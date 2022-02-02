@@ -15,11 +15,16 @@
 package com.liferay.change.tracking.web.internal.portlet.action;
 
 import com.liferay.change.tracking.constants.CTActionKeys;
+import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.model.CTCollection;
+import com.liferay.change.tracking.model.CTPreferences;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
+import com.liferay.change.tracking.service.CTPreferencesLocalService;
+import com.liferay.change.tracking.web.internal.settings.CTSettings;
 import com.liferay.change.tracking.web.internal.constants.PublicationRoleConstants;
 import com.liferay.change.tracking.web.internal.security.permission.resource.CTCollectionPermission;
+import com.liferay.change.tracking.web.internal.util.SandboxUtil;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -41,7 +46,9 @@ import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.security.permission.ResourceActions;
+import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
@@ -187,11 +194,7 @@ public class InviteUsersMVCResourceCommand
 			resourceRequest, "publicationsUserRoleUserIds");
 
 		if (publicationsUserRoleUserIds.length > 0) {
-			Role publicationsUserRole = _roleLocalService.getRole(
-				themeDisplay.getCompanyId(), RoleConstants.PUBLICATIONS_USER);
-
-			_userLocalService.addRoleUsers(
-				publicationsUserRole.getRoleId(), publicationsUserRoleUserIds);
+			_addPublicationUsers(themeDisplay, publicationsUserRoleUserIds);
 		}
 
 		int[] roleValues = ParamUtil.getIntegerValues(
@@ -245,6 +248,51 @@ public class InviteUsersMVCResourceCommand
 				"successMessage",
 				_language.get(
 					httpServletRequest, "users-were-invited-successfully")));
+	}
+
+	private void _addPublicationUsers(ThemeDisplay themeDisplay, long[] userIds)
+		throws PortalException {
+
+		Role publicationsUserRole = _roleLocalService.getRole(
+			themeDisplay.getCompanyId(), RoleConstants.PUBLICATIONS_USER);
+
+		_userLocalService.addRoleUsers(
+			publicationsUserRole.getRoleId(), userIds);
+
+		if (!_ctSettings.sandboxEnabled(themeDisplay.getCompanyId())) {
+			return;
+		}
+
+		for (long userId : userIds) {
+			User user = _userLocalService.getUser(userId);
+
+			CTPreferences ctPreferences =
+				_ctPreferencesLocalService.getCTPreferences(
+					themeDisplay.getCompanyId(), userId);
+
+			if ((ctPreferences.getPreviousCtCollectionId() !=
+					CTConstants.CT_COLLECTION_ID_PRODUCTION) &&
+				_ctCollectionModelResourcePermission.contains(
+					PermissionCheckerFactoryUtil.create(user),
+					ctPreferences.getPreviousCtCollectionId(),
+					ActionKeys.UPDATE)) {
+
+				ctPreferences.setCtCollectionId(
+					ctPreferences.getPreviousCtCollectionId());
+			}
+			else {
+				CTCollection ctCollection = SandboxUtil.addSandboxCTCollection(
+					user.getUserId());
+
+				ctPreferences.setCtCollectionId(
+					ctCollection.getCtCollectionId());
+			}
+
+			ctPreferences.setPreviousCtCollectionId(
+				CTConstants.CT_COLLECTION_ID_PRODUCTION);
+
+			_ctPreferencesLocalService.updateCTPreferences(ctPreferences);
+		}
 	}
 
 	private String[] _getModelResourceActions(int role) {
@@ -329,6 +377,18 @@ public class InviteUsersMVCResourceCommand
 
 	@Reference
 	private CTCollectionLocalService _ctCollectionLocalService;
+
+	@Reference(
+		target = "(model.class.name=com.liferay.change.tracking.model.CTCollection)"
+	)
+	private ModelResourcePermission<CTCollection>
+		_ctCollectionModelResourcePermission;
+
+	@Reference
+	private CTPreferencesLocalService _ctPreferencesLocalService;
+
+	@Reference
+	private CTSettings _ctSettings;
 
 	@Reference
 	private GroupLocalService _groupLocalService;
