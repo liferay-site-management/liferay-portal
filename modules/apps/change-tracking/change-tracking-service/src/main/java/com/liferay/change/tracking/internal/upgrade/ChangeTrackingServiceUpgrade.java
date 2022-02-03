@@ -17,10 +17,14 @@ package com.liferay.change.tracking.internal.upgrade;
 import com.liferay.change.tracking.internal.upgrade.v2_2_0.CTPreferencesUpgradeProcess;
 import com.liferay.change.tracking.internal.upgrade.v2_3_0.UpgradeCompanyId;
 import com.liferay.change.tracking.internal.upgrade.v2_4_0.CTSchemaVersionUpgradeProcess;
+import com.liferay.change.tracking.internal.upgrade.v2_5_2.PublicationsUserRoleUpgradeProcess;
+import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
+import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.upgrade.DummyUpgradeStep;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Daniel Kocsis
@@ -58,6 +62,17 @@ public class ChangeTrackingServiceUpgrade implements UpgradeStepRegistrator {
 				SchemaUpgradeProcess());
 
 		registry.register("2.5.0", "2.5.1", new DummyUpgradeStep());
+
+		registry.register(
+			"2.5.1", "2.5.2",
+			new PublicationsUserRoleUpgradeProcess(
+				_resourcePermissionLocalService, _roleLocalService));
 	}
+
+	@Reference
+	private ResourcePermissionLocalService _resourcePermissionLocalService;
+
+	@Reference
+	private RoleLocalService _roleLocalService;
 
 }
