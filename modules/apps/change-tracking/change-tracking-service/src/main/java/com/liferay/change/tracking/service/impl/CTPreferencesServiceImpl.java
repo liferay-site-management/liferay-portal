@@ -14,6 +14,7 @@
 
 package com.liferay.change.tracking.service.impl;
 
+import com.liferay.change.tracking.constants.CTActionKeys;
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.exception.CTStagingEnabledException;
@@ -139,6 +140,10 @@ public class CTPreferencesServiceImpl extends CTPreferencesServiceBaseImpl {
 			Role role = _roleLocalService.getRole(
 				companyId, RoleConstants.PUBLICATIONS_USER);
 
+			_resourcePermissionLocalService.addResourcePermission(
+				companyId, "com.liferay.change.tracking",
+				ResourceConstants.SCOPE_COMPANY, String.valueOf(companyId),
+				role.getRoleId(), CTActionKeys.ADD_PUBLICATION);
 			_resourcePermissionLocalService.addResourcePermission(
 				companyId, CTPortletKeys.PUBLICATIONS,
 				ResourceConstants.SCOPE_COMPANY, String.valueOf(companyId),
