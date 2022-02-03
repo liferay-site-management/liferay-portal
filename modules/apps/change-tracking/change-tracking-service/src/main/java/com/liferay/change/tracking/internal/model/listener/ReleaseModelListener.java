@@ -25,16 +25,24 @@ import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTPreferencesLocalService;
 import com.liferay.change.tracking.service.CTSchemaVersionLocalService;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
+import com.liferay.portal.kernel.exception.ModelListenerException;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.ModelListener;
 import com.liferay.portal.kernel.model.Release;
 import com.liferay.portal.kernel.model.ReleaseTable;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
+import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.version.Version;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.impl.ReleaseImpl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.osgi.service.component.annotations.Activate;
@@ -103,6 +111,8 @@ public class ReleaseModelListener extends BaseModelListener<Release> {
 	}
 
 	private void _resetCTPreferences() {
+		Map<Long, Role> publicationsUserRoleMap = new HashMap<>();
+
 		for (CTPreferences ctPreferences :
 				_ctPreferencesLocalService.<List<CTPreferences>>dslQuery(
 					DSLQueryFactoryUtil.select(
@@ -118,8 +128,32 @@ public class ReleaseModelListener extends BaseModelListener<Release> {
 						)
 					))) {
 
-			ctPreferences.setCtCollectionId(
-				CTConstants.CT_COLLECTION_ID_PRODUCTION);
+			Role publicationsUserRole = publicationsUserRoleMap.computeIfAbsent(
+				ctPreferences.getCompanyId(),
+				companyId -> _roleLocalService.fetchRole(
+					companyId, RoleConstants.PUBLICATIONS_USER));
+
+			if (_roleLocalService.hasUserRole(
+					ctPreferences.getUserId(),
+					publicationsUserRole.getRoleId())) {
+
+				try {
+					CTCollection sandboxCTCollection =
+						_ctCollectionLocalService.addSandboxCTCollection(
+							ctPreferences.getUserId());
+
+					ctPreferences.setCtCollectionId(
+						sandboxCTCollection.getCtCollectionId());
+				}
+				catch (PortalException portalException) {
+					throw new ModelListenerException(portalException);
+				}
+			}
+			else {
+				ctPreferences.setCtCollectionId(
+					CTConstants.CT_COLLECTION_ID_PRODUCTION);
+			}
+
 			ctPreferences.setPreviousCtCollectionId(
 				CTConstants.CT_COLLECTION_ID_PRODUCTION);
 
@@ -154,5 +188,11 @@ public class ReleaseModelListener extends BaseModelListener<Release> {
 
 	@Reference(target = ModuleServiceLifecycle.PORTLETS_INITIALIZED)
 	private ModuleServiceLifecycle _moduleServiceLifecycle;
+
+	@Reference
+	private RoleLocalService _roleLocalService;
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }
