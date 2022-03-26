@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.change.tracking.web.internal.upgrade.v1_0_2;
+package com.liferay.change.tracking.internal.upgrade.v2_5_2;
 
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.petra.string.CharPool;
