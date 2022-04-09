@@ -14,11 +14,20 @@
 
 package com.liferay.change.tracking.internal.model.listener;
 
+import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.model.CTPreferences;
 import com.liferay.change.tracking.service.CTPreferencesLocalService;
+import com.liferay.portal.kernel.exception.ModelListenerException;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.ModelListener;
+import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.role.RoleConstants;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
+import com.liferay.portal.kernel.service.RoleLocalService;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -28,6 +37,28 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(immediate = true, service = ModelListener.class)
 public class CompanyModelListener extends BaseModelListener<Company> {
+
+	@Override
+	public void onAfterCreate(Company company) throws ModelListenerException {
+		try {
+			Role role = _roleLocalService.getRole(
+				company.getCompanyId(), RoleConstants.PUBLICATIONS_USER);
+
+			_resourcePermissionLocalService.addResourcePermission(
+				company.getCompanyId(), CTPortletKeys.PUBLICATIONS,
+				ResourceConstants.SCOPE_COMPANY,
+				String.valueOf(company.getCompanyId()), role.getRoleId(),
+				ActionKeys.ACCESS_IN_CONTROL_PANEL);
+			_resourcePermissionLocalService.addResourcePermission(
+				company.getCompanyId(), CTPortletKeys.PUBLICATIONS,
+				ResourceConstants.SCOPE_COMPANY,
+				String.valueOf(company.getCompanyId()), role.getRoleId(),
+				ActionKeys.VIEW);
+		}
+		catch (PortalException portalException) {
+			throw new ModelListenerException(portalException);
+		}
+	}
 
 	@Override
 	public void onAfterRemove(Company company) {
@@ -42,5 +73,11 @@ public class CompanyModelListener extends BaseModelListener<Company> {
 
 	@Reference
 	private CTPreferencesLocalService _ctPreferencesLocalService;
+
+	@Reference
+	private ResourcePermissionLocalService _resourcePermissionLocalService;
+
+	@Reference
+	private RoleLocalService _roleLocalService;
 
 }
