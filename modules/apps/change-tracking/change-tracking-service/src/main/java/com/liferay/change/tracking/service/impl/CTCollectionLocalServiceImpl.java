@@ -40,7 +40,6 @@ import com.liferay.change.tracking.model.CTProcess;
 import com.liferay.change.tracking.model.CTSchemaVersion;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.service.CTPreferencesLocalService;
-import com.liferay.change.tracking.service.CTProcessLocalService;
 import com.liferay.change.tracking.service.CTSchemaVersionLocalService;
 import com.liferay.change.tracking.service.base.CTCollectionLocalServiceBaseImpl;
 import com.liferay.change.tracking.service.persistence.CTAutoResolutionInfoPersistence;
@@ -59,6 +58,8 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.aop.AopService;
+import com.liferay.portal.background.task.model.BackgroundTask;
+import com.liferay.portal.background.task.service.BackgroundTaskLocalService;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.dao.jdbc.CurrentConnection;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -434,15 +435,29 @@ public class CTCollectionLocalServiceImpl
 		_ctMessagePersistence.removeByCtCollectionId(
 			ctCollection.getCtCollectionId());
 
-		_ctPreferencesLocalService.resetCTPreferences(
-			ctCollection.getCtCollectionId());
+		resetCTPreferences(
+			ctCollection.getCompanyId(), ctCollection.getCtCollectionId());
 
 		List<CTProcess> ctProcesses =
 			_ctProcessPersistence.findByCtCollectionId(
 				ctCollection.getCtCollectionId());
 
 		for (CTProcess ctProcess : ctProcesses) {
-			_ctProcessLocalService.deleteCTProcess(ctProcess);
+			BackgroundTask backgroundTask =
+				_backgroundTaskLocalService.fetchBackgroundTask(
+					ctProcess.getBackgroundTaskId());
+
+			if (backgroundTask != null) {
+				try {
+					_backgroundTaskLocalService.deleteBackgroundTask(
+						backgroundTask);
+				}
+				catch (PortalException portalException) {
+					_log.error(portalException);
+				}
+			}
+
+			_ctProcessPersistence.remove(ctProcess);
 		}
 
 		Group group = _groupLocalService.fetchGroup(
@@ -927,6 +942,9 @@ public class CTCollectionLocalServiceImpl
 		CTCollectionLocalServiceImpl.class);
 
 	@Reference
+	private BackgroundTaskLocalService _backgroundTaskLocalService;
+
+	@Reference
 	private ClassNameLocalService _classNameLocalService;
 
 	private ServiceTrackerMap<ConstraintResolverKey, ConstraintResolver<?>>
@@ -958,9 +976,6 @@ public class CTCollectionLocalServiceImpl
 
 	@Reference
 	private CTPreferencesPersistence _ctPreferencesPersistence;
-
-	@Reference
-	private CTProcessLocalService _ctProcessLocalService;
 
 	@Reference
 	private CTProcessPersistence _ctProcessPersistence;
