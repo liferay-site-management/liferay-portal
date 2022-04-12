@@ -68,6 +68,12 @@ public class CTCollectionLocalServiceUtil {
 			companyId, userId, name, description);
 	}
 
+	public static CTCollection addSandboxCTCollection(long userId)
+		throws PortalException {
+
+		return getService().addSandboxCTCollection(userId);
+	}
+
 	public static Map
 		<Long, List<com.liferay.change.tracking.conflict.ConflictInfo>>
 				checkConflicts(CTCollection ctCollection)
@@ -334,6 +340,12 @@ public class CTCollectionLocalServiceUtil {
 
 		return getService().isCTEntryEnclosed(
 			ctCollectionId, modelClassNameId, modelClassPK);
+	}
+
+	public static void resetCTPreferences(long companyId, long ctCollectionId)
+		throws PortalException {
+
+		getService().resetCTPreferences(companyId, ctCollectionId);
 	}
 
 	public static CTCollection undoCTCollection(
