@@ -18,6 +18,7 @@ import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.internal.background.task.CTPublishBackgroundTaskExecutor;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTProcess;
+import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTPreferencesLocalService;
 import com.liferay.change.tracking.service.base.CTProcessLocalServiceBaseImpl;
 import com.liferay.change.tracking.service.persistence.CTCollectionPersistence;
@@ -70,8 +71,8 @@ public class CTProcessLocalServiceImpl extends CTProcessLocalServiceBaseImpl {
 
 		ctCollection = _ctCollectionPersistence.update(ctCollection);
 
-		_ctPreferencesLocalService.resetCTPreferences(
-			ctCollection.getCtCollectionId());
+		_ctCollectionLocalService.resetCTPreferences(
+			ctCollection.getCompanyId(), ctCollectionId);
 
 		long ctProcessId = counterLocalService.increment(
 			CTProcess.class.getName());
@@ -147,6 +148,9 @@ public class CTProcessLocalServiceImpl extends CTProcessLocalServiceBaseImpl {
 
 	@Reference
 	private CompanyLocalService _companyLocalService;
+
+	@Reference
+	private CTCollectionLocalService _ctCollectionLocalService;
 
 	@Reference
 	private CTCollectionPersistence _ctCollectionPersistence;
