@@ -49,9 +49,11 @@ public class PublicationsConfigurationDisplayContext {
 
 		if (ctPreferences != null) {
 			_publicationsEnabled = true;
+			_sandboxOnlyEnabled = true;
 		}
 		else {
 			_publicationsEnabled = false;
+			_sandboxOnlyEnabled = false;
 		}
 
 		_language = language;
@@ -86,10 +88,15 @@ public class PublicationsConfigurationDisplayContext {
 		return _publicationsEnabled;
 	}
 
+	public boolean isSandboxOnlyEnabled() {
+		return _sandboxOnlyEnabled;
+	}
+
 	private final HttpServletRequest _httpServletRequest;
 	private final Language _language;
 	private String _navigation;
 	private final boolean _publicationsEnabled;
 	private final RenderResponse _renderResponse;
+	private final boolean _sandboxOnlyEnabled;
 
 }
