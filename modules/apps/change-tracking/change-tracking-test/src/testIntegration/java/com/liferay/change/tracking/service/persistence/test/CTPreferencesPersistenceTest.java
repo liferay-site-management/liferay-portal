@@ -135,6 +135,8 @@ public class CTPreferencesPersistenceTest {
 
 		newCTPreferences.setConfirmationEnabled(RandomTestUtil.randomBoolean());
 
+		newCTPreferences.setSandboxOnlyEnabled(RandomTestUtil.randomBoolean());
+
 		_ctPreferenceses.add(_persistence.update(newCTPreferences));
 
 		CTPreferences existingCTPreferences = _persistence.findByPrimaryKey(
@@ -160,6 +162,9 @@ public class CTPreferencesPersistenceTest {
 		Assert.assertEquals(
 			existingCTPreferences.isConfirmationEnabled(),
 			newCTPreferences.isConfirmationEnabled());
+		Assert.assertEquals(
+			existingCTPreferences.isSandboxOnlyEnabled(),
+			newCTPreferences.isSandboxOnlyEnabled());
 	}
 
 	@Test
@@ -211,7 +216,8 @@ public class CTPreferencesPersistenceTest {
 		return OrderByComparatorFactoryUtil.create(
 			"CTPreferences", "mvccVersion", true, "ctPreferencesId", true,
 			"companyId", true, "userId", true, "ctCollectionId", true,
-			"previousCtCollectionId", true, "confirmationEnabled", true);
+			"previousCtCollectionId", true, "confirmationEnabled", true,
+			"sandboxOnlyEnabled", true);
 	}
 
 	@Test
@@ -506,6 +512,8 @@ public class CTPreferencesPersistenceTest {
 		ctPreferences.setPreviousCtCollectionId(RandomTestUtil.nextLong());
 
 		ctPreferences.setConfirmationEnabled(RandomTestUtil.randomBoolean());
+
+		ctPreferences.setSandboxOnlyEnabled(RandomTestUtil.randomBoolean());
 
 		_ctPreferenceses.add(_persistence.update(ctPreferences));
 

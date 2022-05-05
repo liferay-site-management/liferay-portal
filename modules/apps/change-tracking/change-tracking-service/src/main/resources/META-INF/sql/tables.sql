@@ -66,7 +66,8 @@ create table CTPreferences (
 	userId LONG,
 	ctCollectionId LONG,
 	previousCtCollectionId LONG,
-	confirmationEnabled BOOLEAN
+	confirmationEnabled BOOLEAN,
+	sandboxOnlyEnabled BOOLEAN
 );
 
 create table CTProcess (

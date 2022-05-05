@@ -49,6 +49,10 @@ public class CTPreferencesTable extends BaseTable<CTPreferencesTable> {
 		createColumn(
 			"confirmationEnabled", Boolean.class, Types.BOOLEAN,
 			Column.FLAG_DEFAULT);
+	public final Column<CTPreferencesTable, Boolean> sandboxOnlyEnabled =
+		createColumn(
+			"sandboxOnlyEnabled", Boolean.class, Types.BOOLEAN,
+			Column.FLAG_DEFAULT);
 
 	private CTPreferencesTable() {
 		super("CTPreferences", CTPreferencesTable::new);

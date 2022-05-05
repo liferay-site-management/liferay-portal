@@ -75,7 +75,8 @@ public class CTPreferencesModelImpl
 		{"companyId", Types.BIGINT}, {"userId", Types.BIGINT},
 		{"ctCollectionId", Types.BIGINT},
 		{"previousCtCollectionId", Types.BIGINT},
-		{"confirmationEnabled", Types.BOOLEAN}
+		{"confirmationEnabled", Types.BOOLEAN},
+		{"sandboxOnlyEnabled", Types.BOOLEAN}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -89,10 +90,11 @@ public class CTPreferencesModelImpl
 		TABLE_COLUMNS_MAP.put("ctCollectionId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("previousCtCollectionId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("confirmationEnabled", Types.BOOLEAN);
+		TABLE_COLUMNS_MAP.put("sandboxOnlyEnabled", Types.BOOLEAN);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table CTPreferences (mvccVersion LONG default 0 not null,ctPreferencesId LONG not null primary key,companyId LONG,userId LONG,ctCollectionId LONG,previousCtCollectionId LONG,confirmationEnabled BOOLEAN)";
+		"create table CTPreferences (mvccVersion LONG default 0 not null,ctPreferencesId LONG not null primary key,companyId LONG,userId LONG,ctCollectionId LONG,previousCtCollectionId LONG,confirmationEnabled BOOLEAN,sandboxOnlyEnabled BOOLEAN)";
 
 	public static final String TABLE_SQL_DROP = "drop table CTPreferences";
 
@@ -284,6 +286,12 @@ public class CTPreferencesModelImpl
 			"confirmationEnabled",
 			(BiConsumer<CTPreferences, Boolean>)
 				CTPreferences::setConfirmationEnabled);
+		attributeGetterFunctions.put(
+			"sandboxOnlyEnabled", CTPreferences::getSandboxOnlyEnabled);
+		attributeSetterBiConsumers.put(
+			"sandboxOnlyEnabled",
+			(BiConsumer<CTPreferences, Boolean>)
+				CTPreferences::setSandboxOnlyEnabled);
 
 		_attributeGetterFunctions = Collections.unmodifiableMap(
 			attributeGetterFunctions);
@@ -457,6 +465,27 @@ public class CTPreferencesModelImpl
 		_confirmationEnabled = confirmationEnabled;
 	}
 
+	@JSON
+	@Override
+	public boolean getSandboxOnlyEnabled() {
+		return _sandboxOnlyEnabled;
+	}
+
+	@JSON
+	@Override
+	public boolean isSandboxOnlyEnabled() {
+		return _sandboxOnlyEnabled;
+	}
+
+	@Override
+	public void setSandboxOnlyEnabled(boolean sandboxOnlyEnabled) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_sandboxOnlyEnabled = sandboxOnlyEnabled;
+	}
+
 	public long getColumnBitmask() {
 		if (_columnBitmask > 0) {
 			return _columnBitmask;
@@ -521,6 +550,7 @@ public class CTPreferencesModelImpl
 		ctPreferencesImpl.setPreviousCtCollectionId(
 			getPreviousCtCollectionId());
 		ctPreferencesImpl.setConfirmationEnabled(isConfirmationEnabled());
+		ctPreferencesImpl.setSandboxOnlyEnabled(isSandboxOnlyEnabled());
 
 		ctPreferencesImpl.resetOriginalValues();
 
@@ -545,6 +575,8 @@ public class CTPreferencesModelImpl
 			this.<Long>getColumnOriginalValue("previousCtCollectionId"));
 		ctPreferencesImpl.setConfirmationEnabled(
 			this.<Boolean>getColumnOriginalValue("confirmationEnabled"));
+		ctPreferencesImpl.setSandboxOnlyEnabled(
+			this.<Boolean>getColumnOriginalValue("sandboxOnlyEnabled"));
 
 		return ctPreferencesImpl;
 	}
@@ -635,6 +667,8 @@ public class CTPreferencesModelImpl
 			getPreviousCtCollectionId();
 
 		ctPreferencesCacheModel.confirmationEnabled = isConfirmationEnabled();
+
+		ctPreferencesCacheModel.sandboxOnlyEnabled = isSandboxOnlyEnabled();
 
 		return ctPreferencesCacheModel;
 	}
@@ -735,6 +769,7 @@ public class CTPreferencesModelImpl
 	private long _ctCollectionId;
 	private long _previousCtCollectionId;
 	private boolean _confirmationEnabled;
+	private boolean _sandboxOnlyEnabled;
 
 	public <T> T getColumnValue(String columnName) {
 		Function<CTPreferences, Object> function =
@@ -771,6 +806,7 @@ public class CTPreferencesModelImpl
 		_columnOriginalValues.put(
 			"previousCtCollectionId", _previousCtCollectionId);
 		_columnOriginalValues.put("confirmationEnabled", _confirmationEnabled);
+		_columnOriginalValues.put("sandboxOnlyEnabled", _sandboxOnlyEnabled);
 	}
 
 	private transient Map<String, Object> _columnOriginalValues;
@@ -797,6 +833,8 @@ public class CTPreferencesModelImpl
 		columnBitmasks.put("previousCtCollectionId", 32L);
 
 		columnBitmasks.put("confirmationEnabled", 64L);
+
+		columnBitmasks.put("sandboxOnlyEnabled", 128L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}
