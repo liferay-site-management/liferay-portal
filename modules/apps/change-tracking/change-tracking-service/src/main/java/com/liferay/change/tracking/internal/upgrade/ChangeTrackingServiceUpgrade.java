@@ -14,7 +14,6 @@
 
 package com.liferay.change.tracking.internal.upgrade;
 
-import com.liferay.change.tracking.internal.upgrade.v2_2_0.CTPreferencesUpgradeProcess;
 import com.liferay.change.tracking.internal.upgrade.v2_3_0.UpgradeCompanyId;
 import com.liferay.change.tracking.internal.upgrade.v2_4_0.CTSchemaVersionUpgradeProcess;
 import com.liferay.portal.kernel.upgrade.DummyUpgradeStep;
@@ -45,7 +44,10 @@ public class ChangeTrackingServiceUpgrade implements UpgradeStepRegistrator {
 			new com.liferay.change.tracking.internal.upgrade.v2_1_0.
 				SchemaUpgradeProcess());
 
-		registry.register("2.1.0", "2.2.0", new CTPreferencesUpgradeProcess());
+		registry.register(
+			"2.1.0", "2.2.0",
+			new com.liferay.change.tracking.internal.upgrade.v2_2_0.
+				CTPreferencesUpgradeProcess());
 
 		registry.register("2.2.0", "2.3.0", new UpgradeCompanyId());
 
@@ -58,6 +60,13 @@ public class ChangeTrackingServiceUpgrade implements UpgradeStepRegistrator {
 				SchemaUpgradeProcess());
 
 		registry.register("2.5.0", "2.5.1", new DummyUpgradeStep());
+
+		registry.register("2.5.0", "2.5.1", new DummyUpgradeStep());
+
+		registry.register(
+			"2.5.1", "2.6.0",
+			new com.liferay.change.tracking.internal.upgrade.v2_6_0.
+				CTPreferencesUpgradeProcess());
 	}
 
 }
