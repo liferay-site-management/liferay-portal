@@ -74,6 +74,7 @@
 		<field name="ctCollectionId" type="long" />
 		<field name="previousCtCollectionId" type="long" />
 		<field name="confirmationEnabled" type="boolean" />
+		<field name="sandboxOnlyEnabled" type="boolean" />
 	</model>
 	<model name="com.liferay.change.tracking.model.CTProcess">
 		<field name="mvccVersion" type="long" />

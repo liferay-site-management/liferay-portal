@@ -48,6 +48,7 @@ public class CTPreferencesWrapper
 		attributes.put("ctCollectionId", getCtCollectionId());
 		attributes.put("previousCtCollectionId", getPreviousCtCollectionId());
 		attributes.put("confirmationEnabled", isConfirmationEnabled());
+		attributes.put("sandboxOnlyEnabled", isSandboxOnlyEnabled());
 
 		return attributes;
 	}
@@ -96,6 +97,13 @@ public class CTPreferencesWrapper
 
 		if (confirmationEnabled != null) {
 			setConfirmationEnabled(confirmationEnabled);
+		}
+
+		Boolean sandboxOnlyEnabled = (Boolean)attributes.get(
+			"sandboxOnlyEnabled");
+
+		if (sandboxOnlyEnabled != null) {
+			setSandboxOnlyEnabled(sandboxOnlyEnabled);
 		}
 	}
 
@@ -175,6 +183,16 @@ public class CTPreferencesWrapper
 	}
 
 	/**
+	 * Returns the sandbox only enabled of this ct preferences.
+	 *
+	 * @return the sandbox only enabled of this ct preferences
+	 */
+	@Override
+	public boolean getSandboxOnlyEnabled() {
+		return model.getSandboxOnlyEnabled();
+	}
+
+	/**
 	 * Returns the user ID of this ct preferences.
 	 *
 	 * @return the user ID of this ct preferences
@@ -202,6 +220,16 @@ public class CTPreferencesWrapper
 	@Override
 	public boolean isConfirmationEnabled() {
 		return model.isConfirmationEnabled();
+	}
+
+	/**
+	 * Returns <code>true</code> if this ct preferences is sandbox only enabled.
+	 *
+	 * @return <code>true</code> if this ct preferences is sandbox only enabled; <code>false</code> otherwise
+	 */
+	@Override
+	public boolean isSandboxOnlyEnabled() {
+		return model.isSandboxOnlyEnabled();
 	}
 
 	@Override
@@ -277,6 +305,16 @@ public class CTPreferencesWrapper
 	@Override
 	public void setPrimaryKey(long primaryKey) {
 		model.setPrimaryKey(primaryKey);
+	}
+
+	/**
+	 * Sets whether this ct preferences is sandbox only enabled.
+	 *
+	 * @param sandboxOnlyEnabled the sandbox only enabled of this ct preferences
+	 */
+	@Override
+	public void setSandboxOnlyEnabled(boolean sandboxOnlyEnabled) {
+		model.setSandboxOnlyEnabled(sandboxOnlyEnabled);
 	}
 
 	/**
