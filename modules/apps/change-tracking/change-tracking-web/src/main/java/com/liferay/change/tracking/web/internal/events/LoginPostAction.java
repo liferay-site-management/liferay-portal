@@ -59,7 +59,9 @@ public class LoginPostAction extends Action {
 				_ctPreferencesLocalService.fetchCTPreferences(
 					user.getCompanyId(), 0);
 
-			if (ctPreferences == null) {
+			if ((ctPreferences == null) ||
+				!ctPreferences.isSandboxOnlyEnabled()) {
+
 				return;
 			}
 
