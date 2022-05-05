@@ -713,7 +713,7 @@ public class CTCollectionLocalServiceImpl
 
 			PermissionChecker permissionChecker =
 				PermissionCheckerFactoryUtil.create(user);
-			
+
 			if ((globalCTPreferences != null) &&
 				globalCTPreferences.isSandboxOnlyEnabled() &&
 				_portletPermission.contains(
