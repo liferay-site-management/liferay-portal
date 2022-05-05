@@ -192,6 +192,7 @@
 		<column name="ctCollectionId" type="long" />
 		<column name="previousCtCollectionId" type="long" />
 		<column name="confirmationEnabled" type="boolean" />
+		<column name="sandboxOnlyEnabled" type="boolean" />
 
 		<!-- Finder methods -->
 
