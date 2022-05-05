@@ -687,6 +687,9 @@ public class CTCollectionLocalServiceImpl
 	public void resetCTPreferences(long companyId, long ctCollectionId)
 		throws PortalException {
 
+		CTPreferences globalCTPreferences =
+			_ctPreferencesLocalService.fetchCTPreferences(companyId, 0);
+
 		Role publicationsUserRole = _roleLocalService.getRole(
 			companyId, RoleConstants.PUBLICATIONS_USER);
 
@@ -694,7 +697,9 @@ public class CTCollectionLocalServiceImpl
 				_ctPreferencesPersistence.findByCtCollectionId(
 					ctCollectionId)) {
 
-			if (_roleLocalService.hasUserRole(
+			if ((globalCTPreferences != null) &&
+				globalCTPreferences.isSandboxOnlyEnabled() &&
+				_roleLocalService.hasUserRole(
 					ctPreferences.getUserId(),
 					publicationsUserRole.getRoleId())) {
 

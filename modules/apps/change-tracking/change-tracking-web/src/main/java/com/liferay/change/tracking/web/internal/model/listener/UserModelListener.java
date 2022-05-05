@@ -61,11 +61,20 @@ public class UserModelListener extends BaseModelListener<User> {
 					return;
 				}
 
+				CTPreferences ctPreferences =
+					_ctPreferencesLocalService.fetchCTPreferences(
+						role.getCompanyId(), 0);
+
+				if ((ctPreferences == null) ||
+					!ctPreferences.isSandboxOnlyEnabled()) {
+
+					return;
+				}
+
 				Long userId = (Long)classPK;
 
-				CTPreferences ctPreferences =
-					_ctPreferencesLocalService.getCTPreferences(
-						role.getCompanyId(), userId);
+				ctPreferences = _ctPreferencesLocalService.getCTPreferences(
+					role.getCompanyId(), userId);
 
 				if (ctPreferences.getCtCollectionId() !=
 						CTConstants.CT_COLLECTION_ID_PRODUCTION) {

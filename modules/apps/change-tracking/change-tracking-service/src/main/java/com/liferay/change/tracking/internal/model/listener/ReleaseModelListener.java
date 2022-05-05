@@ -111,6 +111,7 @@ public class ReleaseModelListener extends BaseModelListener<Release> {
 	}
 
 	private void _resetCTPreferences() {
+		Map<Long, CTPreferences> globalCTPreferencesMap = new HashMap<>();
 		Map<Long, Role> publicationsUserRoleMap = new HashMap<>();
 
 		for (CTPreferences ctPreferences :
@@ -128,12 +129,18 @@ public class ReleaseModelListener extends BaseModelListener<Release> {
 						)
 					))) {
 
+			CTPreferences globalCTPreferences =
+				globalCTPreferencesMap.computeIfAbsent(
+					ctPreferences.getCompanyId(),
+					companyId -> _ctPreferencesLocalService.fetchCTPreferences(
+						companyId, 0));
 			Role publicationsUserRole = publicationsUserRoleMap.computeIfAbsent(
 				ctPreferences.getCompanyId(),
 				companyId -> _roleLocalService.fetchRole(
 					companyId, RoleConstants.PUBLICATIONS_USER));
 
-			if (_roleLocalService.hasUserRole(
+			if (globalCTPreferences.isSandboxOnlyEnabled() &&
+				_roleLocalService.hasUserRole(
 					ctPreferences.getUserId(),
 					publicationsUserRole.getRoleId())) {
 
