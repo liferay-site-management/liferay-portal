@@ -88,7 +88,7 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 		}
 
 		try {
-			_ctPreferencesService.enablePublications(
+			ctPreferences = _ctPreferencesService.enablePublications(
 				themeDisplay.getCompanyId(), enablePublications);
 		}
 		catch (CTStagingEnabledException ctStagingEnabledException) {
@@ -102,7 +102,15 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 			return;
 		}
 
-		if (!enablePublications && PropsValues.SCHEDULER_ENABLED) {
+		if (enablePublications) {
+			boolean enableSandboxOnly = ParamUtil.getBoolean(
+				actionRequest, "enableSandboxOnly");
+
+			ctPreferences.setSandboxOnlyEnabled(enableSandboxOnly);
+
+			_ctPreferencesLocalService.updateCTPreferences(ctPreferences);
+		}
+		else if (PropsValues.SCHEDULER_ENABLED) {
 			List<CTCollection> ctCollections =
 				_ctCollectionLocalService.getCTCollections(
 					themeDisplay.getCompanyId(),

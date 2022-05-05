@@ -47,7 +47,7 @@ public class PublicationsConfigurationDisplayContext {
 
 		if (ctPreferences != null) {
 			_publicationsEnabled = true;
-			_sandboxOnlyEnabled = true;
+			_sandboxOnlyEnabled = ctPreferences.getSandboxOnlyEnabled();
 		}
 		else {
 			_publicationsEnabled = false;
