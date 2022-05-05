@@ -14,19 +14,31 @@
 
 package com.liferay.change.tracking.web.internal.portlet.action;
 
+import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.exception.CTStagingEnabledException;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTPreferences;
+import com.liferay.change.tracking.model.CTPreferencesTable;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTPreferencesLocalService;
 import com.liferay.change.tracking.service.CTPreferencesService;
 import com.liferay.change.tracking.web.internal.scheduler.PublishScheduler;
+import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.model.Users_RolesTable;
+import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
+import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -78,17 +90,17 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 		boolean enablePublications = ParamUtil.getBoolean(
 			actionRequest, "enablePublications");
 
-		CTPreferences ctPreferences =
+		CTPreferences globalCTPreferences =
 			_ctPreferencesLocalService.fetchCTPreferences(
 				themeDisplay.getCompanyId(), 0);
 
-		if ((ctPreferences != null) || !enablePublications) {
+		if ((globalCTPreferences != null) || !enablePublications) {
 			redirectURL.setParameter(
 				"mvcRenderCommandName", "/change_tracking/view_settings");
 		}
 
 		try {
-			ctPreferences = _ctPreferencesService.enablePublications(
+			globalCTPreferences = _ctPreferencesService.enablePublications(
 				themeDisplay.getCompanyId(), enablePublications);
 		}
 		catch (CTStagingEnabledException ctStagingEnabledException) {
@@ -102,13 +114,21 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 			return;
 		}
 
+		boolean doSandbox = false;
+
 		if (enablePublications) {
 			boolean enableSandboxOnly = ParamUtil.getBoolean(
 				actionRequest, "enableSandboxOnly");
 
-			ctPreferences.setSandboxOnlyEnabled(enableSandboxOnly);
+			if (!globalCTPreferences.isSandboxOnlyEnabled() &&
+				enableSandboxOnly) {
 
-			_ctPreferencesLocalService.updateCTPreferences(ctPreferences);
+				doSandbox = true;
+			}
+
+			globalCTPreferences.setSandboxOnlyEnabled(enableSandboxOnly);
+
+			_ctPreferencesLocalService.updateCTPreferences(globalCTPreferences);
 		}
 		else if (PropsValues.SCHEDULER_ENABLED) {
 			List<CTCollection> ctCollections =
@@ -120,6 +140,62 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 			for (CTCollection ctCollection : ctCollections) {
 				_publishScheduler.unschedulePublish(
 					ctCollection.getCtCollectionId());
+			}
+		}
+
+		if (doSandbox) {
+			Role publicationsUserRole = _roleLocalService.getRole(
+				themeDisplay.getCompanyId(), RoleConstants.PUBLICATIONS_USER);
+
+			for (CTPreferences ctPreferences :
+					_ctPreferencesLocalService.<List<CTPreferences>>dslQuery(
+						DSLQueryFactoryUtil.select(
+							CTPreferencesTable.INSTANCE
+						).from(
+							CTPreferencesTable.INSTANCE
+						).innerJoinON(
+							Users_RolesTable.INSTANCE,
+							Users_RolesTable.INSTANCE.roleId.eq(
+								publicationsUserRole.getRoleId()
+							).and(
+								Users_RolesTable.INSTANCE.userId.eq(
+									CTPreferencesTable.INSTANCE.userId)
+							)
+						).where(
+							CTPreferencesTable.INSTANCE.companyId.eq(
+								themeDisplay.getCompanyId()
+							).and(
+								CTPreferencesTable.INSTANCE.ctCollectionId.eq(
+									CTConstants.CT_COLLECTION_ID_PRODUCTION)
+							)
+						))) {
+
+				User user = _userLocalService.getUser(
+					ctPreferences.getUserId());
+
+				if ((ctPreferences.getPreviousCtCollectionId() !=
+						CTConstants.CT_COLLECTION_ID_PRODUCTION) &&
+					_ctCollectionModelResourcePermission.contains(
+						PermissionCheckerFactoryUtil.create(user),
+						ctPreferences.getPreviousCtCollectionId(),
+						ActionKeys.UPDATE)) {
+
+					ctPreferences.setCtCollectionId(
+						ctPreferences.getPreviousCtCollectionId());
+				}
+				else {
+					CTCollection sandboxCTCollection =
+						_ctCollectionLocalService.addSandboxCTCollection(
+							ctPreferences.getUserId());
+
+					ctPreferences.setCtCollectionId(
+						sandboxCTCollection.getCtCollectionId());
+				}
+
+				ctPreferences.setPreviousCtCollectionId(
+					CTConstants.CT_COLLECTION_ID_PRODUCTION);
+
+				_ctPreferencesLocalService.updateCTPreferences(ctPreferences);
 			}
 		}
 
@@ -135,6 +211,12 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 
 	@Reference
 	private CTCollectionLocalService _ctCollectionLocalService;
+
+	@Reference(
+		target = "(model.class.name=com.liferay.change.tracking.model.CTCollection)"
+	)
+	private ModelResourcePermission<CTCollection>
+		_ctCollectionModelResourcePermission;
 
 	@Reference
 	private CTPreferencesLocalService _ctPreferencesLocalService;
@@ -154,5 +236,11 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 		policyOption = ReferencePolicyOption.GREEDY
 	)
 	private volatile PublishScheduler _publishScheduler;
+
+	@Reference
+	private RoleLocalService _roleLocalService;
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }
