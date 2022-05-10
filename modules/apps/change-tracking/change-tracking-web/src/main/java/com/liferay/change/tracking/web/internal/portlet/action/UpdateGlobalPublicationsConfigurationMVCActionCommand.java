@@ -149,16 +149,22 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 						).from(
 							CTPreferencesTable.INSTANCE
 						).where(
-							CTPreferencesTable.INSTANCE.companyId.eq(
-								themeDisplay.getCompanyId()
+							CTPreferencesTable.INSTANCE.ctCollectionId.eq(
+								CTConstants.CT_COLLECTION_ID_PRODUCTION
 							).and(
-								CTPreferencesTable.INSTANCE.ctCollectionId.eq(
-									CTConstants.CT_COLLECTION_ID_PRODUCTION)
+								CTPreferencesTable.INSTANCE.companyId.eq(
+									themeDisplay.getCompanyId())
+							).and(
+								CTPreferencesTable.INSTANCE.userId.neq(0L)
 							)
 						))) {
 
-				User user = _userLocalService.getUser(
+				User user = _userLocalService.fetchUser(
 					ctPreferences.getUserId());
+
+				if (user == null) {
+					continue;
+				}
 
 				PermissionChecker permissionChecker =
 					PermissionCheckerFactoryUtil.create(user);
