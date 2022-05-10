@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.service.UserLocalService;
@@ -148,24 +149,32 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 						).from(
 							CTPreferencesTable.INSTANCE
 						).where(
-							CTPreferencesTable.INSTANCE.companyId.eq(
-								themeDisplay.getCompanyId()
+							CTPreferencesTable.INSTANCE.ctCollectionId.eq(
+								CTConstants.CT_COLLECTION_ID_PRODUCTION
 							).and(
-								CTPreferencesTable.INSTANCE.ctCollectionId.eq(
-									CTConstants.CT_COLLECTION_ID_PRODUCTION)
+								CTPreferencesTable.INSTANCE.companyId.eq(
+									themeDisplay.getCompanyId())
+							).and(
+								CTPreferencesTable.INSTANCE.userId.neq(0L)
 							)
 						))) {
 
-				User user = _userLocalService.getUser(
+				User user = _userLocalService.fetchUser(
 					ctPreferences.getUserId());
 
+				if (user == null) {
+					continue;
+				}
+
+				PermissionChecker permissionChecker =
+					PermissionCheckerFactoryUtil.create(user);
+
 				if (!_portletPermission.contains(
-						PermissionCheckerFactoryUtil.create(user),
-						CTPortletKeys.PUBLICATIONS,
+						permissionChecker, CTPortletKeys.PUBLICATIONS,
 						ActionKeys.ACCESS_IN_CONTROL_PANEL) ||
 					!_portletPermission.contains(
-						PermissionCheckerFactoryUtil.create(user),
-						CTPortletKeys.PUBLICATIONS, ActionKeys.VIEW)) {
+						permissionChecker, CTPortletKeys.PUBLICATIONS,
+						ActionKeys.VIEW)) {
 
 					continue;
 				}
@@ -173,7 +182,7 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 				if ((ctPreferences.getPreviousCtCollectionId() !=
 						CTConstants.CT_COLLECTION_ID_PRODUCTION) &&
 					_ctCollectionModelResourcePermission.contains(
-						PermissionCheckerFactoryUtil.create(user),
+						permissionChecker,
 						ctPreferences.getPreviousCtCollectionId(),
 						ActionKeys.UPDATE)) {
 
