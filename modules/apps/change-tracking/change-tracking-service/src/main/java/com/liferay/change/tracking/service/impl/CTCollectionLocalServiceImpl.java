@@ -18,6 +18,7 @@ import com.liferay.change.tracking.closure.CTClosure;
 import com.liferay.change.tracking.closure.CTClosureFactory;
 import com.liferay.change.tracking.conflict.ConflictInfo;
 import com.liferay.change.tracking.constants.CTConstants;
+import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.exception.CTCollectionDescriptionException;
 import com.liferay.change.tracking.exception.CTCollectionNameException;
 import com.liferay.change.tracking.exception.CTLocalizedException;
@@ -70,15 +71,16 @@ import com.liferay.portal.kernel.model.ClassName;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.ModelHintsUtil;
 import com.liferay.portal.kernel.model.ResourceConstants;
-import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.model.role.RoleConstants;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ResourceLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.service.change.tracking.CTService;
+import com.liferay.portal.kernel.service.permission.PortletPermission;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -690,18 +692,21 @@ public class CTCollectionLocalServiceImpl
 		CTPreferences globalCTPreferences =
 			_ctPreferencesLocalService.fetchCTPreferences(companyId, 0);
 
-		Role publicationsUserRole = _roleLocalService.getRole(
-			companyId, RoleConstants.PUBLICATIONS_USER);
-
 		for (CTPreferences ctPreferences :
 				_ctPreferencesPersistence.findByCtCollectionId(
 					ctCollectionId)) {
 
+			User user = _userLocalService.getUser(ctPreferences.getUserId());
+
 			if ((globalCTPreferences != null) &&
 				globalCTPreferences.isSandboxOnlyEnabled() &&
-				_roleLocalService.hasUserRole(
-					ctPreferences.getUserId(),
-					publicationsUserRole.getRoleId())) {
+				_portletPermission.contains(
+					PermissionCheckerFactoryUtil.create(user),
+					CTPortletKeys.PUBLICATIONS,
+					ActionKeys.ACCESS_IN_CONTROL_PANEL) &&
+				_portletPermission.contains(
+					PermissionCheckerFactoryUtil.create(user),
+					CTPortletKeys.PUBLICATIONS, ActionKeys.VIEW)) {
 
 				CTCollection sandboxCTCollection = addSandboxCTCollection(
 					ctPreferences.getUserId());
@@ -996,6 +1001,9 @@ public class CTCollectionLocalServiceImpl
 
 	@Reference
 	private GroupLocalService _groupLocalService;
+
+	@Reference
+	private PortletPermission _portletPermission;
 
 	@Reference
 	private ResourceLocalService _resourceLocalService;

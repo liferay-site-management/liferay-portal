@@ -31,12 +31,9 @@ import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.Role;
-import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.portlet.PortalPreferences;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
-import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.permission.PortletPermission;
 import com.liferay.portal.kernel.servlet.taglib.BaseDynamicInclude;
 import com.liferay.portal.kernel.servlet.taglib.DynamicInclude;
@@ -293,14 +290,7 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 				}
 			}
 			else {
-				Role publicationsUserRole = _roleLocalService.getRole(
-					themeDisplay.getCompanyId(),
-					RoleConstants.PUBLICATIONS_USER);
-
 				if (!sandboxOnlyEnabled ||
-					!_roleLocalService.hasUserRole(
-						ctPreferences.getUserId(),
-						publicationsUserRole.getRoleId()) ||
 					_portletPermission.contains(
 						themeDisplay.getPermissionChecker(),
 						CTPortletKeys.PUBLICATIONS,
@@ -417,9 +407,6 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 
 	@Reference
 	private ReactRenderer _reactRenderer;
-
-	@Reference
-	private RoleLocalService _roleLocalService;
 
 	@Reference(
 		target = "(osgi.web.symbolicname=com.liferay.change.tracking.web)"

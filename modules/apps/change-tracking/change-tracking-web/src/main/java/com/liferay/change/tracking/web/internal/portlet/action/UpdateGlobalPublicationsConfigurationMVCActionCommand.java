@@ -27,18 +27,15 @@ import com.liferay.change.tracking.web.internal.scheduler.PublishScheduler;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.language.Language;
-import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.model.Users_RolesTable;
-import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
-import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.service.permission.PortletPermission;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -144,23 +141,12 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 		}
 
 		if (doSandbox) {
-			Role publicationsUserRole = _roleLocalService.getRole(
-				themeDisplay.getCompanyId(), RoleConstants.PUBLICATIONS_USER);
-
 			for (CTPreferences ctPreferences :
 					_ctPreferencesLocalService.<List<CTPreferences>>dslQuery(
 						DSLQueryFactoryUtil.select(
 							CTPreferencesTable.INSTANCE
 						).from(
 							CTPreferencesTable.INSTANCE
-						).innerJoinON(
-							Users_RolesTable.INSTANCE,
-							Users_RolesTable.INSTANCE.roleId.eq(
-								publicationsUserRole.getRoleId()
-							).and(
-								Users_RolesTable.INSTANCE.userId.eq(
-									CTPreferencesTable.INSTANCE.userId)
-							)
 						).where(
 							CTPreferencesTable.INSTANCE.companyId.eq(
 								themeDisplay.getCompanyId()
@@ -172,6 +158,17 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 
 				User user = _userLocalService.getUser(
 					ctPreferences.getUserId());
+
+				if (!_portletPermission.contains(
+						PermissionCheckerFactoryUtil.create(user),
+						CTPortletKeys.PUBLICATIONS,
+						ActionKeys.ACCESS_IN_CONTROL_PANEL) ||
+					!_portletPermission.contains(
+						PermissionCheckerFactoryUtil.create(user),
+						CTPortletKeys.PUBLICATIONS, ActionKeys.VIEW)) {
+
+					continue;
+				}
 
 				if ((ctPreferences.getPreviousCtCollectionId() !=
 						CTConstants.CT_COLLECTION_ID_PRODUCTION) &&
@@ -230,15 +227,15 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 	@Reference
 	private Portal _portal;
 
+	@Reference
+	private PortletPermission _portletPermission;
+
 	@Reference(
 		cardinality = ReferenceCardinality.OPTIONAL,
 		policy = ReferencePolicy.DYNAMIC,
 		policyOption = ReferencePolicyOption.GREEDY
 	)
 	private volatile PublishScheduler _publishScheduler;
-
-	@Reference
-	private RoleLocalService _roleLocalService;
 
 	@Reference
 	private UserLocalService _userLocalService;

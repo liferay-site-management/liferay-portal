@@ -15,6 +15,7 @@
 package com.liferay.change.tracking.web.internal.events;
 
 import com.liferay.change.tracking.constants.CTConstants;
+import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTPreferences;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
@@ -22,13 +23,11 @@ import com.liferay.change.tracking.service.CTPreferencesLocalService;
 import com.liferay.portal.kernel.events.Action;
 import com.liferay.portal.kernel.events.ActionException;
 import com.liferay.portal.kernel.events.LifecycleAction;
-import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
-import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.kernel.service.permission.PortletPermission;
 import com.liferay.portal.kernel.util.Portal;
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,16 +59,14 @@ public class LoginPostAction extends Action {
 					user.getCompanyId(), 0);
 
 			if ((ctPreferences == null) ||
-				!ctPreferences.isSandboxOnlyEnabled()) {
-
-				return;
-			}
-
-			Role publicationsUserRole = _roleLocalService.getRole(
-				user.getCompanyId(), RoleConstants.PUBLICATIONS_USER);
-
-			if (!_roleLocalService.hasUserRole(
-					user.getUserId(), publicationsUserRole.getRoleId())) {
+				!ctPreferences.isSandboxOnlyEnabled() ||
+				!_portletPermission.contains(
+					PermissionCheckerFactoryUtil.create(user),
+					CTPortletKeys.PUBLICATIONS,
+					ActionKeys.ACCESS_IN_CONTROL_PANEL) ||
+				!_portletPermission.contains(
+					PermissionCheckerFactoryUtil.create(user),
+					CTPortletKeys.PUBLICATIONS, ActionKeys.VIEW)) {
 
 				return;
 			}
@@ -128,6 +125,6 @@ public class LoginPostAction extends Action {
 	private Portal _portal;
 
 	@Reference
-	private RoleLocalService _roleLocalService;
+	private PortletPermission _portletPermission;
 
 }
