@@ -15,6 +15,7 @@
 package com.liferay.change.tracking.internal.model.listener;
 
 import com.liferay.change.tracking.constants.CTConstants;
+import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTCollectionTable;
 import com.liferay.change.tracking.model.CTPreferences;
@@ -31,11 +32,12 @@ import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.ModelListener;
 import com.liferay.portal.kernel.model.Release;
 import com.liferay.portal.kernel.model.ReleaseTable;
-import com.liferay.portal.kernel.model.Role;
-import com.liferay.portal.kernel.model.role.RoleConstants;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
-import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.service.permission.PortletPermission;
 import com.liferay.portal.kernel.version.Version;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.impl.ReleaseImpl;
@@ -111,8 +113,7 @@ public class ReleaseModelListener extends BaseModelListener<Release> {
 	}
 
 	private void _resetCTPreferences() {
-		Map<Long, CTPreferences> globalCTPreferencesMap = new HashMap<>();
-		Map<Long, Role> publicationsUserRoleMap = new HashMap<>();
+		Map<Long, Boolean> sandboxOnlyEnabledMap = new HashMap<>();
 
 		for (CTPreferences ctPreferences :
 				_ctPreferencesLocalService.<List<CTPreferences>>dslQuery(
@@ -129,22 +130,33 @@ public class ReleaseModelListener extends BaseModelListener<Release> {
 						)
 					))) {
 
-			CTPreferences globalCTPreferences =
-				globalCTPreferencesMap.computeIfAbsent(
-					ctPreferences.getCompanyId(),
-					companyId -> _ctPreferencesLocalService.fetchCTPreferences(
-						companyId, 0));
-			Role publicationsUserRole = publicationsUserRoleMap.computeIfAbsent(
+			boolean sandboxOnlyEnabled = sandboxOnlyEnabledMap.computeIfAbsent(
 				ctPreferences.getCompanyId(),
-				companyId -> _roleLocalService.fetchRole(
-					companyId, RoleConstants.PUBLICATIONS_USER));
+				companyId -> {
+					CTPreferences globalCTPreferences =
+						_ctPreferencesLocalService.fetchCTPreferences(
+							companyId, 0);
 
-			if (globalCTPreferences.isSandboxOnlyEnabled() &&
-				_roleLocalService.hasUserRole(
-					ctPreferences.getUserId(),
-					publicationsUserRole.getRoleId())) {
+					if (globalCTPreferences == null) {
+						return false;
+					}
 
-				try {
+					return globalCTPreferences.isSandboxOnlyEnabled();
+				});
+
+			try {
+				User user = _userLocalService.getUser(
+					ctPreferences.getUserId());
+
+				if (sandboxOnlyEnabled &&
+					_portletPermission.contains(
+						PermissionCheckerFactoryUtil.create(user),
+						CTPortletKeys.PUBLICATIONS,
+						ActionKeys.ACCESS_IN_CONTROL_PANEL) &&
+					_portletPermission.contains(
+						PermissionCheckerFactoryUtil.create(user),
+						CTPortletKeys.PUBLICATIONS, ActionKeys.VIEW)) {
+
 					CTCollection sandboxCTCollection =
 						_ctCollectionLocalService.addSandboxCTCollection(
 							ctPreferences.getUserId());
@@ -152,13 +164,13 @@ public class ReleaseModelListener extends BaseModelListener<Release> {
 					ctPreferences.setCtCollectionId(
 						sandboxCTCollection.getCtCollectionId());
 				}
-				catch (PortalException portalException) {
-					throw new ModelListenerException(portalException);
+				else {
+					ctPreferences.setCtCollectionId(
+						CTConstants.CT_COLLECTION_ID_PRODUCTION);
 				}
 			}
-			else {
-				ctPreferences.setCtCollectionId(
-					CTConstants.CT_COLLECTION_ID_PRODUCTION);
+			catch (PortalException portalException) {
+				throw new ModelListenerException(portalException);
 			}
 
 			ctPreferences.setPreviousCtCollectionId(
@@ -197,7 +209,7 @@ public class ReleaseModelListener extends BaseModelListener<Release> {
 	private ModuleServiceLifecycle _moduleServiceLifecycle;
 
 	@Reference
-	private RoleLocalService _roleLocalService;
+	private PortletPermission _portletPermission;
 
 	@Reference
 	private UserLocalService _userLocalService;
