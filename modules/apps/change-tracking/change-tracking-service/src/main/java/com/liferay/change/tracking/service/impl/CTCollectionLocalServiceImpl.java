@@ -696,7 +696,11 @@ public class CTCollectionLocalServiceImpl
 				_ctPreferencesPersistence.findByCtCollectionId(
 					ctCollectionId)) {
 
-			User user = _userLocalService.getUser(ctPreferences.getUserId());
+			User user = _userLocalService.fetchUser(ctPreferences.getUserId());
+
+			if (user == null) {
+				continue;
+			}
 
 			if ((globalCTPreferences != null) &&
 				globalCTPreferences.isSandboxOnlyEnabled() &&

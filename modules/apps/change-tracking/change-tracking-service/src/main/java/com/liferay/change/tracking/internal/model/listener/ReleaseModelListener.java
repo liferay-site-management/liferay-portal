@@ -137,8 +137,12 @@ public class ReleaseModelListener extends BaseModelListener<Release> {
 						companyId, 0));
 
 			try {
-				User user = _userLocalService.getUser(
+				User user = _userLocalService.fetchUser(
 					ctPreferences.getUserId());
+
+				if (user == null) {
+					continue;
+				}
 
 				if (globalCTPreferences.isSandboxOnlyEnabled() &&
 					_portletPermission.contains(
