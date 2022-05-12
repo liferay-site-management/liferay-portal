@@ -178,6 +178,27 @@ public interface CTPreferencesModel
 	 */
 	public void setConfirmationEnabled(boolean confirmationEnabled);
 
+	/**
+	 * Returns the sandbox only enabled of this ct preferences.
+	 *
+	 * @return the sandbox only enabled of this ct preferences
+	 */
+	public boolean getSandboxOnlyEnabled();
+
+	/**
+	 * Returns <code>true</code> if this ct preferences is sandbox only enabled.
+	 *
+	 * @return <code>true</code> if this ct preferences is sandbox only enabled; <code>false</code> otherwise
+	 */
+	public boolean isSandboxOnlyEnabled();
+
+	/**
+	 * Sets whether this ct preferences is sandbox only enabled.
+	 *
+	 * @param sandboxOnlyEnabled the sandbox only enabled of this ct preferences
+	 */
+	public void setSandboxOnlyEnabled(boolean sandboxOnlyEnabled);
+
 	@Override
 	public CTPreferences cloneWithOriginalValues();
 

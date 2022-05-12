@@ -64,6 +64,14 @@ public class CTCollectionLocalServiceWrapper
 	}
 
 	@Override
+	public com.liferay.change.tracking.model.CTCollection
+			addSandboxCTCollection(long userId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _ctCollectionLocalService.addSandboxCTCollection(userId);
+	}
+
+	@Override
 	public java.util.Map
 		<Long,
 		 java.util.List<com.liferay.change.tracking.conflict.ConflictInfo>>
@@ -382,6 +390,13 @@ public class CTCollectionLocalServiceWrapper
 
 		return _ctCollectionLocalService.isCTEntryEnclosed(
 			ctCollectionId, modelClassNameId, modelClassPK);
+	}
+
+	@Override
+	public void resetCTPreferences(long companyId, long ctCollectionId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		_ctCollectionLocalService.resetCTPreferences(companyId, ctCollectionId);
 	}
 
 	@Override

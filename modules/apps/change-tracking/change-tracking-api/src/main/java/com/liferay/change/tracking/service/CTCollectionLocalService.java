@@ -83,6 +83,9 @@ public interface CTCollectionLocalService
 			long companyId, long userId, String name, String description)
 		throws PortalException;
 
+	public CTCollection addSandboxCTCollection(long userId)
+		throws PortalException;
+
 	public Map<Long, List<ConflictInfo>> checkConflicts(
 			CTCollection ctCollection)
 		throws PortalException;
@@ -288,6 +291,9 @@ public interface CTCollectionLocalService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public boolean isCTEntryEnclosed(
 		long ctCollectionId, long modelClassNameId, long modelClassPK);
+
+	public void resetCTPreferences(long companyId, long ctCollectionId)
+		throws PortalException;
 
 	public CTCollection undoCTCollection(
 			long ctCollectionId, long userId, String name, String description)
