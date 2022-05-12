@@ -188,7 +188,8 @@ public class PublishScheduler {
 
 		_ctCollectionLocalService.updateCTCollection(ctCollection);
 
-		_ctPreferencesLocalService.resetCTPreferences(ctCollectionId);
+		_ctCollectionLocalService.resetCTPreferences(
+			ctCollection.getCompanyId(), ctCollectionId);
 
 		Message message = new Message();
 

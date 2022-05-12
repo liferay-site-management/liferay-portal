@@ -15,6 +15,7 @@
 package com.liferay.change.tracking.internal.model.listener;
 
 import com.liferay.change.tracking.constants.CTConstants;
+import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTCollectionTable;
 import com.liferay.change.tracking.model.CTPreferences;
@@ -25,16 +26,25 @@ import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTPreferencesLocalService;
 import com.liferay.change.tracking.service.CTSchemaVersionLocalService;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
+import com.liferay.portal.kernel.exception.ModelListenerException;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.ModelListener;
 import com.liferay.portal.kernel.model.Release;
 import com.liferay.portal.kernel.model.ReleaseTable;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.service.permission.PortletPermission;
 import com.liferay.portal.kernel.version.Version;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.impl.ReleaseImpl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.osgi.service.component.annotations.Activate;
@@ -103,6 +113,8 @@ public class ReleaseModelListener extends BaseModelListener<Release> {
 	}
 
 	private void _resetCTPreferences() {
+		Map<Long, Boolean> sandboxOnlyEnabledMap = new HashMap<>();
+
 		for (CTPreferences ctPreferences :
 				_ctPreferencesLocalService.<List<CTPreferences>>dslQuery(
 					DSLQueryFactoryUtil.select(
@@ -118,8 +130,53 @@ public class ReleaseModelListener extends BaseModelListener<Release> {
 						)
 					))) {
 
-			ctPreferences.setCtCollectionId(
-				CTConstants.CT_COLLECTION_ID_PRODUCTION);
+			boolean sandboxOnlyEnabled = sandboxOnlyEnabledMap.computeIfAbsent(
+				ctPreferences.getCompanyId(),
+				companyId -> {
+					CTPreferences globalCTPreferences =
+						_ctPreferencesLocalService.fetchCTPreferences(
+							companyId, 0);
+
+					if (globalCTPreferences == null) {
+						return false;
+					}
+
+					return globalCTPreferences.isSandboxOnlyEnabled();
+				});
+
+			try {
+				User user = _userLocalService.fetchUser(
+					ctPreferences.getUserId());
+
+				if (user == null) {
+					continue;
+				}
+
+				if (sandboxOnlyEnabled &&
+					_portletPermission.contains(
+						PermissionCheckerFactoryUtil.create(user),
+						CTPortletKeys.PUBLICATIONS,
+						ActionKeys.ACCESS_IN_CONTROL_PANEL) &&
+					_portletPermission.contains(
+						PermissionCheckerFactoryUtil.create(user),
+						CTPortletKeys.PUBLICATIONS, ActionKeys.VIEW)) {
+
+					CTCollection sandboxCTCollection =
+						_ctCollectionLocalService.addSandboxCTCollection(
+							ctPreferences.getUserId());
+
+					ctPreferences.setCtCollectionId(
+						sandboxCTCollection.getCtCollectionId());
+				}
+				else {
+					ctPreferences.setCtCollectionId(
+						CTConstants.CT_COLLECTION_ID_PRODUCTION);
+				}
+			}
+			catch (PortalException portalException) {
+				throw new ModelListenerException(portalException);
+			}
+
 			ctPreferences.setPreviousCtCollectionId(
 				CTConstants.CT_COLLECTION_ID_PRODUCTION);
 
@@ -154,5 +211,11 @@ public class ReleaseModelListener extends BaseModelListener<Release> {
 
 	@Reference(target = ModuleServiceLifecycle.PORTLETS_INITIALIZED)
 	private ModuleServiceLifecycle _moduleServiceLifecycle;
+
+	@Reference
+	private PortletPermission _portletPermission;
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }
