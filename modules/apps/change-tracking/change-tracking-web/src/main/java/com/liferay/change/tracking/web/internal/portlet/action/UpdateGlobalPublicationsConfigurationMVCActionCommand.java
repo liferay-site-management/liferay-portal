@@ -14,19 +14,29 @@
 
 package com.liferay.change.tracking.web.internal.portlet.action;
 
+import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.exception.CTStagingEnabledException;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTPreferences;
+import com.liferay.change.tracking.model.CTPreferencesTable;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTPreferencesLocalService;
 import com.liferay.change.tracking.service.CTPreferencesService;
 import com.liferay.change.tracking.web.internal.scheduler.PublishScheduler;
+import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
+import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.service.permission.PortletPermission;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -78,17 +88,17 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 		boolean enablePublications = ParamUtil.getBoolean(
 			actionRequest, "enablePublications");
 
-		CTPreferences ctPreferences =
+		CTPreferences globalCTPreferences =
 			_ctPreferencesLocalService.fetchCTPreferences(
 				themeDisplay.getCompanyId(), 0);
 
-		if ((ctPreferences != null) || !enablePublications) {
+		if ((globalCTPreferences != null) || !enablePublications) {
 			redirectURL.setParameter(
 				"mvcRenderCommandName", "/change_tracking/view_settings");
 		}
 
 		try {
-			_ctPreferencesService.enablePublications(
+			globalCTPreferences = _ctPreferencesService.enablePublications(
 				themeDisplay.getCompanyId(), enablePublications);
 		}
 		catch (CTStagingEnabledException ctStagingEnabledException) {
@@ -102,7 +112,23 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 			return;
 		}
 
-		if (!enablePublications && PropsValues.SCHEDULER_ENABLED) {
+		boolean doSandbox = false;
+
+		if (enablePublications) {
+			boolean enableSandboxOnly = ParamUtil.getBoolean(
+				actionRequest, "enableSandboxOnly");
+
+			if (!globalCTPreferences.isSandboxOnlyEnabled() &&
+				enableSandboxOnly) {
+
+				doSandbox = true;
+			}
+
+			globalCTPreferences.setSandboxOnlyEnabled(enableSandboxOnly);
+
+			_ctPreferencesLocalService.updateCTPreferences(globalCTPreferences);
+		}
+		else if (PropsValues.SCHEDULER_ENABLED) {
 			List<CTCollection> ctCollections =
 				_ctCollectionLocalService.getCTCollections(
 					themeDisplay.getCompanyId(),
@@ -112,6 +138,70 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 			for (CTCollection ctCollection : ctCollections) {
 				_publishScheduler.unschedulePublish(
 					ctCollection.getCtCollectionId());
+			}
+		}
+
+		if (doSandbox) {
+			for (CTPreferences ctPreferences :
+					_ctPreferencesLocalService.<List<CTPreferences>>dslQuery(
+						DSLQueryFactoryUtil.select(
+							CTPreferencesTable.INSTANCE
+						).from(
+							CTPreferencesTable.INSTANCE
+						).where(
+							CTPreferencesTable.INSTANCE.companyId.eq(
+								themeDisplay.getCompanyId()
+							).and(
+								CTPreferencesTable.INSTANCE.ctCollectionId.eq(
+									CTConstants.CT_COLLECTION_ID_PRODUCTION)
+							).and(
+								CTPreferencesTable.INSTANCE.userId.neq(0L)
+							)
+						))) {
+
+				User user = _userLocalService.fetchUser(
+					ctPreferences.getUserId());
+
+				if (user == null) {
+					continue;
+				}
+
+				PermissionChecker permissionChecker =
+					PermissionCheckerFactoryUtil.create(user);
+
+				if (!_portletPermission.contains(
+						permissionChecker, CTPortletKeys.PUBLICATIONS,
+						ActionKeys.ACCESS_IN_CONTROL_PANEL) ||
+					!_portletPermission.contains(
+						permissionChecker, CTPortletKeys.PUBLICATIONS,
+						ActionKeys.VIEW)) {
+
+					continue;
+				}
+
+				if ((ctPreferences.getPreviousCtCollectionId() !=
+						CTConstants.CT_COLLECTION_ID_PRODUCTION) &&
+					_ctCollectionModelResourcePermission.contains(
+						permissionChecker,
+						ctPreferences.getPreviousCtCollectionId(),
+						ActionKeys.UPDATE)) {
+
+					ctPreferences.setCtCollectionId(
+						ctPreferences.getPreviousCtCollectionId());
+				}
+				else {
+					CTCollection sandboxCTCollection =
+						_ctCollectionLocalService.addSandboxCTCollection(
+							ctPreferences.getUserId());
+
+					ctPreferences.setCtCollectionId(
+						sandboxCTCollection.getCtCollectionId());
+				}
+
+				ctPreferences.setPreviousCtCollectionId(
+					CTConstants.CT_COLLECTION_ID_PRODUCTION);
+
+				_ctPreferencesLocalService.updateCTPreferences(ctPreferences);
 			}
 		}
 
@@ -128,6 +218,12 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 	@Reference
 	private CTCollectionLocalService _ctCollectionLocalService;
 
+	@Reference(
+		target = "(model.class.name=com.liferay.change.tracking.model.CTCollection)"
+	)
+	private ModelResourcePermission<CTCollection>
+		_ctCollectionModelResourcePermission;
+
 	@Reference
 	private CTPreferencesLocalService _ctPreferencesLocalService;
 
@@ -140,11 +236,17 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 	@Reference
 	private Portal _portal;
 
+	@Reference
+	private PortletPermission _portletPermission;
+
 	@Reference(
 		cardinality = ReferenceCardinality.OPTIONAL,
 		policy = ReferencePolicy.DYNAMIC,
 		policyOption = ReferencePolicyOption.GREEDY
 	)
 	private volatile PublishScheduler _publishScheduler;
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }
