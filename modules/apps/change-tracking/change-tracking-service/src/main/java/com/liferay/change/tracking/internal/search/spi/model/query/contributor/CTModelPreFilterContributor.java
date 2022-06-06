@@ -17,6 +17,8 @@ package com.liferay.change.tracking.internal.search.spi.model.query.contributor;
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.CTEntryLocalService;
+import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
@@ -88,7 +90,8 @@ public class CTModelPreFilterContributor implements ModelPreFilterContributor {
 			}
 		}
 		else {
-			List<Long> excludeModelClassPKs = new ArrayList<>();
+			List<Long> excludeProductionModelClassPKs = new ArrayList<>();
+			List<Long> excludeCTCollectionModelClassPKs = new ArrayList<>();
 
 			for (CTEntry ctEntry :
 					_ctEntryLocalService.getCTEntries(
@@ -100,7 +103,12 @@ public class CTModelPreFilterContributor implements ModelPreFilterContributor {
 				if ((changeType == CTConstants.CT_CHANGE_TYPE_DELETION) ||
 					(changeType == CTConstants.CT_CHANGE_TYPE_MODIFICATION)) {
 
-					excludeModelClassPKs.add(ctEntry.getModelClassPK());
+					excludeProductionModelClassPKs.add(
+						ctEntry.getModelClassPK());
+				}
+				else if (_isJournalAddition(className, ctEntry)) {
+					excludeCTCollectionModelClassPKs.add(
+						ctEntry.getModelClassPK());
 				}
 			}
 
@@ -117,14 +125,23 @@ public class CTModelPreFilterContributor implements ModelPreFilterContributor {
 			ctBooleanFilter.add(
 				ctCollectionIdTermsFilter, BooleanClauseOccur.SHOULD);
 
-			if (!excludeModelClassPKs.isEmpty()) {
+			if (!excludeProductionModelClassPKs.isEmpty() ||
+				!excludeCTCollectionModelClassPKs.isEmpty()) {
+
 				TermsFilter uidTermsFilter = new TermsFilter(Field.UID);
 
-				for (Long classPK : excludeModelClassPKs) {
+				for (Long classPK : excludeProductionModelClassPKs) {
 					uidTermsFilter.addValue(
 						_uidFactory.getUID(
 							className, String.valueOf(classPK),
 							CTConstants.CT_COLLECTION_ID_PRODUCTION));
+				}
+
+				for (Long classPK : excludeCTCollectionModelClassPKs) {
+					uidTermsFilter.addValue(
+						_uidFactory.getUID(
+							className, String.valueOf(classPK),
+							ctCollectionId));
 				}
 
 				ctBooleanFilter.add(
@@ -156,6 +173,20 @@ public class CTModelPreFilterContributor implements ModelPreFilterContributor {
 		_serviceTrackerMap.close();
 	}
 
+	private boolean _isJournalAddition(String className, CTEntry ctEntry) {
+		if (className.equals(JournalArticle.class.getName())) {
+			JournalArticle journalArticle =
+				_journalArticleLocalService.fetchJournalArticle(
+					ctEntry.getModelClassPK());
+
+			if ((journalArticle != null) && (journalArticle.getVersion() > 1)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	private static final String _CT_COLLECTION_ID = "ctCollectionId";
 
 	private static final Filter _CT_COLLECTION_ID_MISSING_FILTER =
@@ -166,6 +197,9 @@ public class CTModelPreFilterContributor implements ModelPreFilterContributor {
 
 	@Reference
 	private CTEntryLocalService _ctEntryLocalService;
+
+	@Reference
+	private JournalArticleLocalService _journalArticleLocalService;
 
 	private ServiceTrackerMap<String, CTService<?>> _serviceTrackerMap;
 
