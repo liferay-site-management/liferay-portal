@@ -210,7 +210,7 @@ public class SearchCTTest {
 
 		_assertCollectionHits(
 			_ctCollection1.getCtCollectionId(), _JOURNAL_ARTICLE_CLASS,
-			new JournalArticle[] {addedJournalArticle, modifiedJournalArticle2},
+			new JournalArticle[] {addedJournalArticle},
 			new JournalArticle[] {modifiedJournalArticle1});
 
 		_assertProductionHits(_LAYOUT_CLASS, deletedLayout, modifiedLayout);
