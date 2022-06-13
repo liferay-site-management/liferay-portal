@@ -18,8 +18,8 @@ import com.liferay.application.list.BasePanelApp;
 import com.liferay.application.list.PanelApp;
 import com.liferay.application.list.constants.PanelCategoryKeys;
 import com.liferay.change.tracking.constants.CTPortletKeys;
-import com.liferay.change.tracking.model.CTPreferences;
 import com.liferay.change.tracking.service.CTPreferencesLocalService;
+import com.liferay.change.tracking.settings.CTSettings;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Portlet;
@@ -64,11 +64,7 @@ public class PublicationsPanelApp extends BasePanelApp {
 			(ThemeDisplay)httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
 
-		CTPreferences ctPreferences =
-			_ctPreferencesLocalService.fetchCTPreferences(
-				themeDisplay.getCompanyId(), 0);
-
-		if (ctPreferences == null) {
+		if (!_ctSettings.enabled(themeDisplay.getCompanyId())) {
 			portletURL.setParameter(
 				"mvcRenderCommandName", "/change_tracking/view_settings");
 		}
@@ -82,19 +78,11 @@ public class PublicationsPanelApp extends BasePanelApp {
 
 		if (_portletPermission.contains(
 				permissionChecker, CTPortletKeys.PUBLICATIONS,
-				ActionKeys.CONFIGURATION)) {
-
-			return true;
-		}
-
-		CTPreferences ctPreferences =
-			_ctPreferencesLocalService.fetchCTPreferences(
-				group.getCompanyId(), 0);
-
-		if ((ctPreferences != null) &&
-			_portletPermission.contains(
-				permissionChecker, CTPortletKeys.PUBLICATIONS,
-				ActionKeys.VIEW)) {
+				ActionKeys.CONFIGURATION) ||
+			(_ctSettings.enabled(group.getCompanyId()) &&
+			 _portletPermission.contains(
+				 permissionChecker, CTPortletKeys.PUBLICATIONS,
+				 ActionKeys.VIEW))) {
 
 			return true;
 		}
@@ -113,6 +101,9 @@ public class PublicationsPanelApp extends BasePanelApp {
 
 	@Reference
 	private CTPreferencesLocalService _ctPreferencesLocalService;
+
+	@Reference
+	private CTSettings _ctSettings;
 
 	@Reference
 	private PortletPermission _portletPermission;

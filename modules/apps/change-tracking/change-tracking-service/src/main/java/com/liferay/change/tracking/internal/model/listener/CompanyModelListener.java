@@ -14,8 +14,10 @@
 
 package com.liferay.change.tracking.internal.model.listener;
 
-import com.liferay.change.tracking.model.CTPreferences;
-import com.liferay.change.tracking.service.CTPreferencesLocalService;
+import com.liferay.change.tracking.settings.CTSettings;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.ModelListener;
@@ -31,16 +33,20 @@ public class CompanyModelListener extends BaseModelListener<Company> {
 
 	@Override
 	public void onAfterRemove(Company company) {
-		CTPreferences ctPreferences =
-			_ctPreferencesLocalService.fetchCTPreferences(
-				company.getCompanyId(), 0);
-
-		if (ctPreferences != null) {
-			_ctPreferencesLocalService.deleteCTPreferences(ctPreferences);
+		try {
+			_ctSettings.delete(company.getCompanyId());
+		}
+		catch (PortalException portalException) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(portalException);
+			}
 		}
 	}
 
+	private static final Log _log = LogFactoryUtil.getLog(
+		CompanyModelListener.class);
+
 	@Reference
-	private CTPreferencesLocalService _ctPreferencesLocalService;
+	private CTSettings _ctSettings;
 
 }
