@@ -14,8 +14,7 @@
 
 package com.liferay.staging.configuration.web.internal.portlet;
 
-import com.liferay.change.tracking.model.CTPreferences;
-import com.liferay.change.tracking.service.CTPreferencesLocalService;
+import com.liferay.change.tracking.settings.CTSettings;
 import com.liferay.exportimport.kernel.service.StagingLocalService;
 import com.liferay.exportimport.kernel.staging.Staging;
 import com.liferay.exportimport.kernel.staging.constants.StagingConstants;
@@ -122,16 +121,12 @@ public class StagingConfigurationPortlet extends MVCPortlet {
 
 		int stagingType = ParamUtil.getInteger(actionRequest, "stagingType");
 
-		if (stagingType != StagingConstants.TYPE_NOT_STAGED) {
-			CTPreferences ctPreferences =
-				_ctPreferencesLocalService.fetchCTPreferences(
-					themeDisplay.getCompanyId(), 0);
+		if ((stagingType != StagingConstants.TYPE_NOT_STAGED) &&
+			_ctSettings.enabled(themeDisplay.getCompanyId())) {
 
-			if (ctPreferences != null) {
-				SessionErrors.add(actionRequest, "publicationsEnabled");
+			SessionErrors.add(actionRequest, "publicationsEnabled");
 
-				return;
-			}
+			return;
 		}
 
 		long liveGroupId = ParamUtil.getLong(actionRequest, "liveGroupId");
@@ -337,7 +332,7 @@ public class StagingConfigurationPortlet extends MVCPortlet {
 	private BackgroundTaskManager _backgroundTaskManager;
 
 	@Reference
-	private CTPreferencesLocalService _ctPreferencesLocalService;
+	private CTSettings _ctSettings;
 
 	private GroupLocalService _groupLocalService;
 

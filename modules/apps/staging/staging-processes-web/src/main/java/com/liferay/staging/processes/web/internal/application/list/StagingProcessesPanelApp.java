@@ -17,8 +17,7 @@ package com.liferay.staging.processes.web.internal.application.list;
 import com.liferay.application.list.BasePanelApp;
 import com.liferay.application.list.PanelApp;
 import com.liferay.application.list.constants.PanelCategoryKeys;
-import com.liferay.change.tracking.model.CTPreferences;
-import com.liferay.change.tracking.service.CTPreferencesLocalService;
+import com.liferay.change.tracking.settings.CTSettings;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Portlet;
@@ -50,11 +49,7 @@ public class StagingProcessesPanelApp extends BasePanelApp {
 	public boolean isShow(PermissionChecker permissionChecker, Group group)
 		throws PortalException {
 
-		CTPreferences ctPreferences =
-			_ctPreferencesLocalService.fetchCTPreferences(
-				permissionChecker.getCompanyId(), 0);
-
-		if (ctPreferences != null) {
+		if (_ctSettings.enabled(group.getCompanyId())) {
 			return false;
 		}
 
@@ -71,6 +66,6 @@ public class StagingProcessesPanelApp extends BasePanelApp {
 	}
 
 	@Reference
-	private CTPreferencesLocalService _ctPreferencesLocalService;
+	private CTSettings _ctSettings;
 
 }
