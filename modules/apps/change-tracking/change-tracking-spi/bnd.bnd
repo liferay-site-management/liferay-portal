@@ -10,4 +10,5 @@ Export-Package:\
 	com.liferay.change.tracking.spi.reference.builder,\
 	com.liferay.change.tracking.spi.resolver,\
 	com.liferay.change.tracking.spi.resolver.context,\
-	com.liferay.change.tracking.spi.search
+	com.liferay.change.tracking.spi.search,\
+	com.liferay.change.tracking.spi.settings
