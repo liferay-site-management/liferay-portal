@@ -95,28 +95,34 @@ definition {
 
 	macro disablePublications {
 		ApplicationsMenu.gotoPortlet(
-			category = "Publications",
-			panel = "Applications",
-			portlet = "Publications");
+			category = "Configuration",
+			panel = "Control Panel",
+			portlet = "System Settings");
 
-		Click.waitForMenuToggleJSClick(locator1 = "Publications#PUBLICATIONS_ELLIPSIS");
+		SystemSettings.gotoConfiguration(
+			configurationCategory = "Infrastructure",
+			configurationName = "Publications Settings",
+			configurationScope = "System Scope");
 
-		MenuItem.click(menuItem = "Settings");
+		FormFields.disableCheckbox(fieldName = "enabled");
 
-		Uncheck.uncheckToggleSwitch(locator1 = "Publications#PUBLICATIONS_TOGGLE_SWITCH");
-
-		Click(locator1 = "Button#SAVE");
+		SystemSettings.saveConfiguration();
 	}
 
 	macro enablePublications {
 		ApplicationsMenu.gotoPortlet(
-			category = "Publications",
-			panel = "Applications",
-			portlet = "Publications");
+			category = "Configuration",
+			panel = "Control Panel",
+			portlet = "System Settings");
 
-		Check.checkToggleSwitch(locator1 = "Publications#PUBLICATIONS_TOGGLE_SWITCH");
+		SystemSettings.gotoConfiguration(
+			configurationCategory = "Infrastructure",
+			configurationName = "Publications Settings",
+			configurationScope = "System Scope");
 
-		Click(locator1 = "Button#SAVE");
+		FormFields.enableCheckbox(fieldName = "enabled");
+
+		SystemSettings.saveConfiguration();
 	}
 
 	macro inviteUsers {
