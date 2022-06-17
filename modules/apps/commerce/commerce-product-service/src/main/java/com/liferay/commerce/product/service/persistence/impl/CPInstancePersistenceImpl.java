@@ -7707,7 +7707,9 @@ public class CPInstancePersistenceImpl
 	 */
 	@Override
 	public CPInstance fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(CPInstance.class)) {
+		if (ctPersistenceHelper.isProductionMode(
+				CPInstance.class, primaryKey)) {
+
 			return super.fetchByPrimaryKey(primaryKey);
 		}
 

@@ -22088,7 +22088,9 @@ public class BlogsEntryPersistenceImpl
 	 */
 	@Override
 	public BlogsEntry fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(BlogsEntry.class)) {
+		if (ctPersistenceHelper.isProductionMode(
+				BlogsEntry.class, primaryKey)) {
+
 			return super.fetchByPrimaryKey(primaryKey);
 		}
 

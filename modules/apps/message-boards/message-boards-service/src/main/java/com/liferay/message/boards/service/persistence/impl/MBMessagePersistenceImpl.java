@@ -21819,7 +21819,7 @@ public class MBMessagePersistenceImpl
 	 */
 	@Override
 	public MBMessage fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(MBMessage.class)) {
+		if (ctPersistenceHelper.isProductionMode(MBMessage.class, primaryKey)) {
 			return super.fetchByPrimaryKey(primaryKey);
 		}
 

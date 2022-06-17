@@ -9590,7 +9590,9 @@ public class OrganizationPersistenceImpl
 	 */
 	@Override
 	public Organization fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(Organization.class)) {
+		if (CTPersistenceHelperUtil.isProductionMode(
+				Organization.class, primaryKey)) {
+
 			return super.fetchByPrimaryKey(primaryKey);
 		}
 
