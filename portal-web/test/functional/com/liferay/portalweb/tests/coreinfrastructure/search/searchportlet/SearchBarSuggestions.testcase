@@ -71,6 +71,8 @@ definition {
 
 	@priority = "4"
 	test CanViewBasicAndBlueprintSuggestionsTogether {
+		property test.run.environment = "EE";
+
 		JSONWebcontent.addWebContent(
 			content = "WC WebContent Content",
 			description = "WC WebContent Description",
@@ -229,6 +231,18 @@ definition {
 			searchAssetTitle = "Apple");
 	}
 
+	@priority = "4"
+	test ShowHTMLAsPlainText {
+		Type(
+			locator1 = "Search#EMBEDDED_SEARCH_BAR",
+			value1 = "test");
+
+		SearchBarSuggestions.viewSuggestions(
+			searchAssetDescription = "Page: Home",
+			searchAssetTitle = "Home",
+			suggestionContributorDisplayGroupName = "suggestions");
+	}
+
 	@priority = "5"
 	test ViewBasicSuggestionsAcrossDifferentScopes {
 		JSONWebcontent.addWebContent(
@@ -277,6 +291,8 @@ definition {
 
 	@priority = "5"
 	test ViewBlueprintSuggestionsAcrossDifferentScopes {
+		property test.run.environment = "EE";
+
 		JSONWebcontent.addWebContent(
 			content = "WC WebContent Content",
 			description = "WC WebContent Description",
