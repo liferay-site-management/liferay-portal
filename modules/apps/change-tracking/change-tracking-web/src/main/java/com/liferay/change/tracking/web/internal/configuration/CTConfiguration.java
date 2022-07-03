@@ -21,11 +21,11 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 /**
  * @author Tomas Polesovsky
  */
-@ExtendedObjectClassDefinition(category = "infrastructure")
+@ExtendedObjectClassDefinition(category = "publications")
 @Meta.OCD(
 	id = "com.liferay.change.tracking.web.internal.configuration.CTConfiguration",
 	localization = "content/Language",
-	name = "publications-portal-configuration-name"
+	name = "publications-root-display-configuration-name"
 )
 public interface CTConfiguration {
 
