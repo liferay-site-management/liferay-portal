@@ -14,7 +14,9 @@
 
 package com.liferay.change.tracking.internal.aop;
 
+import com.liferay.change.tracking.internal.configuration.CTProductionOnlyConfiguration;
 import com.liferay.petra.lang.SafeCloseable;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.aop.AopMethodInvocation;
 import com.liferay.portal.kernel.aop.ChainableMethodAdvice;
 import com.liferay.portal.kernel.change.tracking.CTAware;
@@ -22,6 +24,7 @@ import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTTransactionException;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.spring.transaction.TransactionExecutorThreadLocal;
 
 import java.lang.annotation.Annotation;
@@ -29,12 +32,17 @@ import java.lang.reflect.Method;
 
 import java.util.Map;
 
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 
 /**
  * @author Preston Crary
  */
-@Component(immediate = true, service = ChainableMethodAdvice.class)
+@Component(
+	configurationPid = "com.liferay.change.tracking.internal.configuration.CTProductionOnlyConfiguration",
+	immediate = true, service = ChainableMethodAdvice.class
+)
 public class CTTransactionAdvice extends ChainableMethodAdvice {
 
 	@Override
@@ -52,7 +60,9 @@ public class CTTransactionAdvice extends ChainableMethodAdvice {
 		CTAware ctAware = (CTAware)annotations.get(CTAware.class);
 
 		if (ctAware != null) {
-			if (ctAware.onProduction()) {
+			if (ctAware.onProduction() ||
+				_isProductionOnlyClassName(method.getDeclaringClass())) {
+
 				return CTMode.REQUIRES_NEW;
 			}
 
@@ -101,6 +111,22 @@ public class CTTransactionAdvice extends ChainableMethodAdvice {
 				aopMethodInvocation.getThis() +
 					" can only be performed in production mode.");
 	}
+
+	@Activate
+	@Modified
+	protected void activate(Map<String, Object> properties) {
+		_ctProductionOnlyConfiguration = ConfigurableUtil.createConfigurable(
+			CTProductionOnlyConfiguration.class, properties);
+	}
+
+	private boolean _isProductionOnlyClassName(Class<?> clazz) {
+		return ArrayUtil.contains(
+			_ctProductionOnlyConfiguration.productionOnlyClassNames(),
+			clazz.getName());
+	}
+
+	private volatile CTProductionOnlyConfiguration
+		_ctProductionOnlyConfiguration;
 
 	private enum CTMode {
 
