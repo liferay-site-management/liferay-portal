@@ -29,10 +29,7 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 )
 public interface CTProductionOnlyConfiguration {
 
-	@Meta.AD(
-		deflt = "",
-		name = "production-only-class-names", required = false
-	)
+	@Meta.AD(deflt = "", name = "production-only-class-names", required = false)
 	public String[] productionOnlyClassNames();
 
 }
