@@ -201,6 +201,59 @@ definition {
 		AssertElementNotPresent(locator1 = "Publications#PUBLICATIONS_INDICATOR_BUTTON");
 	}
 
+	@description = "This is a use case for LPS-157465. A configuration to determine which change tracked items can go straight to production"
+	@priority = "4"
+	test CanConfigureChangeTrackedEntitiesToSkipPublication {
+		property osgi.module.configuration.file.names = "com.liferay.change.tracking.configuration.CTSettingsConfiguration.config:com.liferay.change.tracking.internal.configuration.CTProductionOnlyConfiguration.config";
+		property osgi.module.configurations = "enabled=B&quot;true&quot;:productionOnlyClassNames=[&quot;com.liferay.journal.service.impl.JournalArticleServiceImpl&quot;]";
+
+		JSONPublications.addPublication(publicationName = "Publication Name");
+
+		JSONPublications.selectPublication(publicationName = "Publication Name");
+
+		JSONWebcontent.addWebContent(
+			content = "WC WebContent Content",
+			groupName = "Guest",
+			title = "WC WebContent Title");
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
+		Publications.workOnProduction();
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
+		WebContent.viewTitle(webContentTitle = "WC WebContent Title");
+
+		Publications.selectPublication(publicationName = "Publication Name");
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
+		WebContent.editCP(
+			webContentContentEdit = "WC WebContent Content Edit",
+			webContentTitle = "WC WebContent Title",
+			webContentTitleEdit = "WC WebContent Title Edit");
+
+		Publications.workOnProduction();
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
+		WebContent.viewTitle(webContentTitle = "WC WebContent Title Edit");
+
+		Publications.selectPublication(publicationName = "Publication Name");
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
+		JSONWebcontent.deleteWebContent(
+			groupName = "Guest",
+			title = "WC WebContent Title Edit");
+
+		Publications.workOnProduction();
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
+		WebContent.viewNotPresentCP(webContentTitle = "WC WebContent Title Edit");
+	}
+
 	@description = "This is the use case for LPS-158789. Allow you to change publication via URL parameter"
 	@priority = "4"
 	test CanChangePublicationViaURLParameter {
