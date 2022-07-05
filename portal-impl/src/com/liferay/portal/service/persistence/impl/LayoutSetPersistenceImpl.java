@@ -1237,18 +1237,15 @@ public class LayoutSetPersistenceImpl
 	public LayoutSet fetchByG_P(
 		long groupId, boolean privateLayout, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			LayoutSet.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, privateLayout};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_P, finderArgs);
 		}
@@ -1256,7 +1253,9 @@ public class LayoutSetPersistenceImpl
 		if (result instanceof LayoutSet) {
 			LayoutSet layoutSet = (LayoutSet)result;
 
-			if ((groupId != layoutSet.getGroupId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					LayoutSet.class, layoutSet.getPrimaryKey()) ||
+				(groupId != layoutSet.getGroupId()) ||
 				(privateLayout != layoutSet.isPrivateLayout())) {
 
 				result = null;
@@ -1290,7 +1289,7 @@ public class LayoutSetPersistenceImpl
 				List<LayoutSet> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByG_P, finderArgs, list);
 					}
@@ -2073,18 +2072,15 @@ public class LayoutSetPersistenceImpl
 	public LayoutSet fetchByP_L(
 		boolean privateLayout, long logoId, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			LayoutSet.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {privateLayout, logoId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByP_L, finderArgs);
 		}
@@ -2092,7 +2088,9 @@ public class LayoutSetPersistenceImpl
 		if (result instanceof LayoutSet) {
 			LayoutSet layoutSet = (LayoutSet)result;
 
-			if ((privateLayout != layoutSet.isPrivateLayout()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					LayoutSet.class, layoutSet.getPrimaryKey()) ||
+				(privateLayout != layoutSet.isPrivateLayout()) ||
 				(logoId != layoutSet.getLogoId())) {
 
 				result = null;
@@ -2126,7 +2124,7 @@ public class LayoutSetPersistenceImpl
 				List<LayoutSet> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByP_L, finderArgs, list);
 					}
@@ -2136,7 +2134,7 @@ public class LayoutSetPersistenceImpl
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
+							if (!useFinderCache) {
 								finderArgs = new Object[] {
 									privateLayout, logoId
 								};

@@ -3209,12 +3209,9 @@ public class WorkflowDefinitionLinkPersistenceImpl
 		long groupId, long companyId, long classNameId, long classPK,
 		long typePK, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			WorkflowDefinitionLink.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, companyId, classNameId, classPK, typePK
 			};
@@ -3222,7 +3219,7 @@ public class WorkflowDefinitionLinkPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_C_C_C_T, finderArgs);
 		}
@@ -3231,7 +3228,10 @@ public class WorkflowDefinitionLinkPersistenceImpl
 			WorkflowDefinitionLink workflowDefinitionLink =
 				(WorkflowDefinitionLink)result;
 
-			if ((groupId != workflowDefinitionLink.getGroupId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					WorkflowDefinitionLink.class,
+					workflowDefinitionLink.getPrimaryKey()) ||
+				(groupId != workflowDefinitionLink.getGroupId()) ||
 				(companyId != workflowDefinitionLink.getCompanyId()) ||
 				(classNameId != workflowDefinitionLink.getClassNameId()) ||
 				(classPK != workflowDefinitionLink.getClassPK()) ||
@@ -3280,7 +3280,7 @@ public class WorkflowDefinitionLinkPersistenceImpl
 				List<WorkflowDefinitionLink> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByG_C_C_C_T, finderArgs, list);
 					}
@@ -3290,7 +3290,7 @@ public class WorkflowDefinitionLinkPersistenceImpl
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
+							if (!useFinderCache) {
 								finderArgs = new Object[] {
 									groupId, companyId, classNameId, classPK,
 									typePK

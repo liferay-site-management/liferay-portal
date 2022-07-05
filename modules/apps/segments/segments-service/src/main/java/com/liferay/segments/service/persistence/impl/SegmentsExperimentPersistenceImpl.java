@@ -732,18 +732,15 @@ public class SegmentsExperimentPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsExperiment.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -751,7 +748,10 @@ public class SegmentsExperimentPersistenceImpl
 		if (result instanceof SegmentsExperiment) {
 			SegmentsExperiment segmentsExperiment = (SegmentsExperiment)result;
 
-			if (!Objects.equals(uuid, segmentsExperiment.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					SegmentsExperiment.class,
+					segmentsExperiment.getPrimaryKey()) ||
+				!Objects.equals(uuid, segmentsExperiment.getUuid()) ||
 				(groupId != segmentsExperiment.getGroupId())) {
 
 				result = null;
@@ -796,7 +796,7 @@ public class SegmentsExperimentPersistenceImpl
 				List<SegmentsExperiment> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -3075,25 +3075,25 @@ public class SegmentsExperimentPersistenceImpl
 
 		segmentsExperimentKey = Objects.toString(segmentsExperimentKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsExperiment.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, segmentsExperimentKey};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_S, finderArgs);
 		}
 
 		if (result instanceof SegmentsExperiment) {
 			SegmentsExperiment segmentsExperiment = (SegmentsExperiment)result;
 
-			if ((groupId != segmentsExperiment.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					SegmentsExperiment.class,
+					segmentsExperiment.getPrimaryKey()) ||
+				(groupId != segmentsExperiment.getGroupId()) ||
 				!Objects.equals(
 					segmentsExperimentKey,
 					segmentsExperiment.getSegmentsExperimentKey())) {
@@ -3140,7 +3140,7 @@ public class SegmentsExperimentPersistenceImpl
 				List<SegmentsExperiment> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_S, finderArgs, list);
 					}

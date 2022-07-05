@@ -712,18 +712,15 @@ public class AssetCategoryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetCategory.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -731,7 +728,9 @@ public class AssetCategoryPersistenceImpl
 		if (result instanceof AssetCategory) {
 			AssetCategory assetCategory = (AssetCategory)result;
 
-			if (!Objects.equals(uuid, assetCategory.getUuid()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					AssetCategory.class, assetCategory.getPrimaryKey()) ||
+				!Objects.equals(uuid, assetCategory.getUuid()) ||
 				(groupId != assetCategory.getGroupId())) {
 
 				result = null;
@@ -776,7 +775,7 @@ public class AssetCategoryPersistenceImpl
 				List<AssetCategory> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -11648,18 +11647,15 @@ public class AssetCategoryPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetCategory.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {parentCategoryId, name, vocabularyId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByP_N_V, finderArgs);
 		}
@@ -11667,7 +11663,9 @@ public class AssetCategoryPersistenceImpl
 		if (result instanceof AssetCategory) {
 			AssetCategory assetCategory = (AssetCategory)result;
 
-			if ((parentCategoryId != assetCategory.getParentCategoryId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					AssetCategory.class, assetCategory.getPrimaryKey()) ||
+				(parentCategoryId != assetCategory.getParentCategoryId()) ||
 				!Objects.equals(name, assetCategory.getName()) ||
 				(vocabularyId != assetCategory.getVocabularyId())) {
 
@@ -11717,7 +11715,7 @@ public class AssetCategoryPersistenceImpl
 				List<AssetCategory> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByP_N_V, finderArgs, list);
 					}
@@ -11932,18 +11930,15 @@ public class AssetCategoryPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetCategory.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_ERC, finderArgs);
 		}
@@ -11951,7 +11946,9 @@ public class AssetCategoryPersistenceImpl
 		if (result instanceof AssetCategory) {
 			AssetCategory assetCategory = (AssetCategory)result;
 
-			if ((groupId != assetCategory.getGroupId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					AssetCategory.class, assetCategory.getPrimaryKey()) ||
+				(groupId != assetCategory.getGroupId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					assetCategory.getExternalReferenceCode())) {
@@ -11998,7 +11995,7 @@ public class AssetCategoryPersistenceImpl
 				List<AssetCategory> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByG_ERC, finderArgs, list);
 					}

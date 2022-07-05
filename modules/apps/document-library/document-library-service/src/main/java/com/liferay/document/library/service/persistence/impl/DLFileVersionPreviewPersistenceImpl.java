@@ -1215,18 +1215,15 @@ public class DLFileVersionPreviewPersistenceImpl
 	public DLFileVersionPreview fetchByF_F(
 		long fileEntryId, long fileVersionId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DLFileVersionPreview.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {fileEntryId, fileVersionId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByF_F, finderArgs);
 		}
 
@@ -1234,7 +1231,10 @@ public class DLFileVersionPreviewPersistenceImpl
 			DLFileVersionPreview dlFileVersionPreview =
 				(DLFileVersionPreview)result;
 
-			if ((fileEntryId != dlFileVersionPreview.getFileEntryId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DLFileVersionPreview.class,
+					dlFileVersionPreview.getPrimaryKey()) ||
+				(fileEntryId != dlFileVersionPreview.getFileEntryId()) ||
 				(fileVersionId != dlFileVersionPreview.getFileVersionId())) {
 
 				result = null;
@@ -1268,7 +1268,7 @@ public class DLFileVersionPreviewPersistenceImpl
 				List<DLFileVersionPreview> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByF_F, finderArgs, list);
 					}
@@ -1462,12 +1462,9 @@ public class DLFileVersionPreviewPersistenceImpl
 		long fileEntryId, long fileVersionId, int previewStatus,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DLFileVersionPreview.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				fileEntryId, fileVersionId, previewStatus
 			};
@@ -1475,7 +1472,7 @@ public class DLFileVersionPreviewPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByF_F_P, finderArgs);
 		}
 
@@ -1483,7 +1480,10 @@ public class DLFileVersionPreviewPersistenceImpl
 			DLFileVersionPreview dlFileVersionPreview =
 				(DLFileVersionPreview)result;
 
-			if ((fileEntryId != dlFileVersionPreview.getFileEntryId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DLFileVersionPreview.class,
+					dlFileVersionPreview.getPrimaryKey()) ||
+				(fileEntryId != dlFileVersionPreview.getFileEntryId()) ||
 				(fileVersionId != dlFileVersionPreview.getFileVersionId()) ||
 				(previewStatus != dlFileVersionPreview.getPreviewStatus())) {
 
@@ -1522,7 +1522,7 @@ public class DLFileVersionPreviewPersistenceImpl
 				List<DLFileVersionPreview> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByF_F_P, finderArgs, list);
 					}

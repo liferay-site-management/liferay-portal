@@ -718,18 +718,15 @@ public class CPDefinitionInventoryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionInventory.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -738,7 +735,10 @@ public class CPDefinitionInventoryPersistenceImpl
 			CPDefinitionInventory cpDefinitionInventory =
 				(CPDefinitionInventory)result;
 
-			if (!Objects.equals(uuid, cpDefinitionInventory.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CPDefinitionInventory.class,
+					cpDefinitionInventory.getPrimaryKey()) ||
+				!Objects.equals(uuid, cpDefinitionInventory.getUuid()) ||
 				(groupId != cpDefinitionInventory.getGroupId())) {
 
 				result = null;
@@ -783,7 +783,7 @@ public class CPDefinitionInventoryPersistenceImpl
 				List<CPDefinitionInventory> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -1577,18 +1577,15 @@ public class CPDefinitionInventoryPersistenceImpl
 	public CPDefinitionInventory fetchByCPDefinitionId(
 		long CPDefinitionId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionInventory.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {CPDefinitionId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByCPDefinitionId, finderArgs);
 		}
@@ -1597,7 +1594,11 @@ public class CPDefinitionInventoryPersistenceImpl
 			CPDefinitionInventory cpDefinitionInventory =
 				(CPDefinitionInventory)result;
 
-			if (CPDefinitionId != cpDefinitionInventory.getCPDefinitionId()) {
+			if (ctPersistenceHelper.isProductionMode(
+					CPDefinitionInventory.class,
+					cpDefinitionInventory.getPrimaryKey()) ||
+				(CPDefinitionId != cpDefinitionInventory.getCPDefinitionId())) {
+
 				result = null;
 			}
 		}
@@ -1625,7 +1626,7 @@ public class CPDefinitionInventoryPersistenceImpl
 				List<CPDefinitionInventory> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByCPDefinitionId, finderArgs, list);
 					}

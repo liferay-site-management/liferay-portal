@@ -2361,18 +2361,15 @@ public class DLFileEntryMetadataPersistenceImpl
 	public DLFileEntryMetadata fetchByD_F(
 		long DDMStructureId, long fileVersionId, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileEntryMetadata.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {DDMStructureId, fileVersionId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByD_F, finderArgs);
 		}
@@ -2381,7 +2378,10 @@ public class DLFileEntryMetadataPersistenceImpl
 			DLFileEntryMetadata dlFileEntryMetadata =
 				(DLFileEntryMetadata)result;
 
-			if ((DDMStructureId != dlFileEntryMetadata.getDDMStructureId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					DLFileEntryMetadata.class,
+					dlFileEntryMetadata.getPrimaryKey()) ||
+				(DDMStructureId != dlFileEntryMetadata.getDDMStructureId()) ||
 				(fileVersionId != dlFileEntryMetadata.getFileVersionId())) {
 
 				result = null;
@@ -2415,7 +2415,7 @@ public class DLFileEntryMetadataPersistenceImpl
 				List<DLFileEntryMetadata> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByD_F, finderArgs, list);
 					}

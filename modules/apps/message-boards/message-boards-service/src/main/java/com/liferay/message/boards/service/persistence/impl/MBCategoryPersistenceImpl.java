@@ -719,18 +719,15 @@ public class MBCategoryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBCategory.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -738,7 +735,9 @@ public class MBCategoryPersistenceImpl
 		if (result instanceof MBCategory) {
 			MBCategory mbCategory = (MBCategory)result;
 
-			if (!Objects.equals(uuid, mbCategory.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					MBCategory.class, mbCategory.getPrimaryKey()) ||
+				!Objects.equals(uuid, mbCategory.getUuid()) ||
 				(groupId != mbCategory.getGroupId())) {
 
 				result = null;
@@ -783,7 +782,7 @@ public class MBCategoryPersistenceImpl
 				List<MBCategory> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}

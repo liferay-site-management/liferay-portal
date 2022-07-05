@@ -722,18 +722,15 @@ public class CommercePriceModifierPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommercePriceModifier.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -742,7 +739,10 @@ public class CommercePriceModifierPersistenceImpl
 			CommercePriceModifier commercePriceModifier =
 				(CommercePriceModifier)result;
 
-			if (!Objects.equals(uuid, commercePriceModifier.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CommercePriceModifier.class,
+					commercePriceModifier.getPrimaryKey()) ||
+				!Objects.equals(uuid, commercePriceModifier.getUuid()) ||
 				(groupId != commercePriceModifier.getGroupId())) {
 
 				result = null;
@@ -787,7 +787,7 @@ public class CommercePriceModifierPersistenceImpl
 				List<CommercePriceModifier> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -6212,18 +6212,15 @@ public class CommercePriceModifierPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommercePriceModifier.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_ERC, finderArgs);
 		}
 
@@ -6231,7 +6228,10 @@ public class CommercePriceModifierPersistenceImpl
 			CommercePriceModifier commercePriceModifier =
 				(CommercePriceModifier)result;
 
-			if ((companyId != commercePriceModifier.getCompanyId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CommercePriceModifier.class,
+					commercePriceModifier.getPrimaryKey()) ||
+				(companyId != commercePriceModifier.getCompanyId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					commercePriceModifier.getExternalReferenceCode())) {
@@ -6278,7 +6278,7 @@ public class CommercePriceModifierPersistenceImpl
 				List<CommercePriceModifier> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_ERC, finderArgs, list);
 					}

@@ -1276,18 +1276,15 @@ public class ExpandoColumnPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			ExpandoColumn.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {tableId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByT_N, finderArgs);
 		}
@@ -1295,7 +1292,9 @@ public class ExpandoColumnPersistenceImpl
 		if (result instanceof ExpandoColumn) {
 			ExpandoColumn expandoColumn = (ExpandoColumn)result;
 
-			if ((tableId != expandoColumn.getTableId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					ExpandoColumn.class, expandoColumn.getPrimaryKey()) ||
+				(tableId != expandoColumn.getTableId()) ||
 				!Objects.equals(name, expandoColumn.getName())) {
 
 				result = null;
@@ -1340,7 +1339,7 @@ public class ExpandoColumnPersistenceImpl
 				List<ExpandoColumn> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByT_N, finderArgs, list);
 					}

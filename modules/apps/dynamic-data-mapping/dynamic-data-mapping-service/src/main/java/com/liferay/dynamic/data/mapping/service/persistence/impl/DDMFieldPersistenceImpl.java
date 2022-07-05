@@ -1787,25 +1787,24 @@ public class DDMFieldPersistenceImpl
 
 		instanceId = Objects.toString(instanceId, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMField.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {storageId, instanceId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByS_I, finderArgs);
 		}
 
 		if (result instanceof DDMField) {
 			DDMField ddmField = (DDMField)result;
 
-			if ((storageId != ddmField.getStorageId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DDMField.class, ddmField.getPrimaryKey()) ||
+				(storageId != ddmField.getStorageId()) ||
 				!Objects.equals(instanceId, ddmField.getInstanceId())) {
 
 				result = null;
@@ -1850,7 +1849,7 @@ public class DDMFieldPersistenceImpl
 				List<DDMField> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByS_I, finderArgs, list);
 					}

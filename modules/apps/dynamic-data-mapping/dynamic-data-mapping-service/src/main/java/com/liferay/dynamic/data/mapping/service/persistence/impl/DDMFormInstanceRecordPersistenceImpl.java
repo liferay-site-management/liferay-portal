@@ -731,18 +731,15 @@ public class DDMFormInstanceRecordPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMFormInstanceRecord.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -751,7 +748,10 @@ public class DDMFormInstanceRecordPersistenceImpl
 			DDMFormInstanceRecord ddmFormInstanceRecord =
 				(DDMFormInstanceRecord)result;
 
-			if (!Objects.equals(uuid, ddmFormInstanceRecord.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DDMFormInstanceRecord.class,
+					ddmFormInstanceRecord.getPrimaryKey()) ||
+				!Objects.equals(uuid, ddmFormInstanceRecord.getUuid()) ||
 				(groupId != ddmFormInstanceRecord.getGroupId())) {
 
 				result = null;
@@ -796,7 +796,7 @@ public class DDMFormInstanceRecordPersistenceImpl
 				List<DDMFormInstanceRecord> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}

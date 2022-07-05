@@ -732,18 +732,15 @@ public class SiteNavigationMenuPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SiteNavigationMenu.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -751,7 +748,10 @@ public class SiteNavigationMenuPersistenceImpl
 		if (result instanceof SiteNavigationMenu) {
 			SiteNavigationMenu siteNavigationMenu = (SiteNavigationMenu)result;
 
-			if (!Objects.equals(uuid, siteNavigationMenu.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					SiteNavigationMenu.class,
+					siteNavigationMenu.getPrimaryKey()) ||
+				!Objects.equals(uuid, siteNavigationMenu.getUuid()) ||
 				(groupId != siteNavigationMenu.getGroupId())) {
 
 				result = null;
@@ -796,7 +796,7 @@ public class SiteNavigationMenuPersistenceImpl
 				List<SiteNavigationMenu> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -3478,25 +3478,25 @@ public class SiteNavigationMenuPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SiteNavigationMenu.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_N, finderArgs);
 		}
 
 		if (result instanceof SiteNavigationMenu) {
 			SiteNavigationMenu siteNavigationMenu = (SiteNavigationMenu)result;
 
-			if ((groupId != siteNavigationMenu.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					SiteNavigationMenu.class,
+					siteNavigationMenu.getPrimaryKey()) ||
+				(groupId != siteNavigationMenu.getGroupId()) ||
 				!Objects.equals(name, siteNavigationMenu.getName())) {
 
 				result = null;
@@ -3541,7 +3541,7 @@ public class SiteNavigationMenuPersistenceImpl
 				List<SiteNavigationMenu> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_N, finderArgs, list);
 					}

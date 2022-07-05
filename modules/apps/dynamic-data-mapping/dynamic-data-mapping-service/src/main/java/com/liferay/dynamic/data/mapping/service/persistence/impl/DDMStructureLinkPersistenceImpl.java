@@ -1249,25 +1249,24 @@ public class DDMStructureLinkPersistenceImpl
 		long classNameId, long classPK, long structureId,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMStructureLink.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {classNameId, classPK, structureId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_C_S, finderArgs);
 		}
 
 		if (result instanceof DDMStructureLink) {
 			DDMStructureLink ddmStructureLink = (DDMStructureLink)result;
 
-			if ((classNameId != ddmStructureLink.getClassNameId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DDMStructureLink.class, ddmStructureLink.getPrimaryKey()) ||
+				(classNameId != ddmStructureLink.getClassNameId()) ||
 				(classPK != ddmStructureLink.getClassPK()) ||
 				(structureId != ddmStructureLink.getStructureId())) {
 
@@ -1306,7 +1305,7 @@ public class DDMStructureLinkPersistenceImpl
 				List<DDMStructureLink> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_C_S, finderArgs, list);
 					}

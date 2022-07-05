@@ -717,18 +717,15 @@ public class JournalFeedPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalFeed.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -736,7 +733,9 @@ public class JournalFeedPersistenceImpl
 		if (result instanceof JournalFeed) {
 			JournalFeed journalFeed = (JournalFeed)result;
 
-			if (!Objects.equals(uuid, journalFeed.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					JournalFeed.class, journalFeed.getPrimaryKey()) ||
+				!Objects.equals(uuid, journalFeed.getUuid()) ||
 				(groupId != journalFeed.getGroupId())) {
 
 				result = null;
@@ -781,7 +780,7 @@ public class JournalFeedPersistenceImpl
 				List<JournalFeed> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -2456,25 +2455,24 @@ public class JournalFeedPersistenceImpl
 
 		feedId = Objects.toString(feedId, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalFeed.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, feedId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_F, finderArgs);
 		}
 
 		if (result instanceof JournalFeed) {
 			JournalFeed journalFeed = (JournalFeed)result;
 
-			if ((groupId != journalFeed.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					JournalFeed.class, journalFeed.getPrimaryKey()) ||
+				(groupId != journalFeed.getGroupId()) ||
 				!Objects.equals(feedId, journalFeed.getFeedId())) {
 
 				result = null;
@@ -2519,7 +2517,7 @@ public class JournalFeedPersistenceImpl
 				List<JournalFeed> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_F, finderArgs, list);
 					}

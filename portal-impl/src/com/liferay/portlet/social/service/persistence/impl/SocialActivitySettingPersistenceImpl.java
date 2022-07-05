@@ -2415,12 +2415,9 @@ public class SocialActivitySettingPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialActivitySetting.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, classNameId, activityType, name
 			};
@@ -2428,7 +2425,7 @@ public class SocialActivitySettingPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_C_A_N, finderArgs);
 		}
@@ -2437,7 +2434,10 @@ public class SocialActivitySettingPersistenceImpl
 			SocialActivitySetting socialActivitySetting =
 				(SocialActivitySetting)result;
 
-			if ((groupId != socialActivitySetting.getGroupId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					SocialActivitySetting.class,
+					socialActivitySetting.getPrimaryKey()) ||
+				(groupId != socialActivitySetting.getGroupId()) ||
 				(classNameId != socialActivitySetting.getClassNameId()) ||
 				(activityType != socialActivitySetting.getActivityType()) ||
 				!Objects.equals(name, socialActivitySetting.getName())) {
@@ -2492,7 +2492,7 @@ public class SocialActivitySettingPersistenceImpl
 				List<SocialActivitySetting> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByG_C_A_N, finderArgs, list);
 					}
@@ -2502,7 +2502,7 @@ public class SocialActivitySettingPersistenceImpl
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
+							if (!useFinderCache) {
 								finderArgs = new Object[] {
 									groupId, classNameId, activityType, name
 								};

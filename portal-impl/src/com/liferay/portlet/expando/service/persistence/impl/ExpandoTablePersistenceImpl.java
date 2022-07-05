@@ -719,18 +719,15 @@ public class ExpandoTablePersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			ExpandoTable.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, classNameId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByC_C_N, finderArgs);
 		}
@@ -738,7 +735,9 @@ public class ExpandoTablePersistenceImpl
 		if (result instanceof ExpandoTable) {
 			ExpandoTable expandoTable = (ExpandoTable)result;
 
-			if ((companyId != expandoTable.getCompanyId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					ExpandoTable.class, expandoTable.getPrimaryKey()) ||
+				(companyId != expandoTable.getCompanyId()) ||
 				(classNameId != expandoTable.getClassNameId()) ||
 				!Objects.equals(name, expandoTable.getName())) {
 
@@ -788,7 +787,7 @@ public class ExpandoTablePersistenceImpl
 				List<ExpandoTable> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByC_C_N, finderArgs, list);
 					}

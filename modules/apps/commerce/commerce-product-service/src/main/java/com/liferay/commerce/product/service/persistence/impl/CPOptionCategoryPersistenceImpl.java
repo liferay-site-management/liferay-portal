@@ -3086,25 +3086,24 @@ public class CPOptionCategoryPersistenceImpl
 
 		key = Objects.toString(key, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPOptionCategory.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, key};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_K, finderArgs);
 		}
 
 		if (result instanceof CPOptionCategory) {
 			CPOptionCategory cpOptionCategory = (CPOptionCategory)result;
 
-			if ((companyId != cpOptionCategory.getCompanyId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CPOptionCategory.class, cpOptionCategory.getPrimaryKey()) ||
+				(companyId != cpOptionCategory.getCompanyId()) ||
 				!Objects.equals(key, cpOptionCategory.getKey())) {
 
 				result = null;
@@ -3149,7 +3148,7 @@ public class CPOptionCategoryPersistenceImpl
 				List<CPOptionCategory> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_K, finderArgs, list);
 					}

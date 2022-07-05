@@ -728,18 +728,15 @@ public class AssetListEntryUsagePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetListEntryUsage.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -748,7 +745,10 @@ public class AssetListEntryUsagePersistenceImpl
 			AssetListEntryUsage assetListEntryUsage =
 				(AssetListEntryUsage)result;
 
-			if (!Objects.equals(uuid, assetListEntryUsage.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					AssetListEntryUsage.class,
+					assetListEntryUsage.getPrimaryKey()) ||
+				!Objects.equals(uuid, assetListEntryUsage.getUuid()) ||
 				(groupId != assetListEntryUsage.getGroupId())) {
 
 				result = null;
@@ -793,7 +793,7 @@ public class AssetListEntryUsagePersistenceImpl
 				List<AssetListEntryUsage> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -5178,12 +5178,9 @@ public class AssetListEntryUsagePersistenceImpl
 		containerKey = Objects.toString(containerKey, "");
 		key = Objects.toString(key, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetListEntryUsage.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, classNameId, containerKey, containerType, key, plid
 			};
@@ -5191,7 +5188,7 @@ public class AssetListEntryUsagePersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByG_C_CK_CT_K_P, finderArgs);
 		}
@@ -5200,7 +5197,10 @@ public class AssetListEntryUsagePersistenceImpl
 			AssetListEntryUsage assetListEntryUsage =
 				(AssetListEntryUsage)result;
 
-			if ((groupId != assetListEntryUsage.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					AssetListEntryUsage.class,
+					assetListEntryUsage.getPrimaryKey()) ||
+				(groupId != assetListEntryUsage.getGroupId()) ||
 				(classNameId != assetListEntryUsage.getClassNameId()) ||
 				!Objects.equals(
 					containerKey, assetListEntryUsage.getContainerKey()) ||
@@ -5277,7 +5277,7 @@ public class AssetListEntryUsagePersistenceImpl
 				List<AssetListEntryUsage> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_C_CK_CT_K_P, finderArgs, list);
 					}

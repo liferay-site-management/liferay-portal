@@ -712,18 +712,15 @@ public class CPMeasurementUnitPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPMeasurementUnit.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -731,7 +728,10 @@ public class CPMeasurementUnitPersistenceImpl
 		if (result instanceof CPMeasurementUnit) {
 			CPMeasurementUnit cpMeasurementUnit = (CPMeasurementUnit)result;
 
-			if (!Objects.equals(uuid, cpMeasurementUnit.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CPMeasurementUnit.class,
+					cpMeasurementUnit.getPrimaryKey()) ||
+				!Objects.equals(uuid, cpMeasurementUnit.getUuid()) ||
 				(groupId != cpMeasurementUnit.getGroupId())) {
 
 				result = null;
@@ -776,7 +776,7 @@ public class CPMeasurementUnitPersistenceImpl
 				List<CPMeasurementUnit> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -2092,25 +2092,25 @@ public class CPMeasurementUnitPersistenceImpl
 
 		key = Objects.toString(key, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPMeasurementUnit.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, key};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_K, finderArgs);
 		}
 
 		if (result instanceof CPMeasurementUnit) {
 			CPMeasurementUnit cpMeasurementUnit = (CPMeasurementUnit)result;
 
-			if ((companyId != cpMeasurementUnit.getCompanyId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CPMeasurementUnit.class,
+					cpMeasurementUnit.getPrimaryKey()) ||
+				(companyId != cpMeasurementUnit.getCompanyId()) ||
 				!Objects.equals(key, cpMeasurementUnit.getKey())) {
 
 				result = null;
@@ -2155,7 +2155,7 @@ public class CPMeasurementUnitPersistenceImpl
 				List<CPMeasurementUnit> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_K, finderArgs, list);
 					}
@@ -3506,25 +3506,25 @@ public class CPMeasurementUnitPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPMeasurementUnit.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_ERC, finderArgs);
 		}
 
 		if (result instanceof CPMeasurementUnit) {
 			CPMeasurementUnit cpMeasurementUnit = (CPMeasurementUnit)result;
 
-			if ((companyId != cpMeasurementUnit.getCompanyId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CPMeasurementUnit.class,
+					cpMeasurementUnit.getPrimaryKey()) ||
+				(companyId != cpMeasurementUnit.getCompanyId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					cpMeasurementUnit.getExternalReferenceCode())) {
@@ -3571,7 +3571,7 @@ public class CPMeasurementUnitPersistenceImpl
 				List<CPMeasurementUnit> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_ERC, finderArgs, list);
 					}

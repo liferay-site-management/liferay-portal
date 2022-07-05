@@ -725,18 +725,15 @@ public class MBMessagePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBMessage.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -744,7 +741,9 @@ public class MBMessagePersistenceImpl
 		if (result instanceof MBMessage) {
 			MBMessage mbMessage = (MBMessage)result;
 
-			if (!Objects.equals(uuid, mbMessage.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					MBMessage.class, mbMessage.getPrimaryKey()) ||
+				!Objects.equals(uuid, mbMessage.getUuid()) ||
 				(groupId != mbMessage.getGroupId())) {
 
 				result = null;
@@ -789,7 +788,7 @@ public class MBMessagePersistenceImpl
 				List<MBMessage> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -6885,25 +6884,24 @@ public class MBMessagePersistenceImpl
 
 		urlSubject = Objects.toString(urlSubject, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBMessage.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, urlSubject};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_US, finderArgs);
 		}
 
 		if (result instanceof MBMessage) {
 			MBMessage mbMessage = (MBMessage)result;
 
-			if ((groupId != mbMessage.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					MBMessage.class, mbMessage.getPrimaryKey()) ||
+				(groupId != mbMessage.getGroupId()) ||
 				!Objects.equals(urlSubject, mbMessage.getUrlSubject())) {
 
 				result = null;
@@ -6948,7 +6946,7 @@ public class MBMessagePersistenceImpl
 				List<MBMessage> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_US, finderArgs, list);
 					}
@@ -21192,25 +21190,24 @@ public class MBMessagePersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBMessage.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_ERC, finderArgs);
 		}
 
 		if (result instanceof MBMessage) {
 			MBMessage mbMessage = (MBMessage)result;
 
-			if ((groupId != mbMessage.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					MBMessage.class, mbMessage.getPrimaryKey()) ||
+				(groupId != mbMessage.getGroupId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					mbMessage.getExternalReferenceCode())) {
@@ -21257,7 +21254,7 @@ public class MBMessagePersistenceImpl
 				List<MBMessage> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_ERC, finderArgs, list);
 					}

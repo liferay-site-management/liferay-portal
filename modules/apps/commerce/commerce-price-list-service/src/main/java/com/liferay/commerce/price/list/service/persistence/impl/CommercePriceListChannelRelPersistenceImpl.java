@@ -1868,18 +1868,15 @@ public class CommercePriceListChannelRelPersistenceImpl
 		long commerceChannelId, long commercePriceListId,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommercePriceListChannelRel.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {commerceChannelId, commercePriceListId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByCCI_CPI, finderArgs);
 		}
@@ -1888,7 +1885,10 @@ public class CommercePriceListChannelRelPersistenceImpl
 			CommercePriceListChannelRel commercePriceListChannelRel =
 				(CommercePriceListChannelRel)result;
 
-			if ((commerceChannelId !=
+			if (ctPersistenceHelper.isProductionMode(
+					CommercePriceListChannelRel.class,
+					commercePriceListChannelRel.getPrimaryKey()) ||
+				(commerceChannelId !=
 					commercePriceListChannelRel.getCommerceChannelId()) ||
 				(commercePriceListId !=
 					commercePriceListChannelRel.getCommercePriceListId())) {
@@ -1924,7 +1924,7 @@ public class CommercePriceListChannelRelPersistenceImpl
 				List<CommercePriceListChannelRel> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByCCI_CPI, finderArgs, list);
 					}

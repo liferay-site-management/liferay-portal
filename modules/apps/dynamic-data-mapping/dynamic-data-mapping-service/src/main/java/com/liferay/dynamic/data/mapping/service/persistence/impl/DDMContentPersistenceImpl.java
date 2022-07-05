@@ -717,18 +717,15 @@ public class DDMContentPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMContent.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -736,7 +733,9 @@ public class DDMContentPersistenceImpl
 		if (result instanceof DDMContent) {
 			DDMContent ddmContent = (DDMContent)result;
 
-			if (!Objects.equals(uuid, ddmContent.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DDMContent.class, ddmContent.getPrimaryKey()) ||
+				!Objects.equals(uuid, ddmContent.getUuid()) ||
 				(groupId != ddmContent.getGroupId())) {
 
 				result = null;
@@ -781,7 +780,7 @@ public class DDMContentPersistenceImpl
 				List<DDMContent> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}

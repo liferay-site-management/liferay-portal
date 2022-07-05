@@ -718,18 +718,15 @@ public class MBMailingListPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBMailingList.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -737,7 +734,9 @@ public class MBMailingListPersistenceImpl
 		if (result instanceof MBMailingList) {
 			MBMailingList mbMailingList = (MBMailingList)result;
 
-			if (!Objects.equals(uuid, mbMailingList.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					MBMailingList.class, mbMailingList.getPrimaryKey()) ||
+				!Objects.equals(uuid, mbMailingList.getUuid()) ||
 				(groupId != mbMailingList.getGroupId())) {
 
 				result = null;
@@ -782,7 +781,7 @@ public class MBMailingListPersistenceImpl
 				List<MBMailingList> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -2085,25 +2084,24 @@ public class MBMailingListPersistenceImpl
 	public MBMailingList fetchByG_C(
 		long groupId, long categoryId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBMailingList.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, categoryId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_C, finderArgs);
 		}
 
 		if (result instanceof MBMailingList) {
 			MBMailingList mbMailingList = (MBMailingList)result;
 
-			if ((groupId != mbMailingList.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					MBMailingList.class, mbMailingList.getPrimaryKey()) ||
+				(groupId != mbMailingList.getGroupId()) ||
 				(categoryId != mbMailingList.getCategoryId())) {
 
 				result = null;
@@ -2137,7 +2135,7 @@ public class MBMailingListPersistenceImpl
 				List<MBMailingList> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_C, finderArgs, list);
 					}

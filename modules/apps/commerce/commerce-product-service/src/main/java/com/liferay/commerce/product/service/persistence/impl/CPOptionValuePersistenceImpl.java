@@ -2329,25 +2329,24 @@ public class CPOptionValuePersistenceImpl
 
 		key = Objects.toString(key, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPOptionValue.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {CPOptionId, key};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_K, finderArgs);
 		}
 
 		if (result instanceof CPOptionValue) {
 			CPOptionValue cpOptionValue = (CPOptionValue)result;
 
-			if ((CPOptionId != cpOptionValue.getCPOptionId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CPOptionValue.class, cpOptionValue.getPrimaryKey()) ||
+				(CPOptionId != cpOptionValue.getCPOptionId()) ||
 				!Objects.equals(key, cpOptionValue.getKey())) {
 
 				result = null;
@@ -2392,7 +2391,7 @@ public class CPOptionValuePersistenceImpl
 				List<CPOptionValue> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_K, finderArgs, list);
 					}
@@ -2595,25 +2594,24 @@ public class CPOptionValuePersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPOptionValue.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_ERC, finderArgs);
 		}
 
 		if (result instanceof CPOptionValue) {
 			CPOptionValue cpOptionValue = (CPOptionValue)result;
 
-			if ((companyId != cpOptionValue.getCompanyId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CPOptionValue.class, cpOptionValue.getPrimaryKey()) ||
+				(companyId != cpOptionValue.getCompanyId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					cpOptionValue.getExternalReferenceCode())) {
@@ -2660,7 +2658,7 @@ public class CPOptionValuePersistenceImpl
 				List<CPOptionValue> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_ERC, finderArgs, list);
 					}

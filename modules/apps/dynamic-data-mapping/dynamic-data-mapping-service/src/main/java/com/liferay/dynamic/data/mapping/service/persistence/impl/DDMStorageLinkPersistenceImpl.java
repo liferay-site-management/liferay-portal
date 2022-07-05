@@ -1305,18 +1305,15 @@ public class DDMStorageLinkPersistenceImpl
 	 */
 	@Override
 	public DDMStorageLink fetchByClassPK(long classPK, boolean useFinderCache) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMStorageLink.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByClassPK, finderArgs);
 		}
@@ -1324,7 +1321,10 @@ public class DDMStorageLinkPersistenceImpl
 		if (result instanceof DDMStorageLink) {
 			DDMStorageLink ddmStorageLink = (DDMStorageLink)result;
 
-			if (classPK != ddmStorageLink.getClassPK()) {
+			if (ctPersistenceHelper.isProductionMode(
+					DDMStorageLink.class, ddmStorageLink.getPrimaryKey()) ||
+				(classPK != ddmStorageLink.getClassPK())) {
+
 				result = null;
 			}
 		}
@@ -1352,7 +1352,7 @@ public class DDMStorageLinkPersistenceImpl
 				List<DDMStorageLink> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByClassPK, finderArgs, list);
 					}

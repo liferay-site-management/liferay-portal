@@ -692,25 +692,25 @@ public class DDMTemplateVersionPersistenceImpl
 
 		version = Objects.toString(version, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMTemplateVersion.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {templateId, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByT_V, finderArgs);
 		}
 
 		if (result instanceof DDMTemplateVersion) {
 			DDMTemplateVersion ddmTemplateVersion = (DDMTemplateVersion)result;
 
-			if ((templateId != ddmTemplateVersion.getTemplateId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DDMTemplateVersion.class,
+					ddmTemplateVersion.getPrimaryKey()) ||
+				(templateId != ddmTemplateVersion.getTemplateId()) ||
 				!Objects.equals(version, ddmTemplateVersion.getVersion())) {
 
 				result = null;
@@ -755,7 +755,7 @@ public class DDMTemplateVersionPersistenceImpl
 				List<DDMTemplateVersion> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByT_V, finderArgs, list);
 					}

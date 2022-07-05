@@ -694,18 +694,15 @@ public class CPDefinitionLocalizationPersistenceImpl
 
 		languageId = Objects.toString(languageId, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionLocalization.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {CPDefinitionId, languageId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByCPDefinitionId_LanguageId, finderArgs);
 		}
@@ -714,7 +711,10 @@ public class CPDefinitionLocalizationPersistenceImpl
 			CPDefinitionLocalization cpDefinitionLocalization =
 				(CPDefinitionLocalization)result;
 
-			if ((CPDefinitionId !=
+			if (ctPersistenceHelper.isProductionMode(
+					CPDefinitionLocalization.class,
+					cpDefinitionLocalization.getPrimaryKey()) ||
+				(CPDefinitionId !=
 					cpDefinitionLocalization.getCPDefinitionId()) ||
 				!Objects.equals(
 					languageId, cpDefinitionLocalization.getLanguageId())) {
@@ -764,7 +764,7 @@ public class CPDefinitionLocalizationPersistenceImpl
 				List<CPDefinitionLocalization> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByCPDefinitionId_LanguageId,
 							finderArgs, list);

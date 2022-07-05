@@ -1232,18 +1232,15 @@ public class AssetEntryAssetCategoryRelPersistenceImpl
 	public AssetEntryAssetCategoryRel fetchByA_A(
 		long assetEntryId, long assetCategoryId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetEntryAssetCategoryRel.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {assetEntryId, assetCategoryId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByA_A, finderArgs);
 		}
 
@@ -1251,7 +1248,10 @@ public class AssetEntryAssetCategoryRelPersistenceImpl
 			AssetEntryAssetCategoryRel assetEntryAssetCategoryRel =
 				(AssetEntryAssetCategoryRel)result;
 
-			if ((assetEntryId !=
+			if (ctPersistenceHelper.isProductionMode(
+					AssetEntryAssetCategoryRel.class,
+					assetEntryAssetCategoryRel.getPrimaryKey()) ||
+				(assetEntryId !=
 					assetEntryAssetCategoryRel.getAssetEntryId()) ||
 				(assetCategoryId !=
 					assetEntryAssetCategoryRel.getAssetCategoryId())) {
@@ -1287,7 +1287,7 @@ public class AssetEntryAssetCategoryRelPersistenceImpl
 				List<AssetEntryAssetCategoryRel> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByA_A, finderArgs, list);
 					}
@@ -1297,7 +1297,7 @@ public class AssetEntryAssetCategoryRelPersistenceImpl
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
+							if (!useFinderCache) {
 								finderArgs = new Object[] {
 									assetEntryId, assetCategoryId
 								};

@@ -2824,18 +2824,15 @@ public class UserGroupGroupRolePersistenceImpl
 	public UserGroupGroupRole fetchByU_G_R(
 		long userGroupId, long groupId, long roleId, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			UserGroupGroupRole.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {userGroupId, groupId, roleId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByU_G_R, finderArgs);
 		}
@@ -2843,7 +2840,10 @@ public class UserGroupGroupRolePersistenceImpl
 		if (result instanceof UserGroupGroupRole) {
 			UserGroupGroupRole userGroupGroupRole = (UserGroupGroupRole)result;
 
-			if ((userGroupId != userGroupGroupRole.getUserGroupId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					UserGroupGroupRole.class,
+					userGroupGroupRole.getPrimaryKey()) ||
+				(userGroupId != userGroupGroupRole.getUserGroupId()) ||
 				(groupId != userGroupGroupRole.getGroupId()) ||
 				(roleId != userGroupGroupRole.getRoleId())) {
 
@@ -2882,7 +2882,7 @@ public class UserGroupGroupRolePersistenceImpl
 				List<UserGroupGroupRole> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByU_G_R, finderArgs, list);
 					}

@@ -718,18 +718,15 @@ public class LayoutSEOSitePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutSEOSite.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -737,7 +734,9 @@ public class LayoutSEOSitePersistenceImpl
 		if (result instanceof LayoutSEOSite) {
 			LayoutSEOSite layoutSEOSite = (LayoutSEOSite)result;
 
-			if (!Objects.equals(uuid, layoutSEOSite.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					LayoutSEOSite.class, layoutSEOSite.getPrimaryKey()) ||
+				!Objects.equals(uuid, layoutSEOSite.getUuid()) ||
 				(groupId != layoutSEOSite.getGroupId())) {
 
 				result = null;
@@ -782,7 +781,7 @@ public class LayoutSEOSitePersistenceImpl
 				List<LayoutSEOSite> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -1568,18 +1567,15 @@ public class LayoutSEOSitePersistenceImpl
 	 */
 	@Override
 	public LayoutSEOSite fetchByGroupId(long groupId, boolean useFinderCache) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutSEOSite.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByGroupId, finderArgs);
 		}
@@ -1587,7 +1583,10 @@ public class LayoutSEOSitePersistenceImpl
 		if (result instanceof LayoutSEOSite) {
 			LayoutSEOSite layoutSEOSite = (LayoutSEOSite)result;
 
-			if (groupId != layoutSEOSite.getGroupId()) {
+			if (ctPersistenceHelper.isProductionMode(
+					LayoutSEOSite.class, layoutSEOSite.getPrimaryKey()) ||
+				(groupId != layoutSEOSite.getGroupId())) {
+
 				result = null;
 			}
 		}
@@ -1615,7 +1614,7 @@ public class LayoutSEOSitePersistenceImpl
 				List<LayoutSEOSite> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByGroupId, finderArgs, list);
 					}

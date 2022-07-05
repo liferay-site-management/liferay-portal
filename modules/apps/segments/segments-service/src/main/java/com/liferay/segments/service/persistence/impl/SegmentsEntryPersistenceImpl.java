@@ -722,18 +722,15 @@ public class SegmentsEntryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -741,7 +738,9 @@ public class SegmentsEntryPersistenceImpl
 		if (result instanceof SegmentsEntry) {
 			SegmentsEntry segmentsEntry = (SegmentsEntry)result;
 
-			if (!Objects.equals(uuid, segmentsEntry.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					SegmentsEntry.class, segmentsEntry.getPrimaryKey()) ||
+				!Objects.equals(uuid, segmentsEntry.getUuid()) ||
 				(groupId != segmentsEntry.getGroupId())) {
 
 				result = null;
@@ -786,7 +785,7 @@ public class SegmentsEntryPersistenceImpl
 				List<SegmentsEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -4032,25 +4031,24 @@ public class SegmentsEntryPersistenceImpl
 
 		segmentsEntryKey = Objects.toString(segmentsEntryKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, segmentsEntryKey};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_S, finderArgs);
 		}
 
 		if (result instanceof SegmentsEntry) {
 			SegmentsEntry segmentsEntry = (SegmentsEntry)result;
 
-			if ((groupId != segmentsEntry.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					SegmentsEntry.class, segmentsEntry.getPrimaryKey()) ||
+				(groupId != segmentsEntry.getGroupId()) ||
 				!Objects.equals(
 					segmentsEntryKey, segmentsEntry.getSegmentsEntryKey())) {
 
@@ -4096,7 +4094,7 @@ public class SegmentsEntryPersistenceImpl
 				List<SegmentsEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_S, finderArgs, list);
 					}

@@ -1248,18 +1248,15 @@ public class JournalArticlePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalArticle.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -1267,7 +1264,9 @@ public class JournalArticlePersistenceImpl
 		if (result instanceof JournalArticle) {
 			JournalArticle journalArticle = (JournalArticle)result;
 
-			if (!Objects.equals(uuid, journalArticle.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					JournalArticle.class, journalArticle.getPrimaryKey()) ||
+				!Objects.equals(uuid, journalArticle.getUuid()) ||
 				(groupId != journalArticle.getGroupId())) {
 
 				result = null;
@@ -1312,7 +1311,7 @@ public class JournalArticlePersistenceImpl
 				List<JournalArticle> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -22833,18 +22832,15 @@ public class JournalArticlePersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalArticle.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, externalReferenceCode, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByG_ERC_V, finderArgs);
 		}
@@ -22852,7 +22848,9 @@ public class JournalArticlePersistenceImpl
 		if (result instanceof JournalArticle) {
 			JournalArticle journalArticle = (JournalArticle)result;
 
-			if ((groupId != journalArticle.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					JournalArticle.class, journalArticle.getPrimaryKey()) ||
+				(groupId != journalArticle.getGroupId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					journalArticle.getExternalReferenceCode()) ||
@@ -22904,7 +22902,7 @@ public class JournalArticlePersistenceImpl
 				List<JournalArticle> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_ERC_V, finderArgs, list);
 					}
@@ -25697,18 +25695,15 @@ public class JournalArticlePersistenceImpl
 
 		DDMStructureKey = Objects.toString(DDMStructureKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalArticle.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, classNameId, DDMStructureKey};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByG_C_DDMSK, finderArgs);
 		}
@@ -25716,7 +25711,9 @@ public class JournalArticlePersistenceImpl
 		if (result instanceof JournalArticle) {
 			JournalArticle journalArticle = (JournalArticle)result;
 
-			if ((groupId != journalArticle.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					JournalArticle.class, journalArticle.getPrimaryKey()) ||
+				(groupId != journalArticle.getGroupId()) ||
 				(classNameId != journalArticle.getClassNameId()) ||
 				!Objects.equals(
 					DDMStructureKey, journalArticle.getDDMStructureKey())) {
@@ -25767,7 +25764,7 @@ public class JournalArticlePersistenceImpl
 				List<JournalArticle> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_C_DDMSK, finderArgs, list);
 					}
@@ -25777,7 +25774,7 @@ public class JournalArticlePersistenceImpl
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
+							if (!useFinderCache) {
 								finderArgs = new Object[] {
 									groupId, classNameId, DDMStructureKey
 								};
@@ -28216,25 +28213,24 @@ public class JournalArticlePersistenceImpl
 
 		articleId = Objects.toString(articleId, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalArticle.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, articleId, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_A_V, finderArgs);
 		}
 
 		if (result instanceof JournalArticle) {
 			JournalArticle journalArticle = (JournalArticle)result;
 
-			if ((groupId != journalArticle.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					JournalArticle.class, journalArticle.getPrimaryKey()) ||
+				(groupId != journalArticle.getGroupId()) ||
 				!Objects.equals(articleId, journalArticle.getArticleId()) ||
 				(version != journalArticle.getVersion())) {
 
@@ -28284,7 +28280,7 @@ public class JournalArticlePersistenceImpl
 				List<JournalArticle> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_A_V, finderArgs, list);
 					}

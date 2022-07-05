@@ -2415,18 +2415,15 @@ public class SocialActivityAchievementPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialActivityAchievement.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, userId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_U_N, finderArgs);
 		}
@@ -2435,7 +2432,10 @@ public class SocialActivityAchievementPersistenceImpl
 			SocialActivityAchievement socialActivityAchievement =
 				(SocialActivityAchievement)result;
 
-			if ((groupId != socialActivityAchievement.getGroupId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					SocialActivityAchievement.class,
+					socialActivityAchievement.getPrimaryKey()) ||
+				(groupId != socialActivityAchievement.getGroupId()) ||
 				(userId != socialActivityAchievement.getUserId()) ||
 				!Objects.equals(name, socialActivityAchievement.getName())) {
 
@@ -2485,7 +2485,7 @@ public class SocialActivityAchievementPersistenceImpl
 				List<SocialActivityAchievement> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByG_U_N, finderArgs, list);
 					}

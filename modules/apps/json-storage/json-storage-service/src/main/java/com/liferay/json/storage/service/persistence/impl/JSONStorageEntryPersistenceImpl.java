@@ -2152,12 +2152,9 @@ public class JSONStorageEntryPersistenceImpl
 
 		key = Objects.toString(key, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JSONStorageEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				classNameId, classPK, parentJSONStorageEntryId, index, key
 			};
@@ -2165,7 +2162,7 @@ public class JSONStorageEntryPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByCN_CPK_P_I_K, finderArgs);
 		}
@@ -2173,7 +2170,9 @@ public class JSONStorageEntryPersistenceImpl
 		if (result instanceof JSONStorageEntry) {
 			JSONStorageEntry jsonStorageEntry = (JSONStorageEntry)result;
 
-			if ((classNameId != jsonStorageEntry.getClassNameId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					JSONStorageEntry.class, jsonStorageEntry.getPrimaryKey()) ||
+				(classNameId != jsonStorageEntry.getClassNameId()) ||
 				(classPK != jsonStorageEntry.getClassPK()) ||
 				(parentJSONStorageEntryId !=
 					jsonStorageEntry.getParentJSONStorageEntryId()) ||
@@ -2234,7 +2233,7 @@ public class JSONStorageEntryPersistenceImpl
 				List<JSONStorageEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByCN_CPK_P_I_K, finderArgs, list);
 					}

@@ -707,12 +707,9 @@ public class SegmentsExperimentRelPersistenceImpl
 		long segmentsExperimentId, long segmentsExperienceId,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsExperimentRel.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				segmentsExperimentId, segmentsExperienceId
 			};
@@ -720,7 +717,7 @@ public class SegmentsExperimentRelPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByS_S, finderArgs);
 		}
 
@@ -728,7 +725,10 @@ public class SegmentsExperimentRelPersistenceImpl
 			SegmentsExperimentRel segmentsExperimentRel =
 				(SegmentsExperimentRel)result;
 
-			if ((segmentsExperimentId !=
+			if (ctPersistenceHelper.isProductionMode(
+					SegmentsExperimentRel.class,
+					segmentsExperimentRel.getPrimaryKey()) ||
+				(segmentsExperimentId !=
 					segmentsExperimentRel.getSegmentsExperimentId()) ||
 				(segmentsExperienceId !=
 					segmentsExperimentRel.getSegmentsExperienceId())) {
@@ -764,7 +764,7 @@ public class SegmentsExperimentRelPersistenceImpl
 				List<SegmentsExperimentRel> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByS_S, finderArgs, list);
 					}

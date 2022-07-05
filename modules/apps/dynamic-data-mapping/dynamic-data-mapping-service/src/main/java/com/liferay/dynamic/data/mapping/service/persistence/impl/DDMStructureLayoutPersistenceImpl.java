@@ -729,18 +729,15 @@ public class DDMStructureLayoutPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMStructureLayout.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -748,7 +745,10 @@ public class DDMStructureLayoutPersistenceImpl
 		if (result instanceof DDMStructureLayout) {
 			DDMStructureLayout ddmStructureLayout = (DDMStructureLayout)result;
 
-			if (!Objects.equals(uuid, ddmStructureLayout.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DDMStructureLayout.class,
+					ddmStructureLayout.getPrimaryKey()) ||
+				!Objects.equals(uuid, ddmStructureLayout.getUuid()) ||
 				(groupId != ddmStructureLayout.getGroupId())) {
 
 				result = null;
@@ -793,7 +793,7 @@ public class DDMStructureLayoutPersistenceImpl
 				List<DDMStructureLayout> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -2675,18 +2675,15 @@ public class DDMStructureLayoutPersistenceImpl
 	public DDMStructureLayout fetchByStructureVersionId(
 		long structureVersionId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMStructureLayout.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {structureVersionId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByStructureVersionId, finderArgs);
 		}
@@ -2694,8 +2691,11 @@ public class DDMStructureLayoutPersistenceImpl
 		if (result instanceof DDMStructureLayout) {
 			DDMStructureLayout ddmStructureLayout = (DDMStructureLayout)result;
 
-			if (structureVersionId !=
-					ddmStructureLayout.getStructureVersionId()) {
+			if (ctPersistenceHelper.isProductionMode(
+					DDMStructureLayout.class,
+					ddmStructureLayout.getPrimaryKey()) ||
+				(structureVersionId !=
+					ddmStructureLayout.getStructureVersionId())) {
 
 				result = null;
 			}
@@ -2724,7 +2724,7 @@ public class DDMStructureLayoutPersistenceImpl
 				List<DDMStructureLayout> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByStructureVersionId, finderArgs,
 							list);
@@ -2735,7 +2735,7 @@ public class DDMStructureLayoutPersistenceImpl
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
+							if (!useFinderCache) {
 								finderArgs = new Object[] {structureVersionId};
 							}
 
@@ -3485,12 +3485,9 @@ public class DDMStructureLayoutPersistenceImpl
 
 		structureLayoutKey = Objects.toString(structureLayoutKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMStructureLayout.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, classNameId, structureLayoutKey
 			};
@@ -3498,14 +3495,17 @@ public class DDMStructureLayoutPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_C_S, finderArgs);
 		}
 
 		if (result instanceof DDMStructureLayout) {
 			DDMStructureLayout ddmStructureLayout = (DDMStructureLayout)result;
 
-			if ((groupId != ddmStructureLayout.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DDMStructureLayout.class,
+					ddmStructureLayout.getPrimaryKey()) ||
+				(groupId != ddmStructureLayout.getGroupId()) ||
 				(classNameId != ddmStructureLayout.getClassNameId()) ||
 				!Objects.equals(
 					structureLayoutKey,
@@ -3557,7 +3557,7 @@ public class DDMStructureLayoutPersistenceImpl
 				List<DDMStructureLayout> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_C_S, finderArgs, list);
 					}

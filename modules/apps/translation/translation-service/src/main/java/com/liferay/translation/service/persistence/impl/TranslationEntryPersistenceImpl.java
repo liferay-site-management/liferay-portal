@@ -721,18 +721,15 @@ public class TranslationEntryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			TranslationEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -740,7 +737,9 @@ public class TranslationEntryPersistenceImpl
 		if (result instanceof TranslationEntry) {
 			TranslationEntry translationEntry = (TranslationEntry)result;
 
-			if (!Objects.equals(uuid, translationEntry.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					TranslationEntry.class, translationEntry.getPrimaryKey()) ||
+				!Objects.equals(uuid, translationEntry.getUuid()) ||
 				(groupId != translationEntry.getGroupId())) {
 
 				result = null;
@@ -785,7 +784,7 @@ public class TranslationEntryPersistenceImpl
 				List<TranslationEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -2149,25 +2148,24 @@ public class TranslationEntryPersistenceImpl
 
 		languageId = Objects.toString(languageId, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			TranslationEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {classNameId, classPK, languageId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_C_L, finderArgs);
 		}
 
 		if (result instanceof TranslationEntry) {
 			TranslationEntry translationEntry = (TranslationEntry)result;
 
-			if ((classNameId != translationEntry.getClassNameId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					TranslationEntry.class, translationEntry.getPrimaryKey()) ||
+				(classNameId != translationEntry.getClassNameId()) ||
 				(classPK != translationEntry.getClassPK()) ||
 				!Objects.equals(languageId, translationEntry.getLanguageId())) {
 
@@ -2217,7 +2215,7 @@ public class TranslationEntryPersistenceImpl
 				List<TranslationEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_C_L, finderArgs, list);
 					}

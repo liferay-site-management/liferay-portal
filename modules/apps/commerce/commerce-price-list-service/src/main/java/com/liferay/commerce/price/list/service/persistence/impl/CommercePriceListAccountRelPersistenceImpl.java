@@ -1868,18 +1868,15 @@ public class CommercePriceListAccountRelPersistenceImpl
 		long commerceAccountId, long commercePriceListId,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommercePriceListAccountRel.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {commerceAccountId, commercePriceListId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByCAI_CPI, finderArgs);
 		}
@@ -1888,7 +1885,10 @@ public class CommercePriceListAccountRelPersistenceImpl
 			CommercePriceListAccountRel commercePriceListAccountRel =
 				(CommercePriceListAccountRel)result;
 
-			if ((commerceAccountId !=
+			if (ctPersistenceHelper.isProductionMode(
+					CommercePriceListAccountRel.class,
+					commercePriceListAccountRel.getPrimaryKey()) ||
+				(commerceAccountId !=
 					commercePriceListAccountRel.getCommerceAccountId()) ||
 				(commercePriceListId !=
 					commercePriceListAccountRel.getCommercePriceListId())) {
@@ -1924,7 +1924,7 @@ public class CommercePriceListAccountRelPersistenceImpl
 				List<CommercePriceListAccountRel> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByCAI_CPI, finderArgs, list);
 					}

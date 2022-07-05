@@ -1282,18 +1282,15 @@ public class CommercePricingClassCPDefinitionRelPersistenceImpl
 		long commercePricingClassId, long CPDefinitionId,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommercePricingClassCPDefinitionRel.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {commercePricingClassId, CPDefinitionId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_C, finderArgs);
 		}
 
@@ -1302,7 +1299,10 @@ public class CommercePricingClassCPDefinitionRelPersistenceImpl
 				commercePricingClassCPDefinitionRel =
 					(CommercePricingClassCPDefinitionRel)result;
 
-			if ((commercePricingClassId !=
+			if (ctPersistenceHelper.isProductionMode(
+					CommercePricingClassCPDefinitionRel.class,
+					commercePricingClassCPDefinitionRel.getPrimaryKey()) ||
+				(commercePricingClassId !=
 					commercePricingClassCPDefinitionRel.
 						getCommercePricingClassId()) ||
 				(CPDefinitionId !=
@@ -1339,7 +1339,7 @@ public class CommercePricingClassCPDefinitionRelPersistenceImpl
 				List<CommercePricingClassCPDefinitionRel> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_C, finderArgs, list);
 					}

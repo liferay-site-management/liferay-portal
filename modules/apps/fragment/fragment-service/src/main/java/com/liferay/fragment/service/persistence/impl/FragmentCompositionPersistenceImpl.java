@@ -729,18 +729,15 @@ public class FragmentCompositionPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FragmentComposition.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -749,7 +746,10 @@ public class FragmentCompositionPersistenceImpl
 			FragmentComposition fragmentComposition =
 				(FragmentComposition)result;
 
-			if (!Objects.equals(uuid, fragmentComposition.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					FragmentComposition.class,
+					fragmentComposition.getPrimaryKey()) ||
+				!Objects.equals(uuid, fragmentComposition.getUuid()) ||
 				(groupId != fragmentComposition.getGroupId())) {
 
 				result = null;
@@ -794,7 +794,7 @@ public class FragmentCompositionPersistenceImpl
 				List<FragmentComposition> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -3208,18 +3208,15 @@ public class FragmentCompositionPersistenceImpl
 
 		fragmentCompositionKey = Objects.toString(fragmentCompositionKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FragmentComposition.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, fragmentCompositionKey};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_FCK, finderArgs);
 		}
 
@@ -3227,7 +3224,10 @@ public class FragmentCompositionPersistenceImpl
 			FragmentComposition fragmentComposition =
 				(FragmentComposition)result;
 
-			if ((groupId != fragmentComposition.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					FragmentComposition.class,
+					fragmentComposition.getPrimaryKey()) ||
+				(groupId != fragmentComposition.getGroupId()) ||
 				!Objects.equals(
 					fragmentCompositionKey,
 					fragmentComposition.getFragmentCompositionKey())) {
@@ -3274,7 +3274,7 @@ public class FragmentCompositionPersistenceImpl
 				List<FragmentComposition> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_FCK, finderArgs, list);
 					}

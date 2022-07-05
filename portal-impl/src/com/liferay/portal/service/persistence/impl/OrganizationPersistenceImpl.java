@@ -5948,18 +5948,15 @@ public class OrganizationPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Organization.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByC_N, finderArgs);
 		}
@@ -5967,7 +5964,9 @@ public class OrganizationPersistenceImpl
 		if (result instanceof Organization) {
 			Organization organization = (Organization)result;
 
-			if ((companyId != organization.getCompanyId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					Organization.class, organization.getPrimaryKey()) ||
+				(companyId != organization.getCompanyId()) ||
 				!Objects.equals(name, organization.getName())) {
 
 				result = null;
@@ -6012,7 +6011,7 @@ public class OrganizationPersistenceImpl
 				List<Organization> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByC_N, finderArgs, list);
 					}
@@ -8979,18 +8978,15 @@ public class OrganizationPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Organization.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByC_ERC, finderArgs);
 		}
@@ -8998,7 +8994,9 @@ public class OrganizationPersistenceImpl
 		if (result instanceof Organization) {
 			Organization organization = (Organization)result;
 
-			if ((companyId != organization.getCompanyId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					Organization.class, organization.getPrimaryKey()) ||
+				(companyId != organization.getCompanyId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					organization.getExternalReferenceCode())) {
@@ -9045,7 +9043,7 @@ public class OrganizationPersistenceImpl
 				List<Organization> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByC_ERC, finderArgs, list);
 					}

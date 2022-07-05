@@ -3332,18 +3332,15 @@ public class ExpandoValuePersistenceImpl
 	public ExpandoValue fetchByC_R(
 		long columnId, long rowId, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			ExpandoValue.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {columnId, rowId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByC_R, finderArgs);
 		}
@@ -3351,7 +3348,9 @@ public class ExpandoValuePersistenceImpl
 		if (result instanceof ExpandoValue) {
 			ExpandoValue expandoValue = (ExpandoValue)result;
 
-			if ((columnId != expandoValue.getColumnId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					ExpandoValue.class, expandoValue.getPrimaryKey()) ||
+				(columnId != expandoValue.getColumnId()) ||
 				(rowId != expandoValue.getRowId())) {
 
 				result = null;
@@ -3385,7 +3384,7 @@ public class ExpandoValuePersistenceImpl
 				List<ExpandoValue> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByC_R, finderArgs, list);
 					}
@@ -4128,18 +4127,15 @@ public class ExpandoValuePersistenceImpl
 	public ExpandoValue fetchByT_C_C(
 		long tableId, long columnId, long classPK, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			ExpandoValue.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {tableId, columnId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByT_C_C, finderArgs);
 		}
@@ -4147,7 +4143,9 @@ public class ExpandoValuePersistenceImpl
 		if (result instanceof ExpandoValue) {
 			ExpandoValue expandoValue = (ExpandoValue)result;
 
-			if ((tableId != expandoValue.getTableId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					ExpandoValue.class, expandoValue.getPrimaryKey()) ||
+				(tableId != expandoValue.getTableId()) ||
 				(columnId != expandoValue.getColumnId()) ||
 				(classPK != expandoValue.getClassPK())) {
 
@@ -4186,7 +4184,7 @@ public class ExpandoValuePersistenceImpl
 				List<ExpandoValue> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByT_C_C, finderArgs, list);
 					}

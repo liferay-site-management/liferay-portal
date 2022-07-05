@@ -3346,18 +3346,15 @@ public class AssetEntryPersistenceImpl
 
 		classUuid = Objects.toString(classUuid, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, classUuid};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_CU, finderArgs);
 		}
@@ -3365,7 +3362,9 @@ public class AssetEntryPersistenceImpl
 		if (result instanceof AssetEntry) {
 			AssetEntry assetEntry = (AssetEntry)result;
 
-			if ((groupId != assetEntry.getGroupId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					AssetEntry.class, assetEntry.getPrimaryKey()) ||
+				(groupId != assetEntry.getGroupId()) ||
 				!Objects.equals(classUuid, assetEntry.getClassUuid())) {
 
 				result = null;
@@ -3410,7 +3409,7 @@ public class AssetEntryPersistenceImpl
 				List<AssetEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByG_CU, finderArgs, list);
 					}
@@ -3420,7 +3419,7 @@ public class AssetEntryPersistenceImpl
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
+							if (!useFinderCache) {
 								finderArgs = new Object[] {groupId, classUuid};
 							}
 
@@ -3622,18 +3621,15 @@ public class AssetEntryPersistenceImpl
 	public AssetEntry fetchByC_C(
 		long classNameId, long classPK, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {classNameId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByC_C, finderArgs);
 		}
@@ -3641,7 +3637,9 @@ public class AssetEntryPersistenceImpl
 		if (result instanceof AssetEntry) {
 			AssetEntry assetEntry = (AssetEntry)result;
 
-			if ((classNameId != assetEntry.getClassNameId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					AssetEntry.class, assetEntry.getPrimaryKey()) ||
+				(classNameId != assetEntry.getClassNameId()) ||
 				(classPK != assetEntry.getClassPK())) {
 
 				result = null;
@@ -3675,7 +3673,7 @@ public class AssetEntryPersistenceImpl
 				List<AssetEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByC_C, finderArgs, list);
 					}

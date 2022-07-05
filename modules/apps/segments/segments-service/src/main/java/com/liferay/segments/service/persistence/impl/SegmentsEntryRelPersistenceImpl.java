@@ -1852,18 +1852,15 @@ public class SegmentsEntryRelPersistenceImpl
 		long segmentsEntryId, long classNameId, long classPK,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsEntryRel.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {segmentsEntryId, classNameId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByS_CN_CPK, finderArgs);
 		}
@@ -1871,7 +1868,9 @@ public class SegmentsEntryRelPersistenceImpl
 		if (result instanceof SegmentsEntryRel) {
 			SegmentsEntryRel segmentsEntryRel = (SegmentsEntryRel)result;
 
-			if ((segmentsEntryId != segmentsEntryRel.getSegmentsEntryId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					SegmentsEntryRel.class, segmentsEntryRel.getPrimaryKey()) ||
+				(segmentsEntryId != segmentsEntryRel.getSegmentsEntryId()) ||
 				(classNameId != segmentsEntryRel.getClassNameId()) ||
 				(classPK != segmentsEntryRel.getClassPK())) {
 
@@ -1910,7 +1909,7 @@ public class SegmentsEntryRelPersistenceImpl
 				List<SegmentsEntryRel> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByS_CN_CPK, finderArgs, list);
 					}

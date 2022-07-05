@@ -4176,18 +4176,15 @@ public class ClientExtensionEntryPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			ClientExtensionEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_ERC, finderArgs);
 		}
 
@@ -4195,7 +4192,10 @@ public class ClientExtensionEntryPersistenceImpl
 			ClientExtensionEntry clientExtensionEntry =
 				(ClientExtensionEntry)result;
 
-			if ((companyId != clientExtensionEntry.getCompanyId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					ClientExtensionEntry.class,
+					clientExtensionEntry.getPrimaryKey()) ||
+				(companyId != clientExtensionEntry.getCompanyId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					clientExtensionEntry.getExternalReferenceCode())) {
@@ -4242,7 +4242,7 @@ public class ClientExtensionEntryPersistenceImpl
 				List<ClientExtensionEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_ERC, finderArgs, list);
 					}

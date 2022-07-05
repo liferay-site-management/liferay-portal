@@ -719,18 +719,15 @@ public class DDMTemplatePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMTemplate.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -738,7 +735,9 @@ public class DDMTemplatePersistenceImpl
 		if (result instanceof DDMTemplate) {
 			DDMTemplate ddmTemplate = (DDMTemplate)result;
 
-			if (!Objects.equals(uuid, ddmTemplate.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DDMTemplate.class, ddmTemplate.getPrimaryKey()) ||
+				!Objects.equals(uuid, ddmTemplate.getUuid()) ||
 				(groupId != ddmTemplate.getGroupId())) {
 
 				result = null;
@@ -783,7 +782,7 @@ public class DDMTemplatePersistenceImpl
 				List<DDMTemplate> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -4609,18 +4608,15 @@ public class DDMTemplatePersistenceImpl
 	public DDMTemplate fetchBySmallImageId(
 		long smallImageId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMTemplate.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {smallImageId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchBySmallImageId, finderArgs);
 		}
@@ -4628,7 +4624,10 @@ public class DDMTemplatePersistenceImpl
 		if (result instanceof DDMTemplate) {
 			DDMTemplate ddmTemplate = (DDMTemplate)result;
 
-			if (smallImageId != ddmTemplate.getSmallImageId()) {
+			if (ctPersistenceHelper.isProductionMode(
+					DDMTemplate.class, ddmTemplate.getPrimaryKey()) ||
+				(smallImageId != ddmTemplate.getSmallImageId())) {
+
 				result = null;
 			}
 		}
@@ -4656,7 +4655,7 @@ public class DDMTemplatePersistenceImpl
 				List<DDMTemplate> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchBySmallImageId, finderArgs, list);
 					}
@@ -4666,7 +4665,7 @@ public class DDMTemplatePersistenceImpl
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
+							if (!useFinderCache) {
 								finderArgs = new Object[] {smallImageId};
 							}
 
@@ -8828,25 +8827,24 @@ public class DDMTemplatePersistenceImpl
 
 		templateKey = Objects.toString(templateKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMTemplate.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, classNameId, templateKey};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_C_T, finderArgs);
 		}
 
 		if (result instanceof DDMTemplate) {
 			DDMTemplate ddmTemplate = (DDMTemplate)result;
 
-			if ((groupId != ddmTemplate.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DDMTemplate.class, ddmTemplate.getPrimaryKey()) ||
+				(groupId != ddmTemplate.getGroupId()) ||
 				(classNameId != ddmTemplate.getClassNameId()) ||
 				!Objects.equals(templateKey, ddmTemplate.getTemplateKey())) {
 
@@ -8896,7 +8894,7 @@ public class DDMTemplatePersistenceImpl
 				List<DDMTemplate> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_C_T, finderArgs, list);
 					}

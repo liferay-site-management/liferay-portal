@@ -698,18 +698,15 @@ public class JournalArticleLocalizationPersistenceImpl
 	public JournalArticleLocalization fetchByC_A(
 		long companyId, long articlePK, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalArticleLocalization.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, articlePK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_A, finderArgs);
 		}
 
@@ -717,7 +714,10 @@ public class JournalArticleLocalizationPersistenceImpl
 			JournalArticleLocalization journalArticleLocalization =
 				(JournalArticleLocalization)result;
 
-			if ((companyId != journalArticleLocalization.getCompanyId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					JournalArticleLocalization.class,
+					journalArticleLocalization.getPrimaryKey()) ||
+				(companyId != journalArticleLocalization.getCompanyId()) ||
 				(articlePK != journalArticleLocalization.getArticlePK())) {
 
 				result = null;
@@ -751,7 +751,7 @@ public class JournalArticleLocalizationPersistenceImpl
 				List<JournalArticleLocalization> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_A, finderArgs, list);
 					}
@@ -761,7 +761,7 @@ public class JournalArticleLocalizationPersistenceImpl
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
+							if (!useFinderCache) {
 								finderArgs = new Object[] {
 									companyId, articlePK
 								};
@@ -958,18 +958,15 @@ public class JournalArticleLocalizationPersistenceImpl
 
 		languageId = Objects.toString(languageId, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalArticleLocalization.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {articlePK, languageId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByA_L, finderArgs);
 		}
 
@@ -977,7 +974,10 @@ public class JournalArticleLocalizationPersistenceImpl
 			JournalArticleLocalization journalArticleLocalization =
 				(JournalArticleLocalization)result;
 
-			if ((articlePK != journalArticleLocalization.getArticlePK()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					JournalArticleLocalization.class,
+					journalArticleLocalization.getPrimaryKey()) ||
+				(articlePK != journalArticleLocalization.getArticlePK()) ||
 				!Objects.equals(
 					languageId, journalArticleLocalization.getLanguageId())) {
 
@@ -1023,7 +1023,7 @@ public class JournalArticleLocalizationPersistenceImpl
 				List<JournalArticleLocalization> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByA_L, finderArgs, list);
 					}
@@ -1236,18 +1236,15 @@ public class JournalArticleLocalizationPersistenceImpl
 
 		languageId = Objects.toString(languageId, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalArticleLocalization.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, articlePK, languageId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_A_L, finderArgs);
 		}
 
@@ -1255,7 +1252,10 @@ public class JournalArticleLocalizationPersistenceImpl
 			JournalArticleLocalization journalArticleLocalization =
 				(JournalArticleLocalization)result;
 
-			if ((companyId != journalArticleLocalization.getCompanyId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					JournalArticleLocalization.class,
+					journalArticleLocalization.getPrimaryKey()) ||
+				(companyId != journalArticleLocalization.getCompanyId()) ||
 				(articlePK != journalArticleLocalization.getArticlePK()) ||
 				!Objects.equals(
 					languageId, journalArticleLocalization.getLanguageId())) {
@@ -1306,7 +1306,7 @@ public class JournalArticleLocalizationPersistenceImpl
 				List<JournalArticleLocalization> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_A_L, finderArgs, list);
 					}
@@ -1535,18 +1535,15 @@ public class JournalArticleLocalizationPersistenceImpl
 		title = Objects.toString(title, "");
 		languageId = Objects.toString(languageId, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalArticleLocalization.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, articlePK, title, languageId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByC_A_T_L, finderArgs);
 		}
@@ -1555,7 +1552,10 @@ public class JournalArticleLocalizationPersistenceImpl
 			JournalArticleLocalization journalArticleLocalization =
 				(JournalArticleLocalization)result;
 
-			if ((companyId != journalArticleLocalization.getCompanyId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					JournalArticleLocalization.class,
+					journalArticleLocalization.getPrimaryKey()) ||
+				(companyId != journalArticleLocalization.getCompanyId()) ||
 				(articlePK != journalArticleLocalization.getArticlePK()) ||
 				!Objects.equals(title, journalArticleLocalization.getTitle()) ||
 				!Objects.equals(
@@ -1622,7 +1622,7 @@ public class JournalArticleLocalizationPersistenceImpl
 				List<JournalArticleLocalization> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_A_T_L, finderArgs, list);
 					}

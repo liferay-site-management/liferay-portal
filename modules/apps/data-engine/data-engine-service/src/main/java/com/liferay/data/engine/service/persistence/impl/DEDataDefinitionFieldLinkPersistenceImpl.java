@@ -741,18 +741,15 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DEDataDefinitionFieldLink.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -761,7 +758,10 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			DEDataDefinitionFieldLink deDataDefinitionFieldLink =
 				(DEDataDefinitionFieldLink)result;
 
-			if (!Objects.equals(uuid, deDataDefinitionFieldLink.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DEDataDefinitionFieldLink.class,
+					deDataDefinitionFieldLink.getPrimaryKey()) ||
+				!Objects.equals(uuid, deDataDefinitionFieldLink.getUuid()) ||
 				(groupId != deDataDefinitionFieldLink.getGroupId())) {
 
 				result = null;
@@ -806,7 +806,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				List<DEDataDefinitionFieldLink> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -5240,12 +5240,9 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 		fieldName = Objects.toString(fieldName, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DEDataDefinitionFieldLink.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				classNameId, classPK, ddmStructureId, fieldName
 			};
@@ -5253,7 +5250,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByC_C_DDMSI_F, finderArgs);
 		}
@@ -5262,7 +5259,10 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			DEDataDefinitionFieldLink deDataDefinitionFieldLink =
 				(DEDataDefinitionFieldLink)result;
 
-			if ((classNameId != deDataDefinitionFieldLink.getClassNameId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DEDataDefinitionFieldLink.class,
+					deDataDefinitionFieldLink.getPrimaryKey()) ||
+				(classNameId != deDataDefinitionFieldLink.getClassNameId()) ||
 				(classPK != deDataDefinitionFieldLink.getClassPK()) ||
 				(ddmStructureId !=
 					deDataDefinitionFieldLink.getDdmStructureId()) ||
@@ -5319,7 +5319,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				List<DEDataDefinitionFieldLink> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_C_DDMSI_F, finderArgs, list);
 					}

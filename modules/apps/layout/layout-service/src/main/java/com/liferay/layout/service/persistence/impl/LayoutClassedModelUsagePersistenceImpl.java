@@ -735,18 +735,15 @@ public class LayoutClassedModelUsagePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutClassedModelUsage.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -755,7 +752,10 @@ public class LayoutClassedModelUsagePersistenceImpl
 			LayoutClassedModelUsage layoutClassedModelUsage =
 				(LayoutClassedModelUsage)result;
 
-			if (!Objects.equals(uuid, layoutClassedModelUsage.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					LayoutClassedModelUsage.class,
+					layoutClassedModelUsage.getPrimaryKey()) ||
+				!Objects.equals(uuid, layoutClassedModelUsage.getUuid()) ||
 				(groupId != layoutClassedModelUsage.getGroupId())) {
 
 				result = null;
@@ -800,7 +800,7 @@ public class LayoutClassedModelUsagePersistenceImpl
 				List<LayoutClassedModelUsage> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -4558,12 +4558,9 @@ public class LayoutClassedModelUsagePersistenceImpl
 
 		containerKey = Objects.toString(containerKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutClassedModelUsage.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				classNameId, classPK, containerKey, containerType, plid
 			};
@@ -4571,7 +4568,7 @@ public class LayoutClassedModelUsagePersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByCN_CPK_CK_CT_P, finderArgs);
 		}
@@ -4580,7 +4577,10 @@ public class LayoutClassedModelUsagePersistenceImpl
 			LayoutClassedModelUsage layoutClassedModelUsage =
 				(LayoutClassedModelUsage)result;
 
-			if ((classNameId != layoutClassedModelUsage.getClassNameId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					LayoutClassedModelUsage.class,
+					layoutClassedModelUsage.getPrimaryKey()) ||
+				(classNameId != layoutClassedModelUsage.getClassNameId()) ||
 				(classPK != layoutClassedModelUsage.getClassPK()) ||
 				!Objects.equals(
 					containerKey, layoutClassedModelUsage.getContainerKey()) ||
@@ -4641,7 +4641,7 @@ public class LayoutClassedModelUsagePersistenceImpl
 				List<LayoutClassedModelUsage> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByCN_CPK_CK_CT_P, finderArgs, list);
 					}

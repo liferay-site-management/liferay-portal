@@ -4037,25 +4037,24 @@ public class CommerceCatalogPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceCatalog.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_ERC, finderArgs);
 		}
 
 		if (result instanceof CommerceCatalog) {
 			CommerceCatalog commerceCatalog = (CommerceCatalog)result;
 
-			if ((companyId != commerceCatalog.getCompanyId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CommerceCatalog.class, commerceCatalog.getPrimaryKey()) ||
+				(companyId != commerceCatalog.getCompanyId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					commerceCatalog.getExternalReferenceCode())) {
@@ -4102,7 +4101,7 @@ public class CommerceCatalogPersistenceImpl
 				List<CommerceCatalog> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_ERC, finderArgs, list);
 					}

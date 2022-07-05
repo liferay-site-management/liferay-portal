@@ -2379,18 +2379,15 @@ public class CommerceTierPriceEntryPersistenceImpl
 	public CommerceTierPriceEntry fetchByC_M(
 		long commercePriceEntryId, int minQuantity, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceTierPriceEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {commercePriceEntryId, minQuantity};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_M, finderArgs);
 		}
 
@@ -2398,7 +2395,10 @@ public class CommerceTierPriceEntryPersistenceImpl
 			CommerceTierPriceEntry commerceTierPriceEntry =
 				(CommerceTierPriceEntry)result;
 
-			if ((commercePriceEntryId !=
+			if (ctPersistenceHelper.isProductionMode(
+					CommerceTierPriceEntry.class,
+					commerceTierPriceEntry.getPrimaryKey()) ||
+				(commercePriceEntryId !=
 					commerceTierPriceEntry.getCommercePriceEntryId()) ||
 				(minQuantity != commerceTierPriceEntry.getMinQuantity())) {
 
@@ -2433,7 +2433,7 @@ public class CommerceTierPriceEntryPersistenceImpl
 				List<CommerceTierPriceEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_M, finderArgs, list);
 					}
@@ -4945,18 +4945,15 @@ public class CommerceTierPriceEntryPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceTierPriceEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_ERC, finderArgs);
 		}
 
@@ -4964,7 +4961,10 @@ public class CommerceTierPriceEntryPersistenceImpl
 			CommerceTierPriceEntry commerceTierPriceEntry =
 				(CommerceTierPriceEntry)result;
 
-			if ((companyId != commerceTierPriceEntry.getCompanyId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CommerceTierPriceEntry.class,
+					commerceTierPriceEntry.getPrimaryKey()) ||
+				(companyId != commerceTierPriceEntry.getCompanyId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					commerceTierPriceEntry.getExternalReferenceCode())) {
@@ -5011,7 +5011,7 @@ public class CommerceTierPriceEntryPersistenceImpl
 				List<CommerceTierPriceEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_ERC, finderArgs, list);
 					}

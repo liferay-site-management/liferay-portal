@@ -722,18 +722,15 @@ public class CalendarBookingPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CalendarBooking.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -741,7 +738,9 @@ public class CalendarBookingPersistenceImpl
 		if (result instanceof CalendarBooking) {
 			CalendarBooking calendarBooking = (CalendarBooking)result;
 
-			if (!Objects.equals(uuid, calendarBooking.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CalendarBooking.class, calendarBooking.getPrimaryKey()) ||
+				!Objects.equals(uuid, calendarBooking.getUuid()) ||
 				(groupId != calendarBooking.getGroupId())) {
 
 				result = null;
@@ -786,7 +785,7 @@ public class CalendarBookingPersistenceImpl
 				List<CalendarBooking> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -3705,25 +3704,24 @@ public class CalendarBookingPersistenceImpl
 	public CalendarBooking fetchByC_P(
 		long calendarId, long parentCalendarBookingId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CalendarBooking.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {calendarId, parentCalendarBookingId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_P, finderArgs);
 		}
 
 		if (result instanceof CalendarBooking) {
 			CalendarBooking calendarBooking = (CalendarBooking)result;
 
-			if ((calendarId != calendarBooking.getCalendarId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CalendarBooking.class, calendarBooking.getPrimaryKey()) ||
+				(calendarId != calendarBooking.getCalendarId()) ||
 				(parentCalendarBookingId !=
 					calendarBooking.getParentCalendarBookingId())) {
 
@@ -3758,7 +3756,7 @@ public class CalendarBookingPersistenceImpl
 				List<CalendarBooking> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_P, finderArgs, list);
 					}
@@ -3943,25 +3941,24 @@ public class CalendarBookingPersistenceImpl
 
 		vEventUid = Objects.toString(vEventUid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CalendarBooking.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {calendarId, vEventUid};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_V, finderArgs);
 		}
 
 		if (result instanceof CalendarBooking) {
 			CalendarBooking calendarBooking = (CalendarBooking)result;
 
-			if ((calendarId != calendarBooking.getCalendarId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CalendarBooking.class, calendarBooking.getPrimaryKey()) ||
+				(calendarId != calendarBooking.getCalendarId()) ||
 				!Objects.equals(vEventUid, calendarBooking.getVEventUid())) {
 
 				result = null;
@@ -4006,7 +4003,7 @@ public class CalendarBookingPersistenceImpl
 				List<CalendarBooking> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_V, finderArgs, list);
 					}

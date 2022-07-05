@@ -711,18 +711,15 @@ public class MBBanPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBBan.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -730,7 +727,9 @@ public class MBBanPersistenceImpl
 		if (result instanceof MBBan) {
 			MBBan mbBan = (MBBan)result;
 
-			if (!Objects.equals(uuid, mbBan.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					MBBan.class, mbBan.getPrimaryKey()) ||
+				!Objects.equals(uuid, mbBan.getUuid()) ||
 				(groupId != mbBan.getGroupId())) {
 
 				result = null;
@@ -775,7 +774,7 @@ public class MBBanPersistenceImpl
 				List<MBBan> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -3067,25 +3066,24 @@ public class MBBanPersistenceImpl
 	public MBBan fetchByG_B(
 		long groupId, long banUserId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBBan.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, banUserId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_B, finderArgs);
 		}
 
 		if (result instanceof MBBan) {
 			MBBan mbBan = (MBBan)result;
 
-			if ((groupId != mbBan.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					MBBan.class, mbBan.getPrimaryKey()) ||
+				(groupId != mbBan.getGroupId()) ||
 				(banUserId != mbBan.getBanUserId())) {
 
 				result = null;
@@ -3119,7 +3117,7 @@ public class MBBanPersistenceImpl
 				List<MBBan> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_B, finderArgs, list);
 					}

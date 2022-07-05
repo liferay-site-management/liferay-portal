@@ -2199,18 +2199,15 @@ public class SocialActivityPersistenceImpl
 	public SocialActivity fetchByMirrorActivityId(
 		long mirrorActivityId, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialActivity.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {mirrorActivityId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByMirrorActivityId, finderArgs);
 		}
@@ -2218,7 +2215,10 @@ public class SocialActivityPersistenceImpl
 		if (result instanceof SocialActivity) {
 			SocialActivity socialActivity = (SocialActivity)result;
 
-			if (mirrorActivityId != socialActivity.getMirrorActivityId()) {
+			if (CTPersistenceHelperUtil.isProductionMode(
+					SocialActivity.class, socialActivity.getPrimaryKey()) ||
+				(mirrorActivityId != socialActivity.getMirrorActivityId())) {
+
 				result = null;
 			}
 		}
@@ -2246,7 +2246,7 @@ public class SocialActivityPersistenceImpl
 				List<SocialActivity> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByMirrorActivityId, finderArgs,
 							list);
@@ -2257,7 +2257,7 @@ public class SocialActivityPersistenceImpl
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
+							if (!useFinderCache) {
 								finderArgs = new Object[] {mirrorActivityId};
 							}
 
@@ -5465,12 +5465,9 @@ public class SocialActivityPersistenceImpl
 		long groupId, long userId, long createDate, long classNameId,
 		long classPK, int type, long receiverUserId, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialActivity.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, userId, createDate, classNameId, classPK, type,
 				receiverUserId
@@ -5479,7 +5476,7 @@ public class SocialActivityPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_U_CD_C_C_T_R, finderArgs);
 		}
@@ -5487,7 +5484,9 @@ public class SocialActivityPersistenceImpl
 		if (result instanceof SocialActivity) {
 			SocialActivity socialActivity = (SocialActivity)result;
 
-			if ((groupId != socialActivity.getGroupId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					SocialActivity.class, socialActivity.getPrimaryKey()) ||
+				(groupId != socialActivity.getGroupId()) ||
 				(userId != socialActivity.getUserId()) ||
 				(createDate != socialActivity.getCreateDate()) ||
 				(classNameId != socialActivity.getClassNameId()) ||
@@ -5546,7 +5545,7 @@ public class SocialActivityPersistenceImpl
 				List<SocialActivity> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByG_U_CD_C_C_T_R, finderArgs, list);
 					}

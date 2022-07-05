@@ -709,18 +709,15 @@ public class CPDisplayLayoutPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDisplayLayout.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -728,7 +725,9 @@ public class CPDisplayLayoutPersistenceImpl
 		if (result instanceof CPDisplayLayout) {
 			CPDisplayLayout cpDisplayLayout = (CPDisplayLayout)result;
 
-			if (!Objects.equals(uuid, cpDisplayLayout.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CPDisplayLayout.class, cpDisplayLayout.getPrimaryKey()) ||
+				!Objects.equals(uuid, cpDisplayLayout.getUuid()) ||
 				(groupId != cpDisplayLayout.getGroupId())) {
 
 				result = null;
@@ -773,7 +772,7 @@ public class CPDisplayLayoutPersistenceImpl
 				List<CPDisplayLayout> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -3795,25 +3794,24 @@ public class CPDisplayLayoutPersistenceImpl
 	public CPDisplayLayout fetchByG_C_C(
 		long groupId, long classNameId, long classPK, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDisplayLayout.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, classNameId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_C_C, finderArgs);
 		}
 
 		if (result instanceof CPDisplayLayout) {
 			CPDisplayLayout cpDisplayLayout = (CPDisplayLayout)result;
 
-			if ((groupId != cpDisplayLayout.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CPDisplayLayout.class, cpDisplayLayout.getPrimaryKey()) ||
+				(groupId != cpDisplayLayout.getGroupId()) ||
 				(classNameId != cpDisplayLayout.getClassNameId()) ||
 				(classPK != cpDisplayLayout.getClassPK())) {
 
@@ -3852,7 +3850,7 @@ public class CPDisplayLayoutPersistenceImpl
 				List<CPDisplayLayout> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_C_C, finderArgs, list);
 					}

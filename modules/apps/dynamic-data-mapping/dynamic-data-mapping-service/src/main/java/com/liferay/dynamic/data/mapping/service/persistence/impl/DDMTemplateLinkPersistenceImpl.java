@@ -679,25 +679,24 @@ public class DDMTemplateLinkPersistenceImpl
 	public DDMTemplateLink fetchByC_C(
 		long classNameId, long classPK, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMTemplateLink.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {classNameId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_C, finderArgs);
 		}
 
 		if (result instanceof DDMTemplateLink) {
 			DDMTemplateLink ddmTemplateLink = (DDMTemplateLink)result;
 
-			if ((classNameId != ddmTemplateLink.getClassNameId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DDMTemplateLink.class, ddmTemplateLink.getPrimaryKey()) ||
+				(classNameId != ddmTemplateLink.getClassNameId()) ||
 				(classPK != ddmTemplateLink.getClassPK())) {
 
 				result = null;
@@ -731,7 +730,7 @@ public class DDMTemplateLinkPersistenceImpl
 				List<DDMTemplateLink> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_C, finderArgs, list);
 					}

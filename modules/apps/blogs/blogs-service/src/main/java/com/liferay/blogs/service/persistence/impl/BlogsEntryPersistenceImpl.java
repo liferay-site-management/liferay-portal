@@ -727,18 +727,15 @@ public class BlogsEntryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			BlogsEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -746,7 +743,9 @@ public class BlogsEntryPersistenceImpl
 		if (result instanceof BlogsEntry) {
 			BlogsEntry blogsEntry = (BlogsEntry)result;
 
-			if (!Objects.equals(uuid, blogsEntry.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					BlogsEntry.class, blogsEntry.getPrimaryKey()) ||
+				!Objects.equals(uuid, blogsEntry.getUuid()) ||
 				(groupId != blogsEntry.getGroupId())) {
 
 				result = null;
@@ -791,7 +790,7 @@ public class BlogsEntryPersistenceImpl
 				List<BlogsEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -2971,25 +2970,24 @@ public class BlogsEntryPersistenceImpl
 
 		urlTitle = Objects.toString(urlTitle, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			BlogsEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, urlTitle};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_UT, finderArgs);
 		}
 
 		if (result instanceof BlogsEntry) {
 			BlogsEntry blogsEntry = (BlogsEntry)result;
 
-			if ((groupId != blogsEntry.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					BlogsEntry.class, blogsEntry.getPrimaryKey()) ||
+				(groupId != blogsEntry.getGroupId()) ||
 				!Objects.equals(urlTitle, blogsEntry.getUrlTitle())) {
 
 				result = null;
@@ -3034,7 +3032,7 @@ public class BlogsEntryPersistenceImpl
 				List<BlogsEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_UT, finderArgs, list);
 					}
@@ -21446,25 +21444,24 @@ public class BlogsEntryPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			BlogsEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_ERC, finderArgs);
 		}
 
 		if (result instanceof BlogsEntry) {
 			BlogsEntry blogsEntry = (BlogsEntry)result;
 
-			if ((groupId != blogsEntry.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					BlogsEntry.class, blogsEntry.getPrimaryKey()) ||
+				(groupId != blogsEntry.getGroupId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					blogsEntry.getExternalReferenceCode())) {
@@ -21511,7 +21508,7 @@ public class BlogsEntryPersistenceImpl
 				List<BlogsEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_ERC, finderArgs, list);
 					}

@@ -3132,18 +3132,15 @@ public class SubscriptionPersistenceImpl
 		long companyId, long userId, long classNameId, long classPK,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			Subscription.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, userId, classNameId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByC_U_C_C, finderArgs);
 		}
@@ -3151,7 +3148,9 @@ public class SubscriptionPersistenceImpl
 		if (result instanceof Subscription) {
 			Subscription subscription = (Subscription)result;
 
-			if ((companyId != subscription.getCompanyId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					Subscription.class, subscription.getPrimaryKey()) ||
+				(companyId != subscription.getCompanyId()) ||
 				(userId != subscription.getUserId()) ||
 				(classNameId != subscription.getClassNameId()) ||
 				(classPK != subscription.getClassPK())) {
@@ -3195,7 +3194,7 @@ public class SubscriptionPersistenceImpl
 				List<Subscription> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_U_C_C, finderArgs, list);
 					}

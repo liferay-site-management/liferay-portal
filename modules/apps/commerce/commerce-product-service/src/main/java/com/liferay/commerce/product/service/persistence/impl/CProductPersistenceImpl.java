@@ -703,18 +703,15 @@ public class CProductPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CProduct.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -722,7 +719,9 @@ public class CProductPersistenceImpl
 		if (result instanceof CProduct) {
 			CProduct cProduct = (CProduct)result;
 
-			if (!Objects.equals(uuid, cProduct.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CProduct.class, cProduct.getPrimaryKey()) ||
+				!Objects.equals(uuid, cProduct.getUuid()) ||
 				(groupId != cProduct.getGroupId())) {
 
 				result = null;
@@ -767,7 +766,7 @@ public class CProductPersistenceImpl
 				List<CProduct> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -2061,25 +2060,24 @@ public class CProductPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CProduct.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_ERC, finderArgs);
 		}
 
 		if (result instanceof CProduct) {
 			CProduct cProduct = (CProduct)result;
 
-			if ((companyId != cProduct.getCompanyId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CProduct.class, cProduct.getPrimaryKey()) ||
+				(companyId != cProduct.getCompanyId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					cProduct.getExternalReferenceCode())) {
@@ -2126,7 +2124,7 @@ public class CProductPersistenceImpl
 				List<CProduct> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_ERC, finderArgs, list);
 					}

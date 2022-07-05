@@ -165,18 +165,15 @@ public class DDMFormInstanceReportPersistenceImpl
 	public DDMFormInstanceReport fetchByFormInstanceId(
 		long formInstanceId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMFormInstanceReport.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {formInstanceId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByFormInstanceId, finderArgs);
 		}
@@ -185,7 +182,11 @@ public class DDMFormInstanceReportPersistenceImpl
 			DDMFormInstanceReport ddmFormInstanceReport =
 				(DDMFormInstanceReport)result;
 
-			if (formInstanceId != ddmFormInstanceReport.getFormInstanceId()) {
+			if (ctPersistenceHelper.isProductionMode(
+					DDMFormInstanceReport.class,
+					ddmFormInstanceReport.getPrimaryKey()) ||
+				(formInstanceId != ddmFormInstanceReport.getFormInstanceId())) {
+
 				result = null;
 			}
 		}
@@ -213,7 +214,7 @@ public class DDMFormInstanceReportPersistenceImpl
 				List<DDMFormInstanceReport> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByFormInstanceId, finderArgs, list);
 					}
@@ -223,7 +224,7 @@ public class DDMFormInstanceReportPersistenceImpl
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
+							if (!useFinderCache) {
 								finderArgs = new Object[] {formInstanceId};
 							}
 

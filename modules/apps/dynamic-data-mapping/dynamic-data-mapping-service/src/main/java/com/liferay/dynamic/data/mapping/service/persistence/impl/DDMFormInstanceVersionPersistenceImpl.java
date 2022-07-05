@@ -702,18 +702,15 @@ public class DDMFormInstanceVersionPersistenceImpl
 
 		version = Objects.toString(version, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMFormInstanceVersion.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {formInstanceId, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByF_V, finderArgs);
 		}
 
@@ -721,7 +718,10 @@ public class DDMFormInstanceVersionPersistenceImpl
 			DDMFormInstanceVersion ddmFormInstanceVersion =
 				(DDMFormInstanceVersion)result;
 
-			if ((formInstanceId !=
+			if (ctPersistenceHelper.isProductionMode(
+					DDMFormInstanceVersion.class,
+					ddmFormInstanceVersion.getPrimaryKey()) ||
+				(formInstanceId !=
 					ddmFormInstanceVersion.getFormInstanceId()) ||
 				!Objects.equals(version, ddmFormInstanceVersion.getVersion())) {
 
@@ -767,7 +767,7 @@ public class DDMFormInstanceVersionPersistenceImpl
 				List<DDMFormInstanceVersion> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByF_V, finderArgs, list);
 					}

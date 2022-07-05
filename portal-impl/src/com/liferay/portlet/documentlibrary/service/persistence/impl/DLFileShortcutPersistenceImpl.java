@@ -711,18 +711,15 @@ public class DLFileShortcutPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileShortcut.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -730,7 +727,9 @@ public class DLFileShortcutPersistenceImpl
 		if (result instanceof DLFileShortcut) {
 			DLFileShortcut dlFileShortcut = (DLFileShortcut)result;
 
-			if (!Objects.equals(uuid, dlFileShortcut.getUuid()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					DLFileShortcut.class, dlFileShortcut.getPrimaryKey()) ||
+				!Objects.equals(uuid, dlFileShortcut.getUuid()) ||
 				(groupId != dlFileShortcut.getGroupId())) {
 
 				result = null;
@@ -775,7 +774,7 @@ public class DLFileShortcutPersistenceImpl
 				List<DLFileShortcut> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}

@@ -732,18 +732,15 @@ public class SegmentsExperiencePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsExperience.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -751,7 +748,10 @@ public class SegmentsExperiencePersistenceImpl
 		if (result instanceof SegmentsExperience) {
 			SegmentsExperience segmentsExperience = (SegmentsExperience)result;
 
-			if (!Objects.equals(uuid, segmentsExperience.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					SegmentsExperience.class,
+					segmentsExperience.getPrimaryKey()) ||
+				!Objects.equals(uuid, segmentsExperience.getUuid()) ||
 				(groupId != segmentsExperience.getGroupId())) {
 
 				result = null;
@@ -796,7 +796,7 @@ public class SegmentsExperiencePersistenceImpl
 				List<SegmentsExperience> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -5156,12 +5156,9 @@ public class SegmentsExperiencePersistenceImpl
 
 		segmentsExperienceKey = Objects.toString(segmentsExperienceKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsExperience.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, segmentsExperienceKey, classNameId, classPK
 			};
@@ -5169,7 +5166,7 @@ public class SegmentsExperiencePersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByG_SEK_C_C, finderArgs);
 		}
@@ -5177,7 +5174,10 @@ public class SegmentsExperiencePersistenceImpl
 		if (result instanceof SegmentsExperience) {
 			SegmentsExperience segmentsExperience = (SegmentsExperience)result;
 
-			if ((groupId != segmentsExperience.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					SegmentsExperience.class,
+					segmentsExperience.getPrimaryKey()) ||
+				(groupId != segmentsExperience.getGroupId()) ||
 				!Objects.equals(
 					segmentsExperienceKey,
 					segmentsExperience.getSegmentsExperienceKey()) ||
@@ -5234,7 +5234,7 @@ public class SegmentsExperiencePersistenceImpl
 				List<SegmentsExperience> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_SEK_C_C, finderArgs, list);
 					}
@@ -5476,18 +5476,15 @@ public class SegmentsExperiencePersistenceImpl
 		long groupId, long classNameId, long classPK, int priority,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsExperience.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, classNameId, classPK, priority};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByG_C_C_P, finderArgs);
 		}
@@ -5495,7 +5492,10 @@ public class SegmentsExperiencePersistenceImpl
 		if (result instanceof SegmentsExperience) {
 			SegmentsExperience segmentsExperience = (SegmentsExperience)result;
 
-			if ((groupId != segmentsExperience.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					SegmentsExperience.class,
+					segmentsExperience.getPrimaryKey()) ||
+				(groupId != segmentsExperience.getGroupId()) ||
 				(classNameId != segmentsExperience.getClassNameId()) ||
 				(classPK != segmentsExperience.getClassPK()) ||
 				(priority != segmentsExperience.getPriority())) {
@@ -5539,7 +5539,7 @@ public class SegmentsExperiencePersistenceImpl
 				List<SegmentsExperience> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_C_C_P, finderArgs, list);
 					}

@@ -739,18 +739,15 @@ public class DDMDataProviderInstancePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMDataProviderInstance.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -759,7 +756,10 @@ public class DDMDataProviderInstancePersistenceImpl
 			DDMDataProviderInstance ddmDataProviderInstance =
 				(DDMDataProviderInstance)result;
 
-			if (!Objects.equals(uuid, ddmDataProviderInstance.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DDMDataProviderInstance.class,
+					ddmDataProviderInstance.getPrimaryKey()) ||
+				!Objects.equals(uuid, ddmDataProviderInstance.getUuid()) ||
 				(groupId != ddmDataProviderInstance.getGroupId())) {
 
 				result = null;
@@ -804,7 +804,7 @@ public class DDMDataProviderInstancePersistenceImpl
 				List<DDMDataProviderInstance> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}

@@ -722,18 +722,15 @@ public class FriendlyURLEntryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FriendlyURLEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -741,7 +738,9 @@ public class FriendlyURLEntryPersistenceImpl
 		if (result instanceof FriendlyURLEntry) {
 			FriendlyURLEntry friendlyURLEntry = (FriendlyURLEntry)result;
 
-			if (!Objects.equals(uuid, friendlyURLEntry.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					FriendlyURLEntry.class, friendlyURLEntry.getPrimaryKey()) ||
+				!Objects.equals(uuid, friendlyURLEntry.getUuid()) ||
 				(groupId != friendlyURLEntry.getGroupId())) {
 
 				result = null;
@@ -786,7 +785,7 @@ public class FriendlyURLEntryPersistenceImpl
 				List<FriendlyURLEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}

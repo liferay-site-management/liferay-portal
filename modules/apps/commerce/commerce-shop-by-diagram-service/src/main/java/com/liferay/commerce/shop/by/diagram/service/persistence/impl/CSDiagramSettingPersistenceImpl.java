@@ -1312,18 +1312,15 @@ public class CSDiagramSettingPersistenceImpl
 	public CSDiagramSetting fetchByCPDefinitionId(
 		long CPDefinitionId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CSDiagramSetting.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {CPDefinitionId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByCPDefinitionId, finderArgs);
 		}
@@ -1331,7 +1328,10 @@ public class CSDiagramSettingPersistenceImpl
 		if (result instanceof CSDiagramSetting) {
 			CSDiagramSetting csDiagramSetting = (CSDiagramSetting)result;
 
-			if (CPDefinitionId != csDiagramSetting.getCPDefinitionId()) {
+			if (ctPersistenceHelper.isProductionMode(
+					CSDiagramSetting.class, csDiagramSetting.getPrimaryKey()) ||
+				(CPDefinitionId != csDiagramSetting.getCPDefinitionId())) {
+
 				result = null;
 			}
 		}
@@ -1359,7 +1359,7 @@ public class CSDiagramSettingPersistenceImpl
 				List<CSDiagramSetting> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByCPDefinitionId, finderArgs, list);
 					}

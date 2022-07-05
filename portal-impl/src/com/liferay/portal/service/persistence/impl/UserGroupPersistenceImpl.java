@@ -3990,18 +3990,15 @@ public class UserGroupPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			UserGroup.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByC_N, finderArgs);
 		}
@@ -4009,7 +4006,9 @@ public class UserGroupPersistenceImpl
 		if (result instanceof UserGroup) {
 			UserGroup userGroup = (UserGroup)result;
 
-			if ((companyId != userGroup.getCompanyId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					UserGroup.class, userGroup.getPrimaryKey()) ||
+				(companyId != userGroup.getCompanyId()) ||
 				!Objects.equals(name, userGroup.getName())) {
 
 				result = null;
@@ -4054,7 +4053,7 @@ public class UserGroupPersistenceImpl
 				List<UserGroup> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByC_N, finderArgs, list);
 					}
@@ -5904,18 +5903,15 @@ public class UserGroupPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			UserGroup.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByC_ERC, finderArgs);
 		}
@@ -5923,7 +5919,9 @@ public class UserGroupPersistenceImpl
 		if (result instanceof UserGroup) {
 			UserGroup userGroup = (UserGroup)result;
 
-			if ((companyId != userGroup.getCompanyId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					UserGroup.class, userGroup.getPrimaryKey()) ||
+				(companyId != userGroup.getCompanyId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					userGroup.getExternalReferenceCode())) {
@@ -5970,7 +5968,7 @@ public class UserGroupPersistenceImpl
 				List<UserGroup> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByC_ERC, finderArgs, list);
 					}

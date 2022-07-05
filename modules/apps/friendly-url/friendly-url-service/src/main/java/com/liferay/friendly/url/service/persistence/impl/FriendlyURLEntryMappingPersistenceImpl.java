@@ -166,18 +166,15 @@ public class FriendlyURLEntryMappingPersistenceImpl
 	public FriendlyURLEntryMapping fetchByC_C(
 		long classNameId, long classPK, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FriendlyURLEntryMapping.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {classNameId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_C, finderArgs);
 		}
 
@@ -185,7 +182,10 @@ public class FriendlyURLEntryMappingPersistenceImpl
 			FriendlyURLEntryMapping friendlyURLEntryMapping =
 				(FriendlyURLEntryMapping)result;
 
-			if ((classNameId != friendlyURLEntryMapping.getClassNameId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					FriendlyURLEntryMapping.class,
+					friendlyURLEntryMapping.getPrimaryKey()) ||
+				(classNameId != friendlyURLEntryMapping.getClassNameId()) ||
 				(classPK != friendlyURLEntryMapping.getClassPK())) {
 
 				result = null;
@@ -219,7 +219,7 @@ public class FriendlyURLEntryMappingPersistenceImpl
 				List<FriendlyURLEntryMapping> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_C, finderArgs, list);
 					}

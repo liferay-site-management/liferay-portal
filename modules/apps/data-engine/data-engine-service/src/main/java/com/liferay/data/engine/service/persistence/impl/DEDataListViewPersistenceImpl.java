@@ -719,18 +719,15 @@ public class DEDataListViewPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DEDataListView.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -738,7 +735,9 @@ public class DEDataListViewPersistenceImpl
 		if (result instanceof DEDataListView) {
 			DEDataListView deDataListView = (DEDataListView)result;
 
-			if (!Objects.equals(uuid, deDataListView.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DEDataListView.class, deDataListView.getPrimaryKey()) ||
+				!Objects.equals(uuid, deDataListView.getUuid()) ||
 				(groupId != deDataListView.getGroupId())) {
 
 				result = null;
@@ -783,7 +782,7 @@ public class DEDataListViewPersistenceImpl
 				List<DEDataListView> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}

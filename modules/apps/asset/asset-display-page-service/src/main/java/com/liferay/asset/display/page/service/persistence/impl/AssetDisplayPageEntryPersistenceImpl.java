@@ -731,18 +731,15 @@ public class AssetDisplayPageEntryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetDisplayPageEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -751,7 +748,10 @@ public class AssetDisplayPageEntryPersistenceImpl
 			AssetDisplayPageEntry assetDisplayPageEntry =
 				(AssetDisplayPageEntry)result;
 
-			if (!Objects.equals(uuid, assetDisplayPageEntry.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					AssetDisplayPageEntry.class,
+					assetDisplayPageEntry.getPrimaryKey()) ||
+				!Objects.equals(uuid, assetDisplayPageEntry.getUuid()) ||
 				(groupId != assetDisplayPageEntry.getGroupId())) {
 
 				result = null;
@@ -796,7 +796,7 @@ public class AssetDisplayPageEntryPersistenceImpl
 				List<AssetDisplayPageEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -2667,18 +2667,15 @@ public class AssetDisplayPageEntryPersistenceImpl
 	public AssetDisplayPageEntry fetchByG_C_C(
 		long groupId, long classNameId, long classPK, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetDisplayPageEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, classNameId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_C_C, finderArgs);
 		}
 
@@ -2686,7 +2683,10 @@ public class AssetDisplayPageEntryPersistenceImpl
 			AssetDisplayPageEntry assetDisplayPageEntry =
 				(AssetDisplayPageEntry)result;
 
-			if ((groupId != assetDisplayPageEntry.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					AssetDisplayPageEntry.class,
+					assetDisplayPageEntry.getPrimaryKey()) ||
+				(groupId != assetDisplayPageEntry.getGroupId()) ||
 				(classNameId != assetDisplayPageEntry.getClassNameId()) ||
 				(classPK != assetDisplayPageEntry.getClassPK())) {
 
@@ -2725,7 +2725,7 @@ public class AssetDisplayPageEntryPersistenceImpl
 				List<AssetDisplayPageEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_C_C, finderArgs, list);
 					}

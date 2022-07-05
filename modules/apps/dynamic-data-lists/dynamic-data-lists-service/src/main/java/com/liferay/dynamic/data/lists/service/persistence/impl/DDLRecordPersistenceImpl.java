@@ -715,18 +715,15 @@ public class DDLRecordPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDLRecord.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -734,7 +731,9 @@ public class DDLRecordPersistenceImpl
 		if (result instanceof DDLRecord) {
 			DDLRecord ddlRecord = (DDLRecord)result;
 
-			if (!Objects.equals(uuid, ddlRecord.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DDLRecord.class, ddlRecord.getPrimaryKey()) ||
+				!Objects.equals(uuid, ddlRecord.getUuid()) ||
 				(groupId != ddlRecord.getGroupId())) {
 
 				result = null;
@@ -779,7 +778,7 @@ public class DDLRecordPersistenceImpl
 				List<DDLRecord> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}

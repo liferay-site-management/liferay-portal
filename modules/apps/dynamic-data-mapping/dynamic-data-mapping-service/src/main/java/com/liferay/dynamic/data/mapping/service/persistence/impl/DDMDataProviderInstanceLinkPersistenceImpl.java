@@ -1244,18 +1244,15 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 	public DDMDataProviderInstanceLink fetchByD_S(
 		long dataProviderInstanceId, long structureId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMDataProviderInstanceLink.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {dataProviderInstanceId, structureId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByD_S, finderArgs);
 		}
 
@@ -1263,7 +1260,10 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 			DDMDataProviderInstanceLink ddmDataProviderInstanceLink =
 				(DDMDataProviderInstanceLink)result;
 
-			if ((dataProviderInstanceId !=
+			if (ctPersistenceHelper.isProductionMode(
+					DDMDataProviderInstanceLink.class,
+					ddmDataProviderInstanceLink.getPrimaryKey()) ||
+				(dataProviderInstanceId !=
 					ddmDataProviderInstanceLink.getDataProviderInstanceId()) ||
 				(structureId != ddmDataProviderInstanceLink.getStructureId())) {
 
@@ -1298,7 +1298,7 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 				List<DDMDataProviderInstanceLink> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByD_S, finderArgs, list);
 					}

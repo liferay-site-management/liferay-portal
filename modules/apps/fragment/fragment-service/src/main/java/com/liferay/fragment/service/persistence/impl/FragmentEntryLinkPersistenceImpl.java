@@ -726,18 +726,15 @@ public class FragmentEntryLinkPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FragmentEntryLink.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -745,7 +742,10 @@ public class FragmentEntryLinkPersistenceImpl
 		if (result instanceof FragmentEntryLink) {
 			FragmentEntryLink fragmentEntryLink = (FragmentEntryLink)result;
 
-			if (!Objects.equals(uuid, fragmentEntryLink.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					FragmentEntryLink.class,
+					fragmentEntryLink.getPrimaryKey()) ||
+				!Objects.equals(uuid, fragmentEntryLink.getUuid()) ||
 				(groupId != fragmentEntryLink.getGroupId())) {
 
 				result = null;
@@ -790,7 +790,7 @@ public class FragmentEntryLinkPersistenceImpl
 				List<FragmentEntryLink> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}

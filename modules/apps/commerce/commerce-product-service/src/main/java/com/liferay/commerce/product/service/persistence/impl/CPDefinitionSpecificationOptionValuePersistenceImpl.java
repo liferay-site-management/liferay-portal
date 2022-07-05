@@ -752,18 +752,15 @@ public class CPDefinitionSpecificationOptionValuePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionSpecificationOptionValue.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -773,7 +770,10 @@ public class CPDefinitionSpecificationOptionValuePersistenceImpl
 				cpDefinitionSpecificationOptionValue =
 					(CPDefinitionSpecificationOptionValue)result;
 
-			if (!Objects.equals(
+			if (ctPersistenceHelper.isProductionMode(
+					CPDefinitionSpecificationOptionValue.class,
+					cpDefinitionSpecificationOptionValue.getPrimaryKey()) ||
+				!Objects.equals(
 					uuid, cpDefinitionSpecificationOptionValue.getUuid()) ||
 				(groupId !=
 					cpDefinitionSpecificationOptionValue.getGroupId())) {
@@ -820,7 +820,7 @@ public class CPDefinitionSpecificationOptionValuePersistenceImpl
 				List<CPDefinitionSpecificationOptionValue> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -3894,12 +3894,9 @@ public class CPDefinitionSpecificationOptionValuePersistenceImpl
 		long CPDefinitionSpecificationOptionValueId, long CPDefinitionId,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionSpecificationOptionValue.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				CPDefinitionSpecificationOptionValueId, CPDefinitionId
 			};
@@ -3907,7 +3904,7 @@ public class CPDefinitionSpecificationOptionValuePersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByC_CSOVI, finderArgs);
 		}
@@ -3917,7 +3914,10 @@ public class CPDefinitionSpecificationOptionValuePersistenceImpl
 				cpDefinitionSpecificationOptionValue =
 					(CPDefinitionSpecificationOptionValue)result;
 
-			if ((CPDefinitionSpecificationOptionValueId !=
+			if (ctPersistenceHelper.isProductionMode(
+					CPDefinitionSpecificationOptionValue.class,
+					cpDefinitionSpecificationOptionValue.getPrimaryKey()) ||
+				(CPDefinitionSpecificationOptionValueId !=
 					cpDefinitionSpecificationOptionValue.
 						getCPDefinitionSpecificationOptionValueId()) ||
 				(CPDefinitionId !=
@@ -3955,7 +3955,7 @@ public class CPDefinitionSpecificationOptionValuePersistenceImpl
 				List<CPDefinitionSpecificationOptionValue> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_CSOVI, finderArgs, list);
 					}

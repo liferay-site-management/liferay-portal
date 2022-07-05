@@ -1284,25 +1284,24 @@ public class DDLRecordVersionPersistenceImpl
 
 		version = Objects.toString(version, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDLRecordVersion.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {recordId, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByR_V, finderArgs);
 		}
 
 		if (result instanceof DDLRecordVersion) {
 			DDLRecordVersion ddlRecordVersion = (DDLRecordVersion)result;
 
-			if ((recordId != ddlRecordVersion.getRecordId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DDLRecordVersion.class, ddlRecordVersion.getPrimaryKey()) ||
+				(recordId != ddlRecordVersion.getRecordId()) ||
 				!Objects.equals(version, ddlRecordVersion.getVersion())) {
 
 				result = null;
@@ -1347,7 +1346,7 @@ public class DDLRecordVersionPersistenceImpl
 				List<DDLRecordVersion> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByR_V, finderArgs, list);
 					}

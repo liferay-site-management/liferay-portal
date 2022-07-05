@@ -1820,25 +1820,24 @@ public class CPTaxCategoryPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPTaxCategory.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_ERC, finderArgs);
 		}
 
 		if (result instanceof CPTaxCategory) {
 			CPTaxCategory cpTaxCategory = (CPTaxCategory)result;
 
-			if ((companyId != cpTaxCategory.getCompanyId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CPTaxCategory.class, cpTaxCategory.getPrimaryKey()) ||
+				(companyId != cpTaxCategory.getCompanyId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					cpTaxCategory.getExternalReferenceCode())) {
@@ -1885,7 +1884,7 @@ public class CPTaxCategoryPersistenceImpl
 				List<CPTaxCategory> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_ERC, finderArgs, list);
 					}

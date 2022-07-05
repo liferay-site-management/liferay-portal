@@ -1215,18 +1215,15 @@ public class AssetAutoTaggerEntryPersistenceImpl
 	public AssetAutoTaggerEntry fetchByA_A(
 		long assetEntryId, long assetTagId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetAutoTaggerEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {assetEntryId, assetTagId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByA_A, finderArgs);
 		}
 
@@ -1234,7 +1231,10 @@ public class AssetAutoTaggerEntryPersistenceImpl
 			AssetAutoTaggerEntry assetAutoTaggerEntry =
 				(AssetAutoTaggerEntry)result;
 
-			if ((assetEntryId != assetAutoTaggerEntry.getAssetEntryId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					AssetAutoTaggerEntry.class,
+					assetAutoTaggerEntry.getPrimaryKey()) ||
+				(assetEntryId != assetAutoTaggerEntry.getAssetEntryId()) ||
 				(assetTagId != assetAutoTaggerEntry.getAssetTagId())) {
 
 				result = null;
@@ -1268,7 +1268,7 @@ public class AssetAutoTaggerEntryPersistenceImpl
 				List<AssetAutoTaggerEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByA_A, finderArgs, list);
 					}

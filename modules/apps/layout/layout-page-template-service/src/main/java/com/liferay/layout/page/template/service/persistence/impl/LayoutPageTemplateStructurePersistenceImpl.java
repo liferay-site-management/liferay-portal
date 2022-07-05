@@ -741,18 +741,15 @@ public class LayoutPageTemplateStructurePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutPageTemplateStructure.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -761,7 +758,10 @@ public class LayoutPageTemplateStructurePersistenceImpl
 			LayoutPageTemplateStructure layoutPageTemplateStructure =
 				(LayoutPageTemplateStructure)result;
 
-			if (!Objects.equals(uuid, layoutPageTemplateStructure.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					LayoutPageTemplateStructure.class,
+					layoutPageTemplateStructure.getPrimaryKey()) ||
+				!Objects.equals(uuid, layoutPageTemplateStructure.getUuid()) ||
 				(groupId != layoutPageTemplateStructure.getGroupId())) {
 
 				result = null;
@@ -806,7 +806,7 @@ public class LayoutPageTemplateStructurePersistenceImpl
 				List<LayoutPageTemplateStructure> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -2143,18 +2143,15 @@ public class LayoutPageTemplateStructurePersistenceImpl
 	public LayoutPageTemplateStructure fetchByG_C_C(
 		long groupId, long classNameId, long classPK, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutPageTemplateStructure.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, classNameId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_C_C, finderArgs);
 		}
 
@@ -2162,7 +2159,10 @@ public class LayoutPageTemplateStructurePersistenceImpl
 			LayoutPageTemplateStructure layoutPageTemplateStructure =
 				(LayoutPageTemplateStructure)result;
 
-			if ((groupId != layoutPageTemplateStructure.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					LayoutPageTemplateStructure.class,
+					layoutPageTemplateStructure.getPrimaryKey()) ||
+				(groupId != layoutPageTemplateStructure.getGroupId()) ||
 				(classNameId != layoutPageTemplateStructure.getClassNameId()) ||
 				(classPK != layoutPageTemplateStructure.getClassPK())) {
 
@@ -2201,7 +2201,7 @@ public class LayoutPageTemplateStructurePersistenceImpl
 				List<LayoutPageTemplateStructure> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_C_C, finderArgs, list);
 					}

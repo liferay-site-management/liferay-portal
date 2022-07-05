@@ -746,18 +746,15 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutPageTemplateStructureRel.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -766,7 +763,10 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 			LayoutPageTemplateStructureRel layoutPageTemplateStructureRel =
 				(LayoutPageTemplateStructureRel)result;
 
-			if (!Objects.equals(
+			if (ctPersistenceHelper.isProductionMode(
+					LayoutPageTemplateStructureRel.class,
+					layoutPageTemplateStructureRel.getPrimaryKey()) ||
+				!Objects.equals(
 					uuid, layoutPageTemplateStructureRel.getUuid()) ||
 				(groupId != layoutPageTemplateStructureRel.getGroupId())) {
 
@@ -812,7 +812,7 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 				List<LayoutPageTemplateStructureRel> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -2740,12 +2740,9 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 		long layoutPageTemplateStructureId, long segmentsExperienceId,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutPageTemplateStructureRel.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				layoutPageTemplateStructureId, segmentsExperienceId
 			};
@@ -2753,7 +2750,7 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByL_S, finderArgs);
 		}
 
@@ -2761,7 +2758,10 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 			LayoutPageTemplateStructureRel layoutPageTemplateStructureRel =
 				(LayoutPageTemplateStructureRel)result;
 
-			if ((layoutPageTemplateStructureId !=
+			if (ctPersistenceHelper.isProductionMode(
+					LayoutPageTemplateStructureRel.class,
+					layoutPageTemplateStructureRel.getPrimaryKey()) ||
+				(layoutPageTemplateStructureId !=
 					layoutPageTemplateStructureRel.
 						getLayoutPageTemplateStructureId()) ||
 				(segmentsExperienceId !=
@@ -2798,7 +2798,7 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 				List<LayoutPageTemplateStructureRel> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByL_S, finderArgs, list);
 					}

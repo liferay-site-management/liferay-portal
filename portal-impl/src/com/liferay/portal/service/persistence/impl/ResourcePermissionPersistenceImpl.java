@@ -4950,18 +4950,15 @@ public class ResourcePermissionPersistenceImpl
 		name = Objects.toString(name, "");
 		primKey = Objects.toString(primKey, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			ResourcePermission.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, name, scope, primKey, roleId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByC_N_S_P_R, finderArgs);
 		}
@@ -4969,7 +4966,10 @@ public class ResourcePermissionPersistenceImpl
 		if (result instanceof ResourcePermission) {
 			ResourcePermission resourcePermission = (ResourcePermission)result;
 
-			if ((companyId != resourcePermission.getCompanyId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					ResourcePermission.class,
+					resourcePermission.getPrimaryKey()) ||
+				(companyId != resourcePermission.getCompanyId()) ||
 				!Objects.equals(name, resourcePermission.getName()) ||
 				(scope != resourcePermission.getScope()) ||
 				!Objects.equals(primKey, resourcePermission.getPrimKey()) ||
@@ -5040,7 +5040,7 @@ public class ResourcePermissionPersistenceImpl
 				List<ResourcePermission> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByC_N_S_P_R, finderArgs, list);
 					}

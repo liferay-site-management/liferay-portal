@@ -1224,25 +1224,24 @@ public class TrashVersionPersistenceImpl
 	public TrashVersion fetchByC_C(
 		long classNameId, long classPK, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			TrashVersion.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {classNameId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_C, finderArgs);
 		}
 
 		if (result instanceof TrashVersion) {
 			TrashVersion trashVersion = (TrashVersion)result;
 
-			if ((classNameId != trashVersion.getClassNameId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					TrashVersion.class, trashVersion.getPrimaryKey()) ||
+				(classNameId != trashVersion.getClassNameId()) ||
 				(classPK != trashVersion.getClassPK())) {
 
 				result = null;
@@ -1276,7 +1275,7 @@ public class TrashVersionPersistenceImpl
 				List<TrashVersion> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_C, finderArgs, list);
 					}

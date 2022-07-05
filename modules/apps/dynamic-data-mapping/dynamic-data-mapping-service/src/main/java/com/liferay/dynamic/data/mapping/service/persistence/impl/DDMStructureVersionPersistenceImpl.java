@@ -695,18 +695,15 @@ public class DDMStructureVersionPersistenceImpl
 
 		version = Objects.toString(version, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMStructureVersion.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {structureId, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByS_V, finderArgs);
 		}
 
@@ -714,7 +711,10 @@ public class DDMStructureVersionPersistenceImpl
 			DDMStructureVersion ddmStructureVersion =
 				(DDMStructureVersion)result;
 
-			if ((structureId != ddmStructureVersion.getStructureId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DDMStructureVersion.class,
+					ddmStructureVersion.getPrimaryKey()) ||
+				(structureId != ddmStructureVersion.getStructureId()) ||
 				!Objects.equals(version, ddmStructureVersion.getVersion())) {
 
 				result = null;
@@ -759,7 +759,7 @@ public class DDMStructureVersionPersistenceImpl
 				List<DDMStructureVersion> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByS_V, finderArgs, list);
 					}

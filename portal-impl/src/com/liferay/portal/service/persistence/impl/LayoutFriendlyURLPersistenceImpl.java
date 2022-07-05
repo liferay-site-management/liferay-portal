@@ -714,18 +714,15 @@ public class LayoutFriendlyURLPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			LayoutFriendlyURL.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -733,7 +730,10 @@ public class LayoutFriendlyURLPersistenceImpl
 		if (result instanceof LayoutFriendlyURL) {
 			LayoutFriendlyURL layoutFriendlyURL = (LayoutFriendlyURL)result;
 
-			if (!Objects.equals(uuid, layoutFriendlyURL.getUuid()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					LayoutFriendlyURL.class,
+					layoutFriendlyURL.getPrimaryKey()) ||
+				!Objects.equals(uuid, layoutFriendlyURL.getUuid()) ||
 				(groupId != layoutFriendlyURL.getGroupId())) {
 
 				result = null;
@@ -778,7 +778,7 @@ public class LayoutFriendlyURLPersistenceImpl
 				List<LayoutFriendlyURL> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -3977,18 +3977,15 @@ public class LayoutFriendlyURLPersistenceImpl
 
 		languageId = Objects.toString(languageId, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			LayoutFriendlyURL.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {plid, languageId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByP_L, finderArgs);
 		}
@@ -3996,7 +3993,10 @@ public class LayoutFriendlyURLPersistenceImpl
 		if (result instanceof LayoutFriendlyURL) {
 			LayoutFriendlyURL layoutFriendlyURL = (LayoutFriendlyURL)result;
 
-			if ((plid != layoutFriendlyURL.getPlid()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					LayoutFriendlyURL.class,
+					layoutFriendlyURL.getPrimaryKey()) ||
+				(plid != layoutFriendlyURL.getPlid()) ||
 				!Objects.equals(
 					languageId, layoutFriendlyURL.getLanguageId())) {
 
@@ -4042,7 +4042,7 @@ public class LayoutFriendlyURLPersistenceImpl
 				List<LayoutFriendlyURL> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByP_L, finderArgs, list);
 					}
@@ -5038,12 +5038,9 @@ public class LayoutFriendlyURLPersistenceImpl
 		friendlyURL = Objects.toString(friendlyURL, "");
 		languageId = Objects.toString(languageId, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			LayoutFriendlyURL.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, privateLayout, friendlyURL, languageId
 			};
@@ -5051,7 +5048,7 @@ public class LayoutFriendlyURLPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_P_F_L, finderArgs);
 		}
@@ -5059,7 +5056,10 @@ public class LayoutFriendlyURLPersistenceImpl
 		if (result instanceof LayoutFriendlyURL) {
 			LayoutFriendlyURL layoutFriendlyURL = (LayoutFriendlyURL)result;
 
-			if ((groupId != layoutFriendlyURL.getGroupId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					LayoutFriendlyURL.class,
+					layoutFriendlyURL.getPrimaryKey()) ||
+				(groupId != layoutFriendlyURL.getGroupId()) ||
 				(privateLayout != layoutFriendlyURL.isPrivateLayout()) ||
 				!Objects.equals(
 					friendlyURL, layoutFriendlyURL.getFriendlyURL()) ||
@@ -5127,7 +5127,7 @@ public class LayoutFriendlyURLPersistenceImpl
 				List<LayoutFriendlyURL> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByG_P_F_L, finderArgs, list);
 					}

@@ -720,18 +720,15 @@ public class TemplateEntryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			TemplateEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -739,7 +736,9 @@ public class TemplateEntryPersistenceImpl
 		if (result instanceof TemplateEntry) {
 			TemplateEntry templateEntry = (TemplateEntry)result;
 
-			if (!Objects.equals(uuid, templateEntry.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					TemplateEntry.class, templateEntry.getPrimaryKey()) ||
+				!Objects.equals(uuid, templateEntry.getUuid()) ||
 				(groupId != templateEntry.getGroupId())) {
 
 				result = null;
@@ -784,7 +783,7 @@ public class TemplateEntryPersistenceImpl
 				List<TemplateEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -2344,18 +2343,15 @@ public class TemplateEntryPersistenceImpl
 	public TemplateEntry fetchByDDMTemplateId(
 		long ddmTemplateId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			TemplateEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {ddmTemplateId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByDDMTemplateId, finderArgs);
 		}
@@ -2363,7 +2359,10 @@ public class TemplateEntryPersistenceImpl
 		if (result instanceof TemplateEntry) {
 			TemplateEntry templateEntry = (TemplateEntry)result;
 
-			if (ddmTemplateId != templateEntry.getDDMTemplateId()) {
+			if (ctPersistenceHelper.isProductionMode(
+					TemplateEntry.class, templateEntry.getPrimaryKey()) ||
+				(ddmTemplateId != templateEntry.getDDMTemplateId())) {
+
 				result = null;
 			}
 		}
@@ -2391,7 +2390,7 @@ public class TemplateEntryPersistenceImpl
 				List<TemplateEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByDDMTemplateId, finderArgs, list);
 					}
@@ -2401,7 +2400,7 @@ public class TemplateEntryPersistenceImpl
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
+							if (!useFinderCache) {
 								finderArgs = new Object[] {ddmTemplateId};
 							}
 

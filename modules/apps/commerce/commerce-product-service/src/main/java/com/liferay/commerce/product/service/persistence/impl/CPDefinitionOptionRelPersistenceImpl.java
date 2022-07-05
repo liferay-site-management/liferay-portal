@@ -718,18 +718,15 @@ public class CPDefinitionOptionRelPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionOptionRel.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -738,7 +735,10 @@ public class CPDefinitionOptionRelPersistenceImpl
 			CPDefinitionOptionRel cpDefinitionOptionRel =
 				(CPDefinitionOptionRel)result;
 
-			if (!Objects.equals(uuid, cpDefinitionOptionRel.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CPDefinitionOptionRel.class,
+					cpDefinitionOptionRel.getPrimaryKey()) ||
+				!Objects.equals(uuid, cpDefinitionOptionRel.getUuid()) ||
 				(groupId != cpDefinitionOptionRel.getGroupId())) {
 
 				result = null;
@@ -783,7 +783,7 @@ public class CPDefinitionOptionRelPersistenceImpl
 				List<CPDefinitionOptionRel> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -3152,18 +3152,15 @@ public class CPDefinitionOptionRelPersistenceImpl
 	public CPDefinitionOptionRel fetchByC_C(
 		long CPDefinitionId, long CPOptionId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionOptionRel.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {CPDefinitionId, CPOptionId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_C, finderArgs);
 		}
 
@@ -3171,7 +3168,10 @@ public class CPDefinitionOptionRelPersistenceImpl
 			CPDefinitionOptionRel cpDefinitionOptionRel =
 				(CPDefinitionOptionRel)result;
 
-			if ((CPDefinitionId != cpDefinitionOptionRel.getCPDefinitionId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CPDefinitionOptionRel.class,
+					cpDefinitionOptionRel.getPrimaryKey()) ||
+				(CPDefinitionId != cpDefinitionOptionRel.getCPDefinitionId()) ||
 				(CPOptionId != cpDefinitionOptionRel.getCPOptionId())) {
 
 				result = null;
@@ -3205,7 +3205,7 @@ public class CPDefinitionOptionRelPersistenceImpl
 				List<CPDefinitionOptionRel> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_C, finderArgs, list);
 					}
@@ -4517,18 +4517,15 @@ public class CPDefinitionOptionRelPersistenceImpl
 
 		key = Objects.toString(key, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionOptionRel.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {CPDefinitionId, key};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_K, finderArgs);
 		}
 
@@ -4536,7 +4533,10 @@ public class CPDefinitionOptionRelPersistenceImpl
 			CPDefinitionOptionRel cpDefinitionOptionRel =
 				(CPDefinitionOptionRel)result;
 
-			if ((CPDefinitionId != cpDefinitionOptionRel.getCPDefinitionId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CPDefinitionOptionRel.class,
+					cpDefinitionOptionRel.getPrimaryKey()) ||
+				(CPDefinitionId != cpDefinitionOptionRel.getCPDefinitionId()) ||
 				!Objects.equals(key, cpDefinitionOptionRel.getKey())) {
 
 				result = null;
@@ -4581,7 +4581,7 @@ public class CPDefinitionOptionRelPersistenceImpl
 				List<CPDefinitionOptionRel> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_K, finderArgs, list);
 					}

@@ -742,18 +742,15 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CalendarNotificationTemplate.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -762,7 +759,10 @@ public class CalendarNotificationTemplatePersistenceImpl
 			CalendarNotificationTemplate calendarNotificationTemplate =
 				(CalendarNotificationTemplate)result;
 
-			if (!Objects.equals(uuid, calendarNotificationTemplate.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CalendarNotificationTemplate.class,
+					calendarNotificationTemplate.getPrimaryKey()) ||
+				!Objects.equals(uuid, calendarNotificationTemplate.getUuid()) ||
 				(groupId != calendarNotificationTemplate.getGroupId())) {
 
 				result = null;
@@ -807,7 +807,7 @@ public class CalendarNotificationTemplatePersistenceImpl
 				List<CalendarNotificationTemplate> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -2162,12 +2162,9 @@ public class CalendarNotificationTemplatePersistenceImpl
 		notificationTemplateType = Objects.toString(
 			notificationTemplateType, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CalendarNotificationTemplate.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				calendarId, notificationType, notificationTemplateType
 			};
@@ -2175,7 +2172,7 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByC_NT_NTT, finderArgs);
 		}
@@ -2184,7 +2181,10 @@ public class CalendarNotificationTemplatePersistenceImpl
 			CalendarNotificationTemplate calendarNotificationTemplate =
 				(CalendarNotificationTemplate)result;
 
-			if ((calendarId != calendarNotificationTemplate.getCalendarId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CalendarNotificationTemplate.class,
+					calendarNotificationTemplate.getPrimaryKey()) ||
+				(calendarId != calendarNotificationTemplate.getCalendarId()) ||
 				!Objects.equals(
 					notificationType,
 					calendarNotificationTemplate.getNotificationType()) ||
@@ -2250,7 +2250,7 @@ public class CalendarNotificationTemplatePersistenceImpl
 				List<CalendarNotificationTemplate> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_NT_NTT, finderArgs, list);
 					}
@@ -2260,7 +2260,7 @@ public class CalendarNotificationTemplatePersistenceImpl
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
+							if (!useFinderCache) {
 								finderArgs = new Object[] {
 									calendarId, notificationType,
 									notificationTemplateType

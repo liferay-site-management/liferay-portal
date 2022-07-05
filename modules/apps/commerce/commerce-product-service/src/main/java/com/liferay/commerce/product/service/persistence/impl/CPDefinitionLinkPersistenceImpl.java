@@ -710,18 +710,15 @@ public class CPDefinitionLinkPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionLink.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -729,7 +726,9 @@ public class CPDefinitionLinkPersistenceImpl
 		if (result instanceof CPDefinitionLink) {
 			CPDefinitionLink cpDefinitionLink = (CPDefinitionLink)result;
 
-			if (!Objects.equals(uuid, cpDefinitionLink.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CPDefinitionLink.class, cpDefinitionLink.getPrimaryKey()) ||
+				!Objects.equals(uuid, cpDefinitionLink.getUuid()) ||
 				(groupId != cpDefinitionLink.getGroupId())) {
 
 				result = null;
@@ -774,7 +773,7 @@ public class CPDefinitionLinkPersistenceImpl
 				List<CPDefinitionLink> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -3825,25 +3824,24 @@ public class CPDefinitionLinkPersistenceImpl
 
 		type = Objects.toString(type, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionLink.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {CPDefinitionId, CProductId, type};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_C_T, finderArgs);
 		}
 
 		if (result instanceof CPDefinitionLink) {
 			CPDefinitionLink cpDefinitionLink = (CPDefinitionLink)result;
 
-			if ((CPDefinitionId != cpDefinitionLink.getCPDefinitionId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CPDefinitionLink.class, cpDefinitionLink.getPrimaryKey()) ||
+				(CPDefinitionId != cpDefinitionLink.getCPDefinitionId()) ||
 				(CProductId != cpDefinitionLink.getCProductId()) ||
 				!Objects.equals(type, cpDefinitionLink.getType())) {
 
@@ -3893,7 +3891,7 @@ public class CPDefinitionLinkPersistenceImpl
 				List<CPDefinitionLink> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_C_T, finderArgs, list);
 					}

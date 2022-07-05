@@ -4944,12 +4944,9 @@ public class JournalContentSearchPersistenceImpl
 		portletId = Objects.toString(portletId, "");
 		articleId = Objects.toString(articleId, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalContentSearch.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, privateLayout, layoutId, portletId, articleId
 			};
@@ -4957,7 +4954,7 @@ public class JournalContentSearchPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByG_P_L_P_A, finderArgs);
 		}
@@ -4966,7 +4963,10 @@ public class JournalContentSearchPersistenceImpl
 			JournalContentSearch journalContentSearch =
 				(JournalContentSearch)result;
 
-			if ((groupId != journalContentSearch.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					JournalContentSearch.class,
+					journalContentSearch.getPrimaryKey()) ||
+				(groupId != journalContentSearch.getGroupId()) ||
 				(privateLayout != journalContentSearch.isPrivateLayout()) ||
 				(layoutId != journalContentSearch.getLayoutId()) ||
 				!Objects.equals(
@@ -5039,7 +5039,7 @@ public class JournalContentSearchPersistenceImpl
 				List<JournalContentSearch> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_P_L_P_A, finderArgs, list);
 					}

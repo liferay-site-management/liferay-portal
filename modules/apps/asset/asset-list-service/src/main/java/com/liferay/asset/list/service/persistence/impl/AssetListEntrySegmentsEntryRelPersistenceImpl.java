@@ -748,18 +748,15 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetListEntrySegmentsEntryRel.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -768,7 +765,10 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 			AssetListEntrySegmentsEntryRel assetListEntrySegmentsEntryRel =
 				(AssetListEntrySegmentsEntryRel)result;
 
-			if (!Objects.equals(
+			if (ctPersistenceHelper.isProductionMode(
+					AssetListEntrySegmentsEntryRel.class,
+					assetListEntrySegmentsEntryRel.getPrimaryKey()) ||
+				!Objects.equals(
 					uuid, assetListEntrySegmentsEntryRel.getUuid()) ||
 				(groupId != assetListEntrySegmentsEntryRel.getGroupId())) {
 
@@ -814,7 +814,7 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 				List<AssetListEntrySegmentsEntryRel> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -2694,18 +2694,15 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 	public AssetListEntrySegmentsEntryRel fetchByA_S(
 		long assetListEntryId, long segmentsEntryId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetListEntrySegmentsEntryRel.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {assetListEntryId, segmentsEntryId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByA_S, finderArgs);
 		}
 
@@ -2713,7 +2710,10 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 			AssetListEntrySegmentsEntryRel assetListEntrySegmentsEntryRel =
 				(AssetListEntrySegmentsEntryRel)result;
 
-			if ((assetListEntryId !=
+			if (ctPersistenceHelper.isProductionMode(
+					AssetListEntrySegmentsEntryRel.class,
+					assetListEntrySegmentsEntryRel.getPrimaryKey()) ||
+				(assetListEntryId !=
 					assetListEntrySegmentsEntryRel.getAssetListEntryId()) ||
 				(segmentsEntryId !=
 					assetListEntrySegmentsEntryRel.getSegmentsEntryId())) {
@@ -2749,7 +2749,7 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 				List<AssetListEntrySegmentsEntryRel> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByA_S, finderArgs, list);
 					}

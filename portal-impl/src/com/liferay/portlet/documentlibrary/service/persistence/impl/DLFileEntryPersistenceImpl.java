@@ -709,18 +709,15 @@ public class DLFileEntryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -728,7 +725,9 @@ public class DLFileEntryPersistenceImpl
 		if (result instanceof DLFileEntry) {
 			DLFileEntry dlFileEntry = (DLFileEntry)result;
 
-			if (!Objects.equals(uuid, dlFileEntry.getUuid()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					DLFileEntry.class, dlFileEntry.getPrimaryKey()) ||
+				!Objects.equals(uuid, dlFileEntry.getUuid()) ||
 				(groupId != dlFileEntry.getGroupId())) {
 
 				result = null;
@@ -773,7 +772,7 @@ public class DLFileEntryPersistenceImpl
 				List<DLFileEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -11690,18 +11689,15 @@ public class DLFileEntryPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, folderId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_F_N, finderArgs);
 		}
@@ -11709,7 +11705,9 @@ public class DLFileEntryPersistenceImpl
 		if (result instanceof DLFileEntry) {
 			DLFileEntry dlFileEntry = (DLFileEntry)result;
 
-			if ((groupId != dlFileEntry.getGroupId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					DLFileEntry.class, dlFileEntry.getPrimaryKey()) ||
+				(groupId != dlFileEntry.getGroupId()) ||
 				(folderId != dlFileEntry.getFolderId()) ||
 				!Objects.equals(name, dlFileEntry.getName())) {
 
@@ -11759,7 +11757,7 @@ public class DLFileEntryPersistenceImpl
 				List<DLFileEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByG_F_N, finderArgs, list);
 					}
@@ -11976,18 +11974,15 @@ public class DLFileEntryPersistenceImpl
 
 		fileName = Objects.toString(fileName, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, folderId, fileName};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_F_FN, finderArgs);
 		}
@@ -11995,7 +11990,9 @@ public class DLFileEntryPersistenceImpl
 		if (result instanceof DLFileEntry) {
 			DLFileEntry dlFileEntry = (DLFileEntry)result;
 
-			if ((groupId != dlFileEntry.getGroupId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					DLFileEntry.class, dlFileEntry.getPrimaryKey()) ||
+				(groupId != dlFileEntry.getGroupId()) ||
 				(folderId != dlFileEntry.getFolderId()) ||
 				!Objects.equals(fileName, dlFileEntry.getFileName())) {
 
@@ -12045,7 +12042,7 @@ public class DLFileEntryPersistenceImpl
 				List<DLFileEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByG_F_FN, finderArgs, list);
 					}
@@ -12260,18 +12257,15 @@ public class DLFileEntryPersistenceImpl
 
 		title = Objects.toString(title, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, folderId, title};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_F_T, finderArgs);
 		}
@@ -12279,7 +12273,9 @@ public class DLFileEntryPersistenceImpl
 		if (result instanceof DLFileEntry) {
 			DLFileEntry dlFileEntry = (DLFileEntry)result;
 
-			if ((groupId != dlFileEntry.getGroupId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					DLFileEntry.class, dlFileEntry.getPrimaryKey()) ||
+				(groupId != dlFileEntry.getGroupId()) ||
 				(folderId != dlFileEntry.getFolderId()) ||
 				!Objects.equals(title, dlFileEntry.getTitle())) {
 
@@ -12329,7 +12325,7 @@ public class DLFileEntryPersistenceImpl
 				List<DLFileEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByG_F_T, finderArgs, list);
 					}
@@ -14764,18 +14760,15 @@ public class DLFileEntryPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_ERC, finderArgs);
 		}
@@ -14783,7 +14776,9 @@ public class DLFileEntryPersistenceImpl
 		if (result instanceof DLFileEntry) {
 			DLFileEntry dlFileEntry = (DLFileEntry)result;
 
-			if ((groupId != dlFileEntry.getGroupId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					DLFileEntry.class, dlFileEntry.getPrimaryKey()) ||
+				(groupId != dlFileEntry.getGroupId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					dlFileEntry.getExternalReferenceCode())) {
@@ -14830,7 +14825,7 @@ public class DLFileEntryPersistenceImpl
 				List<DLFileEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByG_ERC, finderArgs, list);
 					}

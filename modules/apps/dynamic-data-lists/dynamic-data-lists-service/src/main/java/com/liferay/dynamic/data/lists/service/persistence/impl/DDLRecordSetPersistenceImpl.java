@@ -720,18 +720,15 @@ public class DDLRecordSetPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDLRecordSet.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -739,7 +736,9 @@ public class DDLRecordSetPersistenceImpl
 		if (result instanceof DDLRecordSet) {
 			DDLRecordSet ddlRecordSet = (DDLRecordSet)result;
 
-			if (!Objects.equals(uuid, ddlRecordSet.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DDLRecordSet.class, ddlRecordSet.getPrimaryKey()) ||
+				!Objects.equals(uuid, ddlRecordSet.getUuid()) ||
 				(groupId != ddlRecordSet.getGroupId())) {
 
 				result = null;
@@ -784,7 +783,7 @@ public class DDLRecordSetPersistenceImpl
 				List<DDLRecordSet> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -3716,25 +3715,24 @@ public class DDLRecordSetPersistenceImpl
 
 		recordSetKey = Objects.toString(recordSetKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDLRecordSet.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, recordSetKey};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_R, finderArgs);
 		}
 
 		if (result instanceof DDLRecordSet) {
 			DDLRecordSet ddlRecordSet = (DDLRecordSet)result;
 
-			if ((groupId != ddlRecordSet.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					DDLRecordSet.class, ddlRecordSet.getPrimaryKey()) ||
+				(groupId != ddlRecordSet.getGroupId()) ||
 				!Objects.equals(recordSetKey, ddlRecordSet.getRecordSetKey())) {
 
 				result = null;
@@ -3779,7 +3777,7 @@ public class DDLRecordSetPersistenceImpl
 				List<DDLRecordSet> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_R, finderArgs, list);
 					}

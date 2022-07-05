@@ -2827,18 +2827,15 @@ public class AssetLinkPersistenceImpl
 	public AssetLink fetchByE_E_T(
 		long entryId1, long entryId2, int type, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetLink.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {entryId1, entryId2, type};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByE_E_T, finderArgs);
 		}
@@ -2846,7 +2843,9 @@ public class AssetLinkPersistenceImpl
 		if (result instanceof AssetLink) {
 			AssetLink assetLink = (AssetLink)result;
 
-			if ((entryId1 != assetLink.getEntryId1()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					AssetLink.class, assetLink.getPrimaryKey()) ||
+				(entryId1 != assetLink.getEntryId1()) ||
 				(entryId2 != assetLink.getEntryId2()) ||
 				(type != assetLink.getType())) {
 
@@ -2885,7 +2884,7 @@ public class AssetLinkPersistenceImpl
 				List<AssetLink> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByE_E_T, finderArgs, list);
 					}

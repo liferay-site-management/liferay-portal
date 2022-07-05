@@ -719,18 +719,15 @@ public class DLFileEntryTypePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileEntryType.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -738,7 +735,9 @@ public class DLFileEntryTypePersistenceImpl
 		if (result instanceof DLFileEntryType) {
 			DLFileEntryType dlFileEntryType = (DLFileEntryType)result;
 
-			if (!Objects.equals(uuid, dlFileEntryType.getUuid()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					DLFileEntryType.class, dlFileEntryType.getPrimaryKey()) ||
+				!Objects.equals(uuid, dlFileEntryType.getUuid()) ||
 				(groupId != dlFileEntryType.getGroupId())) {
 
 				result = null;
@@ -783,7 +782,7 @@ public class DLFileEntryTypePersistenceImpl
 				List<DLFileEntryType> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -2937,18 +2936,15 @@ public class DLFileEntryTypePersistenceImpl
 	public DLFileEntryType fetchByG_DDI(
 		long groupId, long dataDefinitionId, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileEntryType.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, dataDefinitionId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_DDI, finderArgs);
 		}
@@ -2956,7 +2952,9 @@ public class DLFileEntryTypePersistenceImpl
 		if (result instanceof DLFileEntryType) {
 			DLFileEntryType dlFileEntryType = (DLFileEntryType)result;
 
-			if ((groupId != dlFileEntryType.getGroupId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					DLFileEntryType.class, dlFileEntryType.getPrimaryKey()) ||
+				(groupId != dlFileEntryType.getGroupId()) ||
 				(dataDefinitionId != dlFileEntryType.getDataDefinitionId())) {
 
 				result = null;
@@ -2990,7 +2988,7 @@ public class DLFileEntryTypePersistenceImpl
 				List<DLFileEntryType> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByG_DDI, finderArgs, list);
 					}
@@ -3174,18 +3172,15 @@ public class DLFileEntryTypePersistenceImpl
 
 		fileEntryTypeKey = Objects.toString(fileEntryTypeKey, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileEntryType.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, fileEntryTypeKey};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_F, finderArgs);
 		}
@@ -3193,7 +3188,9 @@ public class DLFileEntryTypePersistenceImpl
 		if (result instanceof DLFileEntryType) {
 			DLFileEntryType dlFileEntryType = (DLFileEntryType)result;
 
-			if ((groupId != dlFileEntryType.getGroupId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					DLFileEntryType.class, dlFileEntryType.getPrimaryKey()) ||
+				(groupId != dlFileEntryType.getGroupId()) ||
 				!Objects.equals(
 					fileEntryTypeKey, dlFileEntryType.getFileEntryTypeKey())) {
 
@@ -3239,7 +3236,7 @@ public class DLFileEntryTypePersistenceImpl
 				List<DLFileEntryType> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByG_F, finderArgs, list);
 					}

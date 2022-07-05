@@ -702,18 +702,15 @@ public class StyleBookEntryVersionPersistenceImpl
 	public StyleBookEntryVersion fetchByStyleBookEntryId_Version(
 		long styleBookEntryId, int version, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			StyleBookEntryVersion.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {styleBookEntryId, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByStyleBookEntryId_Version, finderArgs);
 		}
@@ -722,7 +719,10 @@ public class StyleBookEntryVersionPersistenceImpl
 			StyleBookEntryVersion styleBookEntryVersion =
 				(StyleBookEntryVersion)result;
 
-			if ((styleBookEntryId !=
+			if (ctPersistenceHelper.isProductionMode(
+					StyleBookEntryVersion.class,
+					styleBookEntryVersion.getPrimaryKey()) ||
+				(styleBookEntryId !=
 					styleBookEntryVersion.getStyleBookEntryId()) ||
 				(version != styleBookEntryVersion.getVersion())) {
 
@@ -758,7 +758,7 @@ public class StyleBookEntryVersionPersistenceImpl
 				List<StyleBookEntryVersion> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByStyleBookEntryId_Version,
 							finderArgs, list);
@@ -2714,18 +2714,15 @@ public class StyleBookEntryVersionPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			StyleBookEntryVersion.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G_Version, finderArgs);
 		}
@@ -2734,7 +2731,10 @@ public class StyleBookEntryVersionPersistenceImpl
 			StyleBookEntryVersion styleBookEntryVersion =
 				(StyleBookEntryVersion)result;
 
-			if (!Objects.equals(uuid, styleBookEntryVersion.getUuid()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					StyleBookEntryVersion.class,
+					styleBookEntryVersion.getPrimaryKey()) ||
+				!Objects.equals(uuid, styleBookEntryVersion.getUuid()) ||
 				(groupId != styleBookEntryVersion.getGroupId()) ||
 				(version != styleBookEntryVersion.getVersion())) {
 
@@ -2784,7 +2784,7 @@ public class StyleBookEntryVersionPersistenceImpl
 				List<StyleBookEntryVersion> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G_Version, finderArgs, list);
 					}
@@ -8339,18 +8339,15 @@ public class StyleBookEntryVersionPersistenceImpl
 
 		styleBookEntryKey = Objects.toString(styleBookEntryKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			StyleBookEntryVersion.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, styleBookEntryKey, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByG_SBEK_Version, finderArgs);
 		}
@@ -8359,7 +8356,10 @@ public class StyleBookEntryVersionPersistenceImpl
 			StyleBookEntryVersion styleBookEntryVersion =
 				(StyleBookEntryVersion)result;
 
-			if ((groupId != styleBookEntryVersion.getGroupId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					StyleBookEntryVersion.class,
+					styleBookEntryVersion.getPrimaryKey()) ||
+				(groupId != styleBookEntryVersion.getGroupId()) ||
 				!Objects.equals(
 					styleBookEntryKey,
 					styleBookEntryVersion.getStyleBookEntryKey()) ||
@@ -8411,7 +8411,7 @@ public class StyleBookEntryVersionPersistenceImpl
 				List<StyleBookEntryVersion> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_SBEK_Version, finderArgs, list);
 					}

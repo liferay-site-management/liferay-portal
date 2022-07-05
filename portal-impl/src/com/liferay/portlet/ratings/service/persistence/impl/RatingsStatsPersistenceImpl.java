@@ -405,18 +405,15 @@ public class RatingsStatsPersistenceImpl
 	public RatingsStats fetchByC_C(
 		long classNameId, long classPK, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			RatingsStats.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {classNameId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByC_C, finderArgs);
 		}
@@ -424,7 +421,9 @@ public class RatingsStatsPersistenceImpl
 		if (result instanceof RatingsStats) {
 			RatingsStats ratingsStats = (RatingsStats)result;
 
-			if ((classNameId != ratingsStats.getClassNameId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					RatingsStats.class, ratingsStats.getPrimaryKey()) ||
+				(classNameId != ratingsStats.getClassNameId()) ||
 				(classPK != ratingsStats.getClassPK())) {
 
 				result = null;
@@ -458,7 +457,7 @@ public class RatingsStatsPersistenceImpl
 				List<RatingsStats> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByC_C, finderArgs, list);
 					}

@@ -1207,18 +1207,15 @@ public class CSDiagramEntryPersistenceImpl
 
 		sequence = Objects.toString(sequence, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CSDiagramEntry.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {CPDefinitionId, sequence};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByCPDI_S, finderArgs);
 		}
@@ -1226,7 +1223,9 @@ public class CSDiagramEntryPersistenceImpl
 		if (result instanceof CSDiagramEntry) {
 			CSDiagramEntry csDiagramEntry = (CSDiagramEntry)result;
 
-			if ((CPDefinitionId != csDiagramEntry.getCPDefinitionId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CSDiagramEntry.class, csDiagramEntry.getPrimaryKey()) ||
+				(CPDefinitionId != csDiagramEntry.getCPDefinitionId()) ||
 				!Objects.equals(sequence, csDiagramEntry.getSequence())) {
 
 				result = null;
@@ -1271,7 +1270,7 @@ public class CSDiagramEntryPersistenceImpl
 				List<CSDiagramEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByCPDI_S, finderArgs, list);
 					}

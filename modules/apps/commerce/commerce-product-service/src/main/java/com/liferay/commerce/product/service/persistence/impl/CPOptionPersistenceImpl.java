@@ -3024,25 +3024,24 @@ public class CPOptionPersistenceImpl
 
 		key = Objects.toString(key, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPOption.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, key};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_K, finderArgs);
 		}
 
 		if (result instanceof CPOption) {
 			CPOption cpOption = (CPOption)result;
 
-			if ((companyId != cpOption.getCompanyId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CPOption.class, cpOption.getPrimaryKey()) ||
+				(companyId != cpOption.getCompanyId()) ||
 				!Objects.equals(key, cpOption.getKey())) {
 
 				result = null;
@@ -3087,7 +3086,7 @@ public class CPOptionPersistenceImpl
 				List<CPOption> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_K, finderArgs, list);
 					}
@@ -3285,25 +3284,24 @@ public class CPOptionPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPOption.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_ERC, finderArgs);
 		}
 
 		if (result instanceof CPOption) {
 			CPOption cpOption = (CPOption)result;
 
-			if ((companyId != cpOption.getCompanyId()) ||
+			if (ctPersistenceHelper.isProductionMode(
+					CPOption.class, cpOption.getPrimaryKey()) ||
+				(companyId != cpOption.getCompanyId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					cpOption.getExternalReferenceCode())) {
@@ -3350,7 +3348,7 @@ public class CPOptionPersistenceImpl
 				List<CPOption> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_ERC, finderArgs, list);
 					}

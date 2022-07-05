@@ -711,18 +711,15 @@ public class AssetTagPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetTag.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -730,7 +727,9 @@ public class AssetTagPersistenceImpl
 		if (result instanceof AssetTag) {
 			AssetTag assetTag = (AssetTag)result;
 
-			if (!Objects.equals(uuid, assetTag.getUuid()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					AssetTag.class, assetTag.getPrimaryKey()) ||
+				!Objects.equals(uuid, assetTag.getUuid()) ||
 				(groupId != assetTag.getGroupId())) {
 
 				result = null;
@@ -775,7 +774,7 @@ public class AssetTagPersistenceImpl
 				List<AssetTag> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -3167,18 +3166,15 @@ public class AssetTagPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetTag.class);
-
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_N, finderArgs);
 		}
@@ -3186,7 +3182,9 @@ public class AssetTagPersistenceImpl
 		if (result instanceof AssetTag) {
 			AssetTag assetTag = (AssetTag)result;
 
-			if ((groupId != assetTag.getGroupId()) ||
+			if (CTPersistenceHelperUtil.isProductionMode(
+					AssetTag.class, assetTag.getPrimaryKey()) ||
+				(groupId != assetTag.getGroupId()) ||
 				!Objects.equals(name, assetTag.getName())) {
 
 				result = null;
@@ -3231,7 +3229,7 @@ public class AssetTagPersistenceImpl
 				List<AssetTag> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByG_N, finderArgs, list);
 					}
