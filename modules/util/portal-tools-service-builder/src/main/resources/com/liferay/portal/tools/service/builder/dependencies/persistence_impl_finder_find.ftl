@@ -2282,12 +2282,16 @@ that may or may not be enforced with a unique index at the database level. Case
 		</#list>
 
 		<#if entity.isChangeTrackingEnabled()>
-			boolean productionMode = ${ctPersistenceHelper}.isProductionMode(${entity.name}.class);
+			boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 		</#if>
 
 		Object[] finderArgs = null;
 
-		if (${useCache}) {
+		<#if serviceBuilder.isVersionGTE_7_3_0()>
+			if (useFinderCache) {
+		<#else>
+			if (${useCache}) {
+		</#if>
 			finderArgs = new Object[] {
 				<#list entityColumns as entityColumn>
 					<#if stringUtil.equals(entityColumn.type, "Date")>
@@ -2305,7 +2309,11 @@ that may or may not be enforced with a unique index at the database level. Case
 
 		Object result = null;
 
-		if (${useCache}) {
+		<#if serviceBuilder.isVersionGTE_7_3_0()>
+			if (useFinderCache) {
+		<#else>
+			if (${useCache}) {
+		</#if>
 			result = ${finderCache}.getResult(_finderPathFetchBy${entityFinder.name}, finderArgs
 				<#if serviceBuilder.isVersionLTE_7_3_0()>
 					, this
@@ -2317,6 +2325,9 @@ that may or may not be enforced with a unique index at the database level. Case
 			${entity.name} ${entity.variableName} = (${entity.name})result;
 
 			if (
+				<#if serviceBuilder.isVersionGTE_7_3_0() && entity.isChangeTrackingEnabled()>
+					!${ctPersistenceHelper}.isProductionMode(${entity.name}.class, ${entity.variableName}.getPrimaryKey()) ||
+				</#if>
 				<#list entityColumns as entityColumn>
 					<#if entityColumn.isPrimitiveType(false)>
 						<#if stringUtil.equals(entityColumn.type, "boolean")>
