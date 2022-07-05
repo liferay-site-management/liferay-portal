@@ -2281,13 +2281,17 @@ that may or may not be enforced with a unique index at the database level. Case
 			</#if>
 		</#list>
 
-		<#if entity.isChangeTrackingEnabled()>
+		<#if serviceBuilder.isVersionLTE_7_3_0() && entity.isChangeTrackingEnabled()>
 			boolean productionMode = ${ctPersistenceHelper}.isProductionMode(${entity.name}.class);
 		</#if>
 
 		Object[] finderArgs = null;
 
-		if (${useCache}) {
+		<#if serviceBuilder.isVersionLTE_7_3_0()>
+			if (${useCache}) {
+		<#else>
+			if (useFinderCache) {
+		</#if>
 			finderArgs = new Object[] {
 				<#list entityColumns as entityColumn>
 					<#if stringUtil.equals(entityColumn.type, "Date")>
@@ -2305,7 +2309,11 @@ that may or may not be enforced with a unique index at the database level. Case
 
 		Object result = null;
 
-		if (${useCache}) {
+		<#if serviceBuilder.isVersionLTE_7_3_0()>
+			if (${useCache}) {
+		<#else>
+			if (useFinderCache) {
+		</#if>
 			result = ${finderCache}.getResult(_finderPathFetchBy${entityFinder.name}, finderArgs
 				<#if serviceBuilder.isVersionLTE_7_3_0()>
 					, this
@@ -2317,6 +2325,9 @@ that may or may not be enforced with a unique index at the database level. Case
 			${entity.name} ${entity.variableName} = (${entity.name})result;
 
 			if (
+				<#if serviceBuilder.isVersionGTE_7_3_0() && entity.isChangeTrackingEnabled()>
+					${ctPersistenceHelper}.isProductionMode(${entity.name}.class, ${entity.variableName}.getPrimaryKey()) ||
+				</#if>
 				<#list entityColumns as entityColumn>
 					<#if entityColumn.isPrimitiveType(false)>
 						<#if stringUtil.equals(entityColumn.type, "boolean")>
@@ -2360,7 +2371,11 @@ that may or may not be enforced with a unique index at the database level. Case
 				List<${entity.name}> list = query.list();
 
 				if (list.isEmpty()) {
-					if (${useCache}) {
+					<#if serviceBuilder.isVersionLTE_7_3_0()>
+						if (${useCache}) {
+					<#else>
+						if (useFinderCache) {
+					</#if>
 						${finderCache}.putResult(_finderPathFetchBy${entityFinder.name}, finderArgs, list);
 					}
 				}
@@ -2370,7 +2385,7 @@ that may or may not be enforced with a unique index at the database level. Case
 							Collections.sort(list, Collections.reverseOrder());
 
 							if (_log.isWarnEnabled()) {
-								<#if entity.isChangeTrackingEnabled()>
+								<#if serviceBuilder.isVersionLTE_7_3_0() && entity.isChangeTrackingEnabled()>
 									if (!productionMode || !useFinderCache) {
 								<#else>
 									if (!useFinderCache) {
@@ -2404,7 +2419,11 @@ that may or may not be enforced with a unique index at the database level. Case
 			}
 			catch (Exception exception) {
 				<#if serviceBuilder.isVersionLTE_7_2_0()>
-					if (${useCache}) {
+					<#if serviceBuilder.isVersionLTE_7_3_0()>
+						if (${useCache}) {
+					<#else>
+						if (useFinderCache) {
+					</#if>
 						${finderCache}.removeResult(_finderPathFetchBy${entityFinder.name}, finderArgs);
 					}
 				</#if>
