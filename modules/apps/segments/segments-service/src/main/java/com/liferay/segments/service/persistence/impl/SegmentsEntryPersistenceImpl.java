@@ -15,6 +15,7 @@
 package com.liferay.segments.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -722,18 +723,17 @@ public class SegmentsEntryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsEntry.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -741,7 +741,9 @@ public class SegmentsEntryPersistenceImpl
 		if (result instanceof SegmentsEntry) {
 			SegmentsEntry segmentsEntry = (SegmentsEntry)result;
 
-			if (!Objects.equals(uuid, segmentsEntry.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					SegmentsEntry.class, segmentsEntry.getPrimaryKey()) ||
+				!Objects.equals(uuid, segmentsEntry.getUuid()) ||
 				(groupId != segmentsEntry.getGroupId())) {
 
 				result = null;
@@ -4032,25 +4034,26 @@ public class SegmentsEntryPersistenceImpl
 
 		segmentsEntryKey = Objects.toString(segmentsEntryKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsEntry.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, segmentsEntryKey};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_S, finderArgs);
 		}
 
 		if (result instanceof SegmentsEntry) {
 			SegmentsEntry segmentsEntry = (SegmentsEntry)result;
 
-			if ((groupId != segmentsEntry.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					SegmentsEntry.class, segmentsEntry.getPrimaryKey()) ||
+				(groupId != segmentsEntry.getGroupId()) ||
 				!Objects.equals(
 					segmentsEntryKey, segmentsEntry.getSegmentsEntryKey())) {
 

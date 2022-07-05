@@ -22,6 +22,7 @@ import com.liferay.commerce.pricing.model.impl.CommercePriceModifierModelImpl;
 import com.liferay.commerce.pricing.service.persistence.CommercePriceModifierPersistence;
 import com.liferay.commerce.pricing.service.persistence.CommercePriceModifierUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -722,18 +723,17 @@ public class CommercePriceModifierPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommercePriceModifier.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -742,7 +742,10 @@ public class CommercePriceModifierPersistenceImpl
 			CommercePriceModifier commercePriceModifier =
 				(CommercePriceModifier)result;
 
-			if (!Objects.equals(uuid, commercePriceModifier.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CommercePriceModifier.class,
+					commercePriceModifier.getPrimaryKey()) ||
+				!Objects.equals(uuid, commercePriceModifier.getUuid()) ||
 				(groupId != commercePriceModifier.getGroupId())) {
 
 				result = null;
@@ -6212,18 +6215,17 @@ public class CommercePriceModifierPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommercePriceModifier.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_ERC, finderArgs);
 		}
 
@@ -6231,7 +6233,10 @@ public class CommercePriceModifierPersistenceImpl
 			CommercePriceModifier commercePriceModifier =
 				(CommercePriceModifier)result;
 
-			if ((companyId != commercePriceModifier.getCompanyId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CommercePriceModifier.class,
+					commercePriceModifier.getPrimaryKey()) ||
+				(companyId != commercePriceModifier.getCompanyId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					commercePriceModifier.getExternalReferenceCode())) {

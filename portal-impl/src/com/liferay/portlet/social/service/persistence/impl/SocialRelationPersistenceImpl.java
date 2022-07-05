@@ -15,6 +15,7 @@
 package com.liferay.portlet.social.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -5559,18 +5560,17 @@ public class SocialRelationPersistenceImpl
 	public SocialRelation fetchByU1_U2_T(
 		long userId1, long userId2, int type, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialRelation.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {userId1, userId2, type};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByU1_U2_T, finderArgs);
 		}
@@ -5578,7 +5578,9 @@ public class SocialRelationPersistenceImpl
 		if (result instanceof SocialRelation) {
 			SocialRelation socialRelation = (SocialRelation)result;
 
-			if ((userId1 != socialRelation.getUserId1()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					SocialRelation.class, socialRelation.getPrimaryKey()) ||
+				(userId1 != socialRelation.getUserId1()) ||
 				(userId2 != socialRelation.getUserId2()) ||
 				(type != socialRelation.getType())) {
 

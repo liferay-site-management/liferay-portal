@@ -20,6 +20,7 @@ import com.liferay.document.library.kernel.model.DLFileVersionTable;
 import com.liferay.document.library.kernel.service.persistence.DLFileVersionPersistence;
 import com.liferay.document.library.kernel.service.persistence.DLFileVersionUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -708,18 +709,17 @@ public class DLFileVersionPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileVersion.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -727,7 +727,9 @@ public class DLFileVersionPersistenceImpl
 		if (result instanceof DLFileVersion) {
 			DLFileVersion dlFileVersion = (DLFileVersion)result;
 
-			if (!Objects.equals(uuid, dlFileVersion.getUuid()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					DLFileVersion.class, dlFileVersion.getPrimaryKey()) ||
+				!Objects.equals(uuid, dlFileVersion.getUuid()) ||
 				(groupId != dlFileVersion.getGroupId())) {
 
 				result = null;
@@ -3691,18 +3693,17 @@ public class DLFileVersionPersistenceImpl
 
 		version = Objects.toString(version, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileVersion.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {fileEntryId, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByF_V, finderArgs);
 		}
@@ -3710,7 +3711,9 @@ public class DLFileVersionPersistenceImpl
 		if (result instanceof DLFileVersion) {
 			DLFileVersion dlFileVersion = (DLFileVersion)result;
 
-			if ((fileEntryId != dlFileVersion.getFileEntryId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					DLFileVersion.class, dlFileVersion.getPrimaryKey()) ||
+				(fileEntryId != dlFileVersion.getFileEntryId()) ||
 				!Objects.equals(version, dlFileVersion.getVersion())) {
 
 				result = null;

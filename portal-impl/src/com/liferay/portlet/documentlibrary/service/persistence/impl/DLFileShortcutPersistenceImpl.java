@@ -20,6 +20,7 @@ import com.liferay.document.library.kernel.model.DLFileShortcutTable;
 import com.liferay.document.library.kernel.service.persistence.DLFileShortcutPersistence;
 import com.liferay.document.library.kernel.service.persistence.DLFileShortcutUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -711,18 +712,17 @@ public class DLFileShortcutPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileShortcut.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -730,7 +730,9 @@ public class DLFileShortcutPersistenceImpl
 		if (result instanceof DLFileShortcut) {
 			DLFileShortcut dlFileShortcut = (DLFileShortcut)result;
 
-			if (!Objects.equals(uuid, dlFileShortcut.getUuid()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					DLFileShortcut.class, dlFileShortcut.getPrimaryKey()) ||
+				!Objects.equals(uuid, dlFileShortcut.getUuid()) ||
 				(groupId != dlFileShortcut.getGroupId())) {
 
 				result = null;

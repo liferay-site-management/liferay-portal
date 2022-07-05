@@ -22,6 +22,7 @@ import com.liferay.commerce.product.model.impl.CPAttachmentFileEntryModelImpl;
 import com.liferay.commerce.product.service.persistence.CPAttachmentFileEntryPersistence;
 import com.liferay.commerce.product.service.persistence.CPAttachmentFileEntryUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -720,18 +721,17 @@ public class CPAttachmentFileEntryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPAttachmentFileEntry.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -740,7 +740,10 @@ public class CPAttachmentFileEntryPersistenceImpl
 			CPAttachmentFileEntry cpAttachmentFileEntry =
 				(CPAttachmentFileEntry)result;
 
-			if (!Objects.equals(uuid, cpAttachmentFileEntry.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CPAttachmentFileEntry.class,
+					cpAttachmentFileEntry.getPrimaryKey()) ||
+				!Objects.equals(uuid, cpAttachmentFileEntry.getUuid()) ||
 				(groupId != cpAttachmentFileEntry.getGroupId())) {
 
 				result = null;
@@ -5901,18 +5904,17 @@ public class CPAttachmentFileEntryPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPAttachmentFileEntry.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_ERC, finderArgs);
 		}
 
@@ -5920,7 +5922,10 @@ public class CPAttachmentFileEntryPersistenceImpl
 			CPAttachmentFileEntry cpAttachmentFileEntry =
 				(CPAttachmentFileEntry)result;
 
-			if ((companyId != cpAttachmentFileEntry.getCompanyId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CPAttachmentFileEntry.class,
+					cpAttachmentFileEntry.getPrimaryKey()) ||
+				(companyId != cpAttachmentFileEntry.getCompanyId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					cpAttachmentFileEntry.getExternalReferenceCode())) {

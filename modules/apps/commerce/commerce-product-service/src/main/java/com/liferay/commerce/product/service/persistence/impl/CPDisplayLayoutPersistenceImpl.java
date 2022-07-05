@@ -22,6 +22,7 @@ import com.liferay.commerce.product.model.impl.CPDisplayLayoutModelImpl;
 import com.liferay.commerce.product.service.persistence.CPDisplayLayoutPersistence;
 import com.liferay.commerce.product.service.persistence.CPDisplayLayoutUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -709,18 +710,17 @@ public class CPDisplayLayoutPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDisplayLayout.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -728,7 +728,9 @@ public class CPDisplayLayoutPersistenceImpl
 		if (result instanceof CPDisplayLayout) {
 			CPDisplayLayout cpDisplayLayout = (CPDisplayLayout)result;
 
-			if (!Objects.equals(uuid, cpDisplayLayout.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CPDisplayLayout.class, cpDisplayLayout.getPrimaryKey()) ||
+				!Objects.equals(uuid, cpDisplayLayout.getUuid()) ||
 				(groupId != cpDisplayLayout.getGroupId())) {
 
 				result = null;
@@ -3795,25 +3797,26 @@ public class CPDisplayLayoutPersistenceImpl
 	public CPDisplayLayout fetchByG_C_C(
 		long groupId, long classNameId, long classPK, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDisplayLayout.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, classNameId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_C_C, finderArgs);
 		}
 
 		if (result instanceof CPDisplayLayout) {
 			CPDisplayLayout cpDisplayLayout = (CPDisplayLayout)result;
 
-			if ((groupId != cpDisplayLayout.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CPDisplayLayout.class, cpDisplayLayout.getPrimaryKey()) ||
+				(groupId != cpDisplayLayout.getGroupId()) ||
 				(classNameId != cpDisplayLayout.getClassNameId()) ||
 				(classPK != cpDisplayLayout.getClassPK())) {
 

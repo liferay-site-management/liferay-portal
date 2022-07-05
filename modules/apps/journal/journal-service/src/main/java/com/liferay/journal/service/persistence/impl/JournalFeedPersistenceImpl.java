@@ -23,6 +23,7 @@ import com.liferay.journal.service.persistence.JournalFeedPersistence;
 import com.liferay.journal.service.persistence.JournalFeedUtil;
 import com.liferay.journal.service.persistence.impl.constants.JournalPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -717,18 +718,17 @@ public class JournalFeedPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalFeed.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -736,7 +736,9 @@ public class JournalFeedPersistenceImpl
 		if (result instanceof JournalFeed) {
 			JournalFeed journalFeed = (JournalFeed)result;
 
-			if (!Objects.equals(uuid, journalFeed.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					JournalFeed.class, journalFeed.getPrimaryKey()) ||
+				!Objects.equals(uuid, journalFeed.getUuid()) ||
 				(groupId != journalFeed.getGroupId())) {
 
 				result = null;
@@ -2456,25 +2458,26 @@ public class JournalFeedPersistenceImpl
 
 		feedId = Objects.toString(feedId, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalFeed.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, feedId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_F, finderArgs);
 		}
 
 		if (result instanceof JournalFeed) {
 			JournalFeed journalFeed = (JournalFeed)result;
 
-			if ((groupId != journalFeed.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					JournalFeed.class, journalFeed.getPrimaryKey()) ||
+				(groupId != journalFeed.getGroupId()) ||
 				!Objects.equals(feedId, journalFeed.getFeedId())) {
 
 				result = null;

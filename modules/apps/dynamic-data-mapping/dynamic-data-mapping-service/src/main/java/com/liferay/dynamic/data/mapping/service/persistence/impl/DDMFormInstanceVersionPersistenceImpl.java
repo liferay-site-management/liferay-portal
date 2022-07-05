@@ -23,6 +23,7 @@ import com.liferay.dynamic.data.mapping.service.persistence.DDMFormInstanceVersi
 import com.liferay.dynamic.data.mapping.service.persistence.DDMFormInstanceVersionUtil;
 import com.liferay.dynamic.data.mapping.service.persistence.impl.constants.DDMPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -702,18 +703,17 @@ public class DDMFormInstanceVersionPersistenceImpl
 
 		version = Objects.toString(version, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMFormInstanceVersion.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {formInstanceId, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByF_V, finderArgs);
 		}
 
@@ -721,7 +721,10 @@ public class DDMFormInstanceVersionPersistenceImpl
 			DDMFormInstanceVersion ddmFormInstanceVersion =
 				(DDMFormInstanceVersion)result;
 
-			if ((formInstanceId !=
+			if (!ctPersistenceHelper.isProductionMode(
+					DDMFormInstanceVersion.class,
+					ddmFormInstanceVersion.getPrimaryKey()) ||
+				(formInstanceId !=
 					ddmFormInstanceVersion.getFormInstanceId()) ||
 				!Objects.equals(version, ddmFormInstanceVersion.getVersion())) {
 

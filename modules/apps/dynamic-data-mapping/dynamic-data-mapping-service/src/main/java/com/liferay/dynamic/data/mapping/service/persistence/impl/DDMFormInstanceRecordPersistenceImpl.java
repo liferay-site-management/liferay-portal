@@ -23,6 +23,7 @@ import com.liferay.dynamic.data.mapping.service.persistence.DDMFormInstanceRecor
 import com.liferay.dynamic.data.mapping.service.persistence.DDMFormInstanceRecordUtil;
 import com.liferay.dynamic.data.mapping.service.persistence.impl.constants.DDMPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -731,18 +732,17 @@ public class DDMFormInstanceRecordPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMFormInstanceRecord.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -751,7 +751,10 @@ public class DDMFormInstanceRecordPersistenceImpl
 			DDMFormInstanceRecord ddmFormInstanceRecord =
 				(DDMFormInstanceRecord)result;
 
-			if (!Objects.equals(uuid, ddmFormInstanceRecord.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					DDMFormInstanceRecord.class,
+					ddmFormInstanceRecord.getPrimaryKey()) ||
+				!Objects.equals(uuid, ddmFormInstanceRecord.getUuid()) ||
 				(groupId != ddmFormInstanceRecord.getGroupId())) {
 
 				result = null;

@@ -15,6 +15,7 @@
 package com.liferay.portal.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -705,18 +706,17 @@ public class RepositoryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Repository.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -724,7 +724,9 @@ public class RepositoryPersistenceImpl
 		if (result instanceof Repository) {
 			Repository repository = (Repository)result;
 
-			if (!Objects.equals(uuid, repository.getUuid()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					Repository.class, repository.getPrimaryKey()) ||
+				!Objects.equals(uuid, repository.getUuid()) ||
 				(groupId != repository.getGroupId())) {
 
 				result = null;
@@ -2075,18 +2077,17 @@ public class RepositoryPersistenceImpl
 		name = Objects.toString(name, "");
 		portletId = Objects.toString(portletId, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Repository.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, name, portletId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_N_P, finderArgs);
 		}
@@ -2094,7 +2095,9 @@ public class RepositoryPersistenceImpl
 		if (result instanceof Repository) {
 			Repository repository = (Repository)result;
 
-			if ((groupId != repository.getGroupId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					Repository.class, repository.getPrimaryKey()) ||
+				(groupId != repository.getGroupId()) ||
 				!Objects.equals(name, repository.getName()) ||
 				!Objects.equals(portletId, repository.getPortletId())) {
 

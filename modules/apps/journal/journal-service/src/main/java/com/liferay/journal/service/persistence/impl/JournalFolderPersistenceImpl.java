@@ -23,6 +23,7 @@ import com.liferay.journal.service.persistence.JournalFolderPersistence;
 import com.liferay.journal.service.persistence.JournalFolderUtil;
 import com.liferay.journal.service.persistence.impl.constants.JournalPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -721,18 +722,17 @@ public class JournalFolderPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalFolder.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -740,7 +740,9 @@ public class JournalFolderPersistenceImpl
 		if (result instanceof JournalFolder) {
 			JournalFolder journalFolder = (JournalFolder)result;
 
-			if (!Objects.equals(uuid, journalFolder.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					JournalFolder.class, journalFolder.getPrimaryKey()) ||
+				!Objects.equals(uuid, journalFolder.getUuid()) ||
 				(groupId != journalFolder.getGroupId())) {
 
 				result = null;
@@ -3939,25 +3941,26 @@ public class JournalFolderPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalFolder.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_N, finderArgs);
 		}
 
 		if (result instanceof JournalFolder) {
 			JournalFolder journalFolder = (JournalFolder)result;
 
-			if ((groupId != journalFolder.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					JournalFolder.class, journalFolder.getPrimaryKey()) ||
+				(groupId != journalFolder.getGroupId()) ||
 				!Objects.equals(name, journalFolder.getName())) {
 
 				result = null;
@@ -4771,25 +4774,26 @@ public class JournalFolderPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalFolder.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, parentFolderId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_P_N, finderArgs);
 		}
 
 		if (result instanceof JournalFolder) {
 			JournalFolder journalFolder = (JournalFolder)result;
 
-			if ((groupId != journalFolder.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					JournalFolder.class, journalFolder.getPrimaryKey()) ||
+				(groupId != journalFolder.getGroupId()) ||
 				(parentFolderId != journalFolder.getParentFolderId()) ||
 				!Objects.equals(name, journalFolder.getName())) {
 
@@ -7534,25 +7538,26 @@ public class JournalFolderPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalFolder.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_ERC, finderArgs);
 		}
 
 		if (result instanceof JournalFolder) {
 			JournalFolder journalFolder = (JournalFolder)result;
 
-			if ((groupId != journalFolder.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					JournalFolder.class, journalFolder.getPrimaryKey()) ||
+				(groupId != journalFolder.getGroupId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					journalFolder.getExternalReferenceCode())) {

@@ -22,6 +22,7 @@ import com.liferay.commerce.product.model.impl.CPDefinitionSpecificationOptionVa
 import com.liferay.commerce.product.service.persistence.CPDefinitionSpecificationOptionValuePersistence;
 import com.liferay.commerce.product.service.persistence.CPDefinitionSpecificationOptionValueUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -752,18 +753,17 @@ public class CPDefinitionSpecificationOptionValuePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionSpecificationOptionValue.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -773,7 +773,10 @@ public class CPDefinitionSpecificationOptionValuePersistenceImpl
 				cpDefinitionSpecificationOptionValue =
 					(CPDefinitionSpecificationOptionValue)result;
 
-			if (!Objects.equals(
+			if (!ctPersistenceHelper.isProductionMode(
+					CPDefinitionSpecificationOptionValue.class,
+					cpDefinitionSpecificationOptionValue.getPrimaryKey()) ||
+				!Objects.equals(
 					uuid, cpDefinitionSpecificationOptionValue.getUuid()) ||
 				(groupId !=
 					cpDefinitionSpecificationOptionValue.getGroupId())) {
@@ -3894,12 +3897,11 @@ public class CPDefinitionSpecificationOptionValuePersistenceImpl
 		long CPDefinitionSpecificationOptionValueId, long CPDefinitionId,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionSpecificationOptionValue.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				CPDefinitionSpecificationOptionValueId, CPDefinitionId
 			};
@@ -3907,7 +3909,7 @@ public class CPDefinitionSpecificationOptionValuePersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByC_CSOVI, finderArgs);
 		}
@@ -3917,7 +3919,10 @@ public class CPDefinitionSpecificationOptionValuePersistenceImpl
 				cpDefinitionSpecificationOptionValue =
 					(CPDefinitionSpecificationOptionValue)result;
 
-			if ((CPDefinitionSpecificationOptionValueId !=
+			if (!ctPersistenceHelper.isProductionMode(
+					CPDefinitionSpecificationOptionValue.class,
+					cpDefinitionSpecificationOptionValue.getPrimaryKey()) ||
+				(CPDefinitionSpecificationOptionValueId !=
 					cpDefinitionSpecificationOptionValue.
 						getCPDefinitionSpecificationOptionValueId()) ||
 				(CPDefinitionId !=

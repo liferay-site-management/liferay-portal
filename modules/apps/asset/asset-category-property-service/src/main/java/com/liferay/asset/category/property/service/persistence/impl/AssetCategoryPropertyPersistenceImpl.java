@@ -23,6 +23,7 @@ import com.liferay.asset.category.property.service.persistence.AssetCategoryProp
 import com.liferay.asset.category.property.service.persistence.AssetCategoryPropertyUtil;
 import com.liferay.asset.category.property.service.persistence.impl.constants.AssetPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -1814,18 +1815,17 @@ public class AssetCategoryPropertyPersistenceImpl
 
 		key = Objects.toString(key, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetCategoryProperty.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {categoryId, key};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByCA_K, finderArgs);
 		}
 
@@ -1833,7 +1833,10 @@ public class AssetCategoryPropertyPersistenceImpl
 			AssetCategoryProperty assetCategoryProperty =
 				(AssetCategoryProperty)result;
 
-			if ((categoryId != assetCategoryProperty.getCategoryId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					AssetCategoryProperty.class,
+					assetCategoryProperty.getPrimaryKey()) ||
+				(categoryId != assetCategoryProperty.getCategoryId()) ||
 				!Objects.equals(key, assetCategoryProperty.getKey())) {
 
 				result = null;

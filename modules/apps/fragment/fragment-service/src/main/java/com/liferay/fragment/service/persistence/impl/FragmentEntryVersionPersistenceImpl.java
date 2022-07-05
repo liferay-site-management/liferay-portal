@@ -23,6 +23,7 @@ import com.liferay.fragment.service.persistence.FragmentEntryVersionPersistence;
 import com.liferay.fragment.service.persistence.FragmentEntryVersionUtil;
 import com.liferay.fragment.service.persistence.impl.constants.FragmentPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -702,18 +703,17 @@ public class FragmentEntryVersionPersistenceImpl
 	public FragmentEntryVersion fetchByFragmentEntryId_Version(
 		long fragmentEntryId, int version, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FragmentEntryVersion.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {fragmentEntryId, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByFragmentEntryId_Version, finderArgs);
 		}
@@ -722,7 +722,10 @@ public class FragmentEntryVersionPersistenceImpl
 			FragmentEntryVersion fragmentEntryVersion =
 				(FragmentEntryVersion)result;
 
-			if ((fragmentEntryId !=
+			if (!ctPersistenceHelper.isProductionMode(
+					FragmentEntryVersion.class,
+					fragmentEntryVersion.getPrimaryKey()) ||
+				(fragmentEntryId !=
 					fragmentEntryVersion.getFragmentEntryId()) ||
 				(version != fragmentEntryVersion.getVersion())) {
 
@@ -2710,18 +2713,17 @@ public class FragmentEntryVersionPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FragmentEntryVersion.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G_Version, finderArgs);
 		}
@@ -2730,7 +2732,10 @@ public class FragmentEntryVersionPersistenceImpl
 			FragmentEntryVersion fragmentEntryVersion =
 				(FragmentEntryVersion)result;
 
-			if (!Objects.equals(uuid, fragmentEntryVersion.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					FragmentEntryVersion.class,
+					fragmentEntryVersion.getPrimaryKey()) ||
+				!Objects.equals(uuid, fragmentEntryVersion.getUuid()) ||
 				(groupId != fragmentEntryVersion.getGroupId()) ||
 				(version != fragmentEntryVersion.getVersion())) {
 
@@ -8205,18 +8210,17 @@ public class FragmentEntryVersionPersistenceImpl
 
 		fragmentEntryKey = Objects.toString(fragmentEntryKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FragmentEntryVersion.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, fragmentEntryKey, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByG_FEK_Version, finderArgs);
 		}
@@ -8225,7 +8229,10 @@ public class FragmentEntryVersionPersistenceImpl
 			FragmentEntryVersion fragmentEntryVersion =
 				(FragmentEntryVersion)result;
 
-			if ((groupId != fragmentEntryVersion.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					FragmentEntryVersion.class,
+					fragmentEntryVersion.getPrimaryKey()) ||
+				(groupId != fragmentEntryVersion.getGroupId()) ||
 				!Objects.equals(
 					fragmentEntryKey,
 					fragmentEntryVersion.getFragmentEntryKey()) ||

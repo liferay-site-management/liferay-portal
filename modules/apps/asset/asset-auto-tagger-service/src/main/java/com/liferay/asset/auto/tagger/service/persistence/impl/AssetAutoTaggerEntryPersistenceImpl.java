@@ -23,6 +23,7 @@ import com.liferay.asset.auto.tagger.service.persistence.AssetAutoTaggerEntryPer
 import com.liferay.asset.auto.tagger.service.persistence.AssetAutoTaggerEntryUtil;
 import com.liferay.asset.auto.tagger.service.persistence.impl.constants.AssetAutoTaggerPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -1215,18 +1216,17 @@ public class AssetAutoTaggerEntryPersistenceImpl
 	public AssetAutoTaggerEntry fetchByA_A(
 		long assetEntryId, long assetTagId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetAutoTaggerEntry.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {assetEntryId, assetTagId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByA_A, finderArgs);
 		}
 
@@ -1234,7 +1234,10 @@ public class AssetAutoTaggerEntryPersistenceImpl
 			AssetAutoTaggerEntry assetAutoTaggerEntry =
 				(AssetAutoTaggerEntry)result;
 
-			if ((assetEntryId != assetAutoTaggerEntry.getAssetEntryId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					AssetAutoTaggerEntry.class,
+					assetAutoTaggerEntry.getPrimaryKey()) ||
+				(assetEntryId != assetAutoTaggerEntry.getAssetEntryId()) ||
 				(assetTagId != assetAutoTaggerEntry.getAssetTagId())) {
 
 				result = null;

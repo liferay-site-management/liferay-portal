@@ -15,6 +15,7 @@
 package com.liferay.portal.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -3209,12 +3210,11 @@ public class WorkflowDefinitionLinkPersistenceImpl
 		long groupId, long companyId, long classNameId, long classPK,
 		long typePK, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			WorkflowDefinitionLink.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, companyId, classNameId, classPK, typePK
 			};
@@ -3222,7 +3222,7 @@ public class WorkflowDefinitionLinkPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_C_C_C_T, finderArgs);
 		}
@@ -3231,7 +3231,10 @@ public class WorkflowDefinitionLinkPersistenceImpl
 			WorkflowDefinitionLink workflowDefinitionLink =
 				(WorkflowDefinitionLink)result;
 
-			if ((groupId != workflowDefinitionLink.getGroupId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					WorkflowDefinitionLink.class,
+					workflowDefinitionLink.getPrimaryKey()) ||
+				(groupId != workflowDefinitionLink.getGroupId()) ||
 				(companyId != workflowDefinitionLink.getCompanyId()) ||
 				(classNameId != workflowDefinitionLink.getClassNameId()) ||
 				(classPK != workflowDefinitionLink.getClassPK()) ||

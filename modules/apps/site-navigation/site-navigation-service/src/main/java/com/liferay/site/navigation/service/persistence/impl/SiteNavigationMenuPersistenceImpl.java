@@ -15,6 +15,7 @@
 package com.liferay.site.navigation.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -732,18 +733,17 @@ public class SiteNavigationMenuPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SiteNavigationMenu.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -751,7 +751,10 @@ public class SiteNavigationMenuPersistenceImpl
 		if (result instanceof SiteNavigationMenu) {
 			SiteNavigationMenu siteNavigationMenu = (SiteNavigationMenu)result;
 
-			if (!Objects.equals(uuid, siteNavigationMenu.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					SiteNavigationMenu.class,
+					siteNavigationMenu.getPrimaryKey()) ||
+				!Objects.equals(uuid, siteNavigationMenu.getUuid()) ||
 				(groupId != siteNavigationMenu.getGroupId())) {
 
 				result = null;
@@ -3478,25 +3481,27 @@ public class SiteNavigationMenuPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SiteNavigationMenu.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_N, finderArgs);
 		}
 
 		if (result instanceof SiteNavigationMenu) {
 			SiteNavigationMenu siteNavigationMenu = (SiteNavigationMenu)result;
 
-			if ((groupId != siteNavigationMenu.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					SiteNavigationMenu.class,
+					siteNavigationMenu.getPrimaryKey()) ||
+				(groupId != siteNavigationMenu.getGroupId()) ||
 				!Objects.equals(name, siteNavigationMenu.getName())) {
 
 				result = null;

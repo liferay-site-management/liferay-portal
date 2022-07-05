@@ -20,6 +20,7 @@ import com.liferay.asset.kernel.model.AssetVocabularyTable;
 import com.liferay.asset.kernel.service.persistence.AssetVocabularyPersistence;
 import com.liferay.asset.kernel.service.persistence.AssetVocabularyUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -714,18 +715,17 @@ public class AssetVocabularyPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetVocabulary.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -733,7 +733,9 @@ public class AssetVocabularyPersistenceImpl
 		if (result instanceof AssetVocabulary) {
 			AssetVocabulary assetVocabulary = (AssetVocabulary)result;
 
-			if (!Objects.equals(uuid, assetVocabulary.getUuid()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					AssetVocabulary.class, assetVocabulary.getPrimaryKey()) ||
+				!Objects.equals(uuid, assetVocabulary.getUuid()) ||
 				(groupId != assetVocabulary.getGroupId())) {
 
 				result = null;
@@ -3448,18 +3450,17 @@ public class AssetVocabularyPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetVocabulary.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_N, finderArgs);
 		}
@@ -3467,7 +3468,9 @@ public class AssetVocabularyPersistenceImpl
 		if (result instanceof AssetVocabulary) {
 			AssetVocabulary assetVocabulary = (AssetVocabulary)result;
 
-			if ((groupId != assetVocabulary.getGroupId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					AssetVocabulary.class, assetVocabulary.getPrimaryKey()) ||
+				(groupId != assetVocabulary.getGroupId()) ||
 				!Objects.equals(name, assetVocabulary.getName())) {
 
 				result = null;
@@ -6285,18 +6288,17 @@ public class AssetVocabularyPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetVocabulary.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_ERC, finderArgs);
 		}
@@ -6304,7 +6306,9 @@ public class AssetVocabularyPersistenceImpl
 		if (result instanceof AssetVocabulary) {
 			AssetVocabulary assetVocabulary = (AssetVocabulary)result;
 
-			if ((groupId != assetVocabulary.getGroupId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					AssetVocabulary.class, assetVocabulary.getPrimaryKey()) ||
+				(groupId != assetVocabulary.getGroupId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					assetVocabulary.getExternalReferenceCode())) {

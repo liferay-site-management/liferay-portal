@@ -23,6 +23,7 @@ import com.liferay.dynamic.data.mapping.service.persistence.DDMStorageLinkPersis
 import com.liferay.dynamic.data.mapping.service.persistence.DDMStorageLinkUtil;
 import com.liferay.dynamic.data.mapping.service.persistence.impl.constants.DDMPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -1305,18 +1306,17 @@ public class DDMStorageLinkPersistenceImpl
 	 */
 	@Override
 	public DDMStorageLink fetchByClassPK(long classPK, boolean useFinderCache) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMStorageLink.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByClassPK, finderArgs);
 		}
@@ -1324,7 +1324,10 @@ public class DDMStorageLinkPersistenceImpl
 		if (result instanceof DDMStorageLink) {
 			DDMStorageLink ddmStorageLink = (DDMStorageLink)result;
 
-			if (classPK != ddmStorageLink.getClassPK()) {
+			if (!ctPersistenceHelper.isProductionMode(
+					DDMStorageLink.class, ddmStorageLink.getPrimaryKey()) ||
+				(classPK != ddmStorageLink.getClassPK())) {
+
 				result = null;
 			}
 		}

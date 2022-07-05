@@ -22,6 +22,7 @@ import com.liferay.commerce.product.model.impl.CommerceChannelRelModelImpl;
 import com.liferay.commerce.product.service.persistence.CommerceChannelRelPersistence;
 import com.liferay.commerce.product.service.persistence.CommerceChannelRelUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -1252,25 +1253,27 @@ public class CommerceChannelRelPersistenceImpl
 		long classNameId, long classPK, long commerceChannelId,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelRel.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {classNameId, classPK, commerceChannelId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_C_C, finderArgs);
 		}
 
 		if (result instanceof CommerceChannelRel) {
 			CommerceChannelRel commerceChannelRel = (CommerceChannelRel)result;
 
-			if ((classNameId != commerceChannelRel.getClassNameId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CommerceChannelRel.class,
+					commerceChannelRel.getPrimaryKey()) ||
+				(classNameId != commerceChannelRel.getClassNameId()) ||
 				(classPK != commerceChannelRel.getClassPK()) ||
 				(commerceChannelId !=
 					commerceChannelRel.getCommerceChannelId())) {

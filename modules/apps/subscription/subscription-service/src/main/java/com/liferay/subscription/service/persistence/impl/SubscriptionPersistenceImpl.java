@@ -15,6 +15,7 @@
 package com.liferay.subscription.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -3132,18 +3133,17 @@ public class SubscriptionPersistenceImpl
 		long companyId, long userId, long classNameId, long classPK,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			Subscription.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, userId, classNameId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByC_U_C_C, finderArgs);
 		}
@@ -3151,7 +3151,9 @@ public class SubscriptionPersistenceImpl
 		if (result instanceof Subscription) {
 			Subscription subscription = (Subscription)result;
 
-			if ((companyId != subscription.getCompanyId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					Subscription.class, subscription.getPrimaryKey()) ||
+				(companyId != subscription.getCompanyId()) ||
 				(userId != subscription.getUserId()) ||
 				(classNameId != subscription.getClassNameId()) ||
 				(classPK != subscription.getClassPK())) {

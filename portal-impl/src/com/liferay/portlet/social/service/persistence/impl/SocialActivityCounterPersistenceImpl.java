@@ -15,6 +15,7 @@
 package com.liferay.portlet.social.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -1909,12 +1910,11 @@ public class SocialActivityCounterPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialActivityCounter.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, classNameId, classPK, name, ownerType, startPeriod
 			};
@@ -1922,7 +1922,7 @@ public class SocialActivityCounterPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_C_C_N_O_S, finderArgs);
 		}
@@ -1931,7 +1931,10 @@ public class SocialActivityCounterPersistenceImpl
 			SocialActivityCounter socialActivityCounter =
 				(SocialActivityCounter)result;
 
-			if ((groupId != socialActivityCounter.getGroupId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					SocialActivityCounter.class,
+					socialActivityCounter.getPrimaryKey()) ||
+				(groupId != socialActivityCounter.getGroupId()) ||
 				(classNameId != socialActivityCounter.getClassNameId()) ||
 				(classPK != socialActivityCounter.getClassPK()) ||
 				!Objects.equals(name, socialActivityCounter.getName()) ||
@@ -2271,12 +2274,11 @@ public class SocialActivityCounterPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialActivityCounter.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, classNameId, classPK, name, ownerType, endPeriod
 			};
@@ -2284,7 +2286,7 @@ public class SocialActivityCounterPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_C_C_N_O_E, finderArgs);
 		}
@@ -2293,7 +2295,10 @@ public class SocialActivityCounterPersistenceImpl
 			SocialActivityCounter socialActivityCounter =
 				(SocialActivityCounter)result;
 
-			if ((groupId != socialActivityCounter.getGroupId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					SocialActivityCounter.class,
+					socialActivityCounter.getPrimaryKey()) ||
+				(groupId != socialActivityCounter.getGroupId()) ||
 				(classNameId != socialActivityCounter.getClassNameId()) ||
 				(classPK != socialActivityCounter.getClassPK()) ||
 				!Objects.equals(name, socialActivityCounter.getName()) ||

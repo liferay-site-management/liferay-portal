@@ -23,6 +23,7 @@ import com.liferay.dynamic.data.mapping.service.persistence.DDMFieldAttributePer
 import com.liferay.dynamic.data.mapping.service.persistence.DDMFieldAttributeUtil;
 import com.liferay.dynamic.data.mapping.service.persistence.impl.constants.DDMPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -1950,18 +1951,17 @@ public class DDMFieldAttributePersistenceImpl
 		attributeName = Objects.toString(attributeName, "");
 		languageId = Objects.toString(languageId, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMFieldAttribute.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {fieldId, attributeName, languageId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByF_AN_L, finderArgs);
 		}
@@ -1969,7 +1969,10 @@ public class DDMFieldAttributePersistenceImpl
 		if (result instanceof DDMFieldAttribute) {
 			DDMFieldAttribute ddmFieldAttribute = (DDMFieldAttribute)result;
 
-			if ((fieldId != ddmFieldAttribute.getFieldId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					DDMFieldAttribute.class,
+					ddmFieldAttribute.getPrimaryKey()) ||
+				(fieldId != ddmFieldAttribute.getFieldId()) ||
 				!Objects.equals(
 					attributeName, ddmFieldAttribute.getAttributeName()) ||
 				!Objects.equals(

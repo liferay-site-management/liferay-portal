@@ -23,6 +23,7 @@ import com.liferay.dynamic.data.mapping.service.persistence.DDMTemplatePersisten
 import com.liferay.dynamic.data.mapping.service.persistence.DDMTemplateUtil;
 import com.liferay.dynamic.data.mapping.service.persistence.impl.constants.DDMPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -719,18 +720,17 @@ public class DDMTemplatePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMTemplate.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -738,7 +738,9 @@ public class DDMTemplatePersistenceImpl
 		if (result instanceof DDMTemplate) {
 			DDMTemplate ddmTemplate = (DDMTemplate)result;
 
-			if (!Objects.equals(uuid, ddmTemplate.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					DDMTemplate.class, ddmTemplate.getPrimaryKey()) ||
+				!Objects.equals(uuid, ddmTemplate.getUuid()) ||
 				(groupId != ddmTemplate.getGroupId())) {
 
 				result = null;
@@ -4609,18 +4611,17 @@ public class DDMTemplatePersistenceImpl
 	public DDMTemplate fetchBySmallImageId(
 		long smallImageId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMTemplate.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {smallImageId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchBySmallImageId, finderArgs);
 		}
@@ -4628,7 +4629,10 @@ public class DDMTemplatePersistenceImpl
 		if (result instanceof DDMTemplate) {
 			DDMTemplate ddmTemplate = (DDMTemplate)result;
 
-			if (smallImageId != ddmTemplate.getSmallImageId()) {
+			if (!ctPersistenceHelper.isProductionMode(
+					DDMTemplate.class, ddmTemplate.getPrimaryKey()) ||
+				(smallImageId != ddmTemplate.getSmallImageId())) {
+
 				result = null;
 			}
 		}
@@ -8828,25 +8832,26 @@ public class DDMTemplatePersistenceImpl
 
 		templateKey = Objects.toString(templateKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMTemplate.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, classNameId, templateKey};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_C_T, finderArgs);
 		}
 
 		if (result instanceof DDMTemplate) {
 			DDMTemplate ddmTemplate = (DDMTemplate)result;
 
-			if ((groupId != ddmTemplate.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					DDMTemplate.class, ddmTemplate.getPrimaryKey()) ||
+				(groupId != ddmTemplate.getGroupId()) ||
 				(classNameId != ddmTemplate.getClassNameId()) ||
 				!Objects.equals(templateKey, ddmTemplate.getTemplateKey())) {
 

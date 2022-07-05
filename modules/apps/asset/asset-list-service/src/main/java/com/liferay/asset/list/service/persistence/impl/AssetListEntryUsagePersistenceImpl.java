@@ -23,6 +23,7 @@ import com.liferay.asset.list.service.persistence.AssetListEntryUsagePersistence
 import com.liferay.asset.list.service.persistence.AssetListEntryUsageUtil;
 import com.liferay.asset.list.service.persistence.impl.constants.AssetListPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -728,18 +729,17 @@ public class AssetListEntryUsagePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetListEntryUsage.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -748,7 +748,10 @@ public class AssetListEntryUsagePersistenceImpl
 			AssetListEntryUsage assetListEntryUsage =
 				(AssetListEntryUsage)result;
 
-			if (!Objects.equals(uuid, assetListEntryUsage.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					AssetListEntryUsage.class,
+					assetListEntryUsage.getPrimaryKey()) ||
+				!Objects.equals(uuid, assetListEntryUsage.getUuid()) ||
 				(groupId != assetListEntryUsage.getGroupId())) {
 
 				result = null;
@@ -5178,12 +5181,11 @@ public class AssetListEntryUsagePersistenceImpl
 		containerKey = Objects.toString(containerKey, "");
 		key = Objects.toString(key, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetListEntryUsage.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, classNameId, containerKey, containerType, key, plid
 			};
@@ -5191,7 +5193,7 @@ public class AssetListEntryUsagePersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByG_C_CK_CT_K_P, finderArgs);
 		}
@@ -5200,7 +5202,10 @@ public class AssetListEntryUsagePersistenceImpl
 			AssetListEntryUsage assetListEntryUsage =
 				(AssetListEntryUsage)result;
 
-			if ((groupId != assetListEntryUsage.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					AssetListEntryUsage.class,
+					assetListEntryUsage.getPrimaryKey()) ||
+				(groupId != assetListEntryUsage.getGroupId()) ||
 				(classNameId != assetListEntryUsage.getClassNameId()) ||
 				!Objects.equals(
 					containerKey, assetListEntryUsage.getContainerKey()) ||

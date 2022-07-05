@@ -23,6 +23,7 @@ import com.liferay.dynamic.data.mapping.service.persistence.DDMStructurePersiste
 import com.liferay.dynamic.data.mapping.service.persistence.DDMStructureUtil;
 import com.liferay.dynamic.data.mapping.service.persistence.impl.constants.DDMPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -720,18 +721,17 @@ public class DDMStructurePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMStructure.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -739,7 +739,9 @@ public class DDMStructurePersistenceImpl
 		if (result instanceof DDMStructure) {
 			DDMStructure ddmStructure = (DDMStructure)result;
 
-			if (!Objects.equals(uuid, ddmStructure.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					DDMStructure.class, ddmStructure.getPrimaryKey()) ||
+				!Objects.equals(uuid, ddmStructure.getUuid()) ||
 				(groupId != ddmStructure.getGroupId())) {
 
 				result = null;
@@ -7004,25 +7006,26 @@ public class DDMStructurePersistenceImpl
 
 		structureKey = Objects.toString(structureKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMStructure.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, classNameId, structureKey};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_C_S, finderArgs);
 		}
 
 		if (result instanceof DDMStructure) {
 			DDMStructure ddmStructure = (DDMStructure)result;
 
-			if ((groupId != ddmStructure.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					DDMStructure.class, ddmStructure.getPrimaryKey()) ||
+				(groupId != ddmStructure.getGroupId()) ||
 				(classNameId != ddmStructure.getClassNameId()) ||
 				!Objects.equals(structureKey, ddmStructure.getStructureKey())) {
 

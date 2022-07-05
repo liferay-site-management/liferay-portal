@@ -22,6 +22,7 @@ import com.liferay.commerce.product.model.impl.CProductModelImpl;
 import com.liferay.commerce.product.service.persistence.CProductPersistence;
 import com.liferay.commerce.product.service.persistence.CProductUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -703,18 +704,17 @@ public class CProductPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CProduct.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -722,7 +722,9 @@ public class CProductPersistenceImpl
 		if (result instanceof CProduct) {
 			CProduct cProduct = (CProduct)result;
 
-			if (!Objects.equals(uuid, cProduct.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CProduct.class, cProduct.getPrimaryKey()) ||
+				!Objects.equals(uuid, cProduct.getUuid()) ||
 				(groupId != cProduct.getGroupId())) {
 
 				result = null;
@@ -2061,25 +2063,26 @@ public class CProductPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CProduct.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_ERC, finderArgs);
 		}
 
 		if (result instanceof CProduct) {
 			CProduct cProduct = (CProduct)result;
 
-			if ((companyId != cProduct.getCompanyId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CProduct.class, cProduct.getPrimaryKey()) ||
+				(companyId != cProduct.getCompanyId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					cProduct.getExternalReferenceCode())) {

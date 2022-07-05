@@ -23,6 +23,7 @@ import com.liferay.calendar.service.persistence.CalendarResourcePersistence;
 import com.liferay.calendar.service.persistence.CalendarResourceUtil;
 import com.liferay.calendar.service.persistence.impl.constants.CalendarPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -725,18 +726,17 @@ public class CalendarResourcePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CalendarResource.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -744,7 +744,9 @@ public class CalendarResourcePersistenceImpl
 		if (result instanceof CalendarResource) {
 			CalendarResource calendarResource = (CalendarResource)result;
 
-			if (!Objects.equals(uuid, calendarResource.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CalendarResource.class, calendarResource.getPrimaryKey()) ||
+				!Objects.equals(uuid, calendarResource.getUuid()) ||
 				(groupId != calendarResource.getGroupId())) {
 
 				result = null;
@@ -5560,25 +5562,26 @@ public class CalendarResourcePersistenceImpl
 	public CalendarResource fetchByC_C(
 		long classNameId, long classPK, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CalendarResource.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {classNameId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_C, finderArgs);
 		}
 
 		if (result instanceof CalendarResource) {
 			CalendarResource calendarResource = (CalendarResource)result;
 
-			if ((classNameId != calendarResource.getClassNameId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CalendarResource.class, calendarResource.getPrimaryKey()) ||
+				(classNameId != calendarResource.getClassNameId()) ||
 				(classPK != calendarResource.getClassPK())) {
 
 				result = null;

@@ -20,6 +20,7 @@ import com.liferay.expando.kernel.model.ExpandoRowTable;
 import com.liferay.expando.kernel.service.persistence.ExpandoRowPersistence;
 import com.liferay.expando.kernel.service.persistence.ExpandoRowUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -1166,18 +1167,17 @@ public class ExpandoRowPersistenceImpl
 	public ExpandoRow fetchByT_C(
 		long tableId, long classPK, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			ExpandoRow.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {tableId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByT_C, finderArgs);
 		}
@@ -1185,7 +1185,9 @@ public class ExpandoRowPersistenceImpl
 		if (result instanceof ExpandoRow) {
 			ExpandoRow expandoRow = (ExpandoRow)result;
 
-			if ((tableId != expandoRow.getTableId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					ExpandoRow.class, expandoRow.getPrimaryKey()) ||
+				(tableId != expandoRow.getTableId()) ||
 				(classPK != expandoRow.getClassPK())) {
 
 				result = null;

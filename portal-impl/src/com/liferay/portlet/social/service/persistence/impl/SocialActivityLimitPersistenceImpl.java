@@ -15,6 +15,7 @@
 package com.liferay.portlet.social.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -1777,12 +1778,11 @@ public class SocialActivityLimitPersistenceImpl
 
 		activityCounterName = Objects.toString(activityCounterName, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialActivityLimit.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, userId, classNameId, classPK, activityType,
 				activityCounterName
@@ -1791,7 +1791,7 @@ public class SocialActivityLimitPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_U_C_C_A_A, finderArgs);
 		}
@@ -1800,7 +1800,10 @@ public class SocialActivityLimitPersistenceImpl
 			SocialActivityLimit socialActivityLimit =
 				(SocialActivityLimit)result;
 
-			if ((groupId != socialActivityLimit.getGroupId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					SocialActivityLimit.class,
+					socialActivityLimit.getPrimaryKey()) ||
+				(groupId != socialActivityLimit.getGroupId()) ||
 				(userId != socialActivityLimit.getUserId()) ||
 				(classNameId != socialActivityLimit.getClassNameId()) ||
 				(classPK != socialActivityLimit.getClassPK()) ||

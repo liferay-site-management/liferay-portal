@@ -20,6 +20,7 @@ import com.liferay.expando.kernel.model.ExpandoColumnTable;
 import com.liferay.expando.kernel.service.persistence.ExpandoColumnPersistence;
 import com.liferay.expando.kernel.service.persistence.ExpandoColumnUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -1276,18 +1277,17 @@ public class ExpandoColumnPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			ExpandoColumn.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {tableId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByT_N, finderArgs);
 		}
@@ -1295,7 +1295,9 @@ public class ExpandoColumnPersistenceImpl
 		if (result instanceof ExpandoColumn) {
 			ExpandoColumn expandoColumn = (ExpandoColumn)result;
 
-			if ((tableId != expandoColumn.getTableId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					ExpandoColumn.class, expandoColumn.getPrimaryKey()) ||
+				(tableId != expandoColumn.getTableId()) ||
 				!Objects.equals(name, expandoColumn.getName())) {
 
 				result = null;

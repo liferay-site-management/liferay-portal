@@ -15,6 +15,7 @@
 package com.liferay.reading.time.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -721,18 +722,17 @@ public class ReadingTimeEntryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			ReadingTimeEntry.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -740,7 +740,9 @@ public class ReadingTimeEntryPersistenceImpl
 		if (result instanceof ReadingTimeEntry) {
 			ReadingTimeEntry readingTimeEntry = (ReadingTimeEntry)result;
 
-			if (!Objects.equals(uuid, readingTimeEntry.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					ReadingTimeEntry.class, readingTimeEntry.getPrimaryKey()) ||
+				!Objects.equals(uuid, readingTimeEntry.getUuid()) ||
 				(groupId != readingTimeEntry.getGroupId())) {
 
 				result = null;
@@ -1590,25 +1592,26 @@ public class ReadingTimeEntryPersistenceImpl
 	public ReadingTimeEntry fetchByG_C_C(
 		long groupId, long classNameId, long classPK, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			ReadingTimeEntry.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, classNameId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_C_C, finderArgs);
 		}
 
 		if (result instanceof ReadingTimeEntry) {
 			ReadingTimeEntry readingTimeEntry = (ReadingTimeEntry)result;
 
-			if ((groupId != readingTimeEntry.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					ReadingTimeEntry.class, readingTimeEntry.getPrimaryKey()) ||
+				(groupId != readingTimeEntry.getGroupId()) ||
 				(classNameId != readingTimeEntry.getClassNameId()) ||
 				(classPK != readingTimeEntry.getClassPK())) {
 

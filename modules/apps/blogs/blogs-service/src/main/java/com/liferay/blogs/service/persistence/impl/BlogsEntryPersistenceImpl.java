@@ -23,6 +23,7 @@ import com.liferay.blogs.service.persistence.BlogsEntryPersistence;
 import com.liferay.blogs.service.persistence.BlogsEntryUtil;
 import com.liferay.blogs.service.persistence.impl.constants.BlogsPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -727,18 +728,17 @@ public class BlogsEntryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			BlogsEntry.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -746,7 +746,9 @@ public class BlogsEntryPersistenceImpl
 		if (result instanceof BlogsEntry) {
 			BlogsEntry blogsEntry = (BlogsEntry)result;
 
-			if (!Objects.equals(uuid, blogsEntry.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					BlogsEntry.class, blogsEntry.getPrimaryKey()) ||
+				!Objects.equals(uuid, blogsEntry.getUuid()) ||
 				(groupId != blogsEntry.getGroupId())) {
 
 				result = null;
@@ -2971,25 +2973,26 @@ public class BlogsEntryPersistenceImpl
 
 		urlTitle = Objects.toString(urlTitle, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			BlogsEntry.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, urlTitle};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_UT, finderArgs);
 		}
 
 		if (result instanceof BlogsEntry) {
 			BlogsEntry blogsEntry = (BlogsEntry)result;
 
-			if ((groupId != blogsEntry.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					BlogsEntry.class, blogsEntry.getPrimaryKey()) ||
+				(groupId != blogsEntry.getGroupId()) ||
 				!Objects.equals(urlTitle, blogsEntry.getUrlTitle())) {
 
 				result = null;
@@ -21446,25 +21449,26 @@ public class BlogsEntryPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			BlogsEntry.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_ERC, finderArgs);
 		}
 
 		if (result instanceof BlogsEntry) {
 			BlogsEntry blogsEntry = (BlogsEntry)result;
 
-			if ((groupId != blogsEntry.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					BlogsEntry.class, blogsEntry.getPrimaryKey()) ||
+				(groupId != blogsEntry.getGroupId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					blogsEntry.getExternalReferenceCode())) {

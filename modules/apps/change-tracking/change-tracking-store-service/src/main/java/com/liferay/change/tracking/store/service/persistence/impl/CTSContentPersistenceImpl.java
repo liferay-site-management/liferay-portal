@@ -23,6 +23,7 @@ import com.liferay.change.tracking.store.service.persistence.CTSContentPersisten
 import com.liferay.change.tracking.store.service.persistence.CTSContentUtil;
 import com.liferay.change.tracking.store.service.persistence.impl.constants.CTSPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -2259,12 +2260,11 @@ public class CTSContentPersistenceImpl
 		version = Objects.toString(version, "");
 		storeType = Objects.toString(storeType, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CTSContent.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				companyId, repositoryId, path, version, storeType
 			};
@@ -2272,7 +2272,7 @@ public class CTSContentPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByC_R_P_V_S, finderArgs);
 		}
@@ -2280,7 +2280,9 @@ public class CTSContentPersistenceImpl
 		if (result instanceof CTSContent) {
 			CTSContent ctsContent = (CTSContent)result;
 
-			if ((companyId != ctsContent.getCompanyId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CTSContent.class, ctsContent.getPrimaryKey()) ||
+				(companyId != ctsContent.getCompanyId()) ||
 				(repositoryId != ctsContent.getRepositoryId()) ||
 				!Objects.equals(path, ctsContent.getPath()) ||
 				!Objects.equals(version, ctsContent.getVersion()) ||

@@ -22,6 +22,7 @@ import com.liferay.commerce.product.model.impl.CPOptionValueModelImpl;
 import com.liferay.commerce.product.service.persistence.CPOptionValuePersistence;
 import com.liferay.commerce.product.service.persistence.CPOptionValueUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -2329,25 +2330,26 @@ public class CPOptionValuePersistenceImpl
 
 		key = Objects.toString(key, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPOptionValue.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {CPOptionId, key};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_K, finderArgs);
 		}
 
 		if (result instanceof CPOptionValue) {
 			CPOptionValue cpOptionValue = (CPOptionValue)result;
 
-			if ((CPOptionId != cpOptionValue.getCPOptionId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CPOptionValue.class, cpOptionValue.getPrimaryKey()) ||
+				(CPOptionId != cpOptionValue.getCPOptionId()) ||
 				!Objects.equals(key, cpOptionValue.getKey())) {
 
 				result = null;
@@ -2595,25 +2597,26 @@ public class CPOptionValuePersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPOptionValue.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_ERC, finderArgs);
 		}
 
 		if (result instanceof CPOptionValue) {
 			CPOptionValue cpOptionValue = (CPOptionValue)result;
 
-			if ((companyId != cpOptionValue.getCompanyId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CPOptionValue.class, cpOptionValue.getPrimaryKey()) ||
+				(companyId != cpOptionValue.getCompanyId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					cpOptionValue.getExternalReferenceCode())) {

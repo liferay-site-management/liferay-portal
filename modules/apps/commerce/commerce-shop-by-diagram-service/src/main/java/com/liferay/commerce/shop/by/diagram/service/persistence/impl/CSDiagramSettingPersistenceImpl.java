@@ -23,6 +23,7 @@ import com.liferay.commerce.shop.by.diagram.service.persistence.CSDiagramSetting
 import com.liferay.commerce.shop.by.diagram.service.persistence.CSDiagramSettingUtil;
 import com.liferay.commerce.shop.by.diagram.service.persistence.impl.constants.CommercePersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -1312,18 +1313,17 @@ public class CSDiagramSettingPersistenceImpl
 	public CSDiagramSetting fetchByCPDefinitionId(
 		long CPDefinitionId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CSDiagramSetting.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {CPDefinitionId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByCPDefinitionId, finderArgs);
 		}
@@ -1331,7 +1331,10 @@ public class CSDiagramSettingPersistenceImpl
 		if (result instanceof CSDiagramSetting) {
 			CSDiagramSetting csDiagramSetting = (CSDiagramSetting)result;
 
-			if (CPDefinitionId != csDiagramSetting.getCPDefinitionId()) {
+			if (!ctPersistenceHelper.isProductionMode(
+					CSDiagramSetting.class, csDiagramSetting.getPrimaryKey()) ||
+				(CPDefinitionId != csDiagramSetting.getCPDefinitionId())) {
+
 				result = null;
 			}
 		}

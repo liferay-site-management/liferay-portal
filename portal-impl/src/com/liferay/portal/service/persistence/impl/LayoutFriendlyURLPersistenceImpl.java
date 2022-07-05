@@ -15,6 +15,7 @@
 package com.liferay.portal.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -714,18 +715,17 @@ public class LayoutFriendlyURLPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			LayoutFriendlyURL.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -733,7 +733,10 @@ public class LayoutFriendlyURLPersistenceImpl
 		if (result instanceof LayoutFriendlyURL) {
 			LayoutFriendlyURL layoutFriendlyURL = (LayoutFriendlyURL)result;
 
-			if (!Objects.equals(uuid, layoutFriendlyURL.getUuid()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					LayoutFriendlyURL.class,
+					layoutFriendlyURL.getPrimaryKey()) ||
+				!Objects.equals(uuid, layoutFriendlyURL.getUuid()) ||
 				(groupId != layoutFriendlyURL.getGroupId())) {
 
 				result = null;
@@ -3977,18 +3980,17 @@ public class LayoutFriendlyURLPersistenceImpl
 
 		languageId = Objects.toString(languageId, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			LayoutFriendlyURL.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {plid, languageId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByP_L, finderArgs);
 		}
@@ -3996,7 +3998,10 @@ public class LayoutFriendlyURLPersistenceImpl
 		if (result instanceof LayoutFriendlyURL) {
 			LayoutFriendlyURL layoutFriendlyURL = (LayoutFriendlyURL)result;
 
-			if ((plid != layoutFriendlyURL.getPlid()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					LayoutFriendlyURL.class,
+					layoutFriendlyURL.getPrimaryKey()) ||
+				(plid != layoutFriendlyURL.getPlid()) ||
 				!Objects.equals(
 					languageId, layoutFriendlyURL.getLanguageId())) {
 
@@ -5038,12 +5043,11 @@ public class LayoutFriendlyURLPersistenceImpl
 		friendlyURL = Objects.toString(friendlyURL, "");
 		languageId = Objects.toString(languageId, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			LayoutFriendlyURL.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, privateLayout, friendlyURL, languageId
 			};
@@ -5051,7 +5055,7 @@ public class LayoutFriendlyURLPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_P_F_L, finderArgs);
 		}
@@ -5059,7 +5063,10 @@ public class LayoutFriendlyURLPersistenceImpl
 		if (result instanceof LayoutFriendlyURL) {
 			LayoutFriendlyURL layoutFriendlyURL = (LayoutFriendlyURL)result;
 
-			if ((groupId != layoutFriendlyURL.getGroupId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					LayoutFriendlyURL.class,
+					layoutFriendlyURL.getPrimaryKey()) ||
+				(groupId != layoutFriendlyURL.getGroupId()) ||
 				(privateLayout != layoutFriendlyURL.isPrivateLayout()) ||
 				!Objects.equals(
 					friendlyURL, layoutFriendlyURL.getFriendlyURL()) ||

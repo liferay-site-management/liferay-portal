@@ -23,6 +23,7 @@ import com.liferay.dynamic.data.mapping.service.persistence.DDMStructureLayoutPe
 import com.liferay.dynamic.data.mapping.service.persistence.DDMStructureLayoutUtil;
 import com.liferay.dynamic.data.mapping.service.persistence.impl.constants.DDMPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -729,18 +730,17 @@ public class DDMStructureLayoutPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMStructureLayout.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -748,7 +748,10 @@ public class DDMStructureLayoutPersistenceImpl
 		if (result instanceof DDMStructureLayout) {
 			DDMStructureLayout ddmStructureLayout = (DDMStructureLayout)result;
 
-			if (!Objects.equals(uuid, ddmStructureLayout.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					DDMStructureLayout.class,
+					ddmStructureLayout.getPrimaryKey()) ||
+				!Objects.equals(uuid, ddmStructureLayout.getUuid()) ||
 				(groupId != ddmStructureLayout.getGroupId())) {
 
 				result = null;
@@ -2675,18 +2678,17 @@ public class DDMStructureLayoutPersistenceImpl
 	public DDMStructureLayout fetchByStructureVersionId(
 		long structureVersionId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMStructureLayout.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {structureVersionId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByStructureVersionId, finderArgs);
 		}
@@ -2694,8 +2696,11 @@ public class DDMStructureLayoutPersistenceImpl
 		if (result instanceof DDMStructureLayout) {
 			DDMStructureLayout ddmStructureLayout = (DDMStructureLayout)result;
 
-			if (structureVersionId !=
-					ddmStructureLayout.getStructureVersionId()) {
+			if (!ctPersistenceHelper.isProductionMode(
+					DDMStructureLayout.class,
+					ddmStructureLayout.getPrimaryKey()) ||
+				(structureVersionId !=
+					ddmStructureLayout.getStructureVersionId())) {
 
 				result = null;
 			}
@@ -3485,12 +3490,11 @@ public class DDMStructureLayoutPersistenceImpl
 
 		structureLayoutKey = Objects.toString(structureLayoutKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMStructureLayout.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, classNameId, structureLayoutKey
 			};
@@ -3498,14 +3502,17 @@ public class DDMStructureLayoutPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_C_S, finderArgs);
 		}
 
 		if (result instanceof DDMStructureLayout) {
 			DDMStructureLayout ddmStructureLayout = (DDMStructureLayout)result;
 
-			if ((groupId != ddmStructureLayout.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					DDMStructureLayout.class,
+					ddmStructureLayout.getPrimaryKey()) ||
+				(groupId != ddmStructureLayout.getGroupId()) ||
 				(classNameId != ddmStructureLayout.getClassNameId()) ||
 				!Objects.equals(
 					structureLayoutKey,

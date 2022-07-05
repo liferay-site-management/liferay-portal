@@ -22,6 +22,7 @@ import com.liferay.commerce.price.list.model.impl.CommercePriceListAccountRelMod
 import com.liferay.commerce.price.list.service.persistence.CommercePriceListAccountRelPersistence;
 import com.liferay.commerce.price.list.service.persistence.CommercePriceListAccountRelUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -1868,18 +1869,17 @@ public class CommercePriceListAccountRelPersistenceImpl
 		long commerceAccountId, long commercePriceListId,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommercePriceListAccountRel.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {commerceAccountId, commercePriceListId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByCAI_CPI, finderArgs);
 		}
@@ -1888,7 +1888,10 @@ public class CommercePriceListAccountRelPersistenceImpl
 			CommercePriceListAccountRel commercePriceListAccountRel =
 				(CommercePriceListAccountRel)result;
 
-			if ((commerceAccountId !=
+			if (!ctPersistenceHelper.isProductionMode(
+					CommercePriceListAccountRel.class,
+					commercePriceListAccountRel.getPrimaryKey()) ||
+				(commerceAccountId !=
 					commercePriceListAccountRel.getCommerceAccountId()) ||
 				(commercePriceListId !=
 					commercePriceListAccountRel.getCommercePriceListId())) {

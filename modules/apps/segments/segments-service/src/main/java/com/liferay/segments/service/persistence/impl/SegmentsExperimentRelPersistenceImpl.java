@@ -15,6 +15,7 @@
 package com.liferay.segments.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -707,12 +708,11 @@ public class SegmentsExperimentRelPersistenceImpl
 		long segmentsExperimentId, long segmentsExperienceId,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsExperimentRel.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				segmentsExperimentId, segmentsExperienceId
 			};
@@ -720,7 +720,7 @@ public class SegmentsExperimentRelPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByS_S, finderArgs);
 		}
 
@@ -728,7 +728,10 @@ public class SegmentsExperimentRelPersistenceImpl
 			SegmentsExperimentRel segmentsExperimentRel =
 				(SegmentsExperimentRel)result;
 
-			if ((segmentsExperimentId !=
+			if (!ctPersistenceHelper.isProductionMode(
+					SegmentsExperimentRel.class,
+					segmentsExperimentRel.getPrimaryKey()) ||
+				(segmentsExperimentId !=
 					segmentsExperimentRel.getSegmentsExperimentId()) ||
 				(segmentsExperienceId !=
 					segmentsExperimentRel.getSegmentsExperienceId())) {

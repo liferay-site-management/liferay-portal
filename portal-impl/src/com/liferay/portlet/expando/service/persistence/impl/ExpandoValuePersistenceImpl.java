@@ -20,6 +20,7 @@ import com.liferay.expando.kernel.model.ExpandoValueTable;
 import com.liferay.expando.kernel.service.persistence.ExpandoValuePersistence;
 import com.liferay.expando.kernel.service.persistence.ExpandoValueUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -3332,18 +3333,17 @@ public class ExpandoValuePersistenceImpl
 	public ExpandoValue fetchByC_R(
 		long columnId, long rowId, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			ExpandoValue.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {columnId, rowId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByC_R, finderArgs);
 		}
@@ -3351,7 +3351,9 @@ public class ExpandoValuePersistenceImpl
 		if (result instanceof ExpandoValue) {
 			ExpandoValue expandoValue = (ExpandoValue)result;
 
-			if ((columnId != expandoValue.getColumnId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					ExpandoValue.class, expandoValue.getPrimaryKey()) ||
+				(columnId != expandoValue.getColumnId()) ||
 				(rowId != expandoValue.getRowId())) {
 
 				result = null;
@@ -4128,18 +4130,17 @@ public class ExpandoValuePersistenceImpl
 	public ExpandoValue fetchByT_C_C(
 		long tableId, long columnId, long classPK, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			ExpandoValue.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {tableId, columnId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByT_C_C, finderArgs);
 		}
@@ -4147,7 +4148,9 @@ public class ExpandoValuePersistenceImpl
 		if (result instanceof ExpandoValue) {
 			ExpandoValue expandoValue = (ExpandoValue)result;
 
-			if ((tableId != expandoValue.getTableId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					ExpandoValue.class, expandoValue.getPrimaryKey()) ||
+				(tableId != expandoValue.getTableId()) ||
 				(columnId != expandoValue.getColumnId()) ||
 				(classPK != expandoValue.getClassPK())) {
 

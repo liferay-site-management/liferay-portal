@@ -23,6 +23,7 @@ import com.liferay.journal.service.persistence.JournalArticleResourcePersistence
 import com.liferay.journal.service.persistence.JournalArticleResourceUtil;
 import com.liferay.journal.service.persistence.impl.constants.JournalPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -730,18 +731,17 @@ public class JournalArticleResourcePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalArticleResource.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -750,7 +750,10 @@ public class JournalArticleResourcePersistenceImpl
 			JournalArticleResource journalArticleResource =
 				(JournalArticleResource)result;
 
-			if (!Objects.equals(uuid, journalArticleResource.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					JournalArticleResource.class,
+					journalArticleResource.getPrimaryKey()) ||
+				!Objects.equals(uuid, journalArticleResource.getUuid()) ||
 				(groupId != journalArticleResource.getGroupId())) {
 
 				result = null;
@@ -2116,18 +2119,17 @@ public class JournalArticleResourcePersistenceImpl
 
 		articleId = Objects.toString(articleId, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalArticleResource.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, articleId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_A, finderArgs);
 		}
 
@@ -2135,7 +2137,10 @@ public class JournalArticleResourcePersistenceImpl
 			JournalArticleResource journalArticleResource =
 				(JournalArticleResource)result;
 
-			if ((groupId != journalArticleResource.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					JournalArticleResource.class,
+					journalArticleResource.getPrimaryKey()) ||
+				(groupId != journalArticleResource.getGroupId()) ||
 				!Objects.equals(
 					articleId, journalArticleResource.getArticleId())) {
 

@@ -23,6 +23,7 @@ import com.liferay.fragment.service.persistence.FragmentCollectionPersistence;
 import com.liferay.fragment.service.persistence.FragmentCollectionUtil;
 import com.liferay.fragment.service.persistence.impl.constants.FragmentPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -730,18 +731,17 @@ public class FragmentCollectionPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FragmentCollection.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -749,7 +749,10 @@ public class FragmentCollectionPersistenceImpl
 		if (result instanceof FragmentCollection) {
 			FragmentCollection fragmentCollection = (FragmentCollection)result;
 
-			if (!Objects.equals(uuid, fragmentCollection.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					FragmentCollection.class,
+					fragmentCollection.getPrimaryKey()) ||
+				!Objects.equals(uuid, fragmentCollection.getUuid()) ||
 				(groupId != fragmentCollection.getGroupId())) {
 
 				result = null;
@@ -2373,25 +2376,27 @@ public class FragmentCollectionPersistenceImpl
 
 		fragmentCollectionKey = Objects.toString(fragmentCollectionKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FragmentCollection.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, fragmentCollectionKey};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_FCK, finderArgs);
 		}
 
 		if (result instanceof FragmentCollection) {
 			FragmentCollection fragmentCollection = (FragmentCollection)result;
 
-			if ((groupId != fragmentCollection.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					FragmentCollection.class,
+					fragmentCollection.getPrimaryKey()) ||
+				(groupId != fragmentCollection.getGroupId()) ||
 				!Objects.equals(
 					fragmentCollectionKey,
 					fragmentCollection.getFragmentCollectionKey())) {

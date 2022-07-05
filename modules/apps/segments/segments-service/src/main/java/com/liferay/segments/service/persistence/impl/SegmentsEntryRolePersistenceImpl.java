@@ -15,6 +15,7 @@
 package com.liferay.segments.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -1206,25 +1207,27 @@ public class SegmentsEntryRolePersistenceImpl
 	public SegmentsEntryRole fetchByS_R(
 		long segmentsEntryId, long roleId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsEntryRole.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {segmentsEntryId, roleId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByS_R, finderArgs);
 		}
 
 		if (result instanceof SegmentsEntryRole) {
 			SegmentsEntryRole segmentsEntryRole = (SegmentsEntryRole)result;
 
-			if ((segmentsEntryId != segmentsEntryRole.getSegmentsEntryId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					SegmentsEntryRole.class,
+					segmentsEntryRole.getPrimaryKey()) ||
+				(segmentsEntryId != segmentsEntryRole.getSegmentsEntryId()) ||
 				(roleId != segmentsEntryRole.getRoleId())) {
 
 				result = null;

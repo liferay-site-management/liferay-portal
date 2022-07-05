@@ -22,6 +22,7 @@ import com.liferay.commerce.price.list.model.impl.CommercePriceEntryModelImpl;
 import com.liferay.commerce.price.list.service.persistence.CommercePriceEntryPersistence;
 import com.liferay.commerce.price.list.service.persistence.CommercePriceEntryUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -5368,25 +5369,27 @@ public class CommercePriceEntryPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommercePriceEntry.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_ERC, finderArgs);
 		}
 
 		if (result instanceof CommercePriceEntry) {
 			CommercePriceEntry commercePriceEntry = (CommercePriceEntry)result;
 
-			if ((companyId != commercePriceEntry.getCompanyId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CommercePriceEntry.class,
+					commercePriceEntry.getPrimaryKey()) ||
+				(companyId != commercePriceEntry.getCompanyId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					commercePriceEntry.getExternalReferenceCode())) {

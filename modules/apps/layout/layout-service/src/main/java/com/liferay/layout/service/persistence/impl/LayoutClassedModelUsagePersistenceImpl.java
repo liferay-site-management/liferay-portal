@@ -23,6 +23,7 @@ import com.liferay.layout.service.persistence.LayoutClassedModelUsagePersistence
 import com.liferay.layout.service.persistence.LayoutClassedModelUsageUtil;
 import com.liferay.layout.service.persistence.impl.constants.LayoutPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -735,18 +736,17 @@ public class LayoutClassedModelUsagePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutClassedModelUsage.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -755,7 +755,10 @@ public class LayoutClassedModelUsagePersistenceImpl
 			LayoutClassedModelUsage layoutClassedModelUsage =
 				(LayoutClassedModelUsage)result;
 
-			if (!Objects.equals(uuid, layoutClassedModelUsage.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					LayoutClassedModelUsage.class,
+					layoutClassedModelUsage.getPrimaryKey()) ||
+				!Objects.equals(uuid, layoutClassedModelUsage.getUuid()) ||
 				(groupId != layoutClassedModelUsage.getGroupId())) {
 
 				result = null;
@@ -4558,12 +4561,11 @@ public class LayoutClassedModelUsagePersistenceImpl
 
 		containerKey = Objects.toString(containerKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutClassedModelUsage.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				classNameId, classPK, containerKey, containerType, plid
 			};
@@ -4571,7 +4573,7 @@ public class LayoutClassedModelUsagePersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByCN_CPK_CK_CT_P, finderArgs);
 		}
@@ -4580,7 +4582,10 @@ public class LayoutClassedModelUsagePersistenceImpl
 			LayoutClassedModelUsage layoutClassedModelUsage =
 				(LayoutClassedModelUsage)result;
 
-			if ((classNameId != layoutClassedModelUsage.getClassNameId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					LayoutClassedModelUsage.class,
+					layoutClassedModelUsage.getPrimaryKey()) ||
+				(classNameId != layoutClassedModelUsage.getClassNameId()) ||
 				(classPK != layoutClassedModelUsage.getClassPK()) ||
 				!Objects.equals(
 					containerKey, layoutClassedModelUsage.getContainerKey()) ||

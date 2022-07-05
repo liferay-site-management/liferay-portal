@@ -16,6 +16,7 @@ package com.liferay.portal.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -3990,18 +3991,17 @@ public class UserGroupPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			UserGroup.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByC_N, finderArgs);
 		}
@@ -4009,7 +4009,9 @@ public class UserGroupPersistenceImpl
 		if (result instanceof UserGroup) {
 			UserGroup userGroup = (UserGroup)result;
 
-			if ((companyId != userGroup.getCompanyId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					UserGroup.class, userGroup.getPrimaryKey()) ||
+				(companyId != userGroup.getCompanyId()) ||
 				!Objects.equals(name, userGroup.getName())) {
 
 				result = null;
@@ -5904,18 +5906,17 @@ public class UserGroupPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			UserGroup.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByC_ERC, finderArgs);
 		}
@@ -5923,7 +5924,9 @@ public class UserGroupPersistenceImpl
 		if (result instanceof UserGroup) {
 			UserGroup userGroup = (UserGroup)result;
 
-			if ((companyId != userGroup.getCompanyId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					UserGroup.class, userGroup.getPrimaryKey()) ||
+				(companyId != userGroup.getCompanyId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					userGroup.getExternalReferenceCode())) {

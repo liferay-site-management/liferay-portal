@@ -15,6 +15,7 @@
 package com.liferay.site.navigation.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -734,18 +735,17 @@ public class SiteNavigationMenuItemPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SiteNavigationMenuItem.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -754,7 +754,10 @@ public class SiteNavigationMenuItemPersistenceImpl
 			SiteNavigationMenuItem siteNavigationMenuItem =
 				(SiteNavigationMenuItem)result;
 
-			if (!Objects.equals(uuid, siteNavigationMenuItem.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					SiteNavigationMenuItem.class,
+					siteNavigationMenuItem.getPrimaryKey()) ||
+				!Objects.equals(uuid, siteNavigationMenuItem.getUuid()) ||
 				(groupId != siteNavigationMenuItem.getGroupId())) {
 
 				result = null;

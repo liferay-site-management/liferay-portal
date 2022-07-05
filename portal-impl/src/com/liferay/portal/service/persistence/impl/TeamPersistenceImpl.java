@@ -16,6 +16,7 @@ package com.liferay.portal.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -710,18 +711,17 @@ public class TeamPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Team.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -729,7 +729,9 @@ public class TeamPersistenceImpl
 		if (result instanceof Team) {
 			Team team = (Team)result;
 
-			if (!Objects.equals(uuid, team.getUuid()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					Team.class, team.getPrimaryKey()) ||
+				!Objects.equals(uuid, team.getUuid()) ||
 				(groupId != team.getGroupId())) {
 
 				result = null;
@@ -2939,18 +2941,17 @@ public class TeamPersistenceImpl
 	public Team fetchByG_N(long groupId, String name, boolean useFinderCache) {
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Team.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_N, finderArgs);
 		}
@@ -2958,7 +2959,9 @@ public class TeamPersistenceImpl
 		if (result instanceof Team) {
 			Team team = (Team)result;
 
-			if ((groupId != team.getGroupId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					Team.class, team.getPrimaryKey()) ||
+				(groupId != team.getGroupId()) ||
 				!Objects.equals(name, team.getName())) {
 
 				result = null;

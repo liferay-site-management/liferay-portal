@@ -15,6 +15,7 @@
 package com.liferay.trash.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -1224,25 +1225,26 @@ public class TrashVersionPersistenceImpl
 	public TrashVersion fetchByC_C(
 		long classNameId, long classPK, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			TrashVersion.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {classNameId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_C, finderArgs);
 		}
 
 		if (result instanceof TrashVersion) {
 			TrashVersion trashVersion = (TrashVersion)result;
 
-			if ((classNameId != trashVersion.getClassNameId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					TrashVersion.class, trashVersion.getPrimaryKey()) ||
+				(classNameId != trashVersion.getClassNameId()) ||
 				(classPK != trashVersion.getClassPK())) {
 
 				result = null;

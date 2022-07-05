@@ -22,6 +22,7 @@ import com.liferay.commerce.pricing.model.impl.CommercePricingClassCPDefinitionR
 import com.liferay.commerce.pricing.service.persistence.CommercePricingClassCPDefinitionRelPersistence;
 import com.liferay.commerce.pricing.service.persistence.CommercePricingClassCPDefinitionRelUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -1282,18 +1283,17 @@ public class CommercePricingClassCPDefinitionRelPersistenceImpl
 		long commercePricingClassId, long CPDefinitionId,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommercePricingClassCPDefinitionRel.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {commercePricingClassId, CPDefinitionId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_C, finderArgs);
 		}
 
@@ -1302,7 +1302,10 @@ public class CommercePricingClassCPDefinitionRelPersistenceImpl
 				commercePricingClassCPDefinitionRel =
 					(CommercePricingClassCPDefinitionRel)result;
 
-			if ((commercePricingClassId !=
+			if (!ctPersistenceHelper.isProductionMode(
+					CommercePricingClassCPDefinitionRel.class,
+					commercePricingClassCPDefinitionRel.getPrimaryKey()) ||
+				(commercePricingClassId !=
 					commercePricingClassCPDefinitionRel.
 						getCommercePricingClassId()) ||
 				(CPDefinitionId !=

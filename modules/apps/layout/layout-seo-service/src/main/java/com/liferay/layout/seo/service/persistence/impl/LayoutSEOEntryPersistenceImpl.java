@@ -23,6 +23,7 @@ import com.liferay.layout.seo.service.persistence.LayoutSEOEntryPersistence;
 import com.liferay.layout.seo.service.persistence.LayoutSEOEntryUtil;
 import com.liferay.layout.seo.service.persistence.impl.constants.LayoutSEOPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -719,18 +720,17 @@ public class LayoutSEOEntryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutSEOEntry.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -738,7 +738,9 @@ public class LayoutSEOEntryPersistenceImpl
 		if (result instanceof LayoutSEOEntry) {
 			LayoutSEOEntry layoutSEOEntry = (LayoutSEOEntry)result;
 
-			if (!Objects.equals(uuid, layoutSEOEntry.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					LayoutSEOEntry.class, layoutSEOEntry.getPrimaryKey()) ||
+				!Objects.equals(uuid, layoutSEOEntry.getUuid()) ||
 				(groupId != layoutSEOEntry.getGroupId())) {
 
 				result = null;
@@ -1588,25 +1590,26 @@ public class LayoutSEOEntryPersistenceImpl
 		long groupId, boolean privateLayout, long layoutId,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutSEOEntry.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, privateLayout, layoutId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_P_L, finderArgs);
 		}
 
 		if (result instanceof LayoutSEOEntry) {
 			LayoutSEOEntry layoutSEOEntry = (LayoutSEOEntry)result;
 
-			if ((groupId != layoutSEOEntry.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					LayoutSEOEntry.class, layoutSEOEntry.getPrimaryKey()) ||
+				(groupId != layoutSEOEntry.getGroupId()) ||
 				(privateLayout != layoutSEOEntry.isPrivateLayout()) ||
 				(layoutId != layoutSEOEntry.getLayoutId())) {
 

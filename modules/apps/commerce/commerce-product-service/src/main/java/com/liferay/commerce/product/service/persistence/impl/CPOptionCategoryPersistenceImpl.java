@@ -22,6 +22,7 @@ import com.liferay.commerce.product.model.impl.CPOptionCategoryModelImpl;
 import com.liferay.commerce.product.service.persistence.CPOptionCategoryPersistence;
 import com.liferay.commerce.product.service.persistence.CPOptionCategoryUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -3086,25 +3087,26 @@ public class CPOptionCategoryPersistenceImpl
 
 		key = Objects.toString(key, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPOptionCategory.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, key};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_K, finderArgs);
 		}
 
 		if (result instanceof CPOptionCategory) {
 			CPOptionCategory cpOptionCategory = (CPOptionCategory)result;
 
-			if ((companyId != cpOptionCategory.getCompanyId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CPOptionCategory.class, cpOptionCategory.getPrimaryKey()) ||
+				(companyId != cpOptionCategory.getCompanyId()) ||
 				!Objects.equals(key, cpOptionCategory.getKey())) {
 
 				result = null;

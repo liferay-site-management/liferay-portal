@@ -16,6 +16,7 @@ package com.liferay.portal.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -5795,18 +5796,17 @@ public class RolePersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Role.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByC_N, finderArgs);
 		}
@@ -5814,7 +5814,9 @@ public class RolePersistenceImpl
 		if (result instanceof Role) {
 			Role role = (Role)result;
 
-			if ((companyId != role.getCompanyId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					Role.class, role.getPrimaryKey()) ||
+				(companyId != role.getCompanyId()) ||
 				!Objects.equals(name, role.getName())) {
 
 				result = null;
@@ -8727,18 +8729,17 @@ public class RolePersistenceImpl
 		long companyId, long classNameId, long classPK,
 		boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Role.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, classNameId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByC_C_C, finderArgs);
 		}
@@ -8746,7 +8747,9 @@ public class RolePersistenceImpl
 		if (result instanceof Role) {
 			Role role = (Role)result;
 
-			if ((companyId != role.getCompanyId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					Role.class, role.getPrimaryKey()) ||
+				(companyId != role.getCompanyId()) ||
 				(classNameId != role.getClassNameId()) ||
 				(classPK != role.getClassPK())) {
 
@@ -9461,18 +9464,17 @@ public class RolePersistenceImpl
 		long companyId, long classNameId, long classPK, int type,
 		boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Role.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, classNameId, classPK, type};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByC_C_C_T, finderArgs);
 		}
@@ -9480,7 +9482,9 @@ public class RolePersistenceImpl
 		if (result instanceof Role) {
 			Role role = (Role)result;
 
-			if ((companyId != role.getCompanyId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					Role.class, role.getPrimaryKey()) ||
+				(companyId != role.getCompanyId()) ||
 				(classNameId != role.getClassNameId()) ||
 				(classPK != role.getClassPK()) || (type != role.getType())) {
 

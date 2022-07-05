@@ -15,6 +15,7 @@
 package com.liferay.style.book.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -702,18 +703,17 @@ public class StyleBookEntryVersionPersistenceImpl
 	public StyleBookEntryVersion fetchByStyleBookEntryId_Version(
 		long styleBookEntryId, int version, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			StyleBookEntryVersion.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {styleBookEntryId, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByStyleBookEntryId_Version, finderArgs);
 		}
@@ -722,7 +722,10 @@ public class StyleBookEntryVersionPersistenceImpl
 			StyleBookEntryVersion styleBookEntryVersion =
 				(StyleBookEntryVersion)result;
 
-			if ((styleBookEntryId !=
+			if (!ctPersistenceHelper.isProductionMode(
+					StyleBookEntryVersion.class,
+					styleBookEntryVersion.getPrimaryKey()) ||
+				(styleBookEntryId !=
 					styleBookEntryVersion.getStyleBookEntryId()) ||
 				(version != styleBookEntryVersion.getVersion())) {
 
@@ -2714,18 +2717,17 @@ public class StyleBookEntryVersionPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			StyleBookEntryVersion.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G_Version, finderArgs);
 		}
@@ -2734,7 +2736,10 @@ public class StyleBookEntryVersionPersistenceImpl
 			StyleBookEntryVersion styleBookEntryVersion =
 				(StyleBookEntryVersion)result;
 
-			if (!Objects.equals(uuid, styleBookEntryVersion.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					StyleBookEntryVersion.class,
+					styleBookEntryVersion.getPrimaryKey()) ||
+				!Objects.equals(uuid, styleBookEntryVersion.getUuid()) ||
 				(groupId != styleBookEntryVersion.getGroupId()) ||
 				(version != styleBookEntryVersion.getVersion())) {
 
@@ -8339,18 +8344,17 @@ public class StyleBookEntryVersionPersistenceImpl
 
 		styleBookEntryKey = Objects.toString(styleBookEntryKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			StyleBookEntryVersion.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, styleBookEntryKey, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByG_SBEK_Version, finderArgs);
 		}
@@ -8359,7 +8363,10 @@ public class StyleBookEntryVersionPersistenceImpl
 			StyleBookEntryVersion styleBookEntryVersion =
 				(StyleBookEntryVersion)result;
 
-			if ((groupId != styleBookEntryVersion.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					StyleBookEntryVersion.class,
+					styleBookEntryVersion.getPrimaryKey()) ||
+				(groupId != styleBookEntryVersion.getGroupId()) ||
 				!Objects.equals(
 					styleBookEntryKey,
 					styleBookEntryVersion.getStyleBookEntryKey()) ||

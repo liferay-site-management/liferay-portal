@@ -22,6 +22,7 @@ import com.liferay.asset.kernel.service.persistence.AssetTagPersistence;
 import com.liferay.asset.kernel.service.persistence.AssetTagUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -711,18 +712,17 @@ public class AssetTagPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetTag.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -730,7 +730,9 @@ public class AssetTagPersistenceImpl
 		if (result instanceof AssetTag) {
 			AssetTag assetTag = (AssetTag)result;
 
-			if (!Objects.equals(uuid, assetTag.getUuid()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					AssetTag.class, assetTag.getPrimaryKey()) ||
+				!Objects.equals(uuid, assetTag.getUuid()) ||
 				(groupId != assetTag.getGroupId())) {
 
 				result = null;
@@ -3167,18 +3169,17 @@ public class AssetTagPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetTag.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_N, finderArgs);
 		}
@@ -3186,7 +3187,9 @@ public class AssetTagPersistenceImpl
 		if (result instanceof AssetTag) {
 			AssetTag assetTag = (AssetTag)result;
 
-			if ((groupId != assetTag.getGroupId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					AssetTag.class, assetTag.getPrimaryKey()) ||
+				(groupId != assetTag.getGroupId()) ||
 				!Objects.equals(name, assetTag.getName())) {
 
 				result = null;

@@ -23,6 +23,7 @@ import com.liferay.message.boards.service.persistence.MBCategoryPersistence;
 import com.liferay.message.boards.service.persistence.MBCategoryUtil;
 import com.liferay.message.boards.service.persistence.impl.constants.MBPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -719,18 +720,17 @@ public class MBCategoryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBCategory.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -738,7 +738,9 @@ public class MBCategoryPersistenceImpl
 		if (result instanceof MBCategory) {
 			MBCategory mbCategory = (MBCategory)result;
 
-			if (!Objects.equals(uuid, mbCategory.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					MBCategory.class, mbCategory.getPrimaryKey()) ||
+				!Objects.equals(uuid, mbCategory.getUuid()) ||
 				(groupId != mbCategory.getGroupId())) {
 
 				result = null;

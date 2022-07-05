@@ -23,6 +23,7 @@ import com.liferay.dynamic.data.mapping.service.persistence.DDMFormInstanceRepor
 import com.liferay.dynamic.data.mapping.service.persistence.DDMFormInstanceReportUtil;
 import com.liferay.dynamic.data.mapping.service.persistence.impl.constants.DDMPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -165,18 +166,17 @@ public class DDMFormInstanceReportPersistenceImpl
 	public DDMFormInstanceReport fetchByFormInstanceId(
 		long formInstanceId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMFormInstanceReport.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {formInstanceId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByFormInstanceId, finderArgs);
 		}
@@ -185,7 +185,11 @@ public class DDMFormInstanceReportPersistenceImpl
 			DDMFormInstanceReport ddmFormInstanceReport =
 				(DDMFormInstanceReport)result;
 
-			if (formInstanceId != ddmFormInstanceReport.getFormInstanceId()) {
+			if (!ctPersistenceHelper.isProductionMode(
+					DDMFormInstanceReport.class,
+					ddmFormInstanceReport.getPrimaryKey()) ||
+				(formInstanceId != ddmFormInstanceReport.getFormInstanceId())) {
+
 				result = null;
 			}
 		}

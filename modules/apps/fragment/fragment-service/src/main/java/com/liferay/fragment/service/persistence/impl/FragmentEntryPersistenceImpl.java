@@ -23,6 +23,7 @@ import com.liferay.fragment.service.persistence.FragmentEntryPersistence;
 import com.liferay.fragment.service.persistence.FragmentEntryUtil;
 import com.liferay.fragment.service.persistence.impl.constants.FragmentPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -1914,18 +1915,17 @@ public class FragmentEntryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FragmentEntry.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId, head};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G_Head, finderArgs);
 		}
@@ -1933,7 +1933,9 @@ public class FragmentEntryPersistenceImpl
 		if (result instanceof FragmentEntry) {
 			FragmentEntry fragmentEntry = (FragmentEntry)result;
 
-			if (!Objects.equals(uuid, fragmentEntry.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					FragmentEntry.class, fragmentEntry.getPrimaryKey()) ||
+				!Objects.equals(uuid, fragmentEntry.getUuid()) ||
 				(groupId != fragmentEntry.getGroupId()) ||
 				(head != fragmentEntry.isHead())) {
 
@@ -7358,18 +7360,17 @@ public class FragmentEntryPersistenceImpl
 
 		fragmentEntryKey = Objects.toString(fragmentEntryKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FragmentEntry.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, fragmentEntryKey, head};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByG_FEK_Head, finderArgs);
 		}
@@ -7377,7 +7378,9 @@ public class FragmentEntryPersistenceImpl
 		if (result instanceof FragmentEntry) {
 			FragmentEntry fragmentEntry = (FragmentEntry)result;
 
-			if ((groupId != fragmentEntry.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					FragmentEntry.class, fragmentEntry.getPrimaryKey()) ||
+				(groupId != fragmentEntry.getGroupId()) ||
 				!Objects.equals(
 					fragmentEntryKey, fragmentEntry.getFragmentEntryKey()) ||
 				(head != fragmentEntry.isHead())) {
@@ -14137,18 +14140,17 @@ public class FragmentEntryPersistenceImpl
 	 */
 	@Override
 	public FragmentEntry fetchByHeadId(long headId, boolean useFinderCache) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FragmentEntry.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {headId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByHeadId, finderArgs);
 		}
@@ -14156,7 +14158,10 @@ public class FragmentEntryPersistenceImpl
 		if (result instanceof FragmentEntry) {
 			FragmentEntry fragmentEntry = (FragmentEntry)result;
 
-			if (headId != fragmentEntry.getHeadId()) {
+			if (!ctPersistenceHelper.isProductionMode(
+					FragmentEntry.class, fragmentEntry.getPrimaryKey()) ||
+				(headId != fragmentEntry.getHeadId())) {
+
 				result = null;
 			}
 		}

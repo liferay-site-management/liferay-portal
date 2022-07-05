@@ -15,6 +15,7 @@
 package com.liferay.portal.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -1306,18 +1307,17 @@ public class PortletPreferenceValuePersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			PortletPreferenceValue.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {portletPreferencesId, index, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByP_I_N, finderArgs);
 		}
@@ -1326,7 +1326,10 @@ public class PortletPreferenceValuePersistenceImpl
 			PortletPreferenceValue portletPreferenceValue =
 				(PortletPreferenceValue)result;
 
-			if ((portletPreferencesId !=
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					PortletPreferenceValue.class,
+					portletPreferenceValue.getPrimaryKey()) ||
+				(portletPreferencesId !=
 					portletPreferenceValue.getPortletPreferencesId()) ||
 				(index != portletPreferenceValue.getIndex()) ||
 				!Objects.equals(name, portletPreferenceValue.getName())) {

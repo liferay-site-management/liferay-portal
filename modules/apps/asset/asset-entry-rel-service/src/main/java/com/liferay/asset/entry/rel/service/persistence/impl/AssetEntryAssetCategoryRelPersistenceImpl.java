@@ -23,6 +23,7 @@ import com.liferay.asset.entry.rel.service.persistence.AssetEntryAssetCategoryRe
 import com.liferay.asset.entry.rel.service.persistence.AssetEntryAssetCategoryRelUtil;
 import com.liferay.asset.entry.rel.service.persistence.impl.constants.AssetPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -1232,18 +1233,17 @@ public class AssetEntryAssetCategoryRelPersistenceImpl
 	public AssetEntryAssetCategoryRel fetchByA_A(
 		long assetEntryId, long assetCategoryId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetEntryAssetCategoryRel.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {assetEntryId, assetCategoryId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByA_A, finderArgs);
 		}
 
@@ -1251,7 +1251,10 @@ public class AssetEntryAssetCategoryRelPersistenceImpl
 			AssetEntryAssetCategoryRel assetEntryAssetCategoryRel =
 				(AssetEntryAssetCategoryRel)result;
 
-			if ((assetEntryId !=
+			if (!ctPersistenceHelper.isProductionMode(
+					AssetEntryAssetCategoryRel.class,
+					assetEntryAssetCategoryRel.getPrimaryKey()) ||
+				(assetEntryId !=
 					assetEntryAssetCategoryRel.getAssetEntryId()) ||
 				(assetCategoryId !=
 					assetEntryAssetCategoryRel.getAssetCategoryId())) {

@@ -22,6 +22,7 @@ import com.liferay.commerce.product.model.impl.CPSpecificationOptionModelImpl;
 import com.liferay.commerce.product.service.persistence.CPSpecificationOptionPersistence;
 import com.liferay.commerce.product.service.persistence.CPSpecificationOptionUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -4027,18 +4028,17 @@ public class CPSpecificationOptionPersistenceImpl
 
 		key = Objects.toString(key, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPSpecificationOption.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {companyId, key};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_K, finderArgs);
 		}
 
@@ -4046,7 +4046,10 @@ public class CPSpecificationOptionPersistenceImpl
 			CPSpecificationOption cpSpecificationOption =
 				(CPSpecificationOption)result;
 
-			if ((companyId != cpSpecificationOption.getCompanyId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CPSpecificationOption.class,
+					cpSpecificationOption.getPrimaryKey()) ||
+				(companyId != cpSpecificationOption.getCompanyId()) ||
 				!Objects.equals(key, cpSpecificationOption.getKey())) {
 
 				result = null;

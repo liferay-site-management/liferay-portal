@@ -23,6 +23,7 @@ import com.liferay.friendly.url.service.persistence.FriendlyURLEntryMappingPersi
 import com.liferay.friendly.url.service.persistence.FriendlyURLEntryMappingUtil;
 import com.liferay.friendly.url.service.persistence.impl.constants.FURLPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -166,18 +167,17 @@ public class FriendlyURLEntryMappingPersistenceImpl
 	public FriendlyURLEntryMapping fetchByC_C(
 		long classNameId, long classPK, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FriendlyURLEntryMapping.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {classNameId, classPK};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByC_C, finderArgs);
 		}
 
@@ -185,7 +185,10 @@ public class FriendlyURLEntryMappingPersistenceImpl
 			FriendlyURLEntryMapping friendlyURLEntryMapping =
 				(FriendlyURLEntryMapping)result;
 
-			if ((classNameId != friendlyURLEntryMapping.getClassNameId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					FriendlyURLEntryMapping.class,
+					friendlyURLEntryMapping.getPrimaryKey()) ||
+				(classNameId != friendlyURLEntryMapping.getClassNameId()) ||
 				(classPK != friendlyURLEntryMapping.getClassPK())) {
 
 				result = null;

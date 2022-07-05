@@ -20,6 +20,7 @@ import com.liferay.asset.kernel.model.AssetCategoryTable;
 import com.liferay.asset.kernel.service.persistence.AssetCategoryPersistence;
 import com.liferay.asset.kernel.service.persistence.AssetCategoryUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -712,18 +713,17 @@ public class AssetCategoryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetCategory.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -731,7 +731,9 @@ public class AssetCategoryPersistenceImpl
 		if (result instanceof AssetCategory) {
 			AssetCategory assetCategory = (AssetCategory)result;
 
-			if (!Objects.equals(uuid, assetCategory.getUuid()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					AssetCategory.class, assetCategory.getPrimaryKey()) ||
+				!Objects.equals(uuid, assetCategory.getUuid()) ||
 				(groupId != assetCategory.getGroupId())) {
 
 				result = null;
@@ -11648,18 +11650,17 @@ public class AssetCategoryPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetCategory.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {parentCategoryId, name, vocabularyId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByP_N_V, finderArgs);
 		}
@@ -11667,7 +11668,9 @@ public class AssetCategoryPersistenceImpl
 		if (result instanceof AssetCategory) {
 			AssetCategory assetCategory = (AssetCategory)result;
 
-			if ((parentCategoryId != assetCategory.getParentCategoryId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					AssetCategory.class, assetCategory.getPrimaryKey()) ||
+				(parentCategoryId != assetCategory.getParentCategoryId()) ||
 				!Objects.equals(name, assetCategory.getName()) ||
 				(vocabularyId != assetCategory.getVocabularyId())) {
 
@@ -11932,18 +11935,17 @@ public class AssetCategoryPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetCategory.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, externalReferenceCode};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_ERC, finderArgs);
 		}
@@ -11951,7 +11953,9 @@ public class AssetCategoryPersistenceImpl
 		if (result instanceof AssetCategory) {
 			AssetCategory assetCategory = (AssetCategory)result;
 
-			if ((groupId != assetCategory.getGroupId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					AssetCategory.class, assetCategory.getPrimaryKey()) ||
+				(groupId != assetCategory.getGroupId()) ||
 				!Objects.equals(
 					externalReferenceCode,
 					assetCategory.getExternalReferenceCode())) {

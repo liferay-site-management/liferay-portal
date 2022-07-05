@@ -23,6 +23,7 @@ import com.liferay.friendly.url.service.persistence.FriendlyURLEntryLocalization
 import com.liferay.friendly.url.service.persistence.FriendlyURLEntryLocalizationUtil;
 import com.liferay.friendly.url.service.persistence.impl.constants.FURLPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -713,18 +714,17 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 		languageId = Objects.toString(languageId, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FriendlyURLEntryLocalization.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {friendlyURLEntryId, languageId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByFriendlyURLEntryId_LanguageId, finderArgs);
 		}
@@ -733,7 +733,10 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 			FriendlyURLEntryLocalization friendlyURLEntryLocalization =
 				(FriendlyURLEntryLocalization)result;
 
-			if ((friendlyURLEntryId !=
+			if (!ctPersistenceHelper.isProductionMode(
+					FriendlyURLEntryLocalization.class,
+					friendlyURLEntryLocalization.getPrimaryKey()) ||
+				(friendlyURLEntryId !=
 					friendlyURLEntryLocalization.getFriendlyURLEntryId()) ||
 				!Objects.equals(
 					languageId, friendlyURLEntryLocalization.getLanguageId())) {
@@ -1006,18 +1009,17 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 		urlTitle = Objects.toString(urlTitle, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FriendlyURLEntryLocalization.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, classNameId, urlTitle};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByG_C_U, finderArgs);
 		}
 
@@ -1025,7 +1027,10 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 			FriendlyURLEntryLocalization friendlyURLEntryLocalization =
 				(FriendlyURLEntryLocalization)result;
 
-			if ((groupId != friendlyURLEntryLocalization.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					FriendlyURLEntryLocalization.class,
+					friendlyURLEntryLocalization.getPrimaryKey()) ||
+				(groupId != friendlyURLEntryLocalization.getGroupId()) ||
 				(classNameId !=
 					friendlyURLEntryLocalization.getClassNameId()) ||
 				!Objects.equals(

@@ -22,6 +22,7 @@ import com.liferay.commerce.model.impl.CPDefinitionInventoryModelImpl;
 import com.liferay.commerce.service.persistence.CPDefinitionInventoryPersistence;
 import com.liferay.commerce.service.persistence.CPDefinitionInventoryUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -718,18 +719,17 @@ public class CPDefinitionInventoryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionInventory.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -738,7 +738,10 @@ public class CPDefinitionInventoryPersistenceImpl
 			CPDefinitionInventory cpDefinitionInventory =
 				(CPDefinitionInventory)result;
 
-			if (!Objects.equals(uuid, cpDefinitionInventory.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CPDefinitionInventory.class,
+					cpDefinitionInventory.getPrimaryKey()) ||
+				!Objects.equals(uuid, cpDefinitionInventory.getUuid()) ||
 				(groupId != cpDefinitionInventory.getGroupId())) {
 
 				result = null;
@@ -1577,18 +1580,17 @@ public class CPDefinitionInventoryPersistenceImpl
 	public CPDefinitionInventory fetchByCPDefinitionId(
 		long CPDefinitionId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionInventory.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {CPDefinitionId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByCPDefinitionId, finderArgs);
 		}
@@ -1597,7 +1599,11 @@ public class CPDefinitionInventoryPersistenceImpl
 			CPDefinitionInventory cpDefinitionInventory =
 				(CPDefinitionInventory)result;
 
-			if (CPDefinitionId != cpDefinitionInventory.getCPDefinitionId()) {
+			if (!ctPersistenceHelper.isProductionMode(
+					CPDefinitionInventory.class,
+					cpDefinitionInventory.getPrimaryKey()) ||
+				(CPDefinitionId != cpDefinitionInventory.getCPDefinitionId())) {
+
 				result = null;
 			}
 		}

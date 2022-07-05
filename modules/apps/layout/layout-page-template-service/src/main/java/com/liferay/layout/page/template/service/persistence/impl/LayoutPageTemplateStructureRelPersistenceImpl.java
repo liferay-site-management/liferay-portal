@@ -23,6 +23,7 @@ import com.liferay.layout.page.template.service.persistence.LayoutPageTemplateSt
 import com.liferay.layout.page.template.service.persistence.LayoutPageTemplateStructureRelUtil;
 import com.liferay.layout.page.template.service.persistence.impl.constants.LayoutPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -746,18 +747,17 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutPageTemplateStructureRel.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -766,7 +766,10 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 			LayoutPageTemplateStructureRel layoutPageTemplateStructureRel =
 				(LayoutPageTemplateStructureRel)result;
 
-			if (!Objects.equals(
+			if (!ctPersistenceHelper.isProductionMode(
+					LayoutPageTemplateStructureRel.class,
+					layoutPageTemplateStructureRel.getPrimaryKey()) ||
+				!Objects.equals(
 					uuid, layoutPageTemplateStructureRel.getUuid()) ||
 				(groupId != layoutPageTemplateStructureRel.getGroupId())) {
 
@@ -2740,12 +2743,11 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 		long layoutPageTemplateStructureId, long segmentsExperienceId,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutPageTemplateStructureRel.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				layoutPageTemplateStructureId, segmentsExperienceId
 			};
@@ -2753,7 +2755,7 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByL_S, finderArgs);
 		}
 
@@ -2761,7 +2763,10 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 			LayoutPageTemplateStructureRel layoutPageTemplateStructureRel =
 				(LayoutPageTemplateStructureRel)result;
 
-			if ((layoutPageTemplateStructureId !=
+			if (!ctPersistenceHelper.isProductionMode(
+					LayoutPageTemplateStructureRel.class,
+					layoutPageTemplateStructureRel.getPrimaryKey()) ||
+				(layoutPageTemplateStructureId !=
 					layoutPageTemplateStructureRel.
 						getLayoutPageTemplateStructureId()) ||
 				(segmentsExperienceId !=

@@ -23,6 +23,7 @@ import com.liferay.dynamic.data.mapping.service.persistence.DDMContentPersistenc
 import com.liferay.dynamic.data.mapping.service.persistence.DDMContentUtil;
 import com.liferay.dynamic.data.mapping.service.persistence.impl.constants.DDMPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -717,18 +718,17 @@ public class DDMContentPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMContent.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -736,7 +736,9 @@ public class DDMContentPersistenceImpl
 		if (result instanceof DDMContent) {
 			DDMContent ddmContent = (DDMContent)result;
 
-			if (!Objects.equals(uuid, ddmContent.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					DDMContent.class, ddmContent.getPrimaryKey()) ||
+				!Objects.equals(uuid, ddmContent.getUuid()) ||
 				(groupId != ddmContent.getGroupId())) {
 
 				result = null;

@@ -15,6 +15,7 @@
 package com.liferay.segments.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -732,18 +733,17 @@ public class SegmentsExperiencePersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsExperience.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -751,7 +751,10 @@ public class SegmentsExperiencePersistenceImpl
 		if (result instanceof SegmentsExperience) {
 			SegmentsExperience segmentsExperience = (SegmentsExperience)result;
 
-			if (!Objects.equals(uuid, segmentsExperience.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					SegmentsExperience.class,
+					segmentsExperience.getPrimaryKey()) ||
+				!Objects.equals(uuid, segmentsExperience.getUuid()) ||
 				(groupId != segmentsExperience.getGroupId())) {
 
 				result = null;
@@ -5156,12 +5159,11 @@ public class SegmentsExperiencePersistenceImpl
 
 		segmentsExperienceKey = Objects.toString(segmentsExperienceKey, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsExperience.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, segmentsExperienceKey, classNameId, classPK
 			};
@@ -5169,7 +5171,7 @@ public class SegmentsExperiencePersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByG_SEK_C_C, finderArgs);
 		}
@@ -5177,7 +5179,10 @@ public class SegmentsExperiencePersistenceImpl
 		if (result instanceof SegmentsExperience) {
 			SegmentsExperience segmentsExperience = (SegmentsExperience)result;
 
-			if ((groupId != segmentsExperience.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					SegmentsExperience.class,
+					segmentsExperience.getPrimaryKey()) ||
+				(groupId != segmentsExperience.getGroupId()) ||
 				!Objects.equals(
 					segmentsExperienceKey,
 					segmentsExperience.getSegmentsExperienceKey()) ||
@@ -5476,18 +5481,17 @@ public class SegmentsExperiencePersistenceImpl
 		long groupId, long classNameId, long classPK, int priority,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsExperience.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, classNameId, classPK, priority};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByG_C_C_P, finderArgs);
 		}
@@ -5495,7 +5499,10 @@ public class SegmentsExperiencePersistenceImpl
 		if (result instanceof SegmentsExperience) {
 			SegmentsExperience segmentsExperience = (SegmentsExperience)result;
 
-			if ((groupId != segmentsExperience.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					SegmentsExperience.class,
+					segmentsExperience.getPrimaryKey()) ||
+				(groupId != segmentsExperience.getGroupId()) ||
 				(classNameId != segmentsExperience.getClassNameId()) ||
 				(classPK != segmentsExperience.getClassPK()) ||
 				(priority != segmentsExperience.getPriority())) {

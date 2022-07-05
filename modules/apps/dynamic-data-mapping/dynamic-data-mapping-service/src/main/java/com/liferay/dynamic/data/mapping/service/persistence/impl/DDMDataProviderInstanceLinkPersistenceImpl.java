@@ -23,6 +23,7 @@ import com.liferay.dynamic.data.mapping.service.persistence.DDMDataProviderInsta
 import com.liferay.dynamic.data.mapping.service.persistence.DDMDataProviderInstanceLinkUtil;
 import com.liferay.dynamic.data.mapping.service.persistence.impl.constants.DDMPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -1244,18 +1245,17 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 	public DDMDataProviderInstanceLink fetchByD_S(
 		long dataProviderInstanceId, long structureId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMDataProviderInstanceLink.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {dataProviderInstanceId, structureId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByD_S, finderArgs);
 		}
 
@@ -1263,7 +1263,10 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 			DDMDataProviderInstanceLink ddmDataProviderInstanceLink =
 				(DDMDataProviderInstanceLink)result;
 
-			if ((dataProviderInstanceId !=
+			if (!ctPersistenceHelper.isProductionMode(
+					DDMDataProviderInstanceLink.class,
+					ddmDataProviderInstanceLink.getPrimaryKey()) ||
+				(dataProviderInstanceId !=
 					ddmDataProviderInstanceLink.getDataProviderInstanceId()) ||
 				(structureId != ddmDataProviderInstanceLink.getStructureId())) {
 

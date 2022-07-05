@@ -23,6 +23,7 @@ import com.liferay.journal.service.persistence.JournalContentSearchPersistence;
 import com.liferay.journal.service.persistence.JournalContentSearchUtil;
 import com.liferay.journal.service.persistence.impl.constants.JournalPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -4944,12 +4945,11 @@ public class JournalContentSearchPersistenceImpl
 		portletId = Objects.toString(portletId, "");
 		articleId = Objects.toString(articleId, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalContentSearch.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, privateLayout, layoutId, portletId, articleId
 			};
@@ -4957,7 +4957,7 @@ public class JournalContentSearchPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByG_P_L_P_A, finderArgs);
 		}
@@ -4966,7 +4966,10 @@ public class JournalContentSearchPersistenceImpl
 			JournalContentSearch journalContentSearch =
 				(JournalContentSearch)result;
 
-			if ((groupId != journalContentSearch.getGroupId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					JournalContentSearch.class,
+					journalContentSearch.getPrimaryKey()) ||
+				(groupId != journalContentSearch.getGroupId()) ||
 				(privateLayout != journalContentSearch.isPrivateLayout()) ||
 				(layoutId != journalContentSearch.getLayoutId()) ||
 				!Objects.equals(

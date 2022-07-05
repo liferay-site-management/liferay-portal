@@ -23,6 +23,7 @@ import com.liferay.message.boards.service.persistence.MBSuspiciousActivityPersis
 import com.liferay.message.boards.service.persistence.MBSuspiciousActivityUtil;
 import com.liferay.message.boards.service.persistence.impl.constants.MBPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -732,18 +733,17 @@ public class MBSuspiciousActivityPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBSuspiciousActivity.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -752,7 +752,10 @@ public class MBSuspiciousActivityPersistenceImpl
 			MBSuspiciousActivity mbSuspiciousActivity =
 				(MBSuspiciousActivity)result;
 
-			if (!Objects.equals(uuid, mbSuspiciousActivity.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					MBSuspiciousActivity.class,
+					mbSuspiciousActivity.getPrimaryKey()) ||
+				!Objects.equals(uuid, mbSuspiciousActivity.getUuid()) ||
 				(groupId != mbSuspiciousActivity.getGroupId())) {
 
 				result = null;
@@ -2636,18 +2639,17 @@ public class MBSuspiciousActivityPersistenceImpl
 	public MBSuspiciousActivity fetchByU_M(
 		long userId, long messageId, boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBSuspiciousActivity.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {userId, messageId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByU_M, finderArgs);
 		}
 
@@ -2655,7 +2657,10 @@ public class MBSuspiciousActivityPersistenceImpl
 			MBSuspiciousActivity mbSuspiciousActivity =
 				(MBSuspiciousActivity)result;
 
-			if ((userId != mbSuspiciousActivity.getUserId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					MBSuspiciousActivity.class,
+					mbSuspiciousActivity.getPrimaryKey()) ||
+				(userId != mbSuspiciousActivity.getUserId()) ||
 				(messageId != mbSuspiciousActivity.getMessageId())) {
 
 				result = null;

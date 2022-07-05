@@ -23,6 +23,7 @@ import com.liferay.dynamic.data.lists.service.persistence.DDLRecordVersionPersis
 import com.liferay.dynamic.data.lists.service.persistence.DDLRecordVersionUtil;
 import com.liferay.dynamic.data.lists.service.persistence.impl.constants.DDLPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -1284,25 +1285,26 @@ public class DDLRecordVersionPersistenceImpl
 
 		version = Objects.toString(version, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDLRecordVersion.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {recordId, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByR_V, finderArgs);
 		}
 
 		if (result instanceof DDLRecordVersion) {
 			DDLRecordVersion ddlRecordVersion = (DDLRecordVersion)result;
 
-			if ((recordId != ddlRecordVersion.getRecordId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					DDLRecordVersion.class, ddlRecordVersion.getPrimaryKey()) ||
+				(recordId != ddlRecordVersion.getRecordId()) ||
 				!Objects.equals(version, ddlRecordVersion.getVersion())) {
 
 				result = null;

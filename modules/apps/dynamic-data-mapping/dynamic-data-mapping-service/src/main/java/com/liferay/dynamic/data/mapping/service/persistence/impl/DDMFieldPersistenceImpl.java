@@ -23,6 +23,7 @@ import com.liferay.dynamic.data.mapping.service.persistence.DDMFieldPersistence;
 import com.liferay.dynamic.data.mapping.service.persistence.DDMFieldUtil;
 import com.liferay.dynamic.data.mapping.service.persistence.impl.constants.DDMPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -1787,25 +1788,26 @@ public class DDMFieldPersistenceImpl
 
 		instanceId = Objects.toString(instanceId, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMField.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {storageId, instanceId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByS_I, finderArgs);
 		}
 
 		if (result instanceof DDMField) {
 			DDMField ddmField = (DDMField)result;
 
-			if ((storageId != ddmField.getStorageId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					DDMField.class, ddmField.getPrimaryKey()) ||
+				(storageId != ddmField.getStorageId()) ||
 				!Objects.equals(instanceId, ddmField.getInstanceId())) {
 
 				result = null;

@@ -15,6 +15,7 @@
 package com.liferay.portlet.social.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -2199,18 +2200,17 @@ public class SocialActivityPersistenceImpl
 	public SocialActivity fetchByMirrorActivityId(
 		long mirrorActivityId, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialActivity.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {mirrorActivityId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByMirrorActivityId, finderArgs);
 		}
@@ -2218,7 +2218,10 @@ public class SocialActivityPersistenceImpl
 		if (result instanceof SocialActivity) {
 			SocialActivity socialActivity = (SocialActivity)result;
 
-			if (mirrorActivityId != socialActivity.getMirrorActivityId()) {
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					SocialActivity.class, socialActivity.getPrimaryKey()) ||
+				(mirrorActivityId != socialActivity.getMirrorActivityId())) {
+
 				result = null;
 			}
 		}
@@ -5465,12 +5468,11 @@ public class SocialActivityPersistenceImpl
 		long groupId, long userId, long createDate, long classNameId,
 		long classPK, int type, long receiverUserId, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialActivity.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				groupId, userId, createDate, classNameId, classPK, type,
 				receiverUserId
@@ -5479,7 +5481,7 @@ public class SocialActivityPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_U_CD_C_C_T_R, finderArgs);
 		}
@@ -5487,7 +5489,9 @@ public class SocialActivityPersistenceImpl
 		if (result instanceof SocialActivity) {
 			SocialActivity socialActivity = (SocialActivity)result;
 
-			if ((groupId != socialActivity.getGroupId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					SocialActivity.class, socialActivity.getPrimaryKey()) ||
+				(groupId != socialActivity.getGroupId()) ||
 				(userId != socialActivity.getUserId()) ||
 				(createDate != socialActivity.getCreateDate()) ||
 				(classNameId != socialActivity.getClassNameId()) ||

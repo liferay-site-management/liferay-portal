@@ -15,6 +15,7 @@
 package com.liferay.portal.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -661,18 +662,17 @@ public class VirtualHostPersistenceImpl
 
 		hostname = Objects.toString(hostname, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			VirtualHost.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {hostname};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByHostname, finderArgs);
 		}
@@ -680,7 +680,10 @@ public class VirtualHostPersistenceImpl
 		if (result instanceof VirtualHost) {
 			VirtualHost virtualHost = (VirtualHost)result;
 
-			if (!Objects.equals(hostname, virtualHost.getHostname())) {
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					VirtualHost.class, virtualHost.getPrimaryKey()) ||
+				!Objects.equals(hostname, virtualHost.getHostname())) {
+
 				result = null;
 			}
 		}
@@ -1472,12 +1475,11 @@ public class VirtualHostPersistenceImpl
 		long companyId, long layoutSetId, boolean defaultVirtualHost,
 		boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			VirtualHost.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {
 				companyId, layoutSetId, defaultVirtualHost
 			};
@@ -1485,7 +1487,7 @@ public class VirtualHostPersistenceImpl
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByC_L_D, finderArgs);
 		}
@@ -1493,7 +1495,9 @@ public class VirtualHostPersistenceImpl
 		if (result instanceof VirtualHost) {
 			VirtualHost virtualHost = (VirtualHost)result;
 
-			if ((companyId != virtualHost.getCompanyId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					VirtualHost.class, virtualHost.getPrimaryKey()) ||
+				(companyId != virtualHost.getCompanyId()) ||
 				(layoutSetId != virtualHost.getLayoutSetId()) ||
 				(defaultVirtualHost != virtualHost.isDefaultVirtualHost())) {
 

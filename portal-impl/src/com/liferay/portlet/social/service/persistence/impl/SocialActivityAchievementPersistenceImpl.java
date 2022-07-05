@@ -15,6 +15,7 @@
 package com.liferay.portlet.social.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -2415,18 +2416,17 @@ public class SocialActivityAchievementPersistenceImpl
 
 		name = Objects.toString(name, "");
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialActivityAchievement.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {groupId, userId, name};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_U_N, finderArgs);
 		}
@@ -2435,7 +2435,10 @@ public class SocialActivityAchievementPersistenceImpl
 			SocialActivityAchievement socialActivityAchievement =
 				(SocialActivityAchievement)result;
 
-			if ((groupId != socialActivityAchievement.getGroupId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					SocialActivityAchievement.class,
+					socialActivityAchievement.getPrimaryKey()) ||
+				(groupId != socialActivityAchievement.getGroupId()) ||
 				(userId != socialActivityAchievement.getUserId()) ||
 				!Objects.equals(name, socialActivityAchievement.getName())) {
 

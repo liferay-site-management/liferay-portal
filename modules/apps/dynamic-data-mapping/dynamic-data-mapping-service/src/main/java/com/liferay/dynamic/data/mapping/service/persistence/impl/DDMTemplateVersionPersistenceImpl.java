@@ -23,6 +23,7 @@ import com.liferay.dynamic.data.mapping.service.persistence.DDMTemplateVersionPe
 import com.liferay.dynamic.data.mapping.service.persistence.DDMTemplateVersionUtil;
 import com.liferay.dynamic.data.mapping.service.persistence.impl.constants.DDMPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -692,25 +693,27 @@ public class DDMTemplateVersionPersistenceImpl
 
 		version = Objects.toString(version, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMTemplateVersion.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {templateId, version};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(_finderPathFetchByT_V, finderArgs);
 		}
 
 		if (result instanceof DDMTemplateVersion) {
 			DDMTemplateVersion ddmTemplateVersion = (DDMTemplateVersion)result;
 
-			if ((templateId != ddmTemplateVersion.getTemplateId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					DDMTemplateVersion.class,
+					ddmTemplateVersion.getPrimaryKey()) ||
+				(templateId != ddmTemplateVersion.getTemplateId()) ||
 				!Objects.equals(version, ddmTemplateVersion.getVersion())) {
 
 				result = null;

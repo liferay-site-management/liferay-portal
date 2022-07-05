@@ -20,6 +20,7 @@ import com.liferay.document.library.kernel.model.DLFileEntryMetadataTable;
 import com.liferay.document.library.kernel.service.persistence.DLFileEntryMetadataPersistence;
 import com.liferay.document.library.kernel.service.persistence.DLFileEntryMetadataUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -2361,18 +2362,17 @@ public class DLFileEntryMetadataPersistenceImpl
 	public DLFileEntryMetadata fetchByD_F(
 		long DDMStructureId, long fileVersionId, boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileEntryMetadata.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {DDMStructureId, fileVersionId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByD_F, finderArgs);
 		}
@@ -2381,7 +2381,10 @@ public class DLFileEntryMetadataPersistenceImpl
 			DLFileEntryMetadata dlFileEntryMetadata =
 				(DLFileEntryMetadata)result;
 
-			if ((DDMStructureId != dlFileEntryMetadata.getDDMStructureId()) ||
+			if (!CTPersistenceHelperUtil.isProductionMode(
+					DLFileEntryMetadata.class,
+					dlFileEntryMetadata.getPrimaryKey()) ||
+				(DDMStructureId != dlFileEntryMetadata.getDDMStructureId()) ||
 				(fileVersionId != dlFileEntryMetadata.getFileVersionId())) {
 
 				result = null;

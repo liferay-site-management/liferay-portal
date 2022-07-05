@@ -23,6 +23,7 @@ import com.liferay.commerce.shop.by.diagram.service.persistence.CSDiagramEntryPe
 import com.liferay.commerce.shop.by.diagram.service.persistence.CSDiagramEntryUtil;
 import com.liferay.commerce.shop.by.diagram.service.persistence.impl.constants.CommercePersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -1207,18 +1208,17 @@ public class CSDiagramEntryPersistenceImpl
 
 		sequence = Objects.toString(sequence, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CSDiagramEntry.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {CPDefinitionId, sequence};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByCPDI_S, finderArgs);
 		}
@@ -1226,7 +1226,9 @@ public class CSDiagramEntryPersistenceImpl
 		if (result instanceof CSDiagramEntry) {
 			CSDiagramEntry csDiagramEntry = (CSDiagramEntry)result;
 
-			if ((CPDefinitionId != csDiagramEntry.getCPDefinitionId()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					CSDiagramEntry.class, csDiagramEntry.getPrimaryKey()) ||
+				(CPDefinitionId != csDiagramEntry.getCPDefinitionId()) ||
 				!Objects.equals(sequence, csDiagramEntry.getSequence())) {
 
 				result = null;

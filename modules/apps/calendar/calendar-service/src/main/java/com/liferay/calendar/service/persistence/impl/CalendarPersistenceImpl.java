@@ -23,6 +23,7 @@ import com.liferay.calendar.service.persistence.CalendarPersistence;
 import com.liferay.calendar.service.persistence.CalendarUtil;
 import com.liferay.calendar.service.persistence.impl.constants.CalendarPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -716,18 +717,17 @@ public class CalendarPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			Calendar.class);
+		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			finderArgs = new Object[] {uuid, groupId};
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs);
 		}
@@ -735,7 +735,9 @@ public class CalendarPersistenceImpl
 		if (result instanceof Calendar) {
 			Calendar calendar = (Calendar)result;
 
-			if (!Objects.equals(uuid, calendar.getUuid()) ||
+			if (!ctPersistenceHelper.isProductionMode(
+					Calendar.class, calendar.getPrimaryKey()) ||
+				!Objects.equals(uuid, calendar.getUuid()) ||
 				(groupId != calendar.getGroupId())) {
 
 				result = null;
