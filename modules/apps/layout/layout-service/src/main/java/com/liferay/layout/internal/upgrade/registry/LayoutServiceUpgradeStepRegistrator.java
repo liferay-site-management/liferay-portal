@@ -17,6 +17,7 @@ package com.liferay.layout.internal.upgrade.registry;
 import com.liferay.asset.kernel.service.AssetCategoryLocalService;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.asset.kernel.service.AssetTagLocalService;
+import com.liferay.fragment.service.FragmentEntryLinkLocalService;
 import com.liferay.layout.internal.upgrade.v1_0_0.LayoutClassedModelUsageUpgradeProcess;
 import com.liferay.layout.internal.upgrade.v1_0_0.LayoutPermissionsUpgradeProcess;
 import com.liferay.layout.internal.upgrade.v1_0_0.LayoutUpgradeProcess;
@@ -24,11 +25,13 @@ import com.liferay.layout.internal.upgrade.v1_1_0.UpgradeCompanyId;
 import com.liferay.layout.internal.upgrade.v1_2_1.LayoutAssetUpgradeProcess;
 import com.liferay.layout.internal.upgrade.v1_2_2.LayoutSEOUpgradeProcess;
 import com.liferay.layout.internal.upgrade.v1_2_3.LayoutRevisionUpgradeProcess;
+import com.liferay.layout.internal.upgrade.v1_3_0.LayoutPortletPreferencesUpgradeProcess;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutBranchLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.LayoutRevisionLocalService;
 import com.liferay.portal.kernel.service.LayoutSetBranchLocalService;
+import com.liferay.portal.kernel.service.PortletPreferencesLocalService;
 import com.liferay.portal.kernel.upgrade.CTModelUpgradeProcess;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
 
@@ -72,6 +75,11 @@ public class LayoutServiceUpgradeStepRegistrator
 			new LayoutRevisionUpgradeProcess(
 				_layoutBranchLocalService, _layoutLocalService,
 				_layoutRevisionLocalService, _layoutSetBranchLocalService));
+
+		registry.register(
+			"1.2.3", "1.3.0",
+			new LayoutPortletPreferencesUpgradeProcess(
+				_fragmentEntryLinkLocalService));
 	}
 
 	@Reference
@@ -82,6 +90,9 @@ public class LayoutServiceUpgradeStepRegistrator
 
 	@Reference
 	private AssetTagLocalService _assetTagLocalService;
+
+	@Reference
+	private FragmentEntryLinkLocalService _fragmentEntryLinkLocalService;
 
 	@Reference
 	private GroupLocalService _groupLocalService;
@@ -97,5 +108,8 @@ public class LayoutServiceUpgradeStepRegistrator
 
 	@Reference
 	private LayoutSetBranchLocalService _layoutSetBranchLocalService;
+
+	@Reference
+	private PortletPreferencesLocalService _portletPreferencesLocalService;
 
 }
