@@ -104,7 +104,7 @@ definition {
 
 			SystemSettings.gotoConfiguration(
 				configurationCategory = "Publications",
-				configurationName = "Publications Settings",
+				configurationName = "Settings",
 				configurationScope = "Virtual Instance Scope");
 
 			FormFields.disableCheckbox(fieldName = "Enabled");
@@ -140,7 +140,7 @@ definition {
 
 			SystemSettings.gotoConfiguration(
 				configurationCategory = "Publications",
-				configurationName = "Publications Settings",
+				configurationName = "Settings",
 				configurationScope = "Virtual Instance Scope");
 
 			FormFields.enableCheckbox(fieldName = "Enabled");
