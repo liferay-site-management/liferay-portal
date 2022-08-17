@@ -71,16 +71,15 @@ public class PublicationsWebUpgradeStepRegistrator
 
 			});
 
-		registry.register(
-			"1.0.1", "1.0.2",
-			new com.liferay.change.tracking.web.internal.upgrade.v1_0_2.
-				PublicationsUserRoleUpgradeProcess(
-					_companyLocalService, _resourceActions,
-					_resourcePermissionLocalService, _roleLocalService,
-					_userLocalService));
+		registry.register("1.0.1", "1.0.2", new DummyUpgradeStep());
 
 		registry.register(
 			"1.0.2", "1.0.3",
+			new com.liferay.change.tracking.web.internal.upgrade.v1_0_3.
+				PublicationsUserRoleUpgradeProcess(
+					_companyLocalService, _resourceActions,
+					_resourcePermissionLocalService, _roleLocalService,
+					_userLocalService),
 			new PublicationsConfigurationPortletUpgradeProcess(
 				_resourceActionLocalService, _resourcePermissionLocalService));
 
