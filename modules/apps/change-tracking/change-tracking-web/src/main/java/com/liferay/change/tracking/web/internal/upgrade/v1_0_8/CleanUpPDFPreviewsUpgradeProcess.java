@@ -56,8 +56,8 @@ public class CleanUpPDFPreviewsUpgradeProcess extends UpgradeProcess {
 					"CTEntry inner join CTSContent on ",
 					"CTEntry.modelClassNameId = ", ctsContentClassNameId, " ",
 					"and (CTSContent.ctsContentId = CTEntry.modelClassPK and (",
-					"CTSContent.path_ like \"document_preview%\" or ",
-					"CTSContent.path_ like \"document_thumbnail%\"))"));
+					"CTSContent.path_ like 'document_preview%' or ",
+					"CTSContent.path_ like 'document_thumbnail%'))"));
 			ResultSet resultSet = preparedStatement.executeQuery()) {
 
 			while (resultSet.next()) {
