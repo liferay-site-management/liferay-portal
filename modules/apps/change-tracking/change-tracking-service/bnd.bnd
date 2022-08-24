@@ -1,6 +1,7 @@
 Bundle-Name: Liferay Change Tracking Service
 Bundle-SymbolicName: com.liferay.change.tracking.service
 Bundle-Version: 3.0.54
-Liferay-Require-SchemaVersion: 2.5.1
+Liferay-Require-SchemaVersion: 2.6.0
+>>>>>>> 1b599b226062 (LPS-161315 create CTCollectionTemplate service and permissions)
 Liferay-Service: true
 -dsannotations-options: inherit
