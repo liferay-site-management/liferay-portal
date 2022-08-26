@@ -57,7 +57,7 @@ import javax.portlet.PortletPreferences;
  * @author Brian Wing Shun Chan
  */
 
-@CTAware
+@CTAware(onProduction = true)
 public class MailServiceImpl implements IdentifiableOSGiService, MailService {
 
 	@Override

@@ -51,7 +51,7 @@ import org.osgi.annotation.versioning.ProviderType;
  * @see UserNotificationEventLocalServiceUtil
  * @generated
  */
-@CTAware
+@CTAware(onProduction = true)
 @ProviderType
 @Transactional(
 	isolation = Isolation.PORTAL,

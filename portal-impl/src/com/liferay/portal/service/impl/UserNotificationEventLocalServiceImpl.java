@@ -46,7 +46,7 @@ import java.util.Map;
  * @author Edward Han
  * @author Brian Wing Shun Chan
  */
-@CTAware
+@CTAware(onProduction = true)
 public class UserNotificationEventLocalServiceImpl
 	extends UserNotificationEventLocalServiceBaseImpl {
 

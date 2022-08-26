@@ -29,7 +29,7 @@ import javax.mail.Session;
  * @author Brian Wing Shun Chan
  */
 
-@CTAware
+@CTAware(onProduction = true)
 @Transactional(rollbackFor = {PortalException.class, SystemException.class})
 public interface MailService {
 
