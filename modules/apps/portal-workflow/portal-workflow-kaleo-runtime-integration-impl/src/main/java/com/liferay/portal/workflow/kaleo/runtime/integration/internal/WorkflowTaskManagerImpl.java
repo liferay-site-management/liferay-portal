@@ -96,7 +96,7 @@ import org.osgi.service.component.annotations.Reference;
 	immediate = true, property = "proxy.bean=false",
 	service = WorkflowTaskManager.class
 )
-@CTAware
+//@CTAware(onProduction = true)
 public class WorkflowTaskManagerImpl implements WorkflowTaskManager {
 
 	@Override

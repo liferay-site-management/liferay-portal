@@ -14,7 +14,9 @@
 
 package com.liferay.portal.workflow.kaleo.runtime.internal.helper;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -51,8 +53,12 @@ public class NotificationHelperImpl implements NotificationHelper {
 			_kaleoNotificationLocalService.getKaleoNotifications(
 				kaleoClassName, kaleoClassPK, executionType.getValue());
 
-		for (KaleoNotification kaleoNotification : kaleoNotifications) {
-			_sendKaleoNotification(kaleoNotification, executionContext);
+		try (SafeCloseable safeCloseable =
+				CTCollectionThreadLocal.setProductionModeWithSafeCloseable()) {
+
+			for (KaleoNotification kaleoNotification : kaleoNotifications) {
+				_sendKaleoNotification(kaleoNotification, executionContext);
+			}
 		}
 	}
 

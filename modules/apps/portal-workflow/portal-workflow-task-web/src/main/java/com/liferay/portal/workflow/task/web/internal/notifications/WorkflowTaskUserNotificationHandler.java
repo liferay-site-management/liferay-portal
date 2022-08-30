@@ -14,7 +14,10 @@
 
 package com.liferay.portal.workflow.task.web.internal.notifications;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.change.tracking.CTAware;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -52,6 +55,7 @@ import org.osgi.service.component.annotations.Reference;
 	property = "javax.portlet.name=" + PortletKeys.MY_WORKFLOW_TASK,
 	service = UserNotificationHandler.class
 )
+@CTAware(onProduction = true)
 public class WorkflowTaskUserNotificationHandler
 	extends BaseUserNotificationHandler {
 

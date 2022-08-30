@@ -15,6 +15,7 @@
 package com.liferay.portal.service.impl;
 
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.change.tracking.CTAware;
 import com.liferay.portal.kernel.exception.NoSuchUserNotificationDeliveryException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
@@ -27,6 +28,7 @@ import com.liferay.portal.service.base.UserNotificationDeliveryLocalServiceBaseI
 /**
  * @author Jonathan Lee
  */
+@CTAware(onProduction = true)
 public class UserNotificationDeliveryLocalServiceImpl
 	extends UserNotificationDeliveryLocalServiceBaseImpl {
 

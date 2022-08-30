@@ -14,6 +14,8 @@
 
 package com.liferay.portal.workflow.kaleo.runtime.internal.notification;
 
+import com.liferay.petra.lang.SafeCloseable;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.UserNotificationDeliveryConstants;
 import com.liferay.portal.kernel.service.UserNotificationEventLocalService;
@@ -61,10 +63,17 @@ public class UserNotificationMessageSender
 						entry.getValue(),
 						UserNotificationDeliveryConstants.TYPE_WEBSITE)) {
 
-				_userNotificationEventLocalService.sendUserNotificationEvents(
-					notificationRecipient.getUserId(),
-					PortletKeys.MY_WORKFLOW_TASK,
-					UserNotificationDeliveryConstants.TYPE_WEBSITE, jsonObject);
+				try (SafeCloseable safeCloseable =
+						CTCollectionThreadLocal.
+							setProductionModeWithSafeCloseable()) {
+
+					_userNotificationEventLocalService.
+						sendUserNotificationEvents(
+							notificationRecipient.getUserId(),
+							PortletKeys.MY_WORKFLOW_TASK,
+							UserNotificationDeliveryConstants.TYPE_WEBSITE,
+							jsonObject);
+				}
 			}
 		}
 	}

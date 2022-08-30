@@ -14,8 +14,11 @@
 
 package com.liferay.portal.kernel.notifications;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.change.tracking.CTAware;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -34,6 +37,7 @@ import java.util.Locale;
 /**
  * @author Jonathan Lee
  */
+//@CTAware(onProduction = true)
 public abstract class BaseUserNotificationHandler
 	implements UserNotificationHandler {
 
@@ -53,7 +57,8 @@ public abstract class BaseUserNotificationHandler
 			ServiceContext serviceContext)
 		throws PortalException {
 
-		try {
+		try(SafeCloseable safeCloseable =
+				CTCollectionThreadLocal.setProductionModeWithSafeCloseable()) {
 			UserNotificationFeedEntry userNotificationFeedEntry = doInterpret(
 				userNotificationEvent, serviceContext);
 
