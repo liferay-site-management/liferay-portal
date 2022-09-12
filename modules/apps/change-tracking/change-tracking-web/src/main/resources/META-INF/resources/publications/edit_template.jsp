@@ -1,3 +1,6 @@
+<%@ page import="java.util.HashMap" %><%@
+page import="java.util.Map" %>
+
 <%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
@@ -42,6 +45,15 @@ else {
 
 portletDisplay.setURLBack(backURL);
 portletDisplay.setShowBackIcon(true);
+
+Map<String, Object> reactProps = new HashMap<>();
+
+reactProps.put("ctCollectionTemplateId", ctCollectionTemplateId);
+reactProps.put("name", name);
+reactProps.put("description", description);
+reactProps.put("publicationName", name);
+reactProps.put("publicationDescription", description);
+reactProps.put("saveButtonLabel", LanguageUtil.get(request, saveButtonLabel));
 %>
 
 <liferay-portlet:actionURL name="/change_tracking/edit_template" var="actionURL">
@@ -49,39 +61,50 @@ portletDisplay.setShowBackIcon(true);
 </liferay-portlet:actionURL>
 
 <clay:container-fluid
-	cssClass="container-form-lg"
+	cssClass="container-form-lg edit-publication-template-container"
 >
-	<clay:sheet>
-		<aui:form action='<%= actionURL + "&etag=0&strip=0" %>' cssClass="lfr-export-dialog" method="post" name="editPublicationTemplateFm">
-			<aui:input name="ctCollectionTemplateId" type="hidden" value="<%= ctCollectionTemplateId %>" />
-
-			<aui:input label="name" name="name" placeholder="publication-template-name-placeholder" value="<%= name %>">
-				<aui:validator name="maxLength"><%= ModelHintsUtil.getMaxLength(CTCollectionTemplate.class.getName(), "name") %></aui:validator>
-				<aui:validator name="required" />
-			</aui:input>
-
-			<aui:input label="description" name="description" placeholder="publication-template-description-placeholder" type="textarea" value="<%= description %>">
-				<aui:validator name="maxLength"><%= ModelHintsUtil.getMaxLength(CTCollectionTemplate.class.getName(), "description") %></aui:validator>
-			</aui:input>
-
-			<aui:fieldset collapsed="<%= false %>" collapsible="<%= true %>" label="publication-information">
-				<aui:input label="publication-name" name="publicationName" placeholder="publication-name-placeholder" value="<%= name %>">
-					<aui:validator name="maxLength"><%= ModelHintsUtil.getMaxLength(CTCollection.class.getName(), "name") %></aui:validator>
-				</aui:input>
-
-				<aui:input label="publication-description" name="publicationDescription" placeholder="publication-description-placeholder" type="textarea" value="<%= description %>">
-					<aui:validator name="maxLength"><%= ModelHintsUtil.getMaxLength(CTCollection.class.getName(), "description") %></aui:validator>
-				</aui:input>
-			</aui:fieldset>
-
-			<aui:fieldset collapsed="<%= false %>" collapsible="<%= true %>" helpMessage="publication-collaborators-help" label="publication-collaborators">
-			</aui:fieldset>
-
-			<aui:button-row>
-				<aui:button id="saveButton" type="submit" value="<%= LanguageUtil.get(request, saveButtonLabel) %>" />
-
-				<aui:button href="<%= redirect %>" type="cancel" />
-			</aui:button-row>
-		</aui:form>
-	</clay:sheet>
+<react:component
+	module="publications/js/PublicationTemplateEditView"
+	props="<%= reactProps %>"
+/>
 </clay:container-fluid>
+
+<%-- --%>
+
+<%--<clay:container-fluid--%>
+<%-- cssClass="container-form-lg"--%>
+<%-->--%>
+<%-- <clay:sheet>--%>
+<%-- <aui:form action='<%= actionURL + "&etag=0&strip=0" %>' cssClass="lfr-export-dialog" method="post" name="editPublicationTemplateFm">--%>
+<%-- <aui:input name="ctCollectionTemplateId" type="hidden" value="<%= ctCollectionTemplateId %>" />--%>
+
+<%-- <aui:input label="name" name="name" placeholder="publication-template-name-placeholder" value="<%= name %>">--%>
+<%-- <aui:validator name="maxLength"><%= ModelHintsUtil.getMaxLength(CTCollectionTemplate.class.getName(), "name") %></aui:validator>--%>
+<%-- <aui:validator name="required" />--%>
+<%-- </aui:input>--%>
+
+<%-- <aui:input label="description" name="description" placeholder="publication-template-description-placeholder" type="textarea" value="<%= description %>">--%>
+<%-- <aui:validator name="maxLength"><%= ModelHintsUtil.getMaxLength(CTCollectionTemplate.class.getName(), "description") %></aui:validator>--%>
+<%-- </aui:input>--%>
+
+<%-- <aui:fieldset collapsed="<%= false %>" collapsible="<%= true %>" label="publication-information">--%>
+<%-- <aui:input label="publication-name" name="publicationName" placeholder="publication-name-placeholder" value="<%= name %>">--%>
+<%-- <aui:validator name="maxLength"><%= ModelHintsUtil.getMaxLength(CTCollection.class.getName(), "name") %></aui:validator>--%>
+<%-- </aui:input>--%>
+
+<%-- <aui:input label="publication-description" name="publicationDescription" placeholder="publication-description-placeholder" type="textarea" value="<%= description %>">--%>
+<%-- <aui:validator name="maxLength"><%= ModelHintsUtil.getMaxLength(CTCollection.class.getName(), "description") %></aui:validator>--%>
+<%-- </aui:input>--%>
+<%-- </aui:fieldset>--%>
+
+<%-- <aui:fieldset collapsed="<%= false %>" collapsible="<%= true %>" helpMessage="publication-collaborators-help" label="publication-collaborators">--%>
+<%-- </aui:fieldset>--%>
+
+<%-- <aui:button-row>--%>
+<%-- <aui:button id="saveButton" type="submit" value="<%= LanguageUtil.get(request, saveButtonLabel) %>" />--%>
+
+<%-- <aui:button href="<%= redirect %>" type="cancel" />--%>
+<%-- </aui:button-row>--%>
+<%-- </aui:form>--%>
+<%-- </clay:sheet>--%>
+<%--</clay:container-fluid>--%>

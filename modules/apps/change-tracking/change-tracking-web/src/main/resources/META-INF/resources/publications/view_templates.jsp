@@ -131,7 +131,7 @@ SearchContainer<CTCollectionTemplate> searchContainer = viewTemplatesDisplayCont
 					</div>
 
 					<react:component
-						module="publications/js/ViewPublicationsTemplateDropdownMenu"
+						module="publications/js/ViewPublicationsDropdownMenu"
 						props="<%= viewTemplatesDisplayContext.getDropdownReactData(ctCollectionTemplate) %>"
 					/>
 				</div>
