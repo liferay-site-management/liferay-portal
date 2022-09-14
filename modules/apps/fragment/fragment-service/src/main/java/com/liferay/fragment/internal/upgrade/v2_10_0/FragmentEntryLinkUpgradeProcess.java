@@ -12,12 +12,18 @@
  * details.
  */
 
-import {useMemo} from 'react';
+package com.liferay.fragment.internal.upgrade.v2_10_0;
 
-import {config} from '../config/index';
+import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
-let nextId = 0;
+/**
+ * @author Eudaldo Alonso
+ */
+public class FragmentEntryLinkUpgradeProcess extends UpgradeProcess {
 
-export function useId() {
-	return useMemo(() => `${config.portletNamespace}_useId_${nextId++}`, []);
+	@Override
+	protected void doUpgrade() throws Exception {
+		alterTableAddColumn("FragmentEntryLink", "deleted", "BOOLEAN");
+	}
+
 }

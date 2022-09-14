@@ -13,11 +13,12 @@
  */
 
 import {useMemo} from 'react';
+import uuidv4 from 'uuid/v4';
 
-import {config} from './config';
+const PREFIX = uuidv4();
 
 let nextId = 0;
 
 export function useId() {
-	return useMemo(() => `${config.namespace}_useId_${nextId++}`, []);
+	return useMemo(() => `useId_${PREFIX}_${nextId++}`, []);
 }
