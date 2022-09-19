@@ -339,6 +339,161 @@ public interface CTEntryPersistence extends BasePersistence<CTEntry> {
 	public int countByC_MCNI(long ctCollectionId, long modelClassNameId);
 
 	/**
+	 * Returns all the ct entries where modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @return the matching ct entries
+	 */
+	public java.util.List<CTEntry> findByMCNI_MCPK(
+		long modelClassNameId, long modelClassPK);
+
+	/**
+	 * Returns a range of all the ct entries where modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @return the range of matching ct entries
+	 */
+	public java.util.List<CTEntry> findByMCNI_MCPK(
+		long modelClassNameId, long modelClassPK, int start, int end);
+
+	/**
+	 * Returns an ordered range of all the ct entries where modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching ct entries
+	 */
+	public java.util.List<CTEntry> findByMCNI_MCPK(
+		long modelClassNameId, long modelClassPK, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+			orderByComparator);
+
+	/**
+	 * Returns an ordered range of all the ct entries where modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the ordered range of matching ct entries
+	 */
+	public java.util.List<CTEntry> findByMCNI_MCPK(
+		long modelClassNameId, long modelClassPK, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+			orderByComparator,
+		boolean useFinderCache);
+
+	/**
+	 * Returns the first ct entry in the ordered set where modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching ct entry
+	 * @throws NoSuchEntryException if a matching ct entry could not be found
+	 */
+	public CTEntry findByMCNI_MCPK_First(
+			long modelClassNameId, long modelClassPK,
+			com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+				orderByComparator)
+		throws NoSuchEntryException;
+
+	/**
+	 * Returns the first ct entry in the ordered set where modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching ct entry, or <code>null</code> if a matching ct entry could not be found
+	 */
+	public CTEntry fetchByMCNI_MCPK_First(
+		long modelClassNameId, long modelClassPK,
+		com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+			orderByComparator);
+
+	/**
+	 * Returns the last ct entry in the ordered set where modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching ct entry
+	 * @throws NoSuchEntryException if a matching ct entry could not be found
+	 */
+	public CTEntry findByMCNI_MCPK_Last(
+			long modelClassNameId, long modelClassPK,
+			com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+				orderByComparator)
+		throws NoSuchEntryException;
+
+	/**
+	 * Returns the last ct entry in the ordered set where modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching ct entry, or <code>null</code> if a matching ct entry could not be found
+	 */
+	public CTEntry fetchByMCNI_MCPK_Last(
+		long modelClassNameId, long modelClassPK,
+		com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+			orderByComparator);
+
+	/**
+	 * Returns the ct entries before and after the current ct entry in the ordered set where modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * @param ctEntryId the primary key of the current ct entry
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next ct entry
+	 * @throws NoSuchEntryException if a ct entry with the primary key could not be found
+	 */
+	public CTEntry[] findByMCNI_MCPK_PrevAndNext(
+			long ctEntryId, long modelClassNameId, long modelClassPK,
+			com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+				orderByComparator)
+		throws NoSuchEntryException;
+
+	/**
+	 * Removes all the ct entries where modelClassNameId = &#63; and modelClassPK = &#63; from the database.
+	 *
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 */
+	public void removeByMCNI_MCPK(long modelClassNameId, long modelClassPK);
+
+	/**
+	 * Returns the number of ct entries where modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @return the number of matching ct entries
+	 */
+	public int countByMCNI_MCPK(long modelClassNameId, long modelClassPK);
+
+	/**
 	 * Returns the ct entry where ctCollectionId = &#63; and modelClassNameId = &#63; and modelClassPK = &#63; or throws a <code>NoSuchEntryException</code> if it could not be found.
 	 *
 	 * @param ctCollectionId the ct collection ID

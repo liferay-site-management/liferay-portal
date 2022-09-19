@@ -7,6 +7,7 @@ create index IX_FE644B52 on CTComment (ctCollectionId);
 create index IX_C5E592B8 on CTComment (ctEntryId);
 
 create unique index IX_295C418C on CTEntry (ctCollectionId, modelClassNameId, modelClassPK);
+create index IX_88A1512E on CTEntry (modelClassNameId, modelClassPK);
 
 create index IX_9FB742FA on CTMessage (ctCollectionId);
 
