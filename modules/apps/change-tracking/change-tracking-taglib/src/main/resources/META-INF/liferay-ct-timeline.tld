@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<taglib
+	version="2.1"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-jsptaglibrary_2_1.xsd"
+>
+	<description>Provides the Liferay CTTimeline component tags, prefixed with <![CDATA[<code>liferay-ct-timeline:</code>]]>.</description>
+	<tlib-version>1.0</tlib-version>
+	<short-name>liferay-ct-timeline</short-name>
+	<uri>http://liferay.com/tld/ct-timeline</uri>
+	<tag>
+		<description>Creates a change tracking timeline component.</description>
+		<name>timeline</name>
+		<tag-class>com.liferay.change.tracking.taglib.servlet.taglib.CTTimelineTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>modelClassNameId</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>modelClassPK</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+</taglib>
