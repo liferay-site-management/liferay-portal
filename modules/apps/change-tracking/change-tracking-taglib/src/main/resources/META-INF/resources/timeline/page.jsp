@@ -14,4 +14,71 @@
  */
 --%>
 
-<h1>Liferay Timeline Taglib</h1>
+<%@ include file="/init.jsp" %>
+
+<%
+	long modelClassNameId = GetterUtil.getLong(request.getAttribute("change-tracking:timeline:modelClassNameId"));
+	long modelClassPK = GetterUtil.getLong(request.getAttribute("change-tracking:timeline:modelClassPK"));
+
+	List<CTCollection> ctCollections = CTCollectionLocalServiceUtil.getExclusivePublishedCTCollections(modelClassNameId, modelClassPK);
+%>
+
+<clay:content-row
+	cssClass="sidebar-section"
+>
+	<clay:content-col
+		expand="<%= true %>"
+	>
+		<h1 class="component-title"><%=LanguageUtil.get(request, "timeline")%></h1>
+	</clay:content-col>
+
+<%-- TODO
+			<clay:content-col>
+				For add button
+			</clay:content-col>
+--%>
+</clay:content-row>
+
+<clay:content-row
+	cssClass="sidebar-section"
+>
+<%-- TODO
+	<clay:content-col>
+		Icon
+	</clay:content-col>
+--%>
+
+	<clay:content-col
+		expand="<%= true %>"
+	>
+		<h1 class="component-title">Current Draft</h1>
+	</clay:content-col>
+
+</clay:content-row>
+
+<c:forEach items="<%= ctCollections %>" var="ctCollection">
+	<clay:content-row
+		cssClass="sidebar-section"
+	>
+<%-- TODO
+		<clay:content-col>
+			Icon
+		</clay:content-col>
+--%>
+
+		<clay:content-col
+			expand="<%= true %>"
+		>
+			<h1 class="component-title">${ctCollection.getName()}</h1>
+			<%-- TODO
+				Add details
+			--%>
+		</clay:content-col>
+
+<%-- TODO
+		<clay:content-col>
+			Action menu
+		</clay:content-col>
+--%>
+	</clay:content-row>
+</c:forEach>
