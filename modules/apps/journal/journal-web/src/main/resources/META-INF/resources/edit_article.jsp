@@ -155,6 +155,13 @@ JournalEditArticleDisplayContext journalEditArticleDisplayContext = new JournalE
 							classPK="<%= article.getResourcePrimKey() %>"
 						/>
 					</liferay-ui:section>
+
+					<liferay-ui:section>
+						<liferay-change-tracking:timeline
+								className="<%= JournalArticle.class.getName() %>"
+								classPK="<%= article.getPrimaryKey() %>"
+						/>
+					</liferay-ui:section>
 				</c:if>
 			</liferay-ui:tabs>
 		</div>

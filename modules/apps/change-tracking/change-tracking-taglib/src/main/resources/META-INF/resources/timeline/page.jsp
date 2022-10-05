@@ -17,10 +17,10 @@
 <%@ include file="/init.jsp" %>
 
 <%
-	long modelClassNameId = GetterUtil.getLong(request.getAttribute("change-tracking:timeline:modelClassNameId"));
-	long modelClassPK = GetterUtil.getLong(request.getAttribute("change-tracking:timeline:modelClassPK"));
+String className = (String)request.getAttribute("change-tracking:timeline:className");
+long classPK = GetterUtil.getLong(request.getAttribute("change-tracking:timeline:classPK"));
 
-	List<CTCollection> ctCollections = CTCollectionLocalServiceUtil.getExclusivePublishedCTCollections(modelClassNameId, modelClassPK);
+TimelineDisplayContext timelineDisplayContext = new TimelineDisplayContext(renderRequest, renderResponse, className, classPK);
 %>
 
 <clay:content-row
@@ -29,7 +29,7 @@
 	<clay:content-col
 		expand="<%= true %>"
 	>
-		<h1 class="component-title"><%=LanguageUtil.get(request, "timeline")%></h1>
+		<h1 class="component-title"><liferay:ui:message key="timeline" /></h1>
 	</clay:content-col>
 
 <%-- TODO
@@ -37,6 +37,7 @@
 				For add button
 			</clay:content-col>
 --%>
+
 </clay:content-row>
 
 <clay:content-row
@@ -53,10 +54,9 @@
 	>
 		<h1 class="component-title">Current Draft</h1>
 	</clay:content-col>
-
 </clay:content-row>
 
-<c:forEach items="<%= ctCollections %>" var="ctCollection">
+<c:forEach items="<%= timelineDisplayContext.getCTCollections() %>" var="ctCollection">
 	<clay:content-row
 		cssClass="sidebar-section"
 	>
@@ -73,6 +73,7 @@
 			<%-- TODO
 				Add details
 			--%>
+
 		</clay:content-col>
 
 <%-- TODO
