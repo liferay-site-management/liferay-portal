@@ -14,11 +14,8 @@
 
 package com.liferay.change.tracking.taglib.servlet.taglib;
 
-import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.taglib.internal.servlet.ServletContextUtil;
 import com.liferay.taglib.util.IncludeTag;
-
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.PageContext;
@@ -26,30 +23,22 @@ import javax.servlet.jsp.PageContext;
 /**
  * @author Noor Najjar
  */
-public class CTTimelineTag extends IncludeTag {
+public class TimelineTag extends IncludeTag {
 
-	public List<CTCollection> getCtCollections() {
-		return _ctCollections;
+	public String getClassName() {
+		return _className;
 	}
 
-	public long getModelClassNameId() {
-		return _modelClassNameId;
+	public long getClassPK() {
+		return _classPK;
 	}
 
-	public long getModelClassPK() {
-		return _modelClassPK;
+	public void setClassName(String className) {
+		_className = className;
 	}
 
-	public void setCtCollections(List<CTCollection> ctCollections) {
-		_ctCollections = ctCollections;
-	}
-
-	public void setModelClassNameId(long modelClassNameId) {
-		_modelClassNameId = modelClassNameId;
-	}
-
-	public void setModelClassPK(long modelClassPK) {
-		_modelClassPK = modelClassPK;
+	public void setClassPK(long classPK) {
+		_classPK = classPK;
 	}
 
 	@Override
@@ -67,17 +56,14 @@ public class CTTimelineTag extends IncludeTag {
 	@Override
 	protected void setAttributes(HttpServletRequest httpServletRequest) {
 		httpServletRequest.setAttribute(
-			"change-tracking:timeline:modelClassNameId",
-			String.valueOf(_modelClassNameId));
+			"change-tracking:timeline:className", _className);
 		httpServletRequest.setAttribute(
-			"change-tracking:timeline:modelClassPK",
-			String.valueOf(_modelClassPK));
+			"change-tracking:timeline:classPK", String.valueOf(_classPK));
 	}
 
 	private static final String _PAGE = "/timeline/page.jsp";
 
-	private List<CTCollection> _ctCollections;
-	private long _modelClassNameId;
-	private long _modelClassPK;
+	private String _className;
+	private long _classPK;
 
 }
