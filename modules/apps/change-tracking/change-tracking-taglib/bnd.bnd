@@ -5,6 +5,6 @@ Export-Package: com.liferay.change.tracking.taglib.servlet.taglib
 Provide-Capability:\
 	osgi.extender;\
 		osgi.extender="jsp.taglib";\
-		uri="http://liferay.com/tld/ct-timeline";\
+		uri="http://liferay.com/tld/change-tracking";\
 		version:Version="${Bundle-Version}"
 Web-ContextPath: /change-tracking-taglib
