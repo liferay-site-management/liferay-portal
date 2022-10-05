@@ -1,4 +1,4 @@
-<%--
+<%@ page import="com.liferay.journal.model.JournalArticleResource" %><%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -127,7 +127,7 @@ JournalEditArticleDisplayContext journalEditArticleDisplayContext = new JournalE
 		<div class="sidebar-body">
 
 			<%
-			String tabs1Names = "properties,usages";
+			String tabs1Names = "properties,usages,timeline";
 
 			if ((article == null) || (journalEditArticleDisplayContext.getClassNameId() != JournalArticleConstants.CLASS_NAME_ID_DEFAULT)) {
 				tabs1Names = "properties";
@@ -156,6 +156,13 @@ JournalEditArticleDisplayContext journalEditArticleDisplayContext = new JournalE
 						/>
 					</liferay-ui:section>
 				</c:if>
+
+				<liferay-ui:section>
+					<liferay-ct-timeline:timeline
+						modelClassNameId="<%=ClassNameLocalServiceUtil.getClassNameId(JournalArticle.class.getName())%>"
+						modelClassPK="<%=article.getResourcePrimKey()%>"
+					/>
+				</liferay-ui:section>
 			</liferay-ui:tabs>
 		</div>
 	</div>

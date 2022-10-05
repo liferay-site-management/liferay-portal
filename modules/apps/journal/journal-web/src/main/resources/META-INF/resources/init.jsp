@@ -21,6 +21,7 @@
 <%@ taglib uri="http://liferay.com/tld/asset" prefix="liferay-asset" %><%@
 taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
 taglib uri="http://liferay.com/tld/clay" prefix="clay" %><%@
+taglib uri="http://liferay.com/tld/ct-timeline" prefix="liferay-ct-timeline" %><%@
 taglib uri="http://liferay.com/tld/data-engine" prefix="liferay-data-engine" %><%@
 taglib uri="http://liferay.com/tld/expando" prefix="liferay-expando" %><%@
 taglib uri="http://liferay.com/tld/friendly-url" prefix="liferay-friendly-url" %><%@
@@ -98,6 +99,8 @@ page import="com.liferay.journal.exception.InvalidFolderException" %><%@
 page import="com.liferay.journal.exception.MaxAddMenuFavItemsException" %><%@
 page import="com.liferay.journal.exception.NoSuchArticleException" %><%@
 page import="com.liferay.journal.exception.NoSuchFolderException" %><%@
+page import="com.liferay.change.tracking.model.CTCollection" %><%@
+page import="com.liferay.change.tracking.service.CTCollectionLocalServiceUtil" %><%@
 page import="com.liferay.journal.model.JournalArticle" %><%@
 page import="com.liferay.journal.model.JournalArticleDisplay" %><%@
 page import="com.liferay.journal.model.JournalArticleLocalization" %><%@

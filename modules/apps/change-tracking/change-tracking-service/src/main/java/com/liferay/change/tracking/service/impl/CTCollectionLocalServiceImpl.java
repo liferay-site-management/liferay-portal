@@ -82,6 +82,7 @@ import com.liferay.portal.kernel.service.persistence.change.tracking.CTPersisten
 import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.model.uid.UIDFactory;
@@ -737,6 +738,38 @@ public class CTCollectionLocalServiceImpl
 		}
 
 		return ctEntries;
+	}
+
+	public List<CTCollection> getExclusivePublishedCTCollections(
+			long modelClassNameId, long modelClassPK)
+		throws PortalException {
+
+		List<CTEntry> ctEntries = _ctEntryPersistence.findByMCNI_MCPK(
+			modelClassNameId, modelClassPK);
+
+		if (ctEntries.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<CTCollection> ctCollections = new ArrayList<>(ctEntries.size());
+
+		for (CTEntry ctEntry : ctEntries) {
+			CTCollection ctCollection =
+				ctCollectionPersistence.findByPrimaryKey(
+					ctEntry.getCtCollectionId());
+
+			if (ctCollection.getStatus() == WorkflowConstants.STATUS_APPROVED) {
+				ctCollections.add(ctCollection);
+			}
+		}
+
+		OrderByComparator<CTCollection> orderByComparator =
+			OrderByComparatorFactoryUtil.create(
+				"CTCollection", "statusDate", false);
+
+		ctCollections.sort(orderByComparator);
+
+		return ctCollections;
 	}
 
 	@Override
