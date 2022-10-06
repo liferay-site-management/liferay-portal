@@ -13,19 +13,95 @@
  */
 
 import ClayButton from '@clayui/button';
-import React from 'react';
+import {fetch, navigate, objectToFormData} from 'frontend-js-web';
+import React, {useState} from 'react';
 
+import {ManageCollaborators} from './ManageCollaborators';
 import CollapsablePanel from './components/form/CollapsablePanel';
 import TextField from './components/form/TextField';
+import {showNotification} from './util/util';
 
 export default function PublicationTemplateEditView({
+	actionUrl,
+	collaboratorsProps,
 	ctCollectionTemplateId,
 	description,
 	name,
+	namespace,
 	publicationDescription,
 	publicationName,
+	redirect,
 	saveButtonLabel,
 }) {
+	const [showModal, setShowModal] = useState(false);
+	const [collaboratorData, setCollaboratorData] = useState(null);
+	const [nameField, setNameField] = useState(name);
+	const [descriptionField, setDescriptionField] = useState(description);
+	const [publicationNameField, setPublicationNameField] = useState(
+		publicationName
+	);
+	const [
+		publicationDescriptionField,
+		setPublicationDescriptionField,
+	] = useState(publicationDescription);
+
+	const afterSubmitNotification = () => {
+		setShowModal(false);
+		setCollaboratorData(null);
+	};
+
+	const handleSubmit = () => {
+		const bodyContent = objectToFormData({
+			[`${namespace}name`]: nameField,
+			[`${namespace}ctCollectionTemplateId`]: ctCollectionTemplateId,
+			[`${namespace}description`]: descriptionField,
+			[`${namespace}publicationName`]: publicationNameField,
+			[`${namespace}publicationDescription`]: publicationDescriptionField,
+			[`${namespace}publicationsUserRoleUserIds`]: collaboratorData
+				? collaboratorData['publicationsUserRoleUserIds']
+				: null,
+			[`${namespace}roleValues`]: collaboratorData
+				? collaboratorData['roleValues']
+				: null,
+			[`${namespace}userIds`]: collaboratorData
+				? collaboratorData['userIds']
+				: null,
+		});
+
+		fetch(actionUrl, {
+			body: bodyContent,
+			method: 'POST',
+		})
+			.then((response) => {
+				if (response.status === 200) {
+					showNotification(
+						'Successfully added template',
+						false,
+						afterSubmitNotification
+					);
+
+					if (response.redirected) {
+						navigate(response.url);
+					}
+
+					return;
+				}
+
+				showNotification(
+					response.statusText,
+					true,
+					afterSubmitNotification
+				);
+
+				if (response.redirected) {
+					navigate(response.url);
+				}
+			})
+			.catch((error) => {
+				showNotification(error.message, true, afterSubmitNotification);
+			});
+	};
+
 	return (
 		<div className="sheet sheet-lg">
 			<TextField
@@ -33,8 +109,11 @@ export default function PublicationTemplateEditView({
 					'publication-template-name-placeholder'
 				)}
 				componentType="input"
-				fieldValue={name}
+				fieldValue={nameField}
 				label="Name"
+				onChange={(event) => {
+					setNameField(event.target.value);
+				}}
 				placeholderValue={Liferay.Language.get(
 					'publication-template-name-placeholder'
 				)}
@@ -46,8 +125,11 @@ export default function PublicationTemplateEditView({
 					'publication-template-description-placeholder'
 				)}
 				componentType="textarea"
-				fieldValue={description}
+				fieldValue={descriptionField}
 				label="Description"
+				onChange={(event) => {
+					setDescriptionField(event.target.value);
+				}}
 				placeholderValue={Liferay.Language.get(
 					'publication-template-description-placeholder'
 				)}
@@ -60,8 +142,11 @@ export default function PublicationTemplateEditView({
 						'publication-name-placeholder'
 					)}
 					componentType="input"
-					fieldValue={name}
+					fieldValue={publicationNameField}
 					label="Publication Name"
+					onChange={(event) => {
+						setPublicationNameField(event.target.value);
+					}}
 					placeholderValue={Liferay.Language.get(
 						'publication-name-placeholder'
 					)}
@@ -73,8 +158,11 @@ export default function PublicationTemplateEditView({
 						'publication-description-placeholder'
 					)}
 					componentType="textarea"
-					fieldValue={description}
+					fieldValue={publicationDescriptionField}
 					label="Publication Description"
+					onChange={(event) => {
+						setPublicationDescriptionField(event.target.value);
+					}}
 					placeholderValue={Liferay.Language.get(
 						'publication-description-placeholder'
 					)}
@@ -85,19 +173,43 @@ export default function PublicationTemplateEditView({
 			<CollapsablePanel
 				helpTooltip="publication-collaborators-help"
 				title="Publication Collaborators"
-			></CollapsablePanel>
+			>
+				<ManageCollaborators
+					isPublicationTemplate={true}
+					setCollaboratorData={setCollaboratorData}
+					setShowModal={setShowModal}
+					showModal={showModal}
+					trigger={
+						<ClayButton
+							displayType="info"
+							onClick={() => setShowModal(true)}
+							small
+							type="button"
+							value="asdf"
+						>
+							Invite Users
+						</ClayButton>
+					}
+					{...collaboratorsProps}
+				/>
+			</CollapsablePanel>
 
 			<div className="button-holder">
 				<ClayButton
 					displayType="primary"
 					id="saveButton"
+					onClick={() => handleSubmit()}
 					type="submit"
-					value={saveButtonLabel}
+					value={Liferay.Language.get(saveButtonLabel)}
 				>
-					{saveButtonLabel}
+					{Liferay.Language.get(saveButtonLabel)}
 				</ClayButton>
 
-				<ClayButton displayType="secondary" type="cancel">
+				<ClayButton
+					displayType="secondary"
+					onClick={() => navigate(redirect)}
+					type="cancel"
+				>
 					Cancel
 				</ClayButton>
 			</div>

@@ -111,8 +111,11 @@ public class AutocompleteUserMVCResourceCommand extends BaseMVCResourceCommand {
 
 		JSONArray jsonArray = _jsonFactory.createJSONArray();
 
+		long ctCollectionId = ParamUtil.getLong(
+			resourceRequest, "ctCollectionId");
+
 		CTCollection ctCollection = _ctCollectionLocalService.fetchCTCollection(
-			ParamUtil.getLong(resourceRequest, "ctCollectionId"));
+			ctCollectionId);
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);

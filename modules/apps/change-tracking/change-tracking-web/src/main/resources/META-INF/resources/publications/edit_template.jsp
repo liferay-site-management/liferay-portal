@@ -1,6 +1,3 @@
-<%@ page import="java.util.HashMap" %><%@
-page import="java.util.Map" %>
-
 <%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
@@ -45,28 +42,41 @@ else {
 
 portletDisplay.setURLBack(backURL);
 portletDisplay.setShowBackIcon(true);
-
-Map<String, Object> reactProps = new HashMap<>();
-
-reactProps.put("ctCollectionTemplateId", ctCollectionTemplateId);
-reactProps.put("name", name);
-reactProps.put("description", description);
-reactProps.put("publicationName", name);
-reactProps.put("publicationDescription", description);
-reactProps.put("saveButtonLabel", LanguageUtil.get(request, saveButtonLabel));
 %>
-
-<liferay-portlet:actionURL name="/change_tracking/edit_template" var="actionURL">
-	<liferay-portlet:param name="redirect" value="<%= redirect %>" />
-</liferay-portlet:actionURL>
 
 <clay:container-fluid
 	cssClass="container-form-lg edit-publication-template-container"
 >
-<react:component
-	module="publications/js/PublicationTemplateEditView"
-	props="<%= reactProps %>"
-/>
+	<liferay-portlet:actionURL name="/change_tracking/edit_template" var="actionURL">
+		<liferay-portlet:param name="redirect" value="<%= redirect %>" />
+	</liferay-portlet:actionURL>
+
+	<react:component
+		module="publications/js/PublicationTemplateEditView"
+		props='<%=
+			HashMapBuilder.<String, Object>put(
+				"actionUrl", actionURL
+			).put(
+				"collaboratorsProps", publicationsDisplayContext.getCollaboratorsReactData(ctCollectionTemplateId)
+			).put(
+				"ctCollectionTemplateId", ctCollectionTemplateId
+			).put(
+				"description", description
+			).put(
+				"name", name
+			).put(
+				"namespace", liferayPortletResponse.getNamespace()
+			).put(
+				"publicationDescription", description
+			).put(
+				"publicationName", name
+			).put(
+				"redirect", redirect
+			).put(
+				"saveButtonLabel", LanguageUtil.get(request, saveButtonLabel)
+			).build()
+		%>'
+	/>
 </clay:container-fluid>
 
 <%-- --%>
