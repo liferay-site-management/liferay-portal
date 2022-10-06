@@ -67,12 +67,24 @@ public class EditTemplateMVCActionCommand extends BaseMVCActionCommand {
 		String publicationDescription = ParamUtil.getString(
 			actionRequest, "publicationDescription");
 
+		int[] roleValues = ParamUtil.getIntegerValues(
+			actionRequest, "roleValues");
+		long[] userIds = ParamUtil.getLongValues(actionRequest, "userIds");
+		long[] publicationsUserRoleUserIds = ParamUtil.getLongValues(
+			actionRequest, "publicationsUserRoleUserIds");
+
 		JSONObject jsonObject = _jsonFactory.createJSONObject();
 
 		jsonObject.put(
 			"description", publicationDescription
 		).put(
 			"name", publicationName
+		).put(
+			"publicationsUserRoleUserIds", publicationsUserRoleUserIds
+		).put(
+			"roleValues", roleValues
+		).put(
+			"userIds", userIds
 		);
 
 		String json = jsonObject.toString();

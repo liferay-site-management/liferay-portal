@@ -20,10 +20,11 @@ const TextField = ({
 	componentType,
 	fieldValue,
 	label,
+	onChange,
 	placeholderValue,
 	required,
 }) => {
-	const [value, setValue] = useState(fieldValue);
+
 	const [nameErrorMessage, setNameErrorMessage] = useState('');
 
 	const isFieldEmpty = (fieldValue) => {
@@ -31,7 +32,7 @@ const TextField = ({
 	};
 
 	const validateOnBlur = () => {
-		if (!isFieldEmpty(value)) {
+		if (!isFieldEmpty(fieldValue)) {
 			setNameErrorMessage(Liferay.Language.get('this-field-is-required'));
 		}
 		else {
@@ -66,13 +67,11 @@ const TextField = ({
 					aria-label={ariaLabel ? ariaLabel : null}
 					component={componentType}
 					onBlur={required ? () => validateOnBlur() : null}
-					onChange={(event) => {
-						setValue(event.target.value);
-					}}
+					onChange={onChange}
 					placeholder={placeholderValue ? placeholderValue : null}
 					required={required ? 'required' : null}
 					type="text"
-					value={value}
+					value={fieldValue}
 				/>
 
 				{nameErrorMessage && (
