@@ -32,22 +32,22 @@ TimelineDisplayContext timelineDisplayContext = new TimelineDisplayContext(rende
 		<h1 class="component-title"><liferay:ui:message key="timeline" /></h1>
 	</clay:content-col>
 
-<%-- TODO
-			<clay:content-col>
-				For add button
-			</clay:content-col>
---%>
+	<%-- TODO
+				<clay:content-col>
+					For add button
+				</clay:content-col>
+	--%>
 
 </clay:content-row>
 
 <clay:content-row
 	cssClass="sidebar-section"
 >
-<%-- TODO
-	<clay:content-col>
-		Icon
-	</clay:content-col>
---%>
+	<%-- TODO
+		<clay:content-col>
+			Icon
+		</clay:content-col>
+	--%>
 
 	<clay:content-col
 		expand="<%= true %>"
@@ -56,30 +56,51 @@ TimelineDisplayContext timelineDisplayContext = new TimelineDisplayContext(rende
 	</clay:content-col>
 </clay:content-row>
 
-<c:forEach items="<%= timelineDisplayContext.getCTCollections() %>" var="ctCollection">
+<%
+for (CTCollection ctCollection : timelineDisplayContext.getCTCollections()) {
+%>
 	<clay:content-row
 		cssClass="sidebar-section"
 	>
-<%-- TODO
-		<clay:content-col>
-			Icon
-		</clay:content-col>
---%>
+		<%-- TODO
+				<clay:content-col>
+					Icon
+				</clay:content-col>
+		--%>
 
 		<clay:content-col
 			expand="<%= true %>"
 		>
-			<h1 class="component-title">${ctCollection.getName()}</h1>
-			<%-- TODO
-				Add details
-			--%>
+			<div class="dropdown">
+				<h1 class="component-title"><%= ctCollection.getName() %></h1>
+			</div>
 
+			<%
+			Date modifiedDate = ctCollection.getModifiedDate();
+			%>
+
+			<div class="text-secondary">
+				Published <liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - modifiedDate.getTime(), true) %>" key="x-ago" translateArguments="<%= false %>" />
+			</div>
 		</clay:content-col>
 
-<%-- TODO
 		<clay:content-col>
-			Action menu
+			<div>
+				<div class="dropdown">
+					<button class="btn btn-monospaced btn-sm btn-unstyled dropdown-toggle hidden" type="button">
+						<svg class="lexicon-icon lexicon-icon-ellipsis-v publications-hidden" role="presentation">
+							<use xlink:href="<%= FrontendIconsUtil.getSpritemap(themeDisplay) %>#ellipsis-v" />
+						</svg>
+					</button>
+				</div>
+
+				<react:component
+					module="timeline/js/TimelineDropdownMenu"
+					props="<%= timelineDisplayContext.getDropdownReactData(ctCollection) %>"
+				/>
+			</div>
 		</clay:content-col>
---%>
 	</clay:content-row>
-</c:forEach>
+<%
+}
+%>
