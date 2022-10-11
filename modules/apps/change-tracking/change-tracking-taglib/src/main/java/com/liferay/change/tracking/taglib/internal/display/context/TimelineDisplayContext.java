@@ -17,7 +17,10 @@ package com.liferay.change.tracking.taglib.internal.display.context;
 import com.liferay.change.tracking.configuration.CTSettingsConfiguration;
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.model.CTCollection;
-import com.liferay.change.tracking.service.CTCollectionLocalServiceUtil;
+import com.liferay.change.tracking.spi.history.CTCollectionHistoryProvider;
+import com.liferay.journal.model.JournalArticle;
+import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerList;
+import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerListFactory;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -25,11 +28,17 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.module.configuration.ConfigurationProviderUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
+import com.liferay.portal.kernel.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +48,9 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * @author David Truong
@@ -60,8 +72,31 @@ public class TimelineDisplayContext {
 	}
 
 	public List<CTCollection> getCTCollections() throws PortalException {
-		return CTCollectionLocalServiceUtil.getExclusivePublishedCTCollections(
-			_classNameId, _classPK);
+		List<CTCollection> ctCollections = new ArrayList<>();
+
+		boolean article = false;
+
+		if (_classNameId == ClassNameLocalServiceUtil.getClassNameId(
+				JournalArticle.class)) {
+
+			article = true;
+		}
+
+		for (CTCollectionHistoryProvider ctCollectionHistoryProvider :
+				_serviceTrackerList) {
+
+			ctCollections = ctCollectionHistoryProvider.getCTCollections(
+				_classNameId, _classPK);
+
+			//			if (article &&
+			//				(ctCollectionHistoryProvider instanceof
+			//					JournalArticleCTCollectionHistoryProvider)) {
+			if (ctCollections.isEmpty()) {
+				return ctCollections;
+			}
+		}
+
+		return ctCollections;
 	}
 
 	public Map<String, Object> getDropdownReactData(CTCollection ctCollection)
@@ -182,6 +217,16 @@ public class TimelineDisplayContext {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		TimelineDisplayContext.class);
+
+	private static ServiceTrackerList<CTCollectionHistoryProvider>
+		_serviceTrackerList;
+
+	static {
+		Bundle bundle = FrameworkUtil.getBundle(TimelineDisplayContext.class);
+
+		_serviceTrackerList = ServiceTrackerListFactory.open(
+			bundle.getBundleContext(), CTCollectionHistoryProvider.class);
+	}
 
 	private final long _classNameId;
 	private final long _classPK;
