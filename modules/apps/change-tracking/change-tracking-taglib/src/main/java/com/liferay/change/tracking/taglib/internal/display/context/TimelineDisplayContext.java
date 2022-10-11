@@ -14,15 +14,27 @@
 
 package com.liferay.change.tracking.taglib.internal.display.context;
 
+import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.service.CTCollectionLocalServiceUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author David Truong
@@ -38,6 +50,9 @@ public class TimelineDisplayContext {
 		_classPK = classPK;
 
 		_classNameId = PortalUtil.getClassNameId(className);
+
+		_themeDisplay = (ThemeDisplay)_renderRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
 	}
 
 	public List<CTCollection> getCTCollections() throws PortalException {
@@ -45,9 +60,108 @@ public class TimelineDisplayContext {
 			_classNameId, _classPK);
 	}
 
+	public Map<String, Object> getDropdownReactData(CTCollection ctCollection)
+		throws Exception {
+
+		Map<String, Object> data = new HashMap<>();
+
+		if (ctCollection.getStatus() != WorkflowConstants.STATUS_EXPIRED) { //&&
+			//			CTCollectionPermission.contains(
+			//				permissionChecker, ctCollection, ActionKeys.UPDATE)) {
+
+			data.put(
+				"editURL",
+				PortletURLBuilder.create(
+					PortalUtil.getControlPanelPortletURL(
+						PortalUtil.getHttpServletRequest(_renderRequest),
+						_themeDisplay.getScopeGroup(),
+						CTPortletKeys.PUBLICATIONS, 0, 0,
+						PortletRequest.RENDER_PHASE)
+				).setMVCRenderCommandName(
+					"/change_tracking/edit_ct_collection"
+				).setRedirect(
+					_themeDisplay.getURLCurrent()
+				).setParameter(
+					"ctCollectionId", ctCollection.getCtCollectionId()
+				).buildString());
+		}
+
+		data.put(
+			"reviewURL",
+			PortletURLBuilder.create(
+				PortalUtil.getControlPanelPortletURL(
+					PortalUtil.getHttpServletRequest(_renderRequest),
+					_themeDisplay.getScopeGroup(), CTPortletKeys.PUBLICATIONS,
+					0, 0, PortletRequest.RENDER_PHASE)
+			).setMVCRenderCommandName(
+				"/change_tracking/view_changes"
+			).setRedirect(
+				_themeDisplay.getURLCurrent()
+			).setParameter(
+				"ctCollectionId", ctCollection.getCtCollectionId()
+			).buildString());
+
+		data.put(
+			"revertURL",
+			PortletURLBuilder.create(
+				PortalUtil.getControlPanelPortletURL(
+					PortalUtil.getHttpServletRequest(_renderRequest),
+					_themeDisplay.getScopeGroup(), CTPortletKeys.PUBLICATIONS,
+					0, 0, PortletRequest.RENDER_PHASE)
+			).setMVCRenderCommandName(
+				"/change_tracking/undo_ct_collection"
+			).setRedirect(
+				_themeDisplay.getURLCurrent()
+			).setParameter(
+				"ctCollectionId", ctCollection.getCtCollectionId()
+			).setParameter(
+				"revert", Boolean.TRUE
+			).buildString());
+
+		//		if (CTCollectionPermission.contains(
+		//			permissionChecker, ctCollection, ActionKeys.DELETE)) {
+
+		data.put(
+			"deleteURL",
+			_getDeleteHref(
+				PortalUtil.getHttpServletRequest(_renderRequest),
+				_themeDisplay.getURLCurrent(),
+				ctCollection.getCtCollectionId()));
+		//		}
+
+		return data;
+	}
+
+	private String _getDeleteHref(
+		HttpServletRequest httpServletRequest, String backURL,
+		long ctCollectionId) {
+
+		return StringBundler.concat(
+			"javascript:Liferay.Util.openConfirmModal({message: '",
+			LanguageUtil.get(
+				httpServletRequest,
+				"are-you-sure-you-want-to-delete-this-publication"),
+			"', onConfirm: (isConfirmed) => {if (isConfirmed) {",
+			"submitForm(document.hrefFm, '",
+			PortletURLBuilder.create(
+				PortalUtil.getControlPanelPortletURL(
+					httpServletRequest, _themeDisplay.getScopeGroup(),
+					CTPortletKeys.PUBLICATIONS, 0, 0,
+					PortletRequest.RENDER_PHASE)
+			).setMVCRenderCommandName(
+				"/change_tracking/delete_ct_collection"
+			).setRedirect(
+				backURL
+			).setParameter(
+				"ctCollectionId", ctCollectionId
+			).buildString(),
+			"');} else {self.focus();}}});");
+	}
+
 	private final long _classNameId;
 	private final long _classPK;
 	private final RenderRequest _renderRequest;
 	private final RenderResponse _renderResponse;
+	private final ThemeDisplay _themeDisplay;
 
 }
