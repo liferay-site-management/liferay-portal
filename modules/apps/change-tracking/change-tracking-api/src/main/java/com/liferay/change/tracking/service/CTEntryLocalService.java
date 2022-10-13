@@ -242,6 +242,10 @@ public interface CTEntryLocalService
 	public List<CTEntry> getCTEntries(
 		long ctCollectionId, long modelClassNameId);
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<CTEntry> getCTEntriesBYMCNI_MCPK(
+		long modelClassNameId, long modelClassPK);
+
 	/**
 	 * Returns the number of ct entries.
 	 *

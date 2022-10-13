@@ -308,6 +308,14 @@ public class CTEntryLocalServiceWrapper
 			ctCollectionId, modelClassNameId);
 	}
 
+	@Override
+	public java.util.List<com.liferay.change.tracking.model.CTEntry>
+		getCTEntriesBYMCNI_MCPK(long modelClassNameId, long modelClassPK) {
+
+		return _ctEntryLocalService.getCTEntriesBYMCNI_MCPK(
+			modelClassNameId, modelClassPK);
+	}
+
 	/**
 	 * Returns the number of ct entries.
 	 *

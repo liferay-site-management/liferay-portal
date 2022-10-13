@@ -370,7 +370,8 @@ public class CTCollectionLocalServiceWrapper
 
 	@Override
 	public java.util.List<com.liferay.change.tracking.model.CTCollection>
-	getExclusivePublishedCTCollections(long modelClassNameId, long modelClassPK)
+			getExclusivePublishedCTCollections(
+				long modelClassNameId, long modelClassPK)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _ctCollectionLocalService.getExclusivePublishedCTCollections(

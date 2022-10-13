@@ -270,6 +270,13 @@ public class CTEntryLocalServiceUtil {
 		return getService().getCTEntries(ctCollectionId, modelClassNameId);
 	}
 
+	public static List<CTEntry> getCTEntriesBYMCNI_MCPK(
+		long modelClassNameId, long modelClassPK) {
+
+		return getService().getCTEntriesBYMCNI_MCPK(
+			modelClassNameId, modelClassPK);
+	}
+
 	/**
 	 * Returns the number of ct entries.
 	 *
