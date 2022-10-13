@@ -143,6 +143,14 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 	}
 
 	@Override
+	public List<CTEntry> getCTEntriesBYMCNI_MCPK(
+		long modelClassNameId, long modelClassPK) {
+
+		return ctEntryPersistence.findByMCNI_MCPK(
+			modelClassNameId, modelClassPK);
+	}
+
+	@Override
 	public long getCTRowCTCollectionId(CTEntry ctEntry) throws PortalException {
 		CTCollection ctCollection = _ctCollectionPersistence.findByPrimaryKey(
 			ctEntry.getCtCollectionId());
