@@ -14,12 +14,16 @@
 
 package com.liferay.change.tracking.taglib.internal.display.context;
 
+import com.liferay.change.tracking.configuration.CTSettingsConfiguration;
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.service.CTCollectionLocalServiceUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.module.configuration.ConfigurationProviderUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -132,6 +136,24 @@ public class TimelineDisplayContext {
 		return data;
 	}
 
+	public boolean isPublicationsEnabled() {
+		boolean publicationsEnabled = false;
+
+		try {
+			CTSettingsConfiguration ctSettingsConfiguration =
+				ConfigurationProviderUtil.getCompanyConfiguration(
+					CTSettingsConfiguration.class,
+					_themeDisplay.getCompanyId());
+
+			publicationsEnabled = ctSettingsConfiguration.enabled();
+		}
+		catch (Exception exception) {
+			_log.error(exception);
+		}
+
+		return publicationsEnabled;
+	}
+
 	private String _getDeleteHref(
 		HttpServletRequest httpServletRequest, String backURL,
 		long ctCollectionId) {
@@ -157,6 +179,9 @@ public class TimelineDisplayContext {
 			).buildString(),
 			"');} else {self.focus();}}});");
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		TimelineDisplayContext.class);
 
 	private final long _classNameId;
 	private final long _classPK;

@@ -23,84 +23,89 @@ long classPK = GetterUtil.getLong(request.getAttribute("change-tracking:timeline
 TimelineDisplayContext timelineDisplayContext = new TimelineDisplayContext(renderRequest, renderResponse, className, classPK);
 %>
 
-<clay:content-row
-	cssClass="sidebar-section"
->
-	<clay:content-col
-		expand="<%= true %>"
-	>
-		<h1 class="component-title"><liferay:ui:message key="timeline" /></h1>
-	</clay:content-col>
+<c:choose>
+	<c:when test="<%= !timelineDisplayContext.isPublicationsEnabled() %>">
+		<div>
+			<liferay-ui:message key="publications-must-be-enabled" />
+		</div>
+	</c:when>
+	<c:otherwise>
+		<clay:content-row
+			cssClass="sidebar-section"
+		>
+			<clay:content-col
+				expand="<%= true %>"
+			>
+				<%-- TODO
+						For add button
+				--%>
 
-	<%-- TODO
-				<clay:content-col>
-					For add button
-				</clay:content-col>
-	--%>
+			</clay:content-col>
+		</clay:content-row>
 
-</clay:content-row>
-
-<clay:content-row
-	cssClass="sidebar-section"
->
-	<%-- TODO
-		<clay:content-col>
-			Icon
-		</clay:content-col>
-	--%>
-
-	<clay:content-col
-		expand="<%= true %>"
-	>
-		<h1 class="component-title">Current Draft</h1>
-	</clay:content-col>
-</clay:content-row>
-
-<%
-for (CTCollection ctCollection : timelineDisplayContext.getCTCollections()) {
-%>
-	<clay:content-row
-		cssClass="sidebar-section"
-	>
-		<%-- TODO
+		<clay:content-row
+			cssClass="sidebar-section"
+		>
+			<%-- TODO
 				<clay:content-col>
 					Icon
 				</clay:content-col>
-		--%>
+			--%>
 
-		<clay:content-col
-			expand="<%= true %>"
-		>
-			<div class="dropdown">
-				<h1 class="component-title"><%= ctCollection.getName() %></h1>
-			</div>
+			<clay:content-col
+				expand="<%= true %>"
+			>
+				<h1 class="component-title">Current Draft</h1>
+			</clay:content-col>
+		</clay:content-row>
 
-			<%
-			Date modifiedDate = ctCollection.getModifiedDate();
-			%>
+		<%
+		for (CTCollection ctCollection : timelineDisplayContext.getCTCollections()) {
+		%>
+			<clay:content-row
+				cssClass="sidebar-section"
+			>
+				<%-- TODO
+						<clay:content-col>
+							Icon
+						</clay:content-col>
+				--%>
 
-			<div class="text-secondary">
-				Published <liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - modifiedDate.getTime(), true) %>" key="x-ago" translateArguments="<%= false %>" />
-			</div>
-		</clay:content-col>
+				<clay:content-col
+					expand="<%= true %>"
+				>
+					<div class="dropdown">
+						<h1 class="component-title"><%= ctCollection.getName() %></h1>
+					</div>
 
-		<clay:content-col>
-			<div>
-				<div class="dropdown">
-					<button class="btn btn-monospaced btn-sm btn-unstyled dropdown-toggle hidden" type="button">
-						<svg class="lexicon-icon lexicon-icon-ellipsis-v publications-hidden" role="presentation">
-							<use xlink:href="<%= FrontendIconsUtil.getSpritemap(themeDisplay) %>#ellipsis-v" />
-						</svg>
-					</button>
-				</div>
+					<%
+					Date modifiedDate = ctCollection.getModifiedDate();
+					%>
 
-				<react:component
-					module="timeline/js/TimelineDropdownMenu"
-					props="<%= timelineDisplayContext.getDropdownReactData(ctCollection) %>"
-				/>
-			</div>
-		</clay:content-col>
-	</clay:content-row>
-<%
-}
-%>
+					<div class="text-secondary">
+						Published <liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - modifiedDate.getTime(), true) %>" key="x-ago" translateArguments="<%= false %>" />
+					</div>
+				</clay:content-col>
+
+				<clay:content-col>
+					<div>
+						<div class="dropdown">
+							<button class="btn btn-monospaced btn-sm btn-unstyled dropdown-toggle hidden" type="button">
+								<svg class="lexicon-icon lexicon-icon-ellipsis-v publications-hidden" role="presentation">
+									<use xlink:href="<%= FrontendIconsUtil.getSpritemap(themeDisplay) %>#ellipsis-v" />
+								</svg>
+							</button>
+						</div>
+
+						<react:component
+							module="timeline/js/TimelineDropdownMenu"
+							props="<%= timelineDisplayContext.getDropdownReactData(ctCollection) %>"
+						/>
+					</div>
+				</clay:content-col>
+			</clay:content-row>
+		<%
+		}
+		%>
+	</c:otherwise>
+</c:choose>
