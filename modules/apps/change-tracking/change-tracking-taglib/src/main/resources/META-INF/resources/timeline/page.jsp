@@ -83,7 +83,7 @@ TimelineDisplayContext timelineDisplayContext = new TimelineDisplayContext(rende
 					%>
 
 					<div class="text-secondary">
-						Published <liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - modifiedDate.getTime(), true) %>" key="x-ago" translateArguments="<%= false %>" />
+						<liferay-ui:message arguments="<%= new String[] {HtmlUtil.escape(ctCollection.getUserName()), LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - modifiedDate.getTime(), true)} %>" key="x-published-x-ago" translateArguments="<%= false %>" />
 					</div>
 				</clay:content-col>
 
