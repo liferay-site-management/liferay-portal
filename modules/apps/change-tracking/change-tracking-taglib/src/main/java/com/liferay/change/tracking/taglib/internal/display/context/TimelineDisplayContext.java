@@ -18,9 +18,8 @@ import com.liferay.change.tracking.configuration.CTSettingsConfiguration;
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.spi.history.CTCollectionHistoryProvider;
-import com.liferay.journal.model.JournalArticle;
-import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerList;
-import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerListFactory;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -38,7 +37,6 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +48,7 @@ import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
 /**
@@ -72,31 +71,18 @@ public class TimelineDisplayContext {
 	}
 
 	public List<CTCollection> getCTCollections() throws PortalException {
-		List<CTCollection> ctCollections = new ArrayList<>();
+		CTCollectionHistoryProvider<Object> ctCollectionHistoryProvider =
+			(CTCollectionHistoryProvider<Object>)
+				_ctCollectionHistoryProviderServiceTrackerMap.getService(
+					_classNameId);
 
-		boolean article = false;
-
-		if (_classNameId == ClassNameLocalServiceUtil.getClassNameId(
-				JournalArticle.class)) {
-
-			article = true;
-		}
-
-		for (CTCollectionHistoryProvider ctCollectionHistoryProvider :
-				_serviceTrackerList) {
-
-			ctCollections = ctCollectionHistoryProvider.getCTCollections(
+		if (ctCollectionHistoryProvider == null) {
+			return _defaultCTCollectionHistoryProvider.getCTCollections(
 				_classNameId, _classPK);
-
-			//			if (article &&
-			//				(ctCollectionHistoryProvider instanceof
-			//					JournalArticleCTCollectionHistoryProvider)) {
-			if (ctCollections.isEmpty()) {
-				return ctCollections;
-			}
 		}
 
-		return ctCollections;
+		return ctCollectionHistoryProvider.getCTCollections(
+			_classNameId, _classPK);
 	}
 
 	public Map<String, Object> getDropdownReactData(CTCollection ctCollection)
@@ -218,14 +204,44 @@ public class TimelineDisplayContext {
 	private static final Log _log = LogFactoryUtil.getLog(
 		TimelineDisplayContext.class);
 
-	private static ServiceTrackerList<CTCollectionHistoryProvider>
-		_serviceTrackerList;
+	private static ServiceTrackerMap<Long, CTCollectionHistoryProvider<?>>
+		_ctCollectionHistoryProviderServiceTrackerMap;
+	private static CTCollectionHistoryProvider<?>
+		_defaultCTCollectionHistoryProvider;
 
 	static {
 		Bundle bundle = FrameworkUtil.getBundle(TimelineDisplayContext.class);
 
-		_serviceTrackerList = ServiceTrackerListFactory.open(
-			bundle.getBundleContext(), CTCollectionHistoryProvider.class);
+		BundleContext bundleContext = bundle.getBundleContext();
+
+		_ctCollectionHistoryProviderServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext,
+				(Class<CTCollectionHistoryProvider<?>>)
+					(Class<?>)CTCollectionHistoryProvider.class,
+				null,
+				(serviceReference, emitter) -> {
+					CTCollectionHistoryProvider<?> ctCollectionHistoryProvider =
+						bundleContext.getService(serviceReference);
+
+					try {
+						Class<?> modelClass =
+							ctCollectionHistoryProvider.getModelClass();
+
+						if (modelClass != null) {
+							emitter.emit(
+								ClassNameLocalServiceUtil.getClassNameId(
+									modelClass));
+						}
+						else {
+							_defaultCTCollectionHistoryProvider =
+								ctCollectionHistoryProvider;
+						}
+					}
+					finally {
+						bundleContext.ungetService(serviceReference);
+					}
+				});
 	}
 
 	private final long _classNameId;

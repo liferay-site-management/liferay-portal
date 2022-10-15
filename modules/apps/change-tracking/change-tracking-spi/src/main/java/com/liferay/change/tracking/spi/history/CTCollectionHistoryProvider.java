@@ -22,9 +22,16 @@ import java.util.List;
 /**
  * @author Noor Najjar
  */
-public interface CTCollectionHistoryProvider {
+public interface CTCollectionHistoryProvider<T> {
 
 	public List<CTCollection> getCTCollections(long classNameId, long classPK)
 		throws PortalException;
+
+	/**
+	 * Returns the model class for this provider.
+	 *
+	 * @return the model class for this provider
+	 */
+	public Class<T> getModelClass();
 
 }

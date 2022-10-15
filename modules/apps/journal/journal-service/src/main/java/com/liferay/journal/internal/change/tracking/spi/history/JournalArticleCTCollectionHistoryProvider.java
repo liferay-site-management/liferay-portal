@@ -34,9 +34,9 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Noor Najjar
  */
-@Component(service = CTCollectionHistoryProvider.class)
+@Component(immediate = true, service = CTCollectionHistoryProvider.class)
 public class JournalArticleCTCollectionHistoryProvider
-	implements CTCollectionHistoryProvider {
+	implements CTCollectionHistoryProvider<JournalArticle> {
 
 	@Override
 	public List<CTCollection> getCTCollections(long classNameId, long classPK)
@@ -70,6 +70,11 @@ public class JournalArticleCTCollectionHistoryProvider
 		ctCollections.sort(orderByComparator);
 
 		return ctCollections;
+	}
+
+	@Override
+	public Class<JournalArticle> getModelClass() {
+		return JournalArticle.class;
 	}
 
 	@Reference

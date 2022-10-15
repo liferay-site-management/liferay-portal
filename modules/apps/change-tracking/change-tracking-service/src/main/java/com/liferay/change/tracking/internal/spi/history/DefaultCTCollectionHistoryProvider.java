@@ -18,22 +18,29 @@ import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.service.CTCollectionLocalServiceUtil;
 import com.liferay.change.tracking.spi.history.CTCollectionHistoryProvider;
 import com.liferay.portal.kernel.exception.PortalException;
-import org.osgi.service.component.annotations.Component;
 
 import java.util.List;
+
+import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Noor Najjar
  */
 @Component(service = CTCollectionHistoryProvider.class)
-public class DefaultCTCollectionHistoryProvider
-	implements CTCollectionHistoryProvider {
+public class DefaultCTCollectionHistoryProvider<T>
+	implements CTCollectionHistoryProvider<T> {
 
 	@Override
-	public List<CTCollection> getCTCollections(
-		long classNameId, long classPK) throws PortalException {
+	public List<CTCollection> getCTCollections(long classNameId, long classPK)
+		throws PortalException {
 
 		return CTCollectionLocalServiceUtil.getExclusivePublishedCTCollections(
 			classNameId, classPK);
 	}
+
+	@Override
+	public Class<T> getModelClass() {
+		return null;
+	}
+
 }
