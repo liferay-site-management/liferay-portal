@@ -16,10 +16,10 @@ import ClayButton from '@clayui/button';
 import {fetch, navigate, objectToFormData} from 'frontend-js-web';
 import React, {useState} from 'react';
 
-import {ManageCollaborators} from './ManageCollaborators';
-import CollapsablePanel from './components/form/CollapsablePanel';
-import TextField from './components/form/TextField';
-import {showNotification} from './util/util';
+import CollapsablePanel from '../components/form/CollapsablePanel';
+import TextField from '../components/form/TextField';
+import {ManageCollaborators} from '../components/manage-collaborators-modal/ManageCollaborators';
+import {showNotification} from '../util/util';
 
 export default function PublicationTemplateEditView({
 	actionUrl,
