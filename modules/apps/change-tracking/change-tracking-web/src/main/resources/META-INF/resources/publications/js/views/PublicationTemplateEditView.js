@@ -200,9 +200,8 @@ export default function PublicationTemplateEditView({
 					id="saveButton"
 					onClick={() => handleSubmit()}
 					type="submit"
-					value={Liferay.Language.get(saveButtonLabel)}
 				>
-					{Liferay.Language.get(saveButtonLabel)}
+					{saveButtonLabel}
 				</ClayButton>
 
 				<ClayButton
@@ -210,7 +209,7 @@ export default function PublicationTemplateEditView({
 					onClick={() => navigate(redirect)}
 					type="cancel"
 				>
-					Cancel
+					{Liferay.Language.get('cancel')}
 				</ClayButton>
 			</div>
 		</div>
