@@ -194,7 +194,7 @@ export default function PublicationTemplateEditView({
 				/>
 			</CollapsablePanel>
 
-			<div className="button-holder">
+			<div className="button-group">
 				<ClayButton
 					displayType="primary"
 					id="saveButton"
