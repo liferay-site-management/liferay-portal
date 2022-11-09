@@ -258,7 +258,7 @@ export default function ChangeTrackingCollectionEditView({
 				</fieldset>
 			)}
 
-			<div className="button-holder">
+			<div className="button-group">
 				<ClayButton
 					disabled={saveButtonDisabled}
 					displayType="primary"
