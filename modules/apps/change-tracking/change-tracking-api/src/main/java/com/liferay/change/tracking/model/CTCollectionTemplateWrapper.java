@@ -189,6 +189,11 @@ public class CTCollectionTemplateWrapper
 	}
 
 	@Override
+	public String getParsedPublicationDescription() {
+		return model.getParsedPublicationDescription();
+	}
+
+	@Override
 	public String getParsedPublicationName() {
 		return model.getParsedPublicationName();
 	}

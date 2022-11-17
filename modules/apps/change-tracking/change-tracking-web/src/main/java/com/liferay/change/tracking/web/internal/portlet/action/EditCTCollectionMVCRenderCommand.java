@@ -77,7 +77,11 @@ public class EditCTCollectionMVCRenderCommand implements MVCRenderCommand {
 			JSONObject jsonObject = ctCollectionTemplate.getJSONObject();
 
 			jsonObject.put(
-				"name", ctCollectionTemplate.getParsedPublicationName());
+				"description",
+				ctCollectionTemplate.getParsedPublicationDescription()
+			).put(
+				"name", ctCollectionTemplate.getParsedPublicationName()
+			);
 
 			templatesJsonMap.put(
 				ctCollectionTemplate.getCtCollectionTemplateId(), jsonObject);
