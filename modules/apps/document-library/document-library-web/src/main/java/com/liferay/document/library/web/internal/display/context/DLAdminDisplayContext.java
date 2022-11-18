@@ -822,8 +822,7 @@ public class DLAdminDisplayContext {
 	private String _getPortletPreference(String name, String defaultValue) {
 		if (_themeDisplay.isSignedIn()) {
 			try (SafeCloseable safeCloseable =
-					CTCollectionThreadLocal.
-						setProductionModeWithSafeCloseable()) {
+					CTCollectionThreadLocal.setSafeCloseable()) {
 
 				PortletPreferences portletPreferences =
 					_getPortletPreferences();

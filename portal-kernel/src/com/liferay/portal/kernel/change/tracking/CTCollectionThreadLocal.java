@@ -51,6 +51,14 @@ public class CTCollectionThreadLocal {
 		return setCTCollectionIdWithSafeCloseable(CT_COLLECTION_ID_PRODUCTION);
 	}
 
+	public static SafeCloseable setSafeCloseable() {
+		if (isProductionMode()) {
+			return setProductionModeWithSafeCloseable();
+		}
+
+		return setCTCollectionIdWithSafeCloseable(_getCTCollectionId());
+	}
+
 	private static long _getCTCollectionId() {
 		CTCollectionIdSupplier ctCollectionIdSupplier = _ctCollectionIdSupplier;
 
