@@ -74,6 +74,8 @@ portletDisplay.setShowBackIcon(true);
 				"redirect", redirect
 			).put(
 				"saveButtonLabel", LanguageUtil.get(request, saveButtonLabel)
+			).put(
+				"templateStringTokens", CTCollectionTemplateLocalServiceUtil.getTemplateStringTokens()
 			).build()
 		%>'
 	/>
