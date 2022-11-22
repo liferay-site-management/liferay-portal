@@ -97,12 +97,9 @@ public class GetCollaboratorsMVCResourceCommand extends BaseMVCResourceCommand {
 		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		User owner;
+		User owner = null;
 
-		if (ctCollectionId == CTConstants.CT_COLLECTION_ID_PRODUCTION) {
-			owner = themeDisplay.getUser();
-		}
-		else {
+		if (ctCollectionId != CTConstants.CT_COLLECTION_ID_PRODUCTION) {
 			owner = _userLocalService.fetchUser(ctCollection.getUserId());
 		}
 
@@ -130,12 +127,9 @@ public class GetCollaboratorsMVCResourceCommand extends BaseMVCResourceCommand {
 				));
 		}
 
-		Group group;
+		Group group = null;
 
-		if (ctCollectionId == CTConstants.CT_COLLECTION_ID_PRODUCTION) {
-			group = owner.getGroup();
-		}
-		else {
+		if (ctCollectionId != CTConstants.CT_COLLECTION_ID_PRODUCTION) {
 			group = _groupLocalService.fetchGroup(
 				ctCollection.getCompanyId(),
 				_portal.getClassNameId(CTCollection.class),

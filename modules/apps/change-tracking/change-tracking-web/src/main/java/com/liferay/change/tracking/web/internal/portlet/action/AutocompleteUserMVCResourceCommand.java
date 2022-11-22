@@ -14,6 +14,7 @@
 
 package com.liferay.change.tracking.web.internal.portlet.action;
 
+import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
@@ -121,8 +122,9 @@ public class AutocompleteUserMVCResourceCommand extends BaseMVCResourceCommand {
 			WebKeys.THEME_DISPLAY);
 
 		for (User user : _getUsers(resourceRequest, themeDisplay)) {
-			if (user.isDefaultUser() ||
-				(themeDisplay.getUserId() == user.getUserId())) {
+			if ((user.isDefaultUser() ||
+				 (themeDisplay.getUserId() == user.getUserId())) &&
+				(ctCollectionId != CTConstants.CT_COLLECTION_ID_PRODUCTION)) {
 
 				continue;
 			}
