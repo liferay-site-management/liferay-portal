@@ -66,15 +66,19 @@ portletDisplay.setShowBackIcon(true);
 		<liferay-portlet:param name="redirect" value="<%= redirect %>" />
 	</liferay-portlet:actionURL>
 
+	<liferay-portlet:resourceURL id="/change_tracking/invite_users" var="inviteUsersURL" />
+
 	<react:component
 		module="publications/js/views/ChangeTrackingCollectionEditView"
 		props='<%=
 			HashMapBuilder.<String, Object>put(
-				"actionURL", actionURL
+				"actionUrl", actionURL
 			).put(
 				"ctCollectionId", ctCollectionId
 			).put(
 				"ctCollectionTemplates", jsonSerializer.serializeDeep(ctCollectionTemplates)
+			).put(
+				"inviteUsersURL", inviteUsersURL
 			).put(
 				"namespace", liferayPortletResponse.getNamespace()
 			).put(
