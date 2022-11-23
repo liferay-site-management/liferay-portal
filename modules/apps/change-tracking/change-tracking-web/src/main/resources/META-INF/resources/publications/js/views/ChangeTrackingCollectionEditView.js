@@ -25,6 +25,7 @@ export default function ChangeTrackingCollectionEditView({
 	actionUrl,
 	ctCollectionId,
 	ctCollectionTemplates,
+	inviteUsersURL,
 	namespace,
 	publicationDescription,
 	publicationName,
@@ -41,6 +42,7 @@ export default function ChangeTrackingCollectionEditView({
 	const [saveButtonDisabled, setSaveButtonDisabled] = useState(
 		revertingPublication
 	);
+	const [ctCollectionTemplateId, setCtCollectionTemplateId] = useState(0);
 
 	const templateArray = JSON.parse(ctCollectionTemplates);
 	const templateJsons = JSON.parse(templatesJsonMap);
@@ -67,17 +69,36 @@ export default function ChangeTrackingCollectionEditView({
 						false
 					);
 
-					if (response.redirected) {
-						navigate(response.url);
-					}
-
-					return;
+					return response;
 				}
 
 				showNotification(response.statusText, true);
+			})
+			.then((response) => {
+				if (response.status === 200) {
+					return response.json();
+				}
+			})
+			.then((responseJson) => {
+				if (
+					ctCollectionTemplateId > 0 &&
+					responseJson.ctCollectionId &&
+					!!templateJsons[ctCollectionTemplateId].userIds
+				) {
+					sendInvite(
+						responseJson.ctCollectionId,
+						templateJsons[ctCollectionTemplateId]
+							.publicationsUserRoleUserIds,
+						templateJsons[ctCollectionTemplateId].roleValues,
+						templateJsons[ctCollectionTemplateId].userIds
+					);
+				}
 
-				if (response.redirected) {
-					navigate(response.url);
+				return responseJson;
+			})
+			.then((responseJson) => {
+				if (responseJson.redirect === true) {
+					navigate(redirect);
 				}
 			})
 			.catch((error) => {
@@ -86,10 +107,43 @@ export default function ChangeTrackingCollectionEditView({
 	};
 
 	const onSelectValueChange = (value) => {
-		const ctCollectionTemplateId = value;
+		setCtCollectionTemplateId(value);
+		setNameField(templateJsons[value].name);
+		setDescriptionField(templateJsons[value].description);
+	};
 
-		setNameField(templateJsons[ctCollectionTemplateId].name);
-		setDescriptionField(templateJsons[ctCollectionTemplateId].description);
+	const sendInvite = (
+		ctCollectionId,
+		publicationsUserRoleUserIds,
+		roleValues,
+		userIds
+	) => {
+		const formData = {
+			[`${namespace}ctCollectionId`]: ctCollectionId,
+			[`${namespace}publicationsUserRoleUserIds`]: publicationsUserRoleUserIds.join(
+				','
+			),
+			[`${namespace}roleValues`]: roleValues.join(','),
+			[`${namespace}userIds`]: userIds.join(','),
+		};
+
+		fetch(inviteUsersURL, {
+			body: objectToFormData(formData),
+			method: 'POST',
+		})
+			.then((response) => response.json())
+			.then(({errorMessage, successMessage}) => {
+				if (errorMessage) {
+					showNotification(errorMessage, true);
+
+					return;
+				}
+
+				showNotification(successMessage);
+			})
+			.catch((error) => {
+				showNotification(error.message, true);
+			});
 	};
 
 	return (
