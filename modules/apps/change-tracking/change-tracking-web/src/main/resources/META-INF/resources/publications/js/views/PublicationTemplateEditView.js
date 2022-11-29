@@ -212,6 +212,7 @@ export default function PublicationTemplateEditView({
 
 			<div className="button-group">
 				<ClayButton
+					disabled={!nameField.length || !publicationNameField.length}
 					displayType="primary"
 					id="saveButton"
 					onClick={() => handleSubmit()}
