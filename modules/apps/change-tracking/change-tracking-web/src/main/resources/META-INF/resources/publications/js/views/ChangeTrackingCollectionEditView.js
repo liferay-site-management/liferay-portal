@@ -80,7 +80,11 @@ export default function ChangeTrackingCollectionEditView({
 				}
 			})
 			.then((responseJson) => {
-				if (ctCollectionTemplateId > 0 && responseJson.ctCollectionId) {
+				if (
+					ctCollectionTemplateId > 0 &&
+					responseJson.ctCollectionId &&
+					!!templateJsons[ctCollectionTemplateId].userIds
+				) {
 					sendInvite(
 						responseJson.ctCollectionId,
 						templateJsons[ctCollectionTemplateId]
