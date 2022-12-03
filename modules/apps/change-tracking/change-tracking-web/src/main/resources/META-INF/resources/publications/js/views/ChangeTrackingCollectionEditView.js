@@ -98,7 +98,12 @@ export default function ChangeTrackingCollectionEditView({
 			})
 			.then((responseJson) => {
 				if (responseJson.redirect === true) {
-					navigate(redirect);
+					if (revertingPublication === true) {
+						navigate(responseJson.revertedRedirectURL);
+					}
+					else {
+						navigate(redirect);
+					}
 				}
 			})
 			.catch((error) => {
