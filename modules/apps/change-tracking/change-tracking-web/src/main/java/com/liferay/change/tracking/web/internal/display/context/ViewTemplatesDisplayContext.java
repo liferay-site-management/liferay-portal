@@ -18,6 +18,7 @@ import com.liferay.change.tracking.model.CTCollectionTemplate;
 import com.liferay.change.tracking.service.CTCollectionTemplateService;
 import com.liferay.portal.kernel.dao.search.DisplayTerms;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
+import com.liferay.portal.kernel.frontend.icons.FrontendIconsUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.portlet.PortletURLUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
@@ -69,6 +70,12 @@ public class ViewTemplatesDisplayContext
 		).put(
 			"editURL",
 			getEditTemplateURL(ctCollectionTemplate.getCtCollectionTemplateId())
+		).put(
+			"isPublicationTemplate", true
+		).put(
+			"namespace", _renderResponse.getNamespace()
+		).put(
+			"spritemap", FrontendIconsUtil.getSpritemap(_themeDisplay)
 		).build();
 	}
 
@@ -77,6 +84,8 @@ public class ViewTemplatesDisplayContext
 			_renderResponse
 		).setMVCRenderCommandName(
 			"/change_tracking/edit_template"
+		).setRedirect(
+			_themeDisplay.getURLCurrent()
 		).setParameter(
 			"ctCollectionTemplateId", ctCollectionTemplateId
 		).buildString();

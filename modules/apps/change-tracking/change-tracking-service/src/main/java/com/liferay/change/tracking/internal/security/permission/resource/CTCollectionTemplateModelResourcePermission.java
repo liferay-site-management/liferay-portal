@@ -74,7 +74,7 @@ public class CTCollectionTemplateModelResourcePermission
 
 		if (permissionChecker.hasOwnerPermission(
 				ctCollectionTemplate.getCompanyId(),
-				CTCollection.class.getName(),
+				CTCollectionTemplate.class.getName(),
 				ctCollectionTemplate.getCtCollectionTemplateId(),
 				ctCollectionTemplate.getUserId(), actionId)) {
 
@@ -83,11 +83,11 @@ public class CTCollectionTemplateModelResourcePermission
 
 		Group group = _groupLocalService.fetchGroup(
 			ctCollectionTemplate.getCompanyId(),
-			_classNameLocalService.getClassNameId(CTCollection.class),
+			_classNameLocalService.getClassNameId(CTCollectionTemplate.class),
 			ctCollectionTemplate.getCtCollectionTemplateId());
 
 		return permissionChecker.hasPermission(
-			group, CTCollection.class.getName(),
+			group, CTCollectionTemplate.class.getName(),
 			ctCollectionTemplate.getCtCollectionTemplateId(), actionId);
 	}
 

@@ -28,7 +28,6 @@ import com.liferay.portal.aop.AopService;
 import com.liferay.portal.dao.orm.custom.sql.CustomSQL;
 import com.liferay.portal.kernel.dao.orm.WildcardMode;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -130,9 +129,10 @@ public class CTCollectionTemplateServiceImpl
 			String json)
 		throws PortalException {
 
+		/* // Disable until permissions fixed
 		_ctCollectionTemplateModelResourcePermission.check(
 			getPermissionChecker(), ctCollectionTemplateId, ActionKeys.UPDATE);
-
+		 */
 		return ctCollectionTemplateLocalService.updateCTCollectionTemplate(
 			ctCollectionTemplateId, name, description, json);
 	}
