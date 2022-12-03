@@ -64,7 +64,7 @@ public class EditCTCollectionMVCRenderCommand implements MVCRenderCommand {
 
 		List<CTCollectionTemplate> ctCollectionTemplates =
 			_ctCollectionTemplateLocalService.getCTCollectionTemplates(
-				themeDisplay.getCompanyId(), 0, 9);
+				themeDisplay.getCompanyId(), 0, 100);
 
 		renderRequest.setAttribute(
 			"ctCollectionTemplates", ctCollectionTemplates);
