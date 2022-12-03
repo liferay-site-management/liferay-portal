@@ -76,8 +76,13 @@ export default function PublicationTemplateEditView({
 		})
 			.then((response) => {
 				if (response.status === 200) {
+					const successMessage =
+						ctCollectionTemplateId > 0
+							? 'Successfully edited template'
+							: 'Successfully added template';
+
 					showNotification(
-						'Successfully added template',
+						successMessage,
 						false,
 						afterSubmitNotification
 					);
