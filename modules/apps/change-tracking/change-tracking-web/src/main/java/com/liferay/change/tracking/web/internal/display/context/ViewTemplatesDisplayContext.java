@@ -150,8 +150,10 @@ public class ViewTemplatesDisplayContext
 	private String _getDeleteTemplateURL(long ctCollectionTemplateId) {
 		return PortletURLBuilder.createActionURL(
 			_renderResponse
-		).setMVCRenderCommandName(
+		).setActionName(
 			"/change_tracking/delete_template"
+		).setRedirect(
+			_themeDisplay.getURLCurrent()
 		).setParameter(
 			"ctCollectionTemplateId", ctCollectionTemplateId
 		).buildString();
