@@ -189,6 +189,11 @@ public class CTCollectionTemplateWrapper
 	}
 
 	@Override
+	public String getParsedPublicationDescription() {
+		return model.getParsedPublicationDescription();
+	}
+
+	@Override
 	public String getParsedPublicationName() {
 		return model.getParsedPublicationName();
 	}
@@ -331,6 +336,11 @@ public class CTCollectionTemplateWrapper
 	@Override
 	public void setUserUuid(String userUuid) {
 		model.setUserUuid(userUuid);
+	}
+
+	@Override
+	public String toXmlString() {
+		return model.toXmlString();
 	}
 
 	@Override
