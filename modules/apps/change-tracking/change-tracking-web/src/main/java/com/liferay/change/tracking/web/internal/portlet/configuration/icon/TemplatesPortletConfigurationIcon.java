@@ -26,6 +26,8 @@ import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.permission.PortletPermission;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.PropsUtil;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
@@ -64,6 +66,10 @@ public class TemplatesPortletConfigurationIcon
 
 	@Override
 	public boolean isShow(PortletRequest portletRequest) {
+		if (!GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-161313"))) {
+			return false;
+		}
+
 		try {
 			return _portletPermission.contains(
 				PermissionThreadLocal.getPermissionChecker(),
