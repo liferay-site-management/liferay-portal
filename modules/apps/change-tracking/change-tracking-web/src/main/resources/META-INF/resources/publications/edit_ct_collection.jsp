@@ -82,7 +82,11 @@ portletDisplay.setShowBackIcon(true);
 			).put(
 				"ctCollectionTemplates", jsonSerializer.serializeDeep(ctCollectionTemplates)
 			).put(
+				"descriptionFieldMaxLength", ModelHintsUtil.getMaxLength(CTCollection.class.getName(), "description")
+			).put(
 				"inviteUsersURL", inviteUsersURL
+			).put(
+				"nameFieldMaxLength", ModelHintsUtil.getMaxLength(CTCollection.class.getName(), "name")
 			).put(
 				"namespace", liferayPortletResponse.getNamespace()
 			).put(

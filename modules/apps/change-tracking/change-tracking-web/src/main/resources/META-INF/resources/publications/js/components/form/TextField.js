@@ -13,6 +13,7 @@
  */
 
 import ClayForm, {ClayInput} from '@clayui/form';
+import {sub} from 'frontend-js-web';
 import React, {useState} from 'react';
 
 const TextField = ({
@@ -20,6 +21,7 @@ const TextField = ({
 	componentType,
 	fieldValue,
 	label,
+	maxLength,
 	onChange,
 	placeholderValue,
 	required,
@@ -30,9 +32,23 @@ const TextField = ({
 		return !!fieldValue.length;
 	};
 
+	const isValidLength = () => {
+		return maxLength
+			? fieldValue.length <= maxLength
+			: fieldValue.length <= 75;
+	};
+
 	const validateOnBlur = () => {
-		if (!isFieldEmpty(fieldValue)) {
+		if (required && !isFieldEmpty(fieldValue)) {
 			setNameErrorMessage(Liferay.Language.get('this-field-is-required'));
+		}
+		else if (!isValidLength()) {
+			setNameErrorMessage(
+				sub(
+					Liferay.Language.get('value-exceeds-maximum-length-of-x'),
+					maxLength
+				)
+			);
 		}
 		else {
 			setNameErrorMessage('');
@@ -65,7 +81,7 @@ const TextField = ({
 				<ClayInput
 					aria-label={ariaLabel ? ariaLabel : null}
 					component={componentType}
-					onBlur={required ? () => validateOnBlur() : null}
+					onBlur={validateOnBlur}
 					onChange={onChange}
 					placeholder={placeholderValue ? placeholderValue : null}
 					required={required ? 'required' : null}

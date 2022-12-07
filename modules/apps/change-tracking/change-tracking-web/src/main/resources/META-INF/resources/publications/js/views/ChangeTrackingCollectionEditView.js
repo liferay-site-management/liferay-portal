@@ -25,7 +25,9 @@ export default function ChangeTrackingCollectionEditView({
 	actionUrl,
 	ctCollectionId,
 	ctCollectionTemplates,
+	descriptionFieldMaxLength,
 	inviteUsersURL,
+	nameFieldMaxLength,
 	namespace,
 	publicationDescription,
 	publicationName,
@@ -210,6 +212,7 @@ export default function ChangeTrackingCollectionEditView({
 				componentType="input"
 				fieldValue={nameField}
 				label={Liferay.Language.get('name')}
+				maxLength={nameFieldMaxLength}
 				onChange={(event) => {
 					setNameField(event.target.value);
 				}}
@@ -224,6 +227,7 @@ export default function ChangeTrackingCollectionEditView({
 				componentType="textarea"
 				fieldValue={descriptionField}
 				label={Liferay.Language.get('description')}
+				maxLength={descriptionFieldMaxLength}
 				onChange={(event) => {
 					setDescriptionField(event.target.value);
 				}}
@@ -319,7 +323,12 @@ export default function ChangeTrackingCollectionEditView({
 
 			<div className="button-group">
 				<ClayButton
-					disabled={saveButtonDisabled}
+					disabled={
+						saveButtonDisabled ||
+						nameField.length > nameFieldMaxLength ||
+						nameField.length < 1 ||
+						descriptionField.length > descriptionFieldMaxLength
+					}
 					displayType="primary"
 					id="saveButton"
 					onClick={() => handleSubmit()}
