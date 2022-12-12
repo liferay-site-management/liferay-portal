@@ -59,6 +59,7 @@ definition {
 		PublicationsNavigator.openPublicationsAdmin();
 
 		Publications.inviteUsers(
+			gotoReviewChanges = "true",
 			publicationName = "Publication Name 1",
 			userInvite = "userea@liferay.com");
 
@@ -78,6 +79,7 @@ definition {
 		JSONPublications.addPublication(publicationName = "Publication Name 2");
 
 		Publications.inviteUsers(
+			gotoReviewChanges = "true",
 			publicationName = "Publication Name 2",
 			publicationRole = "Editor",
 			userInvite = "userea@liferay.com");
@@ -196,6 +198,7 @@ definition {
 		PublicationsNavigator.openPublicationsAdmin();
 
 		Publications.inviteUsers(
+			gotoReviewChanges = "true",
 			publicationName = "Publication Name",
 			publicationRole = "Admin",
 			userInvite = "userea1@liferay.com");
@@ -263,6 +266,7 @@ definition {
 		PublicationsNavigator.openPublicationsAdmin();
 
 		Publications.inviteUsers(
+			gotoReviewChanges = "true",
 			publicationName = "Publication Name",
 			publicationRole = "Editor",
 			userInvite = "userea@liferay.com");
@@ -335,6 +339,7 @@ definition {
 		PublicationsNavigator.openPublicationsAdmin();
 
 		Publications.inviteUsers(
+			gotoReviewChanges = "true",
 			publicationName = "Publication Name",
 			publicationRole = "Publisher",
 			userInvite = "userea@liferay.com");
@@ -398,6 +403,7 @@ definition {
 		PublicationsNavigator.openPublicationsAdmin();
 
 		Publications.inviteUsers(
+			gotoReviewChanges = "true",
 			publicationName = "Publication Name",
 			userInvite = "userea@liferay.com",
 			userMissingPublicationsRole = "true");
