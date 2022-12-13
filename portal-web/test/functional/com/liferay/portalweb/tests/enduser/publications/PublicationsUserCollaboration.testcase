@@ -78,6 +78,8 @@ definition {
 
 		JSONPublications.addPublication(publicationName = "Publication Name 2");
 
+		PublicationsNavigator.openPublicationsAdmin();
+
 		Publications.inviteUsers(
 			gotoReviewChanges = "true",
 			publicationName = "Publication Name 2",
