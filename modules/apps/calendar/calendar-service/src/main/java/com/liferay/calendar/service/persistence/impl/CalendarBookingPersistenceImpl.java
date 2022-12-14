@@ -6379,7 +6379,7 @@ public class CalendarBookingPersistenceImpl
 		ctStrictColumnNames.add("status");
 		ctStrictColumnNames.add("statusByUserId");
 		ctStrictColumnNames.add("statusByUserName");
-		ctStrictColumnNames.add("statusDate");
+		ctIgnoreColumnNames.add("statusDate");
 
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.CONTROL, ctControlColumnNames);
