@@ -566,9 +566,19 @@ public class CTConflictChecker<T extends CTModel<T>> {
 						"ctCollectionId", Long.class);
 
 					if (ctCollectionIdColumn != null) {
+						if (_targetCTCollectionId ==
+								CTConstants.CT_COLLECTION_ID_PRODUCTION) {
+
+							return ctCollectionIdColumn.in(
+								new Long[] {
+									_sourceCTCollectionId, _targetCTCollectionId
+								});
+						}
+
 						return ctCollectionIdColumn.in(
 							new Long[] {
-								_sourceCTCollectionId, _targetCTCollectionId
+								_sourceCTCollectionId, _targetCTCollectionId,
+								CTConstants.CT_COLLECTION_ID_PRODUCTION
 							});
 					}
 
