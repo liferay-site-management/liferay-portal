@@ -27,6 +27,7 @@ export default function PublicationTemplateEditView({
 	collaboratorsProps,
 	ctCollectionTemplateId,
 	description,
+	getTemplateCollaboratorsURL,
 	name,
 	namespace,
 	publicationDescription,
@@ -199,6 +200,11 @@ export default function PublicationTemplateEditView({
 				title="Publication Collaborators"
 			>
 				<ManageCollaborators
+					getTemplateCollaboratorsURL={
+						ctCollectionTemplateId !== 0
+							? getTemplateCollaboratorsURL
+							: null
+					}
 					isPublicationTemplate={true}
 					setCollaboratorData={setCollaboratorData}
 					setShowModal={setShowModal}

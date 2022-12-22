@@ -44,6 +44,8 @@ else {
 	renderResponse.setTitle(LanguageUtil.get(request, "create-a-new-publication-template"));
 }
 
+HashMapBuilder.HashMapWrapper<String, Object> hashMapWrapper = new HashMapBuilder.HashMapWrapper<>();
+
 portletDisplay.setURLBack(backURL);
 portletDisplay.setShowBackIcon(true);
 %>
@@ -55,10 +57,18 @@ portletDisplay.setShowBackIcon(true);
 		<liferay-portlet:param name="redirect" value="<%= redirect %>" />
 	</liferay-portlet:actionURL>
 
+	<c:if test="<%= ctCollectionTemplateId != 0 %>">
+		<liferay-portlet:resourceURL id="/change_tracking/get_template_collaborators" var="getTemplateCollaboratorsURL">
+			<portlet:param name="ctCollectionTemplateId" value="<%= String.valueOf(ctCollectionTemplateId) %>" />
+		</liferay-portlet:resourceURL>
+
+		<%= hashMapWrapper.put("getTemplateCollaboratorsURL", getTemplateCollaboratorsURL) %>
+	</c:if>
+
 	<react:component
 		module="publications/js/views/PublicationTemplateEditView"
 		props='<%=
-			HashMapBuilder.<String, Object>put(
+			hashMapWrapper.put(
 				"actionUrl", actionURL
 			).put(
 				"collaboratorsProps", publicationsDisplayContext.getCollaboratorsReactData(ctCollectionTemplateId, true)

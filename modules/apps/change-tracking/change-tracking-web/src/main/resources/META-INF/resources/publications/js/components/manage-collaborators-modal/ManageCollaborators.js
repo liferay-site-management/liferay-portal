@@ -50,6 +50,7 @@ import SharingAutocomplete from './SharingAutocomplete';
 const ManageCollaborators = ({
 	autocompleteUserURL,
 	getCollaboratorsURL,
+	getTemplateCollaboratorsURL,
 	inviteUsersURL,
 	isPublicationTemplate,
 	namespace,
@@ -101,7 +102,10 @@ const ManageCollaborators = ({
 		fetchRetry: {
 			attempts: 0,
 		},
-		link: getCollaboratorsURL,
+		link:
+			isPublicationTemplate && !!getTemplateCollaboratorsURL
+				? getTemplateCollaboratorsURL
+				: getCollaboratorsURL,
 	});
 
 	const collaborators = collaboratorsResource;
@@ -349,12 +353,31 @@ const ManageCollaborators = ({
 	const sendInvite = (publicationsUserRoleUserIds, roleValues, userIds) => {
 		const updatedRolesKeys = Object.keys(updatedRoles);
 
-		for (let i = 0; i < updatedRolesKeys.length; i++) {
-			roleValues.push(updatedRoles[updatedRolesKeys[i]].value);
-			userIds.push(updatedRolesKeys[i]);
-		}
+		if (
+			isPublicationTemplate &&
+			(!!userIds.length || !!collaborators.length)
+		) {
+			for (let i = 0; i < collaborators.length; i++) {
+				const collaboratorUserId = collaborators[i].userId;
 
-		if (isPublicationTemplate && !!userIds.length) {
+				if (updatedRoles[collaboratorUserId]) {
+					if (updatedRoles[collaboratorUserId].value === -1) {
+
+						// if updated to Remove collaborator
+
+						continue;
+					}
+
+					roleValues.push(updatedRoles[collaboratorUserId].value);
+				}
+				else {
+					roleValues.push(collaborators[i].roleValue);
+				}
+
+				publicationsUserRoleUserIds.push(collaboratorUserId);
+				userIds.push(collaboratorUserId);
+			}
+
 			setCollaboratorData({
 				[`publicationsUserRoleUserIds`]: publicationsUserRoleUserIds.join(
 					','
@@ -368,6 +391,11 @@ const ManageCollaborators = ({
 			);
 		}
 		else {
+			for (let i = 0; i < updatedRolesKeys.length; i++) {
+				roleValues.push(updatedRoles[updatedRolesKeys[i]].value);
+				userIds.push(updatedRolesKeys[i]);
+			}
+
 			const formData = {
 				[`${namespace}publicationsUserRoleUserIds`]: publicationsUserRoleUserIds.join(
 					','
