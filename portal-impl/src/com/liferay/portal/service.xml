@@ -1578,7 +1578,7 @@
 			<finder-column name="smallValue" />
 		</finder>
 	</entity>
-	<entity local-service="true" name="Portlet" remote-service="true">
+	<entity change-tracking-enabled="true" local-service="true" name="Portlet" remote-service="true">
 
 		<!-- PK fields -->
 
