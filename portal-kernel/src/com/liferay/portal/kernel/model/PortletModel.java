@@ -15,6 +15,7 @@
 package com.liferay.portal.kernel.model;
 
 import com.liferay.portal.kernel.bean.AutoEscape;
+import com.liferay.portal.kernel.model.change.tracking.CTModel;
 
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -31,7 +32,7 @@ import org.osgi.annotation.versioning.ProviderType;
  */
 @ProviderType
 public interface PortletModel
-	extends BaseModel<Portlet>, MVCCModel, ShardedModel {
+	extends BaseModel<Portlet>, CTModel<Portlet>, MVCCModel, ShardedModel {
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -44,6 +45,7 @@ public interface PortletModel
 	 *
 	 * @return the primary key of this portlet
 	 */
+	@Override
 	public long getPrimaryKey();
 
 	/**
@@ -51,6 +53,7 @@ public interface PortletModel
 	 *
 	 * @param primaryKey the primary key of this portlet
 	 */
+	@Override
 	public void setPrimaryKey(long primaryKey);
 
 	/**
@@ -68,6 +71,22 @@ public interface PortletModel
 	 */
 	@Override
 	public void setMvccVersion(long mvccVersion);
+
+	/**
+	 * Returns the ct collection ID of this portlet.
+	 *
+	 * @return the ct collection ID of this portlet
+	 */
+	@Override
+	public long getCtCollectionId();
+
+	/**
+	 * Sets the ct collection ID of this portlet.
+	 *
+	 * @param ctCollectionId the ct collection ID of this portlet
+	 */
+	@Override
+	public void setCtCollectionId(long ctCollectionId);
 
 	/**
 	 * Returns the ID of this portlet.

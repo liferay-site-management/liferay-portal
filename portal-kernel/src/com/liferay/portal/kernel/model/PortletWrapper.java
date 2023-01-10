@@ -18,6 +18,8 @@ import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  * <p>
@@ -41,6 +43,7 @@ public class PortletWrapper
 		Map<String, Object> attributes = new HashMap<String, Object>();
 
 		attributes.put("mvccVersion", getMvccVersion());
+		attributes.put("ctCollectionId", getCtCollectionId());
 		attributes.put("id", getId());
 		attributes.put("companyId", getCompanyId());
 		attributes.put("portletId", getPortletId());
@@ -56,6 +59,12 @@ public class PortletWrapper
 
 		if (mvccVersion != null) {
 			setMvccVersion(mvccVersion);
+		}
+
+		Long ctCollectionId = (Long)attributes.get("ctCollectionId");
+
+		if (ctCollectionId != null) {
+			setCtCollectionId(ctCollectionId);
 		}
 
 		Long id = (Long)attributes.get("id");
@@ -444,6 +453,16 @@ public class PortletWrapper
 	@Override
 	public String getCssClassWrapper() {
 		return model.getCssClassWrapper();
+	}
+
+	/**
+	 * Returns the ct collection ID of this portlet.
+	 *
+	 * @return the ct collection ID of this portlet
+	 */
+	@Override
+	public long getCtCollectionId() {
+		return model.getCtCollectionId();
 	}
 
 	/**
@@ -2536,6 +2555,16 @@ public class PortletWrapper
 	}
 
 	/**
+	 * Sets the ct collection ID of this portlet.
+	 *
+	 * @param ctCollectionId the ct collection ID of this portlet
+	 */
+	@Override
+	public void setCtCollectionId(long ctCollectionId) {
+		model.setCtCollectionId(ctCollectionId);
+	}
+
+	/**
 	 * Sets the names of the classes that represent custom attribute displays
 	 * associated with the portlet.
 	 *
@@ -3703,6 +3732,20 @@ public class PortletWrapper
 	@Override
 	public void unsetReady() {
 		model.unsetReady();
+	}
+
+	@Override
+	public Map<String, Function<Portlet, Object>>
+		getAttributeGetterFunctions() {
+
+		return model.getAttributeGetterFunctions();
+	}
+
+	@Override
+	public Map<String, BiConsumer<Portlet, Object>>
+		getAttributeSetterBiConsumers() {
+
+		return model.getAttributeSetterBiConsumers();
 	}
 
 	@Override

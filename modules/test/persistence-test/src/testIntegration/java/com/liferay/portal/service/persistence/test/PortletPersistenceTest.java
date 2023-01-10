@@ -124,6 +124,8 @@ public class PortletPersistenceTest {
 
 		newPortlet.setMvccVersion(RandomTestUtil.nextLong());
 
+		newPortlet.setCtCollectionId(RandomTestUtil.nextLong());
+
 		newPortlet.setCompanyId(RandomTestUtil.nextLong());
 
 		newPortlet.setPortletId(RandomTestUtil.randomString());
@@ -139,6 +141,9 @@ public class PortletPersistenceTest {
 
 		Assert.assertEquals(
 			existingPortlet.getMvccVersion(), newPortlet.getMvccVersion());
+		Assert.assertEquals(
+			existingPortlet.getCtCollectionId(),
+			newPortlet.getCtCollectionId());
 		Assert.assertEquals(existingPortlet.getId(), newPortlet.getId());
 		Assert.assertEquals(
 			existingPortlet.getCompanyId(), newPortlet.getCompanyId());
@@ -189,8 +194,9 @@ public class PortletPersistenceTest {
 
 	protected OrderByComparator<Portlet> getOrderByComparator() {
 		return OrderByComparatorFactoryUtil.create(
-			"Portlet", "mvccVersion", true, "id", true, "companyId", true,
-			"portletId", true, "roles", true, "active", true);
+			"Portlet", "mvccVersion", true, "ctCollectionId", true, "id", true,
+			"companyId", true, "portletId", true, "roles", true, "active",
+			true);
 	}
 
 	@Test
@@ -460,6 +466,8 @@ public class PortletPersistenceTest {
 		Portlet portlet = _persistence.create(pk);
 
 		portlet.setMvccVersion(RandomTestUtil.nextLong());
+
+		portlet.setCtCollectionId(RandomTestUtil.nextLong());
 
 		portlet.setCompanyId(RandomTestUtil.nextLong());
 
