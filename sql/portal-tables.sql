@@ -981,11 +981,13 @@ create table PortalPreferences (
 
 create table Portlet (
 	mvccVersion LONG default 0 not null,
-	id_ LONG not null primary key,
+	ctCollectionId LONG default 0 not null,
+	id_ LONG not null,
 	companyId LONG,
 	portletId VARCHAR(200) null,
 	roles STRING null,
-	active_ BOOLEAN
+	active_ BOOLEAN,
+	primary key (id_, ctCollectionId)
 );
 
 create table PortletItem (

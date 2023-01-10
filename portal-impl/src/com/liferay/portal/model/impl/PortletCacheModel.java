@@ -74,10 +74,12 @@ public class PortletCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(13);
+		StringBundler sb = new StringBundler(15);
 
 		sb.append("{mvccVersion=");
 		sb.append(mvccVersion);
+		sb.append(", ctCollectionId=");
+		sb.append(ctCollectionId);
 		sb.append(", id=");
 		sb.append(id);
 		sb.append(", companyId=");
@@ -98,6 +100,7 @@ public class PortletCacheModel
 		PortletImpl portletImpl = new PortletImpl();
 
 		portletImpl.setMvccVersion(mvccVersion);
+		portletImpl.setCtCollectionId(ctCollectionId);
 		portletImpl.setId(id);
 		portletImpl.setCompanyId(companyId);
 
@@ -126,6 +129,8 @@ public class PortletCacheModel
 	public void readExternal(ObjectInput objectInput) throws IOException {
 		mvccVersion = objectInput.readLong();
 
+		ctCollectionId = objectInput.readLong();
+
 		id = objectInput.readLong();
 
 		companyId = objectInput.readLong();
@@ -138,6 +143,8 @@ public class PortletCacheModel
 	@Override
 	public void writeExternal(ObjectOutput objectOutput) throws IOException {
 		objectOutput.writeLong(mvccVersion);
+
+		objectOutput.writeLong(ctCollectionId);
 
 		objectOutput.writeLong(id);
 
@@ -161,6 +168,7 @@ public class PortletCacheModel
 	}
 
 	public long mvccVersion;
+	public long ctCollectionId;
 	public long id;
 	public long companyId;
 	public String portletId;

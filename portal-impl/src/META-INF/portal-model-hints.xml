@@ -1176,6 +1176,7 @@
 	</model>
 	<model name="com.liferay.portal.kernel.model.Portlet">
 		<field name="mvccVersion" type="long" />
+		<field name="ctCollectionId" type="long" />
 		<field name="id" type="long" />
 		<field name="companyId" type="long" />
 		<field name="portletId" type="String">

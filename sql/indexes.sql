@@ -354,7 +354,8 @@ create index IX_4C7A38C4 on PortalPreferenceValue (portalPreferencesId, namespac
 
 create index IX_D1F795F1 on PortalPreferences (ownerId, ownerType);
 
-create unique index IX_12B5E51D on Portlet (companyId, portletId[$COLUMN_LENGTH:200$]);
+create index IX_61BC5B66 on Portlet (companyId, ctCollectionId);
+create unique index IX_B4F4E17B on Portlet (companyId, portletId[$COLUMN_LENGTH:200$], ctCollectionId);
 
 create index IX_96BDD537 on PortletItem (groupId, classNameId);
 create index IX_D699243F on PortletItem (groupId, name[$COLUMN_LENGTH:75$], portletId[$COLUMN_LENGTH:200$], classNameId);

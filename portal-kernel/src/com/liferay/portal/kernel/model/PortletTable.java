@@ -32,6 +32,8 @@ public class PortletTable extends BaseTable<PortletTable> {
 
 	public final Column<PortletTable, Long> mvccVersion = createColumn(
 		"mvccVersion", Long.class, Types.BIGINT, Column.FLAG_NULLITY);
+	public final Column<PortletTable, Long> ctCollectionId = createColumn(
+		"ctCollectionId", Long.class, Types.BIGINT, Column.FLAG_PRIMARY);
 	public final Column<PortletTable, Long> id = createColumn(
 		"id_", Long.class, Types.BIGINT, Column.FLAG_PRIMARY);
 	public final Column<PortletTable, Long> companyId = createColumn(

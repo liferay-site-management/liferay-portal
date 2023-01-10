@@ -14,6 +14,8 @@
 
 package com.liferay.portal.kernel.service;
 
+import com.liferay.portal.kernel.model.Portlet;
+
 /**
  * Provides a wrapper for {@link PortletService}.
  *
@@ -38,7 +40,7 @@ public class PortletServiceWrapper
 	 * @return the OSGi service identifier
 	 */
 	@Override
-	public java.lang.String getOSGiServiceIdentifier() {
+	public String getOSGiServiceIdentifier() {
 		return _portletService.getOSGiServiceIdentifier();
 	}
 
@@ -48,14 +50,13 @@ public class PortletServiceWrapper
 	}
 
 	@Override
-	public boolean hasPortlet(long companyId, java.lang.String portletId) {
+	public boolean hasPortlet(long companyId, String portletId) {
 		return _portletService.hasPortlet(companyId, portletId);
 	}
 
 	@Override
-	public com.liferay.portal.kernel.model.Portlet updatePortlet(
-			long companyId, java.lang.String portletId, java.lang.String roles,
-			boolean active)
+	public Portlet updatePortlet(
+			long companyId, String portletId, String roles, boolean active)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _portletService.updatePortlet(

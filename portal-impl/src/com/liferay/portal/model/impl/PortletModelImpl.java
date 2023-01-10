@@ -68,9 +68,10 @@ public class PortletModelImpl
 	public static final String TABLE_NAME = "Portlet";
 
 	public static final Object[][] TABLE_COLUMNS = {
-		{"mvccVersion", Types.BIGINT}, {"id_", Types.BIGINT},
-		{"companyId", Types.BIGINT}, {"portletId", Types.VARCHAR},
-		{"roles", Types.VARCHAR}, {"active_", Types.BOOLEAN}
+		{"mvccVersion", Types.BIGINT}, {"ctCollectionId", Types.BIGINT},
+		{"id_", Types.BIGINT}, {"companyId", Types.BIGINT},
+		{"portletId", Types.VARCHAR}, {"roles", Types.VARCHAR},
+		{"active_", Types.BOOLEAN}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -78,6 +79,7 @@ public class PortletModelImpl
 
 	static {
 		TABLE_COLUMNS_MAP.put("mvccVersion", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("ctCollectionId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("id_", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("companyId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("portletId", Types.VARCHAR);
@@ -86,7 +88,7 @@ public class PortletModelImpl
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table Portlet (mvccVersion LONG default 0 not null,id_ LONG not null primary key,companyId LONG,portletId VARCHAR(200) null,roles STRING null,active_ BOOLEAN)";
+		"create table Portlet (mvccVersion LONG default 0 not null,ctCollectionId LONG default 0 not null,id_ LONG not null,companyId LONG,portletId VARCHAR(200) null,roles STRING null,active_ BOOLEAN,primary key (id_, ctCollectionId))";
 
 	public static final String TABLE_SQL_DROP = "drop table Portlet";
 
@@ -239,6 +241,11 @@ public class PortletModelImpl
 		attributeGetterFunctions.put("mvccVersion", Portlet::getMvccVersion);
 		attributeSetterBiConsumers.put(
 			"mvccVersion", (BiConsumer<Portlet, Long>)Portlet::setMvccVersion);
+		attributeGetterFunctions.put(
+			"ctCollectionId", Portlet::getCtCollectionId);
+		attributeSetterBiConsumers.put(
+			"ctCollectionId",
+			(BiConsumer<Portlet, Long>)Portlet::setCtCollectionId);
 		attributeGetterFunctions.put("id", Portlet::getId);
 		attributeSetterBiConsumers.put(
 			"id", (BiConsumer<Portlet, Long>)Portlet::setId);
@@ -274,6 +281,21 @@ public class PortletModelImpl
 		}
 
 		_mvccVersion = mvccVersion;
+	}
+
+	@JSON
+	@Override
+	public long getCtCollectionId() {
+		return _ctCollectionId;
+	}
+
+	@Override
+	public void setCtCollectionId(long ctCollectionId) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_ctCollectionId = ctCollectionId;
 	}
 
 	@JSON
@@ -443,6 +465,7 @@ public class PortletModelImpl
 		PortletImpl portletImpl = new PortletImpl();
 
 		portletImpl.setMvccVersion(getMvccVersion());
+		portletImpl.setCtCollectionId(getCtCollectionId());
 		portletImpl.setId(getId());
 		portletImpl.setCompanyId(getCompanyId());
 		portletImpl.setPortletId(getPortletId());
@@ -460,6 +483,8 @@ public class PortletModelImpl
 
 		portletImpl.setMvccVersion(
 			this.<Long>getColumnOriginalValue("mvccVersion"));
+		portletImpl.setCtCollectionId(
+			this.<Long>getColumnOriginalValue("ctCollectionId"));
 		portletImpl.setId(this.<Long>getColumnOriginalValue("id_"));
 		portletImpl.setCompanyId(
 			this.<Long>getColumnOriginalValue("companyId"));
@@ -543,6 +568,8 @@ public class PortletModelImpl
 		PortletCacheModel portletCacheModel = new PortletCacheModel();
 
 		portletCacheModel.mvccVersion = getMvccVersion();
+
+		portletCacheModel.ctCollectionId = getCtCollectionId();
 
 		portletCacheModel.id = getId();
 
@@ -628,6 +655,7 @@ public class PortletModelImpl
 	}
 
 	private long _mvccVersion;
+	private long _ctCollectionId;
 	private long _id;
 	private long _companyId;
 	private String _portletId;
@@ -664,6 +692,7 @@ public class PortletModelImpl
 		_columnOriginalValues = new HashMap<String, Object>();
 
 		_columnOriginalValues.put("mvccVersion", _mvccVersion);
+		_columnOriginalValues.put("ctCollectionId", _ctCollectionId);
 		_columnOriginalValues.put("id_", _id);
 		_columnOriginalValues.put("companyId", _companyId);
 		_columnOriginalValues.put("portletId", _portletId);
@@ -695,15 +724,17 @@ public class PortletModelImpl
 
 		columnBitmasks.put("mvccVersion", 1L);
 
-		columnBitmasks.put("id_", 2L);
+		columnBitmasks.put("ctCollectionId", 2L);
 
-		columnBitmasks.put("companyId", 4L);
+		columnBitmasks.put("id_", 4L);
 
-		columnBitmasks.put("portletId", 8L);
+		columnBitmasks.put("companyId", 8L);
 
-		columnBitmasks.put("roles", 16L);
+		columnBitmasks.put("portletId", 16L);
 
-		columnBitmasks.put("active_", 32L);
+		columnBitmasks.put("roles", 32L);
+
+		columnBitmasks.put("active_", 64L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}
