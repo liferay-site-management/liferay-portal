@@ -23,6 +23,8 @@ import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.TempFileEntryUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.repository.registry.RepositoryClassDefinition;
 import com.liferay.portal.repository.registry.RepositoryClassDefinitionCatalogUtil;
@@ -71,6 +73,12 @@ public class RepositoryCTDisplayRenderer
 		).setParameter(
 			"repositoryId", repository.getRepositoryId()
 		).buildString();
+	}
+
+	@Override
+	public boolean isHideable(Repository repository) {
+		return StringUtil.equals(
+			repository.getName(), TempFileEntryUtil.class.getName());
 	}
 
 	@Override
