@@ -589,8 +589,8 @@ public class LayoutCTTest {
 
 	@Test
 	public void testPublishLayoutWithFriendlyURLUpdate() throws Exception {
-		String ctFriendlyURL = "/testCTLayout";
-		String newCTFriendlyURL = "/testCTLayoutWithNewURL";
+		String ctFriendlyURL = "/" + RandomTestUtil.randomString();
+		String newCTFriendlyURL = "/" + RandomTestUtil.randomString();
 
 		Layout layout = LayoutTestUtil.addTypePortletLayout(_group);
 
