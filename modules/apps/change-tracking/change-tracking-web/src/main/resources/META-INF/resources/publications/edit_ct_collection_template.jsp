@@ -62,35 +62,28 @@ portletDisplay.setShowBackIcon(true);
 			<portlet:param name="ctCollectionTemplateId" value="<%= String.valueOf(ctCollectionTemplateId) %>" />
 		</liferay-portlet:resourceURL>
 
-		<%= hashMapWrapper.put("getTemplateCollaboratorsURL", getTemplateCollaboratorsURL) %>
+		<%
+		hashMapWrapper.put("getTemplateCollaboratorsURL", getTemplateCollaboratorsURL);
+		%>
+
 	</c:if>
+
+	<%
+	hashMapWrapper.put("actionUrl", actionURL);
+	hashMapWrapper.put("collaboratorsProps", publicationsDisplayContext.getCollaboratorsReactData(ctCollectionTemplateId, true));
+	hashMapWrapper.put("ctCollectionTemplateId", ctCollectionTemplateId);
+	hashMapWrapper.put("description", description);
+	hashMapWrapper.put("name", name);
+	hashMapWrapper.put("namespace", liferayPortletResponse.getNamespace());
+	hashMapWrapper.put("publicationDescription", publicationDescription);
+	hashMapWrapper.put("publicationName", publicationName);
+	hashMapWrapper.put("redirect", redirect);
+	hashMapWrapper.put("saveButtonLabel", LanguageUtil.get(request, saveButtonLabel));
+	hashMapWrapper.put("tokens", CTCollectionTemplateLocalServiceUtil.getTokens());
+	%>
 
 	<react:component
 		module="publications/js/views/PublicationTemplateEditView"
-		props='<%=
-			hashMapWrapper.put(
-				"actionUrl", actionURL
-			).put(
-				"collaboratorsProps", publicationsDisplayContext.getCollaboratorsReactData(ctCollectionTemplateId, true)
-			).put(
-				"ctCollectionTemplateId", ctCollectionTemplateId
-			).put(
-				"description", description
-			).put(
-				"name", name
-			).put(
-				"namespace", liferayPortletResponse.getNamespace()
-			).put(
-				"publicationDescription", publicationDescription
-			).put(
-				"publicationName", publicationName
-			).put(
-				"redirect", redirect
-			).put(
-				"saveButtonLabel", LanguageUtil.get(request, saveButtonLabel)
-			).put(
-				"tokens", CTCollectionTemplateLocalServiceUtil.getTokens()
-			).build()
-		%>'
+		props="<%= hashMapWrapper.build() %>"
 	/>
 </clay:container-fluid>
