@@ -67,7 +67,7 @@ public class CheckoutCTCollectionMVCActionCommand extends BaseMVCActionCommand {
 		hideDefaultSuccessMessage(actionRequest);
 
 		SessionMessages.add(
-			_portal.getHttpServletRequest(actionRequest), "requestProcessed",
+			_portal.getLiferayPortletRequest(actionRequest), "requestProcessed",
 			ParamUtil.getString(actionRequest, "successMessage"));
 
 		String redirect = ParamUtil.getString(actionRequest, "redirect");
