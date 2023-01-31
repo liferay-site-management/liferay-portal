@@ -85,8 +85,11 @@ import com.liferay.portal.kernel.service.persistence.change.tracking.CTPersisten
 import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.kernel.workflow.WorkflowHandler;
+import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
 import com.liferay.portal.search.model.uid.UIDFactory;
 
 import java.sql.Connection;
@@ -810,11 +813,14 @@ public class CTCollectionLocalServiceImpl
 			Map<String, Integer> tableColumnsMap =
 				ctPersistence.getTableColumnsMap();
 
-			if (tableColumnsMap.containsKey("status") &&
-				tableColumnsMap.containsKey("statusByUserId")) {
+			WorkflowHandler<?> workflowHandler =
+				WorkflowHandlerRegistryUtil.getWorkflowHandler(
+					_portal.getClassName(modelClassNameId));
 
-				ctPersistences.putIfAbsent(
-					modelClassNameId, ctService.getCTPersistence());
+			if (tableColumnsMap.containsKey("status") &&
+				(workflowHandler != null)) {
+
+				ctPersistences.putIfAbsent(modelClassNameId, ctPersistence);
 			}
 			else {
 				modelClassNameIds.add(modelClassNameId);
@@ -1271,6 +1277,9 @@ public class CTCollectionLocalServiceImpl
 
 	@Reference
 	private IndexWriterHelper _indexWriterHelper;
+
+	@Reference
+	private Portal _portal;
 
 	@Reference
 	private ResourceLocalService _resourceLocalService;
