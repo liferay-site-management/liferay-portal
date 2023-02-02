@@ -15,6 +15,7 @@
 package com.liferay.portal.search.internal.indexer;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.change.tracking.sql.CTSQLModeThreadLocal;
 import com.liferay.portal.kernel.configuration.Filter;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -188,7 +189,13 @@ public class IndexerWriterImpl<T extends BaseModel<?>>
 						_modelSearchSettings.getClassName(),
 						_indexerDocumentBuilder));
 
+				CTSQLModeThreadLocal.CTSQLMode ctSQLMode =
+					CTSQLModeThreadLocal.getCTSQLMode();
+
 				try {
+					CTSQLModeThreadLocal.setCTSQLModeWithSafeCloseable(
+						CTSQLModeThreadLocal.CTSQLMode.CT_ALL);
+
 					batchIndexingActionable.performActions();
 				}
 				catch (Exception exception) {
@@ -200,6 +207,10 @@ public class IndexerWriterImpl<T extends BaseModel<?>>
 								" for company: ", companyId),
 							exception);
 					}
+				}
+				finally {
+					CTSQLModeThreadLocal.setCTSQLModeWithSafeCloseable(
+						ctSQLMode);
 				}
 			}
 		}
