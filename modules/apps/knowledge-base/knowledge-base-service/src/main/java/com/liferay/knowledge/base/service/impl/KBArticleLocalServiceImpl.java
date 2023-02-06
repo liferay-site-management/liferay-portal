@@ -64,6 +64,7 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.bean.BeanProperties;
+import com.liferay.portal.kernel.change.tracking.CTAware;
 import com.liferay.portal.kernel.dao.orm.Conjunction;
 import com.liferay.portal.kernel.dao.orm.Criterion;
 import com.liferay.portal.kernel.dao.orm.Disjunction;
@@ -154,6 +155,7 @@ import org.osgi.service.component.annotations.Reference;
 	property = "model.class.name=com.liferay.knowledge.base.model.KBArticle",
 	service = AopService.class
 )
+@CTAware
 public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 
 	@Override
