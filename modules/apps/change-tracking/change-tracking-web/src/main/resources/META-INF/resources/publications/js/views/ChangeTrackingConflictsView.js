@@ -43,6 +43,7 @@ class ChangeTrackingConflictsView extends ChangeTrackingBaseScheduleView {
 			showPageOverwriteWarning,
 			spritemap,
 			timeZone,
+			unapprovedChangesAllowed,
 			unresolvedConflicts,
 		} = props;
 
@@ -56,6 +57,7 @@ class ChangeTrackingConflictsView extends ChangeTrackingBaseScheduleView {
 		this.showPageOverwriteWarning = showPageOverwriteWarning;
 		this.spritemap = spritemap;
 		this.timeZone = timeZone;
+		this.unapprovedChangesAllowed = unapprovedChangesAllowed;
 		this.unresolvedConflicts = unresolvedConflicts;
 
 		this.state = {
@@ -95,9 +97,13 @@ class ChangeTrackingConflictsView extends ChangeTrackingBaseScheduleView {
 							spritemap={this.spritemap}
 						>
 							<span>
-								{Liferay.Language.get(
-									'this-publication-contains-unapproved-changes-that-must-be-approved-before-publishing'
-								)}
+								{this.unapprovedChangesAllowed
+									? Liferay.Language.get(
+											'this-publication-contains-unapproved-changes.-publications-is-currently-configured-to-allow-publishing-unapproved-changes'
+									  )
+									: Liferay.Language.get(
+											'this-publication-contains-unapproved-changes-that-must-be-approved-before-publishing'
+									  )}
 							</span>
 						</ClayAlert>
 					)}
@@ -119,7 +125,9 @@ class ChangeTrackingConflictsView extends ChangeTrackingBaseScheduleView {
 						</ClayAlert>
 					)}
 
-					{!this.hasUnapprovedChanges &&
+					{(!this.hasUnapprovedChanges ||
+						(this.hasUnapprovedChanges &&
+							this.unapprovedChangesAllowed)) &&
 						!this.unresolvedConflicts.length && (
 							<ClayAlert
 								displayType="success"
@@ -253,7 +261,8 @@ class ChangeTrackingConflictsView extends ChangeTrackingBaseScheduleView {
 							<button
 								className={
 									!!this.unresolvedConflicts.length ||
-									this.hasUnapprovedChanges
+									(this.hasUnapprovedChanges &&
+										!this.unapprovedChangesAllowed)
 										? 'btn btn-primary disabled'
 										: 'btn btn-primary'
 								}
