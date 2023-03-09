@@ -515,6 +515,7 @@ public interface KBArticleLocalService
 	public int getSectionsKBArticlesCount(
 		long groupId, String[] sections, int status);
 
+	@CTAware(onProduction = true)
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public String[] getTempAttachmentNames(
 			long groupId, long userId, String tempFolderName)
