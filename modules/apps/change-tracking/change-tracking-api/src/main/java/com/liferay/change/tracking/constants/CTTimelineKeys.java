@@ -12,31 +12,16 @@
  * details.
  */
 
-package com.liferay.change.tracking.taglib.internal.servlet;
-
-import javax.servlet.ServletContext;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
+package com.liferay.change.tracking.constants;
 
 /**
  * @author Noor Najjar
  */
-@Component(service = {})
-public class ServletContextUtil {
+public class CTTimelineKeys {
 
-	public static ServletContext getServletContext() {
-		return _servletContext;
-	}
+	public static final String CLASS_NAME =
+		"change-tracking:timeline:className";
 
-	@Reference(
-		target = "(osgi.web.symbolicname=com.liferay.change.tracking.taglib)",
-		unbind = "-"
-	)
-	protected void setServletContext(ServletContext servletContext) {
-		_servletContext = servletContext;
-	}
-
-	private static ServletContext _servletContext;
+	public static final String CLASS_PK = "change-tracking:timeline:classPK";
 
 }

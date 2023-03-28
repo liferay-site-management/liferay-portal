@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.change.tracking.taglib.internal.spi.history;
+package com.liferay.change.tracking.web.internal.timeline;
 
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.service.CTCollectionLocalServiceUtil;

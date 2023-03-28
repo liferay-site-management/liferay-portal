@@ -12,10 +12,9 @@
  * details.
  */
 
-package com.liferay.change.tracking.taglib.internal.display.context;
+package com.liferay.change.tracking.web.internal.timeline;
 
 import com.liferay.change.tracking.spi.history.CTCollectionHistoryProvider;
-import com.liferay.change.tracking.taglib.internal.spi.history.DefaultCTCollectionHistoryProvider;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
