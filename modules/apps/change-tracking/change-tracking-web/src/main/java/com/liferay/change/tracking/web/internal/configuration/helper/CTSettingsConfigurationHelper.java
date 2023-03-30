@@ -43,6 +43,50 @@ public class CTSettingsConfigurationHelper {
 		return _getCTSettingsConfiguration(companyId);
 	}
 
+	public long getDefaultCTCollectionTemplateId(long companyId) {
+		CTSettingsConfiguration ctSettingsConfiguration =
+			_getCTSettingsConfiguration(companyId);
+
+		return ctSettingsConfiguration.defaultCTCollectionTemplateId();
+	}
+
+	public long getDefaultSandboxCTCollectionTemplateId(long companyId) {
+		CTSettingsConfiguration ctSettingsConfiguration =
+			_getCTSettingsConfiguration(companyId);
+
+		return ctSettingsConfiguration.defaultSandboxCTCollectionTemplateId();
+	}
+
+	public boolean isDefaultSandboxTemplate(
+		long companyId, long ctCollectionTemplateId) {
+
+		CTSettingsConfiguration ctSettingsConfiguration =
+			_getCTSettingsConfiguration(companyId);
+
+		if (ctSettingsConfiguration.defaultSandboxCTCollectionTemplateId() ==
+				ctCollectionTemplateId) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean isDefaultTemplate(
+		long companyId, long ctCollectionTemplateId) {
+
+		CTSettingsConfiguration ctSettingsConfiguration =
+			_getCTSettingsConfiguration(companyId);
+
+		if (ctSettingsConfiguration.defaultCTCollectionTemplateId() ==
+				ctCollectionTemplateId) {
+
+			return true;
+		}
+
+		return false;
+	}
+
 	public boolean isEnabled(long companyId) {
 		CTSettingsConfiguration ctSettingsConfiguration =
 			_getCTSettingsConfiguration(companyId);
@@ -65,13 +109,19 @@ public class CTSettingsConfigurationHelper {
 	}
 
 	public void save(
-			long companyId, boolean enabled, boolean sandboxEnabled,
-			boolean unapprovedChangesAllowed)
+			long companyId, long defaultCTCollectionTemplateId,
+			long defaultSandboxCTCollectionTemplateId, boolean enabled,
+			boolean sandboxEnabled, boolean unapprovedChangesAllowed)
 		throws PortalException {
 
 		_configurationProvider.saveCompanyConfiguration(
 			CTSettingsConfiguration.class, companyId,
 			HashMapDictionaryBuilder.<String, Object>put(
+				"defaultCTCollectionTemplateId", defaultCTCollectionTemplateId
+			).put(
+				"defaultSandboxCTCollectionTemplateId",
+				defaultSandboxCTCollectionTemplateId
+			).put(
 				"enabled", enabled
 			).put(
 				"sandboxEnabled", sandboxEnabled
