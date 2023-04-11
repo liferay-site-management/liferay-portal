@@ -110,6 +110,11 @@ public class DDLRecordSetCTDisplayRenderer
 	}
 
 	@Override
+	public boolean isHideable(DDLRecordSet ddlRecordSet) {
+		return true;
+	}
+
+	@Override
 	protected void buildDisplay(DisplayBuilder<DDLRecordSet> displayBuilder) {
 		DDLRecordSet ddlRecordSet = displayBuilder.getModel();
 
