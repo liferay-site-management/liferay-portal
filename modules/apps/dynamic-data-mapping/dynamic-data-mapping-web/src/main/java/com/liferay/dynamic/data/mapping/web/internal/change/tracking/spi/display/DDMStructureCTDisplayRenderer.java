@@ -16,6 +16,7 @@ package com.liferay.dynamic.data.mapping.web.internal.change.tracking.spi.displa
 
 import com.liferay.change.tracking.spi.display.BaseCTDisplayRenderer;
 import com.liferay.change.tracking.spi.display.CTDisplayRenderer;
+import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 
 import java.util.Locale;
@@ -47,6 +48,13 @@ public class DDMStructureCTDisplayRenderer
 	@Override
 	public String getTitle(Locale locale, DDMStructure ddmStructure) {
 		return ddmStructure.getName(locale);
+	}
+
+	@Override
+	public boolean isHideable(DDMStructure ddmStructure) {
+		String className = ddmStructure.getClassName();
+
+		return className.equals(DDMFormInstance.class.getName());
 	}
 
 	@Override
