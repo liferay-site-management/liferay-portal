@@ -35,6 +35,8 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.portlet.PortletRequest;
 
@@ -111,7 +113,12 @@ public class DDLRecordSetCTDisplayRenderer
 
 	@Override
 	public boolean isHideable(DDLRecordSet ddlRecordSet) {
-		return true;
+		DDMStructure ddmStructure = _ddmStructureLocalService.fetchDDMStructure(
+			ddlRecordSet.getDDMStructureId());
+
+		Matcher matcher = _pattern.matcher(ddmStructure.getStructureKey());
+
+		return matcher.find();
 	}
 
 	@Override
@@ -156,6 +163,8 @@ public class DDLRecordSetCTDisplayRenderer
 			}
 		);
 	}
+
+	private static final Pattern _pattern = Pattern.compile("^[0-9]*$");
 
 	@Reference
 	private DDMStructureLocalService _ddmStructureLocalService;
