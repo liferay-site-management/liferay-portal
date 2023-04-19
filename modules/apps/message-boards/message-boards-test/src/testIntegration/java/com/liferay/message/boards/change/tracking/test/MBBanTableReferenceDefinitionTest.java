@@ -50,6 +50,11 @@ public class MBBanTableReferenceDefinitionTest
 			ServiceContextTestUtil.getServiceContext(group.getGroupId()));
 	}
 
+	@Override
+	protected void deleteCTModel(long id) throws Exception {
+		_mbBanLocalService.deleteBan(id);
+	}
+
 	@Inject
 	private static MBBanLocalService _mbBanLocalService;
 
