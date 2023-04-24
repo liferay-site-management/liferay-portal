@@ -21,6 +21,7 @@ import com.liferay.message.boards.service.MBSuspiciousActivityLocalService;
 import com.liferay.message.boards.test.util.MBTestUtil;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -52,7 +53,7 @@ public class MBSuspiciousActivityTableReferenceDefinitionTest
 
 		_mbMessage = MBTestUtil.addMessage(
 			group.getGroupId(), TestPropsValues.getUserId(),
-			MBMessage.class.getSimpleName(), MBMessage.class.getName());
+			RandomTestUtil.randomString(), RandomTestUtil.randomString());
 	}
 
 	@Override
@@ -60,6 +61,11 @@ public class MBSuspiciousActivityTableReferenceDefinitionTest
 		return _mbSuspiciousActivityLocalService.
 			addOrUpdateMessageSuspiciousActivity(
 				TestPropsValues.getUserId(), _mbMessage.getMessageId(), "");
+	}
+
+	@Override
+	protected void deleteCTModel(long id) throws Exception {
+		_mbSuspiciousActivityLocalService.deleteSuspiciousActivity(id);
 	}
 
 	private MBMessage _mbMessage;

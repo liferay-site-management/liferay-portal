@@ -20,6 +20,7 @@ import com.liferay.message.boards.constants.MBCategoryConstants;
 import com.liferay.message.boards.service.MBCategoryLocalService;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.test.rule.Inject;
@@ -49,9 +50,13 @@ public class MBCategoryTableReferenceDefinitionTest
 		return _mbCategoryLocalService.addCategory(
 			TestPropsValues.getUserId(),
 			MBCategoryConstants.DEFAULT_PARENT_CATEGORY_ID,
-			MBCategoryTableReferenceDefinitionTest.class.getSimpleName(),
-			MBCategoryTableReferenceDefinitionTest.class.getName(),
+			RandomTestUtil.randomString(), RandomTestUtil.randomString(),
 			ServiceContextTestUtil.getServiceContext(group.getGroupId()));
+	}
+
+	@Override
+	protected void deleteCTModel(long id) throws Exception {
+		_mbCategoryLocalService.deleteCategory(id);
 	}
 
 	@Inject

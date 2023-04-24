@@ -22,6 +22,7 @@ import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.SystemEvent;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
@@ -33,6 +34,7 @@ import com.liferay.portal.test.rule.Inject;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,6 +46,33 @@ public abstract class BaseTableReferenceDefinitionTestCase {
 	@Before
 	public void setUp() throws Exception {
 		group = GroupTestUtil.addGroup();
+
+		systemEventClassNameId = _classNameLocalService.getClassNameId(
+			SystemEvent.class);
+	}
+
+	@Test
+	public void testAddAndDeleteCTEntry() throws Exception {
+		Assume.assumeTrue(System.getProperty("JENKINS_HOME") == null);
+
+		_ctCollection = _ctCollectionService.addCTCollection(
+			TestPropsValues.getCompanyId(), TestPropsValues.getUserId(),
+			RandomTestUtil.randomString(), RandomTestUtil.randomString());
+
+		try (SafeCloseable safeCloseable =
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					_ctCollection.getCtCollectionId())) {
+
+			CTModel<?> ctModel = addCTModel();
+
+			deleteCTModel(ctModel.getPrimaryKey());
+
+			List<CTEntry> ctEntries =
+				_ctEntryLocalService.getCTCollectionCTEntries(
+					_ctCollection.getCtCollectionId());
+
+			Assert.assertEquals(ctEntries.toString(), 0, ctEntries.size());
+		}
 	}
 
 	@Test
@@ -85,17 +114,22 @@ public abstract class BaseTableReferenceDefinitionTestCase {
 				_classNameLocalService.getClassNameId(ctModel.getModelClass()),
 				ctModel.getPrimaryKey());
 
-			count = _ctEntryLocalService.getCTCollectionCTEntriesCount(
+			ctEntries = _ctEntryLocalService.getCTCollectionCTEntries(
 				_ctCollection.getCtCollectionId());
 
-			Assert.assertEquals(0, count);
+			Assert.assertEquals(ctEntries.toString(), 0, ctEntries.size());
 		}
 	}
 
 	protected abstract CTModel<?> addCTModel() throws Exception;
 
+	protected void deleteCTModel(long id) throws Exception {
+	}
+
 	@DeleteAfterTestRun
 	protected Group group;
+
+	protected long systemEventClassNameId;
 
 	@Inject
 	private static ClassNameLocalService _classNameLocalService;

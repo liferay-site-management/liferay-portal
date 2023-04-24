@@ -21,6 +21,7 @@ import com.liferay.message.boards.service.MBThreadFlagLocalService;
 import com.liferay.message.boards.test.util.MBTestUtil;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.test.rule.Inject;
@@ -53,7 +54,7 @@ public class MBThreadFlagTableReferenceDefinitionTest
 
 		_mbMessage = MBTestUtil.addMessage(
 			group.getGroupId(), TestPropsValues.getUserId(),
-			MBMessage.class.getSimpleName(), MBMessage.class.getName());
+			RandomTestUtil.randomString(), RandomTestUtil.randomString());
 	}
 
 	@Override
@@ -61,6 +62,11 @@ public class MBThreadFlagTableReferenceDefinitionTest
 		return _mbThreadFlagLocalService.addThreadFlag(
 			TestPropsValues.getUserId(), _mbMessage.getThread(),
 			ServiceContextTestUtil.getServiceContext(group.getGroupId()));
+	}
+
+	@Override
+	protected void deleteCTModel(long id) throws Exception {
+		_mbThreadFlagLocalService.deleteMBThreadFlag(id);
 	}
 
 	private MBMessage _mbMessage;

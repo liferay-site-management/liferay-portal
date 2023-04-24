@@ -23,6 +23,8 @@ import com.liferay.message.boards.service.MBMailingListLocalService;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.test.rule.Inject;
@@ -56,8 +58,7 @@ public class MBMailingListTableReferenceDefinitionTest
 		_mbCategory = _mbCategoryLocalService.addCategory(
 			TestPropsValues.getUserId(),
 			MBCategoryConstants.DEFAULT_PARENT_CATEGORY_ID,
-			MBCategoryTableReferenceDefinitionTest.class.getSimpleName(),
-			MBCategoryTableReferenceDefinitionTest.class.getName(),
+			RandomTestUtil.randomString(), RandomTestUtil.randomString(),
 			ServiceContextTestUtil.getServiceContext(group.getGroupId()));
 	}
 
@@ -73,6 +74,12 @@ public class MBMailingListTableReferenceDefinitionTest
 			ServiceContextTestUtil.getServiceContext(group.getGroupId()));
 	}
 
+	@Override
+	protected void deleteCTModel(long id) throws Exception {
+		_mbMailingListLocalService.deleteMailingList(id);
+	}
+
+	@DeleteAfterTestRun
 	private MBCategory _mbCategory;
 
 	@Inject

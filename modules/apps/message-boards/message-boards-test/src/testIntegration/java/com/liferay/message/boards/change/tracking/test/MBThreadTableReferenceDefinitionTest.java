@@ -17,10 +17,13 @@ package com.liferay.message.boards.change.tracking.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.change.tracking.test.util.BaseTableReferenceDefinitionTestCase;
 import com.liferay.message.boards.model.MBMessage;
+import com.liferay.message.boards.service.MBThreadLocalService;
 import com.liferay.message.boards.test.util.MBTestUtil;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 
@@ -46,9 +49,17 @@ public class MBThreadTableReferenceDefinitionTest
 	protected CTModel<?> addCTModel() throws Exception {
 		MBMessage mbMessage = MBTestUtil.addMessage(
 			group.getGroupId(), TestPropsValues.getUserId(),
-			MBMessage.class.getSimpleName(), MBMessage.class.getName());
+			RandomTestUtil.randomString(), RandomTestUtil.randomString());
 
 		return mbMessage.getThread();
 	}
+
+	@Override
+	protected void deleteCTModel(long id) throws Exception {
+		_mbThreadLocalService.deleteThread(id);
+	}
+
+	@Inject
+	private MBThreadLocalService _mbThreadLocalService;
 
 }

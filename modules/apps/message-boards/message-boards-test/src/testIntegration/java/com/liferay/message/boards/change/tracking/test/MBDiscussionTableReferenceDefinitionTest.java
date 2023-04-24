@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.test.rule.Inject;
@@ -55,7 +56,7 @@ public class MBDiscussionTableReferenceDefinitionTest
 
 		_mbMessage = MBTestUtil.addMessage(
 			group.getGroupId(), TestPropsValues.getUserId(),
-			MBMessage.class.getSimpleName(), MBMessage.class.getName());
+			RandomTestUtil.randomString(), RandomTestUtil.randomString());
 	}
 
 	@Override
@@ -65,6 +66,11 @@ public class MBDiscussionTableReferenceDefinitionTest
 			_classNameLocalService.getClassNameId(User.class),
 			TestPropsValues.getUserId(), _mbMessage.getThreadId(),
 			ServiceContextTestUtil.getServiceContext(group.getGroupId()));
+	}
+
+	@Override
+	protected void deleteCTModel(long id) throws Exception {
+		_mbDiscussionLocalService.deleteMBDiscussion(id);
 	}
 
 	@Inject
