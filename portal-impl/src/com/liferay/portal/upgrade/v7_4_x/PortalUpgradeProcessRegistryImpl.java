@@ -295,7 +295,8 @@ public class PortalUpgradeProcessRegistryImpl
 		upgradeVersionTreeMap.put(new Version(26, 0, 0), new UpgradeUserType());
 
 		upgradeVersionTreeMap.put(
-			new Version(26, 1, 0), new CTModelUpgradeProcess("Phone"));
+			new Version(26, 1, 0),
+			new CTModelUpgradeProcess("Address", "Phone"));
 	}
 
 }
