@@ -378,6 +378,10 @@ public class SearchCTTest {
 					CTConstants.CT_COLLECTION_ID_PRODUCTION)));
 	}
 
+	@Test
+	public void testSearchCTProcess() throws Exception {
+	}
+
 	@Rule
 	public SearchTestRule searchTestRule = new SearchTestRule();
 
