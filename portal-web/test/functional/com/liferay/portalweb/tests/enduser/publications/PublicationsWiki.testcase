@@ -117,8 +117,6 @@ definition {
 			assetType = "Wiki Node",
 			wikiNodeName = "Wiki Node Name");
 
-		JSONRecycleBin.emptyRecycleBin();
-
 		PublicationsNavigator.gotoReviewChanges(
 			gotoPublicationsAdmin = "true",
 			publicationName = "Publication Name");
@@ -132,7 +130,7 @@ definition {
 			changeOrder = 2,
 			changeSite = "Guest",
 			changeTitle = "Wiki Page Title (1.0)",
-			changeType = "Deleted",
+			changeType = "Modified",
 			changeUser = "Test Test");
 
 		PublicationsChanges.filterChangesByItem(
@@ -143,7 +141,7 @@ definition {
 			changeCategory = "Wiki Node",
 			changeSite = "Guest",
 			changeTitle = "Wiki Node Name",
-			changeType = "Deleted",
+			changeType = "Modified",
 			changeUser = "Test Test");
 
 		Button.clickPublish();

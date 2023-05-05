@@ -313,12 +313,6 @@ definition {
 
 		WebContent.moveToRecycleBinCP(webContentTitle = "WC WebContent Title 1");
 
-		RecycleBin.openRecycleBinAdmin(siteURLKey = "guest");
-
-		RecycleBin.deleteCP(
-			assetName = "WC WebContent Title 1",
-			assetType = "Web Content Article");
-
 		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "guest");
 
 		DMDocument.editCP(
@@ -357,12 +351,9 @@ definition {
 			checkboxName = "Deleted",
 			menuItem = "Change Types");
 
-		PublicationsChanges.viewChanges(
+		PublicationsChanges.viewChangesResultNotPresent(
 			changeCategory = "Web Content Article",
-			changeSite = "Guest",
-			changeTitle = "WC WebContent Title 1",
-			changeType = "Deleted",
-			changeUser = "Test Test");
+			changeTitle = "WC WebContent Title 1");
 
 		PublicationsChanges.viewChangesResultNotPresent(
 			changeCategory = "Web Content Article",
@@ -378,15 +369,18 @@ definition {
 			menuItem = "Change Types");
 
 		PublicationsChanges.viewChanges(
+			changeCategory = "Web Content Article",
+			changeSite = "Guest",
+			changeTitle = "WC WebContent Title 1",
+			changeType = "Modified",
+			changeUser = "Test Test");
+
+		PublicationsChanges.viewChanges(
 			changeCategory = "Document",
 			changeSite = "Guest",
 			changeTitle = "DM Document Title Edit",
 			changeType = "Modified",
 			changeUser = "Test Test");
-
-		PublicationsChanges.viewChangesResultNotPresent(
-			changeCategory = "Web Content Article",
-			changeTitle = "WC WebContent Title 1");
 
 		PublicationsChanges.viewChangesResultNotPresent(
 			changeCategory = "Web Content Article",
@@ -408,7 +402,7 @@ definition {
 			changeCategory = "Web Content Article",
 			changeSite = "Guest",
 			changeTitle = "WC WebContent Title 1",
-			changeType = "Deleted",
+			changeType = "Modified",
 			changeUser = "Test Test");
 
 		PublicationsChanges.viewChangesResultNotPresent(
@@ -463,7 +457,7 @@ definition {
 			changeCategory = "Web Content Article",
 			changeSite = "Guest",
 			changeTitle = "WC WebContent Title 1",
-			changeType = "Deleted",
+			changeType = "Modified",
 			changeUser = "Test Test");
 
 		PublicationsChanges.viewChanges(
