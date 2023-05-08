@@ -41,6 +41,7 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -339,8 +340,8 @@ public class JournalFolderLocalServiceImpl
 
 	@Override
 	public List<DDMStructure> getDDMStructures(
-			long[] groupIds, long folderId, int restrictionType,
-			OrderByComparator<DDMStructure> orderByComparator)
+			long[] groupIds, long folderId, int restrictionType, int start,
+			int end, OrderByComparator<DDMStructure> orderByComparator)
 		throws PortalException {
 
 		if (restrictionType ==
@@ -362,8 +363,19 @@ public class JournalFolderLocalServiceImpl
 
 		return _ddmStructureLocalService.getStructures(
 			groupIds,
-			_classNameLocalService.getClassNameId(JournalArticle.class),
-			orderByComparator);
+			_classNameLocalService.getClassNameId(JournalArticle.class), start,
+			end, orderByComparator);
+	}
+
+	@Override
+	public List<DDMStructure> getDDMStructures(
+			long[] groupIds, long folderId, int restrictionType,
+			OrderByComparator<DDMStructure> orderByComparator)
+		throws PortalException {
+
+		return getDDMStructures(
+			groupIds, folderId, restrictionType, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, orderByComparator);
 	}
 
 	@Override
