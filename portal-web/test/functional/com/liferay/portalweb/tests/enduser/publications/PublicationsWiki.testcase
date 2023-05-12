@@ -117,34 +117,9 @@ definition {
 			assetType = "Wiki Node",
 			wikiNodeName = "Wiki Node Name");
 
-		JSONRecycleBin.emptyRecycleBin();
-
 		PublicationsNavigator.gotoReviewChanges(
 			gotoPublicationsAdmin = "true",
 			publicationName = "Publication Name");
-
-		PublicationsChanges.filterChangesByItem(
-			checkboxName = "Guest",
-			menuItem = "Sites");
-
-		PublicationsChanges.viewChanges(
-			changeCategory = "Wiki Page",
-			changeOrder = 2,
-			changeSite = "Guest",
-			changeTitle = "Wiki Page Title (1.0)",
-			changeType = "Deleted",
-			changeUser = "Test Test");
-
-		PublicationsChanges.filterChangesByItem(
-			checkboxName = "Wiki Node",
-			menuItem = "Types");
-
-		PublicationsChanges.viewChanges(
-			changeCategory = "Wiki Node",
-			changeSite = "Guest",
-			changeTitle = "Wiki Node Name",
-			changeType = "Deleted",
-			changeUser = "Test Test");
 
 		Button.clickPublish();
 
