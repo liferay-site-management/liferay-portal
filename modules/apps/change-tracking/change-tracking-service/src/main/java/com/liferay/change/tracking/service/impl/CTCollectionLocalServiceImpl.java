@@ -20,7 +20,6 @@ import com.liferay.change.tracking.conflict.ConflictInfo;
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.exception.CTCollectionDescriptionException;
 import com.liferay.change.tracking.exception.CTCollectionNameException;
-import com.liferay.change.tracking.exception.CTEnclosureException;
 import com.liferay.change.tracking.exception.CTLocalizedException;
 import com.liferay.change.tracking.internal.CTEnclosureUtil;
 import com.liferay.change.tracking.internal.CTServiceCopier;
@@ -564,24 +563,6 @@ public class CTCollectionLocalServiceImpl
 
 		Map<Long, Set<Long>> enclosureMap = CTEnclosureUtil.getEnclosureMap(
 			ctClosure, modelClassNameId, modelClassPK);
-
-		for (Map.Entry<Long, Long> entry :
-				CTEnclosureUtil.getEnclosureParentEntries(
-					ctClosure, enclosureMap)) {
-
-			long classNameId = entry.getKey();
-			long classPK = entry.getValue();
-
-			int count = _ctEntryPersistence.countByC_MCNI_MCPK(
-				ctCollectionId, classNameId, classPK);
-
-			if (count > 0) {
-				throw new CTEnclosureException(
-					StringBundler.concat(
-						"{classNameId=", classNameId, ", classPK=", classPK,
-						", ctCollectionId=", ctCollectionId, "}"));
-			}
-		}
 
 		for (Map.Entry<Long, Set<Long>> enclosureEntry :
 				enclosureMap.entrySet()) {
