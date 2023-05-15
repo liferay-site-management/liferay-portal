@@ -46,7 +46,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -152,6 +151,10 @@ public class CTClosureFactoryImpl implements CTClosureFactory {
 					_tableReferenceDefinitionManager.getClassNameId(
 						entry.getKey());
 
+				if (!map.containsKey(parentClassNameId)) {
+					continue;
+				}
+
 				TableReferenceInfo<?> parentTableReferenceInfo =
 					combinedTableReferenceInfos.get(parentClassNameId);
 
@@ -181,32 +184,21 @@ public class CTClosureFactoryImpl implements CTClosureFactory {
 						ResultSet resultSet =
 							preparedStatement.executeQuery()) {
 
-						List<Long> newParents = null;
-
 						while (resultSet.next()) {
 							Node parentNode = new Node(
 								parentClassNameId, resultSet.getLong(1));
+
+							if (!nodes.contains(parentNode)) {
+								continue;
+							}
+
 							Node childNode = new Node(
 								childClassNameId, resultSet.getLong(2));
-
-							if (nodes.add(parentNode)) {
-								if (newParents == null) {
-									newParents = new ArrayList<>();
-								}
-
-								newParents.add(parentNode.getPrimaryKey());
-							}
 
 							Collection<Edge> edges = edgeMap.computeIfAbsent(
 								parentNode, key -> new LinkedList<>());
 
 							edges.add(new Edge(parentNode, childNode));
-						}
-
-						if (newParents != null) {
-							queue.add(
-								new AbstractMap.SimpleImmutableEntry<>(
-									parentClassNameId, newParents));
 						}
 					}
 					catch (SQLException sqlException) {
