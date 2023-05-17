@@ -73,16 +73,21 @@ public class CTClosureFactoryImpl implements CTClosureFactory {
 
 	@Override
 	public CTClosure create(long ctCollectionId) {
+		return create(ctCollectionId, false);
+	}
+
+	@Override
+	public CTClosure create(long ctCollectionId, boolean ctEntriesOnly) {
 		return new CTClosureImpl(
 			ctCollectionId,
 			_buildClosureMap(
-				ctCollectionId,
+				ctCollectionId, ctEntriesOnly,
 				_tableReferenceDefinitionManager.
 					getCombinedTableReferenceInfos()));
 	}
 
 	private Map<Node, Collection<Node>> _buildClosureMap(
-		long ctCollectionId,
+		long ctCollectionId, boolean ctEntriesOnly,
 		Map<Long, TableReferenceInfo<?>> combinedTableReferenceInfos) {
 
 		Map<Long, List<Long>> map = new HashMap<>();
@@ -152,6 +157,10 @@ public class CTClosureFactoryImpl implements CTClosureFactory {
 					_tableReferenceDefinitionManager.getClassNameId(
 						entry.getKey());
 
+				if (ctEntriesOnly && !map.containsKey(parentClassNameId)) {
+					continue;
+				}
+
 				TableReferenceInfo<?> parentTableReferenceInfo =
 					combinedTableReferenceInfos.get(parentClassNameId);
 
@@ -186,6 +195,11 @@ public class CTClosureFactoryImpl implements CTClosureFactory {
 						while (resultSet.next()) {
 							Node parentNode = new Node(
 								parentClassNameId, resultSet.getLong(1));
+
+							if (ctEntriesOnly && !nodes.contains(parentNode)) {
+								continue;
+							}
+
 							Node childNode = new Node(
 								childClassNameId, resultSet.getLong(2));
 
