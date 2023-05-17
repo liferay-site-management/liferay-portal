@@ -30,7 +30,9 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.test.rule.Inject;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -72,10 +74,16 @@ public abstract class BaseTableReferenceDefinitionTestCase {
 
 			Assert.assertNotNull(ctEntry);
 
-			List<CTEntry> ctEntries =
+			Map<Long, List<CTEntry>> discardCTEntries =
 				_ctCollectionLocalService.getDiscardCTEntries(
 					_ctCollection.getCtCollectionId(), modelClassNameId,
 					ctModel.getPrimaryKey());
+
+			List<CTEntry> ctEntries = new ArrayList<>();
+
+			for (List<CTEntry> value : discardCTEntries.values()) {
+				ctEntries.addAll(value);
+			}
 
 			Assert.assertTrue(
 				ctEntries.toString(), ctEntries.contains(ctEntry));
