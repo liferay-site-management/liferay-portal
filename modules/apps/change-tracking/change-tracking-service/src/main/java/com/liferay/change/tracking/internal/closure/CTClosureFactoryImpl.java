@@ -73,28 +73,42 @@ public class CTClosureFactoryImpl implements CTClosureFactory {
 
 	@Override
 	public CTClosure create(long ctCollectionId) {
-		return create(ctCollectionId, false);
+		return create(ctCollectionId, 0, false);
 	}
 
 	@Override
-	public CTClosure create(long ctCollectionId, boolean ctEntriesOnly) {
+	public CTClosure create(
+		long ctCollectionId, long classNameId, boolean ctEntriesOnly) {
+
 		return new CTClosureImpl(
 			ctCollectionId,
 			_buildClosureMap(
-				ctCollectionId, ctEntriesOnly,
+				ctCollectionId, classNameId, ctEntriesOnly,
 				_tableReferenceDefinitionManager.
 					getCombinedTableReferenceInfos()));
 	}
 
 	private Map<Node, Collection<Node>> _buildClosureMap(
-		long ctCollectionId, boolean ctEntriesOnly,
+		long ctCollectionId, long classNameId, boolean ctEntriesOnly,
 		Map<Long, TableReferenceInfo<?>> combinedTableReferenceInfos) {
+
+		if (classNameId > 0) {
+			combinedTableReferenceInfos =
+				_tableReferenceDefinitionManager.getCombinedTableReferenceInfos(
+					classNameId);
+		}
 
 		Map<Long, List<Long>> map = new HashMap<>();
 		Set<Node> nodes = new HashSet<>();
 
 		for (CTEntry ctEntry :
 				_ctEntryLocalService.getCTCollectionCTEntries(ctCollectionId)) {
+
+			if (!combinedTableReferenceInfos.containsKey(
+					ctEntry.getModelClassNameId())) {
+
+				continue;
+			}
 
 			List<Long> primaryKeys = map.computeIfAbsent(
 				ctEntry.getModelClassNameId(), key -> new ArrayList<>());

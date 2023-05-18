@@ -1076,7 +1076,7 @@ public class CTCollectionLocalServiceImpl
 		}
 
 		CTClosure ctClosure = _ctClosureFactory.create(
-			ctCollection.getCtCollectionId(), true);
+			ctCollection.getCtCollectionId(), modelClassNameId, true);
 
 		Map<Long, Set<Long>> enclosureMap = CTEnclosureUtil.getEnclosureMap(
 			ctClosure, modelClassNameId, modelClassPK);
