@@ -46,6 +46,10 @@ public class JournalArticleCTEntryConflictHelper
 			_journalArticleLocalService.fetchJournalArticle(
 				ctEntry.getModelClassPK());
 
+		if (journalArticle == null) {
+			return false;
+		}
+
 		try (SafeCloseable safeCloseable =
 				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
 					targetCTCollectionId)) {
