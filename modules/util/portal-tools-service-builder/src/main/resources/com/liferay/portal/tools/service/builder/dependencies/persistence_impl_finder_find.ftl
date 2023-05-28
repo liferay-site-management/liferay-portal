@@ -206,6 +206,8 @@ that may or may not be enforced with a unique index at the database level. Case
 
 		<#if entity.isChangeTrackingEnabled()>
 			boolean productionMode = ${ctPersistenceHelper}.isProductionMode(${entity.name}.class);
+		<#else>
+			boolean productionMode = true;
 		</#if>
 
 		FinderPath finderPath = null;
@@ -213,38 +215,75 @@ that may or may not be enforced with a unique index at the database level. Case
 
 		<#if !entityFinder.hasCustomComparator()>
 			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) && (orderByComparator == null)) {
-				if (${useCache}) {
+				if (useFinderCache) {
 					finderPath = _finderPathWithoutPaginationFindBy${entityFinder.name};
-					finderArgs = new Object[] {
-						<#list entityColumns as entityColumn>
-							<#if stringUtil.equals(entityColumn.type, "Date")>
-								_getTime(${entityColumn.name})
-							<#else>
-								${entityColumn.name}
-							</#if>
 
-							<#if entityColumn_has_next>
-								,
-							</#if>
-						</#list>
-					};
+					if (productionMode) {
+						finderArgs = new Object[] {
+							<#list entityColumns as entityColumn>
+								<#if stringUtil.equals(entityColumn.type, "Date")>
+									_getTime(${entityColumn.name})
+								<#else>
+									${entityColumn.name}
+								</#if>
+
+								<#if entityColumn_has_next>
+									,
+								</#if>
+							</#list>
+						};
+					}
+					else {
+						finderArgs = new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId(),
+							<#list entityColumns as entityColumn>
+								<#if stringUtil.equals(entityColumn.type, "Date")>
+									_getTime(${entityColumn.name})
+								<#else>
+									${entityColumn.name}
+								</#if>
+
+								<#if entityColumn_has_next>
+									,
+								</#if>
+							</#list>
+						};
+					}
+
 				}
 			}
-			else if (${useCache}) {
+			else if (useFinderCache) {
 		</#if>
 
 		finderPath = _finderPathWithPaginationFindBy${entityFinder.name};
-		finderArgs = new Object[] {
-			<#list entityColumns as entityColumn>
-				<#if stringUtil.equals(entityColumn.type, "Date")>
-					_getTime(${entityColumn.name}),
-				<#else>
-					${entityColumn.name},
-				</#if>
-			</#list>
 
-			start, end, orderByComparator
-		};
+		if (productionMode) {
+			finderArgs = new Object[] {
+				<#list entityColumns as entityColumn>
+					<#if stringUtil.equals(entityColumn.type, "Date")>
+						_getTime(${entityColumn.name}),
+					<#else>
+						${entityColumn.name},
+					</#if>
+				</#list>
+
+				start, end, orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				<#list entityColumns as entityColumn>
+					<#if stringUtil.equals(entityColumn.type, "Date")>
+						_getTime(${entityColumn.name}),
+					<#else>
+						${entityColumn.name},
+					</#if>
+				</#list>
+
+				start, end, orderByComparator
+			};
+		}
 
 		<#if !entityFinder.hasCustomComparator()>
 			}
@@ -252,12 +291,15 @@ that may or may not be enforced with a unique index at the database level. Case
 
 		List<${entity.name}> list = null;
 
-		if (${useCache}) {
+		if (useFinderCache) {
 			list = (List<${entity.name}>)${finderCache}.getResult(finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (${entity.name} ${entity.variableName} : list) {
 					if (
+						<#if entity.isChangeTrackingEnabled()>
+							(!productionMode && (CTCollectionThreadLocal.getCTCollectionId() != ${entity.variableName}.getCtCollectionId())) ||
+						</#if>
 						<#list entityColumns as entityColumn>
 							<#include "persistence_impl_finder_field_comparator.ftl">
 
@@ -294,13 +336,13 @@ that may or may not be enforced with a unique index at the database level. Case
 
 				cacheResult(list);
 
-				if (${useCache}) {
+				if (useFinderCache) {
 					${finderCache}.putResult(finderPath, finderArgs, list);
 				}
 			}
 			catch (Exception exception) {
 				<#if serviceBuilder.isVersionLTE_7_2_0()>
-					if (${useCache}) {
+					if (useFinderCache) {
 						${finderCache}.removeResult(finderPath, finderArgs);
 					}
 				</#if>
@@ -1617,53 +1659,96 @@ that may or may not be enforced with a unique index at the database level. Case
 
 		<#if entity.isChangeTrackingEnabled()>
 			boolean productionMode = ${ctPersistenceHelper}.isProductionMode(${entity.name}.class);
+		<#else>
+			boolean productionMode = true;
 		</#if>
 
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) && (orderByComparator == null)) {
-			if (${useCache}) {
+			if (useFinderCache) {
+				if (productionMode) {
+					finderArgs = new Object[] {
+						<#list entityColumns as entityColumn>
+							<#if entityColumn.hasArrayableOperator()>
+								StringUtil.merge(${entityColumn.pluralName})
+							<#elseif stringUtil.equals(entityColumn.type, "Date")>
+								_getTime(${entityColumn.name})
+							<#else>
+								${entityColumn.name}
+							</#if>
+
+							<#if entityColumn_has_next>
+								,
+							</#if>
+						</#list>
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						<#list entityColumns as entityColumn>
+							<#if entityColumn.hasArrayableOperator()>
+								StringUtil.merge(${entityColumn.pluralName})
+							<#elseif stringUtil.equals(entityColumn.type, "Date")>
+								_getTime(${entityColumn.name})
+							<#else>
+								${entityColumn.name}
+							</#if>
+
+							<#if entityColumn_has_next>
+								,
+							</#if>
+						</#list>
+					};
+				}
+			}
+		}
+		else if (useFinderCache) {
+			if (productionMode) {
 				finderArgs = new Object[] {
 					<#list entityColumns as entityColumn>
 						<#if entityColumn.hasArrayableOperator()>
-							StringUtil.merge(${entityColumn.pluralName})
+							StringUtil.merge(${entityColumn.pluralName}),
 						<#elseif stringUtil.equals(entityColumn.type, "Date")>
-							_getTime(${entityColumn.name})
+							_getTime(${entityColumn.name}),
 						<#else>
-							${entityColumn.name}
-						</#if>
-
-						<#if entityColumn_has_next>
-							,
+							${entityColumn.name},
 						</#if>
 					</#list>
+
+					start, end, orderByComparator
 				};
 			}
-		}
-		else if (${useCache}) {
-			finderArgs = new Object[] {
-				<#list entityColumns as entityColumn>
-					<#if entityColumn.hasArrayableOperator()>
-						StringUtil.merge(${entityColumn.pluralName}),
-					<#elseif stringUtil.equals(entityColumn.type, "Date")>
-						_getTime(${entityColumn.name}),
-					<#else>
-						${entityColumn.name},
-					</#if>
-				</#list>
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					<#list entityColumns as entityColumn>
+						<#if entityColumn.hasArrayableOperator()>
+							StringUtil.merge(${entityColumn.pluralName}),
+						<#elseif stringUtil.equals(entityColumn.type, "Date")>
+							_getTime(${entityColumn.name}),
+						<#else>
+							${entityColumn.name},
+						</#if>
+					</#list>
 
-				start, end, orderByComparator
-			};
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<${entity.name}> list = null;
 
-		if (${useCache}) {
+		if (useFinderCache) {
 			list = (List<${entity.name}>)${finderCache}.getResult(_finderPathWithPaginationFindBy${entityFinder.name}, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (${entity.name} ${entity.variableName} : list) {
 					if (
+						<#if entity.isChangeTrackingEnabled()>
+							(!productionMode && (CTCollectionThreadLocal.getCTCollectionId() != ${entity.variableName}.getCtCollectionId())) ||
+						</#if>
 						<#list entityColumns as entityColumn>
 							<#if entityColumn.hasArrayableOperator()>
 								!ArrayUtil.contains(${entityColumn.pluralName}, ${entity.variableName}.get${entityColumn.methodName}())
@@ -1706,13 +1791,13 @@ that may or may not be enforced with a unique index at the database level. Case
 
 				cacheResult(list);
 
-				if (${useCache}) {
+				if (useFinderCache) {
 					${finderCache}.putResult(_finderPathWithPaginationFindBy${entityFinder.name}, finderArgs, list);
 				}
 			}
 			catch (Exception exception) {
 				<#if serviceBuilder.isVersionLTE_7_2_0()>
-					if (${useCache}) {
+					if (useFinderCache) {
 						${finderCache}.removeResult(_finderPathWithPaginationFindBy${entityFinder.name}, finderArgs);
 					}
 				</#if>
@@ -1979,49 +2064,88 @@ that may or may not be enforced with a unique index at the database level. Case
 
 		<#if entity.isChangeTrackingEnabled()>
 			boolean productionMode = ${ctPersistenceHelper}.isProductionMode(${entity.name}.class);
+		<#else>
+			boolean productionMode = true;
 		</#if>
 
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) && (orderByComparator == null)) {
-			if (${useCache}) {
+			if (useFinderCache) {
+				if (productionMode) {
+					finderArgs = new Object[] {
+						<#list entityColumns as entityColumn>
+							<#if entityColumn.hasArrayableOperator()>
+								StringUtil.merge(${entityColumn.pluralName})
+							<#else>
+								${entityColumn.name}
+							</#if>
+
+							<#if entityColumn_has_next>
+								,
+							</#if>
+						</#list>
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						<#list entityColumns as entityColumn>
+							<#if entityColumn.hasArrayableOperator()>
+								StringUtil.merge(${entityColumn.pluralName})
+							<#else>
+								${entityColumn.name}
+							</#if>
+
+							<#if entityColumn_has_next>
+								,
+							</#if>
+						</#list>
+					};
+				}
+			}
+		}
+		else if (useFinderCache) {
+			if (productionMode) {
 				finderArgs = new Object[] {
 					<#list entityColumns as entityColumn>
 						<#if entityColumn.hasArrayableOperator()>
-							StringUtil.merge(${entityColumn.pluralName})
+							StringUtil.merge(${entityColumn.pluralName}),
 						<#else>
-							${entityColumn.name}
-						</#if>
-
-						<#if entityColumn_has_next>
-							,
+							${entityColumn.name},
 						</#if>
 					</#list>
+
+					start, end, orderByComparator
 				};
 			}
-		}
-		else if (${useCache}) {
-			finderArgs = new Object[] {
-				<#list entityColumns as entityColumn>
-					<#if entityColumn.hasArrayableOperator()>
-						StringUtil.merge(${entityColumn.pluralName}),
-					<#else>
-						${entityColumn.name},
-					</#if>
-				</#list>
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					<#list entityColumns as entityColumn>
+						<#if entityColumn.hasArrayableOperator()>
+							StringUtil.merge(${entityColumn.pluralName}),
+						<#else>
+							${entityColumn.name},
+						</#if>
+					</#list>
 
-				start, end, orderByComparator
-			};
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<${entity.name}> list = null;
 
-		if (${useCache}) {
+		if (useFinderCache) {
 			list = (List<${entity.name}>)${finderCache}.getResult(_finderPathWithPaginationFindBy${entityFinder.name}, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (${entity.name} ${entity.variableName} : list) {
 					if (
+						<#if entity.isChangeTrackingEnabled()>
+							(!productionMode && (CTCollectionThreadLocal.getCTCollectionId() != ${entity.variableName}.getCtCollectionId())) ||
+						</#if>
 						<#list entityColumns as entityColumn>
 							<#if entityColumn.hasArrayableOperator()>
 								!ArrayUtil.contains(${entityColumn.pluralName}, ${entity.variableName}.get${entityColumn.methodName}())
@@ -2097,13 +2221,13 @@ that may or may not be enforced with a unique index at the database level. Case
 
 				cacheResult(list);
 
-				if (${useCache}) {
+				if (useFinderCache) {
 					${finderCache}.putResult(_finderPathWithPaginationFindBy${entityFinder.name}, finderArgs, list);
 				}
 			}
 			catch (Exception exception) {
 				<#if serviceBuilder.isVersionLTE_7_2_0()>
-					if (${useCache}) {
+					if (useFinderCache) {
 						${finderCache}.removeResult(_finderPathWithPaginationFindBy${entityFinder.name}, finderArgs);
 					}
 				</#if>
@@ -2279,29 +2403,49 @@ that may or may not be enforced with a unique index at the database level. Case
 
 		<#if entity.isChangeTrackingEnabled()>
 			boolean productionMode = ${ctPersistenceHelper}.isProductionMode(${entity.name}.class);
+		<#else>
+			boolean productionMode = true;
 		</#if>
 
 		Object[] finderArgs = null;
 
-		if (${useCache}) {
-			finderArgs = new Object[] {
-				<#list entityColumns as entityColumn>
-					<#if stringUtil.equals(entityColumn.type, "Date")>
-						_getTime(${entityColumn.name})
-					<#else>
-						${entityColumn.name}
-					</#if>
+		if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {
+					<#list entityColumns as entityColumn>
+						<#if stringUtil.equals(entityColumn.type, "Date")>
+							_getTime(${entityColumn.name})
+						<#else>
+							${entityColumn.name}
+						</#if>
 
-					<#if entityColumn_has_next>
-						,
-					</#if>
-				</#list>
-			};
+						<#if entityColumn_has_next>
+							,
+						</#if>
+					</#list>
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					<#list entityColumns as entityColumn>
+						<#if stringUtil.equals(entityColumn.type, "Date")>
+							_getTime(${entityColumn.name})
+						<#else>
+							${entityColumn.name}
+						</#if>
+
+						<#if entityColumn_has_next>
+							,
+						</#if>
+					</#list>
+				};
+			}
 		}
 
 		Object result = null;
 
-		if (${useCache}) {
+		if (useFinderCache) {
 			result = ${finderCache}.getResult(_finderPathFetchBy${entityFinder.name}, finderArgs, this);
 		}
 
@@ -2309,6 +2453,9 @@ that may or may not be enforced with a unique index at the database level. Case
 			${entity.name} ${entity.variableName} = (${entity.name})result;
 
 			if (
+				<#if entity.isChangeTrackingEnabled()>
+					(!productionMode && (CTCollectionThreadLocal.getCTCollectionId() != ${entity.variableName}.getCtCollectionId())) ||
+				</#if>
 				<#list entityColumns as entityColumn>
 					<#if entityColumn.isPrimitiveType(false)>
 						<#if stringUtil.equals(entityColumn.type, "boolean")>
@@ -2352,7 +2499,7 @@ that may or may not be enforced with a unique index at the database level. Case
 				List<${entity.name}> list = query.list();
 
 				if (list.isEmpty()) {
-					if (${useCache}) {
+					if (useFinderCache) {
 						${finderCache}.putResult(_finderPathFetchBy${entityFinder.name}, finderArgs, list);
 					}
 				}
@@ -2362,11 +2509,7 @@ that may or may not be enforced with a unique index at the database level. Case
 							Collections.sort(list, Collections.reverseOrder());
 
 							if (_log.isWarnEnabled()) {
-								<#if entity.isChangeTrackingEnabled()>
-									if (!productionMode || !useFinderCache) {
-								<#else>
-									if (!useFinderCache) {
-								</#if>
+								if (!useFinderCache) {
 									finderArgs = new Object[] {
 										<#list entityColumns as entityColumn>
 											<#if stringUtil.equals(entityColumn.type, "Date")>
@@ -2396,7 +2539,7 @@ that may or may not be enforced with a unique index at the database level. Case
 			}
 			catch (Exception exception) {
 				<#if serviceBuilder.isVersionLTE_7_2_0()>
-					if (${useCache}) {
+					if (useFinderCache) {
 						${finderCache}.removeResult(_finderPathFetchBy${entityFinder.name}, finderArgs);
 					}
 				</#if>
