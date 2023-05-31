@@ -23,6 +23,7 @@ import com.liferay.osb.faro.service.persistence.FaroNotificationPersistence;
 import com.liferay.osb.faro.service.persistence.FaroNotificationUtil;
 import com.liferay.osb.faro.service.persistence.impl.constants.OSBFaroPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -167,11 +168,24 @@ public class FaroNotificationPersistenceImpl
 		OrderByComparator<FaroNotification> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		finderPath = _finderPathWithPaginationFindByLtCreateTime;
-		finderArgs = new Object[] {createTime, start, end, orderByComparator};
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				createTime, start, end, orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), createTime, start,
+				end, orderByComparator
+			};
+		}
 
 		List<FaroNotification> list = null;
 
@@ -539,11 +553,25 @@ public class FaroNotificationPersistenceImpl
 	 */
 	@Override
 	public int countByLtCreateTime(long createTime) {
-		FinderPath finderPath = _finderPathWithPaginationCountByLtCreateTime;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {createTime};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathWithPaginationCountByLtCreateTime;
+
+		if (productionMode) {
+			finderArgs = new Object[] {createTime};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), createTime
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -679,13 +707,25 @@ public class FaroNotificationPersistenceImpl
 
 		type = Objects.toString(type, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		finderPath = _finderPathWithPaginationFindByG_GtC_O_T;
-		finderArgs = new Object[] {
-			groupId, createTime, ownerId, type, start, end, orderByComparator
-		};
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				groupId, createTime, ownerId, type, start, end,
+				orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				createTime, ownerId, type, start, end, orderByComparator
+			};
+		}
 
 		List<FaroNotification> list = null;
 
@@ -1229,22 +1269,41 @@ public class FaroNotificationPersistenceImpl
 				orderByComparator);
 		}
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
 			if (useFinderCache) {
-				finderArgs = new Object[] {
-					groupId, createTime, StringUtil.merge(ownerIds), type
-				};
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, createTime, StringUtil.merge(ownerIds), type
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						createTime, StringUtil.merge(ownerIds), type
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
-			finderArgs = new Object[] {
-				groupId, createTime, StringUtil.merge(ownerIds), type, start,
-				end, orderByComparator
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, createTime, StringUtil.merge(ownerIds), type,
+					start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					createTime, StringUtil.merge(ownerIds), type, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<FaroNotification> list = null;
@@ -1393,11 +1452,26 @@ public class FaroNotificationPersistenceImpl
 
 		type = Objects.toString(type, "");
 
-		FinderPath finderPath = _finderPathWithPaginationCountByG_GtC_O_T;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {groupId, createTime, ownerId, type};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathWithPaginationCountByG_GtC_O_T;
+
+		if (productionMode) {
+			finderArgs = new Object[] {groupId, createTime, ownerId, type};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				createTime, ownerId, type
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -1479,11 +1553,25 @@ public class FaroNotificationPersistenceImpl
 
 		type = Objects.toString(type, "");
 
-		Object[] finderArgs = new Object[] {
-			groupId, createTime, StringUtil.merge(ownerIds), type
-		};
+		boolean productionMode = true;
 
-		Long count = (Long)finderCache.getResult(
+		Object[] finderArgs = null;
+
+		Long count = null;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				groupId, createTime, StringUtil.merge(ownerIds), type
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				createTime, StringUtil.merge(ownerIds), type
+			};
+		}
+
+		count = (Long)finderCache.getResult(
 			_finderPathWithPaginationCountByG_GtC_O_T, finderArgs, this);
 
 		if (count == null) {
@@ -1683,14 +1771,26 @@ public class FaroNotificationPersistenceImpl
 		type = Objects.toString(type, "");
 		subtype = Objects.toString(subtype, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		finderPath = _finderPathWithPaginationFindByG_GtC_O_T_S;
-		finderArgs = new Object[] {
-			groupId, createTime, ownerId, type, subtype, start, end,
-			orderByComparator
-		};
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				groupId, createTime, ownerId, type, subtype, start, end,
+				orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				createTime, ownerId, type, subtype, start, end,
+				orderByComparator
+			};
+		}
 
 		List<FaroNotification> list = null;
 
@@ -2289,23 +2389,42 @@ public class FaroNotificationPersistenceImpl
 				orderByComparator);
 		}
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
 			if (useFinderCache) {
-				finderArgs = new Object[] {
-					groupId, createTime, StringUtil.merge(ownerIds), type,
-					subtype
-				};
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, createTime, StringUtil.merge(ownerIds), type,
+						subtype
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						createTime, StringUtil.merge(ownerIds), type, subtype
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
-			finderArgs = new Object[] {
-				groupId, createTime, StringUtil.merge(ownerIds), type, subtype,
-				start, end, orderByComparator
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, createTime, StringUtil.merge(ownerIds), type,
+					subtype, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					createTime, StringUtil.merge(ownerIds), type, subtype,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<FaroNotification> list = null;
@@ -2473,13 +2592,28 @@ public class FaroNotificationPersistenceImpl
 		type = Objects.toString(type, "");
 		subtype = Objects.toString(subtype, "");
 
-		FinderPath finderPath = _finderPathWithPaginationCountByG_GtC_O_T_S;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			groupId, createTime, ownerId, type, subtype
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathWithPaginationCountByG_GtC_O_T_S;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				groupId, createTime, ownerId, type, subtype
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				createTime, ownerId, type, subtype
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(6);
@@ -2579,11 +2713,25 @@ public class FaroNotificationPersistenceImpl
 		type = Objects.toString(type, "");
 		subtype = Objects.toString(subtype, "");
 
-		Object[] finderArgs = new Object[] {
-			groupId, createTime, StringUtil.merge(ownerIds), type, subtype
-		};
+		boolean productionMode = true;
 
-		Long count = (Long)finderCache.getResult(
+		Object[] finderArgs = null;
+
+		Long count = null;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				groupId, createTime, StringUtil.merge(ownerIds), type, subtype
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				createTime, StringUtil.merge(ownerIds), type, subtype
+			};
+		}
+
+		count = (Long)finderCache.getResult(
 			_finderPathWithPaginationCountByG_GtC_O_T_S, finderArgs, this);
 
 		if (count == null) {
@@ -2807,14 +2955,26 @@ public class FaroNotificationPersistenceImpl
 		type = Objects.toString(type, "");
 		subtype = Objects.toString(subtype, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		finderPath = _finderPathWithPaginationFindByG_GtC_O_R_T_S;
-		finderArgs = new Object[] {
-			groupId, createTime, ownerId, read, type, subtype, start, end,
-			orderByComparator
-		};
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				groupId, createTime, ownerId, read, type, subtype, start, end,
+				orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				createTime, ownerId, read, type, subtype, start, end,
+				orderByComparator
+			};
+		}
 
 		List<FaroNotification> list = null;
 
@@ -3440,23 +3600,43 @@ public class FaroNotificationPersistenceImpl
 				end, orderByComparator);
 		}
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
 			if (useFinderCache) {
-				finderArgs = new Object[] {
-					groupId, createTime, StringUtil.merge(ownerIds), read, type,
-					subtype
-				};
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, createTime, StringUtil.merge(ownerIds), read,
+						type, subtype
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						createTime, StringUtil.merge(ownerIds), read, type,
+						subtype
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
-			finderArgs = new Object[] {
-				groupId, createTime, StringUtil.merge(ownerIds), read, type,
-				subtype, start, end, orderByComparator
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, createTime, StringUtil.merge(ownerIds), read, type,
+					subtype, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					createTime, StringUtil.merge(ownerIds), read, type, subtype,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<FaroNotification> list = null;
@@ -3631,13 +3811,28 @@ public class FaroNotificationPersistenceImpl
 		type = Objects.toString(type, "");
 		subtype = Objects.toString(subtype, "");
 
-		FinderPath finderPath = _finderPathWithPaginationCountByG_GtC_O_R_T_S;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			groupId, createTime, ownerId, read, type, subtype
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathWithPaginationCountByG_GtC_O_R_T_S;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				groupId, createTime, ownerId, read, type, subtype
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				createTime, ownerId, read, type, subtype
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(7);
@@ -3742,11 +3937,26 @@ public class FaroNotificationPersistenceImpl
 		type = Objects.toString(type, "");
 		subtype = Objects.toString(subtype, "");
 
-		Object[] finderArgs = new Object[] {
-			groupId, createTime, StringUtil.merge(ownerIds), read, type, subtype
-		};
+		boolean productionMode = true;
 
-		Long count = (Long)finderCache.getResult(
+		Object[] finderArgs = null;
+
+		Long count = null;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				groupId, createTime, StringUtil.merge(ownerIds), read, type,
+				subtype
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				createTime, StringUtil.merge(ownerIds), read, type, subtype
+			};
+		}
+
+		count = (Long)finderCache.getResult(
 			_finderPathWithPaginationCountByG_GtC_O_R_T_S, finderArgs, this);
 
 		if (count == null) {
@@ -4221,6 +4431,8 @@ public class FaroNotificationPersistenceImpl
 		OrderByComparator<FaroNotification> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -4229,12 +4441,29 @@ public class FaroNotificationPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<FaroNotification> list = null;
@@ -4310,8 +4539,20 @@ public class FaroNotificationPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -4323,8 +4564,18 @@ public class FaroNotificationPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

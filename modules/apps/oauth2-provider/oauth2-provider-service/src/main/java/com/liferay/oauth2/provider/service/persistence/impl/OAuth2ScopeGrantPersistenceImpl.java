@@ -24,6 +24,7 @@ import com.liferay.oauth2.provider.service.persistence.OAuth2ScopeGrantPersisten
 import com.liferay.oauth2.provider.service.persistence.OAuth2ScopeGrantUtil;
 import com.liferay.oauth2.provider.service.persistence.impl.constants.OAuthTwoPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -184,6 +185,8 @@ public class OAuth2ScopeGrantPersistenceImpl
 		OrderByComparator<OAuth2ScopeGrant> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -193,15 +196,35 @@ public class OAuth2ScopeGrantPersistenceImpl
 			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByOAuth2ApplicationScopeAliasesId;
-				finderArgs = new Object[] {oAuth2ApplicationScopeAliasesId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {oAuth2ApplicationScopeAliasesId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						oAuth2ApplicationScopeAliasesId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath =
 				_finderPathWithPaginationFindByOAuth2ApplicationScopeAliasesId;
-			finderArgs = new Object[] {
-				oAuth2ApplicationScopeAliasesId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					oAuth2ApplicationScopeAliasesId, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					oAuth2ApplicationScopeAliasesId, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<OAuth2ScopeGrant> list = null;
@@ -586,12 +609,26 @@ public class OAuth2ScopeGrantPersistenceImpl
 	public int countByOAuth2ApplicationScopeAliasesId(
 		long oAuth2ApplicationScopeAliasesId) {
 
-		FinderPath finderPath =
-			_finderPathCountByOAuth2ApplicationScopeAliasesId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {oAuth2ApplicationScopeAliasesId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByOAuth2ApplicationScopeAliasesId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {oAuth2ApplicationScopeAliasesId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				oAuth2ApplicationScopeAliasesId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -730,13 +767,24 @@ public class OAuth2ScopeGrantPersistenceImpl
 		bundleSymbolicName = Objects.toString(bundleSymbolicName, "");
 		scope = Objects.toString(scope, "");
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {
-				companyId, oAuth2ApplicationScopeAliasesId, applicationName,
-				bundleSymbolicName, scope
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, oAuth2ApplicationScopeAliasesId, applicationName,
+					bundleSymbolicName, scope
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					oAuth2ApplicationScopeAliasesId, applicationName,
+					bundleSymbolicName, scope
+				};
+			}
 		}
 
 		Object result = null;
@@ -925,14 +973,30 @@ public class OAuth2ScopeGrantPersistenceImpl
 		bundleSymbolicName = Objects.toString(bundleSymbolicName, "");
 		scope = Objects.toString(scope, "");
 
-		FinderPath finderPath = _finderPathCountByC_O_A_B_S;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			companyId, oAuth2ApplicationScopeAliasesId, applicationName,
-			bundleSymbolicName, scope
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByC_O_A_B_S;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				companyId, oAuth2ApplicationScopeAliasesId, applicationName,
+				bundleSymbolicName, scope
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				oAuth2ApplicationScopeAliasesId, applicationName,
+				bundleSymbolicName, scope
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(6);
@@ -1450,6 +1514,8 @@ public class OAuth2ScopeGrantPersistenceImpl
 		OrderByComparator<OAuth2ScopeGrant> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1458,12 +1524,29 @@ public class OAuth2ScopeGrantPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<OAuth2ScopeGrant> list = null;
@@ -1539,8 +1622,20 @@ public class OAuth2ScopeGrantPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -1552,8 +1647,18 @@ public class OAuth2ScopeGrantPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

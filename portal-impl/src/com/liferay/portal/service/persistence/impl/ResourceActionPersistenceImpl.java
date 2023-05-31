@@ -15,6 +15,7 @@
 package com.liferay.portal.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -155,6 +156,8 @@ public class ResourceActionPersistenceImpl
 
 		name = Objects.toString(name, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -163,12 +166,29 @@ public class ResourceActionPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByName;
-				finderArgs = new Object[] {name};
+
+				if (productionMode) {
+					finderArgs = new Object[] {name};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), name
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByName;
-			finderArgs = new Object[] {name, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {name, start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), name, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<ResourceAction> list = null;
@@ -554,12 +574,25 @@ public class ResourceActionPersistenceImpl
 	public int countByName(String name) {
 		name = Objects.toString(name, "");
 
-		FinderPath finderPath = _finderPathCountByName;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {name};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByName;
+
+		if (productionMode) {
+			finderArgs = new Object[] {name};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), name
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -680,10 +713,19 @@ public class ResourceActionPersistenceImpl
 		name = Objects.toString(name, "");
 		actionId = Objects.toString(actionId, "");
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {name, actionId};
+			if (productionMode) {
+				finderArgs = new Object[] {name, actionId};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), name, actionId
+				};
+			}
 		}
 
 		Object result = null;
@@ -809,12 +851,25 @@ public class ResourceActionPersistenceImpl
 		name = Objects.toString(name, "");
 		actionId = Objects.toString(actionId, "");
 
-		FinderPath finderPath = _finderPathCountByN_A;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {name, actionId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByN_A;
+
+		if (productionMode) {
+			finderArgs = new Object[] {name, actionId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), name, actionId
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1272,6 +1327,8 @@ public class ResourceActionPersistenceImpl
 		int start, int end, OrderByComparator<ResourceAction> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1280,12 +1337,29 @@ public class ResourceActionPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<ResourceAction> list = null;
@@ -1361,8 +1435,20 @@ public class ResourceActionPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)FinderCacheUtil.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)FinderCacheUtil.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)FinderCacheUtil.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -1374,8 +1460,18 @@ public class ResourceActionPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				FinderCacheUtil.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					FinderCacheUtil.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					FinderCacheUtil.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

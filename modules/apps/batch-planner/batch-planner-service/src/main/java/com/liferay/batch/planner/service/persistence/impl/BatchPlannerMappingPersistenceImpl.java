@@ -23,6 +23,7 @@ import com.liferay.batch.planner.service.persistence.BatchPlannerMappingPersiste
 import com.liferay.batch.planner.service.persistence.BatchPlannerMappingUtil;
 import com.liferay.batch.planner.service.persistence.impl.constants.BatchPlannerPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -172,6 +173,8 @@ public class BatchPlannerMappingPersistenceImpl
 		OrderByComparator<BatchPlannerMapping> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -181,14 +184,32 @@ public class BatchPlannerMappingPersistenceImpl
 			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByBatchPlannerPlanId;
-				finderArgs = new Object[] {batchPlannerPlanId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {batchPlannerPlanId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						batchPlannerPlanId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByBatchPlannerPlanId;
-			finderArgs = new Object[] {
-				batchPlannerPlanId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					batchPlannerPlanId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					batchPlannerPlanId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<BatchPlannerMapping> list = null;
@@ -564,11 +585,25 @@ public class BatchPlannerMappingPersistenceImpl
 	 */
 	@Override
 	public int countByBatchPlannerPlanId(long batchPlannerPlanId) {
-		FinderPath finderPath = _finderPathCountByBatchPlannerPlanId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {batchPlannerPlanId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByBatchPlannerPlanId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {batchPlannerPlanId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), batchPlannerPlanId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -690,12 +725,22 @@ public class BatchPlannerMappingPersistenceImpl
 		externalFieldName = Objects.toString(externalFieldName, "");
 		internalFieldName = Objects.toString(internalFieldName, "");
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {
-				batchPlannerPlanId, externalFieldName, internalFieldName
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					batchPlannerPlanId, externalFieldName, internalFieldName
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					batchPlannerPlanId, externalFieldName, internalFieldName
+				};
+			}
 		}
 
 		Object result = null;
@@ -840,13 +885,28 @@ public class BatchPlannerMappingPersistenceImpl
 		externalFieldName = Objects.toString(externalFieldName, "");
 		internalFieldName = Objects.toString(internalFieldName, "");
 
-		FinderPath finderPath = _finderPathCountByBPPI_EFN_IFN;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			batchPlannerPlanId, externalFieldName, internalFieldName
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByBPPI_EFN_IFN;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				batchPlannerPlanId, externalFieldName, internalFieldName
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), batchPlannerPlanId,
+				externalFieldName, internalFieldName
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -1357,6 +1417,8 @@ public class BatchPlannerMappingPersistenceImpl
 		OrderByComparator<BatchPlannerMapping> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1365,12 +1427,29 @@ public class BatchPlannerMappingPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<BatchPlannerMapping> list = null;
@@ -1446,8 +1525,20 @@ public class BatchPlannerMappingPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -1460,8 +1551,18 @@ public class BatchPlannerMappingPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

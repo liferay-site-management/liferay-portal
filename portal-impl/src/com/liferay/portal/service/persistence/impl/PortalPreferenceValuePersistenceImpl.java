@@ -15,6 +15,7 @@
 package com.liferay.portal.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -162,6 +163,8 @@ public class PortalPreferenceValuePersistenceImpl
 		OrderByComparator<PortalPreferenceValue> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -171,14 +174,32 @@ public class PortalPreferenceValuePersistenceImpl
 			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByPortalPreferencesId;
-				finderArgs = new Object[] {portalPreferencesId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {portalPreferencesId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						portalPreferencesId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByPortalPreferencesId;
-			finderArgs = new Object[] {
-				portalPreferencesId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					portalPreferencesId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					portalPreferencesId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<PortalPreferenceValue> list = null;
@@ -554,12 +575,25 @@ public class PortalPreferenceValuePersistenceImpl
 	 */
 	@Override
 	public int countByPortalPreferencesId(long portalPreferencesId) {
-		FinderPath finderPath = _finderPathCountByPortalPreferencesId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {portalPreferencesId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByPortalPreferencesId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {portalPreferencesId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), portalPreferencesId
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -687,6 +721,8 @@ public class PortalPreferenceValuePersistenceImpl
 
 		namespace = Objects.toString(namespace, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -695,14 +731,34 @@ public class PortalPreferenceValuePersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByP_N;
-				finderArgs = new Object[] {portalPreferencesId, namespace};
+
+				if (productionMode) {
+					finderArgs = new Object[] {portalPreferencesId, namespace};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						portalPreferencesId, namespace
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByP_N;
-			finderArgs = new Object[] {
-				portalPreferencesId, namespace, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					portalPreferencesId, namespace, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					portalPreferencesId, namespace, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<PortalPreferenceValue> list = null;
@@ -1127,12 +1183,26 @@ public class PortalPreferenceValuePersistenceImpl
 	public int countByP_N(long portalPreferencesId, String namespace) {
 		namespace = Objects.toString(namespace, "");
 
-		FinderPath finderPath = _finderPathCountByP_N;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {portalPreferencesId, namespace};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByP_N;
+
+		if (productionMode) {
+			finderArgs = new Object[] {portalPreferencesId, namespace};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				portalPreferencesId, namespace
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1287,6 +1357,8 @@ public class PortalPreferenceValuePersistenceImpl
 		key = Objects.toString(key, "");
 		namespace = Objects.toString(namespace, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1295,15 +1367,36 @@ public class PortalPreferenceValuePersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByP_K_N;
-				finderArgs = new Object[] {portalPreferencesId, key, namespace};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						portalPreferencesId, key, namespace
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						portalPreferencesId, key, namespace
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByP_K_N;
-			finderArgs = new Object[] {
-				portalPreferencesId, key, namespace, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					portalPreferencesId, key, namespace, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					portalPreferencesId, key, namespace, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<PortalPreferenceValue> list = null;
@@ -1778,14 +1871,26 @@ public class PortalPreferenceValuePersistenceImpl
 		key = Objects.toString(key, "");
 		namespace = Objects.toString(namespace, "");
 
-		FinderPath finderPath = _finderPathCountByP_K_N;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			portalPreferencesId, key, namespace
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByP_K_N;
+
+		if (productionMode) {
+			finderArgs = new Object[] {portalPreferencesId, key, namespace};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				portalPreferencesId, key, namespace
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -1951,12 +2056,22 @@ public class PortalPreferenceValuePersistenceImpl
 		key = Objects.toString(key, "");
 		namespace = Objects.toString(namespace, "");
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {
-				portalPreferencesId, index, key, namespace
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					portalPreferencesId, index, key, namespace
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					portalPreferencesId, index, key, namespace
+				};
+			}
 		}
 
 		Object result = null;
@@ -2103,14 +2218,28 @@ public class PortalPreferenceValuePersistenceImpl
 		key = Objects.toString(key, "");
 		namespace = Objects.toString(namespace, "");
 
-		FinderPath finderPath = _finderPathCountByP_I_K_N;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			portalPreferencesId, index, key, namespace
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByP_I_K_N;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				portalPreferencesId, index, key, namespace
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				portalPreferencesId, index, key, namespace
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -2301,6 +2430,8 @@ public class PortalPreferenceValuePersistenceImpl
 		namespace = Objects.toString(namespace, "");
 		smallValue = Objects.toString(smallValue, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -2309,17 +2440,36 @@ public class PortalPreferenceValuePersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByP_K_N_SV;
-				finderArgs = new Object[] {
-					portalPreferencesId, key, namespace, smallValue
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						portalPreferencesId, key, namespace, smallValue
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						portalPreferencesId, key, namespace, smallValue
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByP_K_N_SV;
-			finderArgs = new Object[] {
-				portalPreferencesId, key, namespace, smallValue, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					portalPreferencesId, key, namespace, smallValue, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					portalPreferencesId, key, namespace, smallValue, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<PortalPreferenceValue> list = null;
@@ -2850,14 +3000,28 @@ public class PortalPreferenceValuePersistenceImpl
 		namespace = Objects.toString(namespace, "");
 		smallValue = Objects.toString(smallValue, "");
 
-		FinderPath finderPath = _finderPathCountByP_K_N_SV;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			portalPreferencesId, key, namespace, smallValue
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByP_K_N_SV;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				portalPreferencesId, key, namespace, smallValue
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				portalPreferencesId, key, namespace, smallValue
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -3381,6 +3545,8 @@ public class PortalPreferenceValuePersistenceImpl
 		OrderByComparator<PortalPreferenceValue> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -3389,12 +3555,29 @@ public class PortalPreferenceValuePersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<PortalPreferenceValue> list = null;
@@ -3470,8 +3653,20 @@ public class PortalPreferenceValuePersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)FinderCacheUtil.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)FinderCacheUtil.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)FinderCacheUtil.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -3484,8 +3679,18 @@ public class PortalPreferenceValuePersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				FinderCacheUtil.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					FinderCacheUtil.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					FinderCacheUtil.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

@@ -20,6 +20,7 @@ import com.liferay.expando.kernel.model.ExpandoTableTable;
 import com.liferay.expando.kernel.service.persistence.ExpandoTablePersistence;
 import com.liferay.expando.kernel.service.persistence.ExpandoTableUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -179,27 +180,48 @@ public class ExpandoTablePersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByC_C;
-				finderArgs = new Object[] {companyId, classNameId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {companyId, classNameId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), companyId,
+						classNameId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByC_C;
-			finderArgs = new Object[] {
-				companyId, classNameId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, classNameId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					classNameId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<ExpandoTable> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<ExpandoTable>)FinderCacheUtil.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (ExpandoTable expandoTable : list) {
-					if ((companyId != expandoTable.getCompanyId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 expandoTable.getCtCollectionId())) ||
+						(companyId != expandoTable.getCompanyId()) ||
 						(classNameId != expandoTable.getClassNameId())) {
 
 						list = null;
@@ -255,7 +277,7 @@ public class ExpandoTablePersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					FinderCacheUtil.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -588,14 +610,19 @@ public class ExpandoTablePersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByC_C;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByC_C;
-
 			finderArgs = new Object[] {companyId, classNameId};
-
-			count = (Long)FinderCacheUtil.getResult(
-				finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				classNameId
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -623,9 +650,7 @@ public class ExpandoTablePersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					FinderCacheUtil.putResult(finderPath, finderArgs, count);
-				}
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -724,13 +749,21 @@ public class ExpandoTablePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {companyId, classNameId, name};
+		if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {companyId, classNameId, name};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					classNameId, name
+				};
+			}
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByC_C_N, finderArgs, this);
 		}
@@ -738,7 +771,10 @@ public class ExpandoTablePersistenceImpl
 		if (result instanceof ExpandoTable) {
 			ExpandoTable expandoTable = (ExpandoTable)result;
 
-			if ((companyId != expandoTable.getCompanyId()) ||
+			if ((!productionMode &&
+				 (CTCollectionThreadLocal.getCTCollectionId() !=
+					 expandoTable.getCtCollectionId())) ||
+				(companyId != expandoTable.getCompanyId()) ||
 				(classNameId != expandoTable.getClassNameId()) ||
 				!Objects.equals(name, expandoTable.getName())) {
 
@@ -788,7 +824,7 @@ public class ExpandoTablePersistenceImpl
 				List<ExpandoTable> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByC_C_N, finderArgs, list);
 					}
@@ -855,14 +891,19 @@ public class ExpandoTablePersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByC_C_N;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByC_C_N;
-
 			finderArgs = new Object[] {companyId, classNameId, name};
-
-			count = (Long)FinderCacheUtil.getResult(
-				finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				classNameId, name
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -905,9 +946,7 @@ public class ExpandoTablePersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					FinderCacheUtil.putResult(finderPath, finderArgs, count);
-				}
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1208,6 +1247,8 @@ public class ExpandoTablePersistenceImpl
 				expandoTable.setNew(false);
 			}
 
+			clearCache();
+
 			expandoTable.resetOriginalValues();
 
 			return expandoTable;
@@ -1478,19 +1519,36 @@ public class ExpandoTablePersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<ExpandoTable> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<ExpandoTable>)FinderCacheUtil.getResult(
 				finderPath, finderArgs, this);
 		}
@@ -1528,7 +1586,7 @@ public class ExpandoTablePersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					FinderCacheUtil.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1570,6 +1628,12 @@ public class ExpandoTablePersistenceImpl
 			count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 		}
+		else {
+			count = (Long)FinderCacheUtil.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -1584,6 +1648,14 @@ public class ExpandoTablePersistenceImpl
 				if (productionMode) {
 					FinderCacheUtil.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					FinderCacheUtil.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
 				}
 			}
 			catch (Exception exception) {

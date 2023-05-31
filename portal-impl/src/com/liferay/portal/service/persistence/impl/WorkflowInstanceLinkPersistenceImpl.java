@@ -15,6 +15,7 @@
 package com.liferay.portal.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -189,27 +190,49 @@ public class WorkflowInstanceLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_C_C;
-				finderArgs = new Object[] {groupId, companyId, classNameId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId, companyId, classNameId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						companyId, classNameId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_C_C;
-			finderArgs = new Object[] {
-				groupId, companyId, classNameId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, companyId, classNameId, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					companyId, classNameId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<WorkflowInstanceLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<WorkflowInstanceLink>)FinderCacheUtil.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (WorkflowInstanceLink workflowInstanceLink : list) {
-					if ((groupId != workflowInstanceLink.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 workflowInstanceLink.getCtCollectionId())) ||
+						(groupId != workflowInstanceLink.getGroupId()) ||
 						(companyId != workflowInstanceLink.getCompanyId()) ||
 						(classNameId !=
 							workflowInstanceLink.getClassNameId())) {
@@ -271,7 +294,7 @@ public class WorkflowInstanceLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					FinderCacheUtil.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -626,14 +649,19 @@ public class WorkflowInstanceLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByG_C_C;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByG_C_C;
-
 			finderArgs = new Object[] {groupId, companyId, classNameId};
-
-			count = (Long)FinderCacheUtil.getResult(
-				finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId, companyId,
+				classNameId
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -665,9 +693,7 @@ public class WorkflowInstanceLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					FinderCacheUtil.putResult(finderPath, finderArgs, count);
-				}
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -793,30 +819,52 @@ public class WorkflowInstanceLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_C_C_C;
-				finderArgs = new Object[] {
-					groupId, companyId, classNameId, classPK
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, companyId, classNameId, classPK
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						companyId, classNameId, classPK
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_C_C_C;
-			finderArgs = new Object[] {
-				groupId, companyId, classNameId, classPK, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, companyId, classNameId, classPK, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					companyId, classNameId, classPK, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<WorkflowInstanceLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<WorkflowInstanceLink>)FinderCacheUtil.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (WorkflowInstanceLink workflowInstanceLink : list) {
-					if ((groupId != workflowInstanceLink.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 workflowInstanceLink.getCtCollectionId())) ||
+						(groupId != workflowInstanceLink.getGroupId()) ||
 						(companyId != workflowInstanceLink.getCompanyId()) ||
 						(classNameId !=
 							workflowInstanceLink.getClassNameId()) ||
@@ -883,7 +931,7 @@ public class WorkflowInstanceLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					FinderCacheUtil.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1259,16 +1307,21 @@ public class WorkflowInstanceLinkPersistenceImpl
 
 		Long count = null;
 
-		if (productionMode) {
-			finderPath = _finderPathCountByG_C_C_C;
+		finderPath = _finderPathCountByG_C_C_C;
 
+		if (productionMode) {
 			finderArgs = new Object[] {
 				groupId, companyId, classNameId, classPK
 			};
-
-			count = (Long)FinderCacheUtil.getResult(
-				finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId, companyId,
+				classNameId, classPK
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -1304,9 +1357,7 @@ public class WorkflowInstanceLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					FinderCacheUtil.putResult(finderPath, finderArgs, count);
-				}
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1628,6 +1679,8 @@ public class WorkflowInstanceLinkPersistenceImpl
 				workflowInstanceLink.setNew(false);
 			}
 
+			clearCache();
+
 			workflowInstanceLink.resetOriginalValues();
 
 			return workflowInstanceLink;
@@ -1907,19 +1960,36 @@ public class WorkflowInstanceLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<WorkflowInstanceLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<WorkflowInstanceLink>)FinderCacheUtil.getResult(
 				finderPath, finderArgs, this);
 		}
@@ -1957,7 +2027,7 @@ public class WorkflowInstanceLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					FinderCacheUtil.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1999,6 +2069,12 @@ public class WorkflowInstanceLinkPersistenceImpl
 			count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 		}
+		else {
+			count = (Long)FinderCacheUtil.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -2014,6 +2090,14 @@ public class WorkflowInstanceLinkPersistenceImpl
 				if (productionMode) {
 					FinderCacheUtil.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					FinderCacheUtil.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
 				}
 			}
 			catch (Exception exception) {

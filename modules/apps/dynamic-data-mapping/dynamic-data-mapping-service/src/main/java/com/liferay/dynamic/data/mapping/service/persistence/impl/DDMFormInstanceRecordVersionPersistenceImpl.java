@@ -23,6 +23,7 @@ import com.liferay.dynamic.data.mapping.service.persistence.DDMFormInstanceRecor
 import com.liferay.dynamic.data.mapping.service.persistence.DDMFormInstanceRecordVersionUtil;
 import com.liferay.dynamic.data.mapping.service.persistence.impl.constants.DDMPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -190,22 +191,40 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByFormInstanceRecordId;
-				finderArgs = new Object[] {formInstanceRecordId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {formInstanceRecordId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						formInstanceRecordId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByFormInstanceRecordId;
-			finderArgs = new Object[] {
-				formInstanceRecordId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					formInstanceRecordId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					formInstanceRecordId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<DDMFormInstanceRecordVersion> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DDMFormInstanceRecordVersion>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -213,9 +232,13 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 				for (DDMFormInstanceRecordVersion ddmFormInstanceRecordVersion :
 						list) {
 
-					if (formInstanceRecordId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 ddmFormInstanceRecordVersion.
+								 getCtCollectionId())) ||
+						(formInstanceRecordId !=
 							ddmFormInstanceRecordVersion.
-								getFormInstanceRecordId()) {
+								getFormInstanceRecordId())) {
 
 						list = null;
 
@@ -267,7 +290,7 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -593,13 +616,19 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByFormInstanceRecordId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByFormInstanceRecordId;
-
 			finderArgs = new Object[] {formInstanceRecordId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				formInstanceRecordId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -624,9 +653,7 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -735,21 +762,39 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_F;
-				finderArgs = new Object[] {userId, formInstanceId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {userId, formInstanceId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						formInstanceId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_F;
-			finderArgs = new Object[] {
-				userId, formInstanceId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, formInstanceId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId,
+					formInstanceId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<DDMFormInstanceRecordVersion> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DDMFormInstanceRecordVersion>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -757,7 +802,11 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 				for (DDMFormInstanceRecordVersion ddmFormInstanceRecordVersion :
 						list) {
 
-					if ((userId != ddmFormInstanceRecordVersion.getUserId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 ddmFormInstanceRecordVersion.
+								 getCtCollectionId())) ||
+						(userId != ddmFormInstanceRecordVersion.getUserId()) ||
 						(formInstanceId !=
 							ddmFormInstanceRecordVersion.getFormInstanceId())) {
 
@@ -814,7 +863,7 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1152,13 +1201,19 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByU_F;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByU_F;
-
 			finderArgs = new Object[] {userId, formInstanceId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId,
+				formInstanceId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1186,9 +1241,7 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1303,22 +1356,42 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByF_F;
-				finderArgs = new Object[] {formInstanceId, formInstanceVersion};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						formInstanceId, formInstanceVersion
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						formInstanceId, formInstanceVersion
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByF_F;
-			finderArgs = new Object[] {
-				formInstanceId, formInstanceVersion, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					formInstanceId, formInstanceVersion, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), formInstanceId,
+					formInstanceVersion, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<DDMFormInstanceRecordVersion> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DDMFormInstanceRecordVersion>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -1326,7 +1399,11 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 				for (DDMFormInstanceRecordVersion ddmFormInstanceRecordVersion :
 						list) {
 
-					if ((formInstanceId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 ddmFormInstanceRecordVersion.
+								 getCtCollectionId())) ||
+						(formInstanceId !=
 							ddmFormInstanceRecordVersion.getFormInstanceId()) ||
 						!formInstanceVersion.equals(
 							ddmFormInstanceRecordVersion.
@@ -1396,7 +1473,7 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1753,13 +1830,19 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByF_F;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByF_F;
-
 			finderArgs = new Object[] {formInstanceId, formInstanceVersion};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), formInstanceId,
+				formInstanceVersion
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1798,9 +1881,7 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1897,13 +1978,21 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {formInstanceRecordId, version};
+		if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {formInstanceRecordId, version};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					formInstanceRecordId, version
+				};
+			}
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByF_V, finderArgs, this);
 		}
@@ -1912,7 +2001,10 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 			DDMFormInstanceRecordVersion ddmFormInstanceRecordVersion =
 				(DDMFormInstanceRecordVersion)result;
 
-			if ((formInstanceRecordId !=
+			if ((!productionMode &&
+				 (CTCollectionThreadLocal.getCTCollectionId() !=
+					 ddmFormInstanceRecordVersion.getCtCollectionId())) ||
+				(formInstanceRecordId !=
 					ddmFormInstanceRecordVersion.getFormInstanceRecordId()) ||
 				!Objects.equals(
 					version, ddmFormInstanceRecordVersion.getVersion())) {
@@ -1959,7 +2051,7 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 				List<DDMFormInstanceRecordVersion> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByF_V, finderArgs, list);
 					}
@@ -2026,13 +2118,19 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByF_V;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByF_V;
-
 			finderArgs = new Object[] {formInstanceRecordId, version};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				formInstanceRecordId, version
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -2071,9 +2169,7 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2188,21 +2284,39 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByF_S;
-				finderArgs = new Object[] {formInstanceRecordId, status};
+
+				if (productionMode) {
+					finderArgs = new Object[] {formInstanceRecordId, status};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						formInstanceRecordId, status
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByF_S;
-			finderArgs = new Object[] {
-				formInstanceRecordId, status, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					formInstanceRecordId, status, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					formInstanceRecordId, status, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<DDMFormInstanceRecordVersion> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DDMFormInstanceRecordVersion>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -2210,7 +2324,11 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 				for (DDMFormInstanceRecordVersion ddmFormInstanceRecordVersion :
 						list) {
 
-					if ((formInstanceRecordId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 ddmFormInstanceRecordVersion.
+								 getCtCollectionId())) ||
+						(formInstanceRecordId !=
 							ddmFormInstanceRecordVersion.
 								getFormInstanceRecordId()) ||
 						(status != ddmFormInstanceRecordVersion.getStatus())) {
@@ -2268,7 +2386,7 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -2607,13 +2725,19 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByF_S;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByF_S;
-
 			finderArgs = new Object[] {formInstanceRecordId, status};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				formInstanceRecordId, status
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -2641,9 +2765,7 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2772,24 +2894,43 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_F_F_S;
-				finderArgs = new Object[] {
-					userId, formInstanceId, formInstanceVersion, status
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						userId, formInstanceId, formInstanceVersion, status
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						formInstanceId, formInstanceVersion, status
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_F_F_S;
-			finderArgs = new Object[] {
-				userId, formInstanceId, formInstanceVersion, status, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, formInstanceId, formInstanceVersion, status, start,
+					end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId,
+					formInstanceId, formInstanceVersion, status, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<DDMFormInstanceRecordVersion> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DDMFormInstanceRecordVersion>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -2797,7 +2938,11 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 				for (DDMFormInstanceRecordVersion ddmFormInstanceRecordVersion :
 						list) {
 
-					if ((userId != ddmFormInstanceRecordVersion.getUserId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 ddmFormInstanceRecordVersion.
+								 getCtCollectionId())) ||
+						(userId != ddmFormInstanceRecordVersion.getUserId()) ||
 						(formInstanceId !=
 							ddmFormInstanceRecordVersion.getFormInstanceId()) ||
 						!formInstanceVersion.equals(
@@ -2877,7 +3022,7 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -3282,15 +3427,21 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 		Long count = null;
 
-		if (productionMode) {
-			finderPath = _finderPathCountByU_F_F_S;
+		finderPath = _finderPathCountByU_F_F_S;
 
+		if (productionMode) {
 			finderArgs = new Object[] {
 				userId, formInstanceId, formInstanceVersion, status
 			};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId,
+				formInstanceId, formInstanceVersion, status
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -3337,9 +3488,7 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -3698,6 +3847,8 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 				ddmFormInstanceRecordVersion.setNew(false);
 			}
 
+			clearCache();
+
 			ddmFormInstanceRecordVersion.resetOriginalValues();
 
 			return ddmFormInstanceRecordVersion;
@@ -3986,19 +4137,36 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<DDMFormInstanceRecordVersion> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DDMFormInstanceRecordVersion>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
@@ -4037,7 +4205,7 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -4081,6 +4249,12 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 			count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -4096,6 +4270,14 @@ public class DDMFormInstanceRecordVersionPersistenceImpl
 				if (productionMode) {
 					finderCache.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
 				}
 			}
 			catch (Exception exception) {

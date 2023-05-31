@@ -23,6 +23,7 @@ import com.liferay.commerce.notification.service.persistence.CommerceNotificatio
 import com.liferay.commerce.notification.service.persistence.CommerceNotificationQueueEntryUtil;
 import com.liferay.commerce.notification.service.persistence.impl.constants.CommercePersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -172,6 +173,8 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 		OrderByComparator<CommerceNotificationQueueEntry> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -180,12 +183,31 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByGroupId;
-				finderArgs = new Object[] {groupId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByGroupId;
-			finderArgs = new Object[] {groupId, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<CommerceNotificationQueueEntry> list = null;
@@ -563,11 +585,25 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 	 */
 	@Override
 	public int countByGroupId(long groupId) {
-		FinderPath finderPath = _finderPathCountByGroupId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {groupId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByGroupId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {groupId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -696,6 +732,8 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 			OrderByComparator<CommerceNotificationQueueEntry> orderByComparator,
 			boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -705,15 +743,35 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByCommerceNotificationTemplateId;
-				finderArgs = new Object[] {commerceNotificationTemplateId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {commerceNotificationTemplateId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						commerceNotificationTemplateId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath =
 				_finderPathWithPaginationFindByCommerceNotificationTemplateId;
-			finderArgs = new Object[] {
-				commerceNotificationTemplateId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					commerceNotificationTemplateId, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					commerceNotificationTemplateId, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<CommerceNotificationQueueEntry> list = null;
@@ -1117,12 +1175,26 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 	public int countByCommerceNotificationTemplateId(
 		long commerceNotificationTemplateId) {
 
-		FinderPath finderPath =
-			_finderPathCountByCommerceNotificationTemplateId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {commerceNotificationTemplateId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByCommerceNotificationTemplateId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {commerceNotificationTemplateId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				commerceNotificationTemplateId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1239,6 +1311,8 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 		OrderByComparator<CommerceNotificationQueueEntry> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1247,12 +1321,29 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindBySent;
-				finderArgs = new Object[] {sent};
+
+				if (productionMode) {
+					finderArgs = new Object[] {sent};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), sent
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindBySent;
-			finderArgs = new Object[] {sent, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {sent, start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), sent, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<CommerceNotificationQueueEntry> list = null;
@@ -1627,11 +1718,25 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 	 */
 	@Override
 	public int countBySent(boolean sent) {
-		FinderPath finderPath = _finderPathCountBySent;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {sent};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountBySent;
+
+		if (productionMode) {
+			finderArgs = new Object[] {sent};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), sent
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1748,13 +1853,24 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 		OrderByComparator<CommerceNotificationQueueEntry> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		finderPath = _finderPathWithPaginationFindByLtSentDate;
-		finderArgs = new Object[] {
-			_getTime(sentDate), start, end, orderByComparator
-		};
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				_getTime(sentDate), start, end, orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), _getTime(sentDate),
+				start, end, orderByComparator
+			};
+		}
 
 		List<CommerceNotificationQueueEntry> list = null;
 
@@ -2154,11 +2270,25 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 	 */
 	@Override
 	public int countByLtSentDate(Date sentDate) {
-		FinderPath finderPath = _finderPathWithPaginationCountByLtSentDate;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {_getTime(sentDate)};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathWithPaginationCountByLtSentDate;
+
+		if (productionMode) {
+			finderArgs = new Object[] {_getTime(sentDate)};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), _getTime(sentDate)
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -2309,6 +2439,8 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 		OrderByComparator<CommerceNotificationQueueEntry> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -2317,15 +2449,35 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_C_C_S;
-				finderArgs = new Object[] {groupId, classNameId, classPK, sent};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, classNameId, classPK, sent
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						classNameId, classPK, sent
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_C_C_S;
-			finderArgs = new Object[] {
-				groupId, classNameId, classPK, sent, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, classNameId, classPK, sent, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					classNameId, classPK, sent, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CommerceNotificationQueueEntry> list = null;
@@ -2780,13 +2932,26 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 	public int countByG_C_C_S(
 		long groupId, long classNameId, long classPK, boolean sent) {
 
-		FinderPath finderPath = _finderPathCountByG_C_C_S;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			groupId, classNameId, classPK, sent
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByG_C_C_S;
+
+		if (productionMode) {
+			finderArgs = new Object[] {groupId, classNameId, classPK, sent};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				classNameId, classPK, sent
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -3290,6 +3455,8 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 		OrderByComparator<CommerceNotificationQueueEntry> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -3298,12 +3465,29 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<CommerceNotificationQueueEntry> list = null;
@@ -3382,8 +3566,20 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -3396,8 +3592,18 @@ public class CommerceNotificationQueueEntryPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

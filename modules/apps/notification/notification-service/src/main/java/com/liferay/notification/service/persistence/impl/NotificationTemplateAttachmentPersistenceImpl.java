@@ -23,6 +23,7 @@ import com.liferay.notification.service.persistence.NotificationTemplateAttachme
 import com.liferay.notification.service.persistence.NotificationTemplateAttachmentUtil;
 import com.liferay.notification.service.persistence.impl.constants.NotificationPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -171,6 +172,8 @@ public class NotificationTemplateAttachmentPersistenceImpl
 		OrderByComparator<NotificationTemplateAttachment> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -180,14 +183,32 @@ public class NotificationTemplateAttachmentPersistenceImpl
 			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByNotificationTemplateId;
-				finderArgs = new Object[] {notificationTemplateId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {notificationTemplateId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						notificationTemplateId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByNotificationTemplateId;
-			finderArgs = new Object[] {
-				notificationTemplateId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					notificationTemplateId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					notificationTemplateId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<NotificationTemplateAttachment> list = null;
@@ -577,11 +598,26 @@ public class NotificationTemplateAttachmentPersistenceImpl
 	 */
 	@Override
 	public int countByNotificationTemplateId(long notificationTemplateId) {
-		FinderPath finderPath = _finderPathCountByNotificationTemplateId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {notificationTemplateId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByNotificationTemplateId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {notificationTemplateId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				notificationTemplateId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -693,10 +729,22 @@ public class NotificationTemplateAttachmentPersistenceImpl
 		long notificationTemplateId, long objectFieldId,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {notificationTemplateId, objectFieldId};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					notificationTemplateId, objectFieldId
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					notificationTemplateId, objectFieldId
+				};
+			}
 		}
 
 		Object result = null;
@@ -804,13 +852,26 @@ public class NotificationTemplateAttachmentPersistenceImpl
 	 */
 	@Override
 	public int countByNTI_OFI(long notificationTemplateId, long objectFieldId) {
-		FinderPath finderPath = _finderPathCountByNTI_OFI;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			notificationTemplateId, objectFieldId
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByNTI_OFI;
+
+		if (productionMode) {
+			finderArgs = new Object[] {notificationTemplateId, objectFieldId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				notificationTemplateId, objectFieldId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1301,6 +1362,8 @@ public class NotificationTemplateAttachmentPersistenceImpl
 		OrderByComparator<NotificationTemplateAttachment> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1309,12 +1372,29 @@ public class NotificationTemplateAttachmentPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<NotificationTemplateAttachment> list = null;
@@ -1393,8 +1473,20 @@ public class NotificationTemplateAttachmentPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -1407,8 +1499,18 @@ public class NotificationTemplateAttachmentPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

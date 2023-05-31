@@ -23,6 +23,7 @@ import com.liferay.portal.background.task.model.impl.BackgroundTaskModelImpl;
 import com.liferay.portal.background.task.service.persistence.BackgroundTaskPersistence;
 import com.liferay.portal.background.task.service.persistence.BackgroundTaskUtil;
 import com.liferay.portal.background.task.service.persistence.impl.constants.BackgroundTaskPersistenceConstants;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -171,6 +172,8 @@ public class BackgroundTaskPersistenceImpl
 		OrderByComparator<BackgroundTask> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -179,12 +182,31 @@ public class BackgroundTaskPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByGroupId;
-				finderArgs = new Object[] {groupId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByGroupId;
-			finderArgs = new Object[] {groupId, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -546,11 +568,25 @@ public class BackgroundTaskPersistenceImpl
 	 */
 	@Override
 	public int countByGroupId(long groupId) {
-		FinderPath finderPath = _finderPathCountByGroupId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {groupId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByGroupId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {groupId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -666,6 +702,8 @@ public class BackgroundTaskPersistenceImpl
 		OrderByComparator<BackgroundTask> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -674,14 +712,31 @@ public class BackgroundTaskPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByCompanyId;
-				finderArgs = new Object[] {companyId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {companyId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), companyId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByCompanyId;
-			finderArgs = new Object[] {
-				companyId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -1043,11 +1098,25 @@ public class BackgroundTaskPersistenceImpl
 	 */
 	@Override
 	public int countByCompanyId(long companyId) {
-		FinderPath finderPath = _finderPathCountByCompanyId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {companyId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByCompanyId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {companyId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1163,6 +1232,8 @@ public class BackgroundTaskPersistenceImpl
 		OrderByComparator<BackgroundTask> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1171,14 +1242,31 @@ public class BackgroundTaskPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByCompleted;
-				finderArgs = new Object[] {completed};
+
+				if (productionMode) {
+					finderArgs = new Object[] {completed};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), completed
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByCompleted;
-			finderArgs = new Object[] {
-				completed, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					completed, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), completed,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -1544,11 +1632,25 @@ public class BackgroundTaskPersistenceImpl
 	 */
 	@Override
 	public int countByCompleted(boolean completed) {
-		FinderPath finderPath = _finderPathCountByCompleted;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {completed};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByCompleted;
+
+		if (productionMode) {
+			finderArgs = new Object[] {completed};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), completed
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1661,6 +1763,8 @@ public class BackgroundTaskPersistenceImpl
 		OrderByComparator<BackgroundTask> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1669,12 +1773,31 @@ public class BackgroundTaskPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByStatus;
-				finderArgs = new Object[] {status};
+
+				if (productionMode) {
+					finderArgs = new Object[] {status};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), status
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByStatus;
-			finderArgs = new Object[] {status, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					status, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), status, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -2036,11 +2159,25 @@ public class BackgroundTaskPersistenceImpl
 	 */
 	@Override
 	public int countByStatus(int status) {
-		FinderPath finderPath = _finderPathCountByStatus;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {status};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByStatus;
+
+		if (productionMode) {
+			finderArgs = new Object[] {status};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), status
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -2168,6 +2305,8 @@ public class BackgroundTaskPersistenceImpl
 
 		taskExecutorClassName = Objects.toString(taskExecutorClassName, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -2176,14 +2315,33 @@ public class BackgroundTaskPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_T;
-				finderArgs = new Object[] {groupId, taskExecutorClassName};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId, taskExecutorClassName};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						taskExecutorClassName
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_T;
-			finderArgs = new Object[] {
-				groupId, taskExecutorClassName, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, taskExecutorClassName, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					taskExecutorClassName, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -2687,24 +2845,45 @@ public class BackgroundTaskPersistenceImpl
 				orderByComparator);
 		}
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
 			if (useFinderCache) {
-				finderArgs = new Object[] {
-					StringUtil.merge(groupIds),
-					StringUtil.merge(taskExecutorClassNames)
-				};
+				if (productionMode) {
+					finderArgs = new Object[] {
+						StringUtil.merge(groupIds),
+						StringUtil.merge(taskExecutorClassNames)
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						StringUtil.merge(groupIds),
+						StringUtil.merge(taskExecutorClassNames)
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
-			finderArgs = new Object[] {
-				StringUtil.merge(groupIds),
-				StringUtil.merge(taskExecutorClassNames), start, end,
-				orderByComparator
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					StringUtil.merge(groupIds),
+					StringUtil.merge(taskExecutorClassNames), start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					StringUtil.merge(groupIds),
+					StringUtil.merge(taskExecutorClassNames), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -2848,11 +3027,26 @@ public class BackgroundTaskPersistenceImpl
 	public int countByG_T(long groupId, String taskExecutorClassName) {
 		taskExecutorClassName = Objects.toString(taskExecutorClassName, "");
 
-		FinderPath finderPath = _finderPathCountByG_T;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {groupId, taskExecutorClassName};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByG_T;
+
+		if (productionMode) {
+			finderArgs = new Object[] {groupId, taskExecutorClassName};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				taskExecutorClassName
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -2933,11 +3127,27 @@ public class BackgroundTaskPersistenceImpl
 				taskExecutorClassNames);
 		}
 
-		Object[] finderArgs = new Object[] {
-			StringUtil.merge(groupIds), StringUtil.merge(taskExecutorClassNames)
-		};
+		boolean productionMode = true;
 
-		Long count = (Long)finderCache.getResult(
+		Object[] finderArgs = null;
+
+		Long count = null;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				StringUtil.merge(groupIds),
+				StringUtil.merge(taskExecutorClassNames)
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				StringUtil.merge(groupIds),
+				StringUtil.merge(taskExecutorClassNames)
+			};
+		}
+
+		count = (Long)finderCache.getResult(
 			_finderPathWithPaginationCountByG_T, finderArgs, this);
 
 		if (count == null) {
@@ -3110,6 +3320,8 @@ public class BackgroundTaskPersistenceImpl
 		OrderByComparator<BackgroundTask> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -3118,14 +3330,32 @@ public class BackgroundTaskPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_S;
-				finderArgs = new Object[] {groupId, status};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId, status};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						status
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_S;
-			finderArgs = new Object[] {
-				groupId, status, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, status, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					status, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -3518,11 +3748,25 @@ public class BackgroundTaskPersistenceImpl
 	 */
 	@Override
 	public int countByG_S(long groupId, int status) {
-		FinderPath finderPath = _finderPathCountByG_S;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {groupId, status};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByG_S;
+
+		if (productionMode) {
+			finderArgs = new Object[] {groupId, status};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId, status
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -3656,6 +3900,8 @@ public class BackgroundTaskPersistenceImpl
 
 		taskExecutorClassName = Objects.toString(taskExecutorClassName, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -3664,14 +3910,32 @@ public class BackgroundTaskPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByT_S;
-				finderArgs = new Object[] {taskExecutorClassName, status};
+
+				if (productionMode) {
+					finderArgs = new Object[] {taskExecutorClassName, status};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						taskExecutorClassName, status
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByT_S;
-			finderArgs = new Object[] {
-				taskExecutorClassName, status, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					taskExecutorClassName, status, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					taskExecutorClassName, status, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -4167,22 +4431,41 @@ public class BackgroundTaskPersistenceImpl
 				orderByComparator);
 		}
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
 			if (useFinderCache) {
-				finderArgs = new Object[] {
-					StringUtil.merge(taskExecutorClassNames), status
-				};
+				if (productionMode) {
+					finderArgs = new Object[] {
+						StringUtil.merge(taskExecutorClassNames), status
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						StringUtil.merge(taskExecutorClassNames), status
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
-			finderArgs = new Object[] {
-				StringUtil.merge(taskExecutorClassNames), status, start, end,
-				orderByComparator
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					StringUtil.merge(taskExecutorClassNames), status, start,
+					end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					StringUtil.merge(taskExecutorClassNames), status, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -4317,11 +4600,26 @@ public class BackgroundTaskPersistenceImpl
 	public int countByT_S(String taskExecutorClassName, int status) {
 		taskExecutorClassName = Objects.toString(taskExecutorClassName, "");
 
-		FinderPath finderPath = _finderPathCountByT_S;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {taskExecutorClassName, status};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByT_S;
+
+		if (productionMode) {
+			finderArgs = new Object[] {taskExecutorClassName, status};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				taskExecutorClassName, status
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -4395,11 +4693,25 @@ public class BackgroundTaskPersistenceImpl
 				taskExecutorClassNames);
 		}
 
-		Object[] finderArgs = new Object[] {
-			StringUtil.merge(taskExecutorClassNames), status
-		};
+		boolean productionMode = true;
 
-		Long count = (Long)finderCache.getResult(
+		Object[] finderArgs = null;
+
+		Long count = null;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				StringUtil.merge(taskExecutorClassNames), status
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				StringUtil.merge(taskExecutorClassNames), status
+			};
+		}
+
+		count = (Long)finderCache.getResult(
 			_finderPathWithPaginationCountByT_S, finderArgs, this);
 
 		if (count == null) {
@@ -4584,6 +4896,8 @@ public class BackgroundTaskPersistenceImpl
 		name = Objects.toString(name, "");
 		taskExecutorClassName = Objects.toString(taskExecutorClassName, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -4592,17 +4906,35 @@ public class BackgroundTaskPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_N_T;
-				finderArgs = new Object[] {
-					groupId, name, taskExecutorClassName
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, name, taskExecutorClassName
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						name, taskExecutorClassName
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_N_T;
-			finderArgs = new Object[] {
-				groupId, name, taskExecutorClassName, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, name, taskExecutorClassName, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId, name,
+					taskExecutorClassName, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -5159,24 +5491,45 @@ public class BackgroundTaskPersistenceImpl
 				orderByComparator);
 		}
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
 			if (useFinderCache) {
-				finderArgs = new Object[] {
-					StringUtil.merge(groupIds), name,
-					StringUtil.merge(taskExecutorClassNames)
-				};
+				if (productionMode) {
+					finderArgs = new Object[] {
+						StringUtil.merge(groupIds), name,
+						StringUtil.merge(taskExecutorClassNames)
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						StringUtil.merge(groupIds), name,
+						StringUtil.merge(taskExecutorClassNames)
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
-			finderArgs = new Object[] {
-				StringUtil.merge(groupIds), name,
-				StringUtil.merge(taskExecutorClassNames), start, end,
-				orderByComparator
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					StringUtil.merge(groupIds), name,
+					StringUtil.merge(taskExecutorClassNames), start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					StringUtil.merge(groupIds), name,
+					StringUtil.merge(taskExecutorClassNames), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -5343,13 +5696,26 @@ public class BackgroundTaskPersistenceImpl
 		name = Objects.toString(name, "");
 		taskExecutorClassName = Objects.toString(taskExecutorClassName, "");
 
-		FinderPath finderPath = _finderPathCountByG_N_T;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			groupId, name, taskExecutorClassName
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByG_N_T;
+
+		if (productionMode) {
+			finderArgs = new Object[] {groupId, name, taskExecutorClassName};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId, name,
+				taskExecutorClassName
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -5450,12 +5816,27 @@ public class BackgroundTaskPersistenceImpl
 				taskExecutorClassNames);
 		}
 
-		Object[] finderArgs = new Object[] {
-			StringUtil.merge(groupIds), name,
-			StringUtil.merge(taskExecutorClassNames)
-		};
+		boolean productionMode = true;
 
-		Long count = (Long)finderCache.getResult(
+		Object[] finderArgs = null;
+
+		Long count = null;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				StringUtil.merge(groupIds), name,
+				StringUtil.merge(taskExecutorClassNames)
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				StringUtil.merge(groupIds), name,
+				StringUtil.merge(taskExecutorClassNames)
+			};
+		}
+
+		count = (Long)finderCache.getResult(
 			_finderPathWithPaginationCountByG_N_T, finderArgs, this);
 
 		if (count == null) {
@@ -5664,6 +6045,8 @@ public class BackgroundTaskPersistenceImpl
 
 		taskExecutorClassName = Objects.toString(taskExecutorClassName, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -5672,17 +6055,36 @@ public class BackgroundTaskPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_T_C;
-				finderArgs = new Object[] {
-					groupId, taskExecutorClassName, completed
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, taskExecutorClassName, completed
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						taskExecutorClassName, completed
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_T_C;
-			finderArgs = new Object[] {
-				groupId, taskExecutorClassName, completed, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, taskExecutorClassName, completed, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					taskExecutorClassName, completed, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -6214,24 +6616,45 @@ public class BackgroundTaskPersistenceImpl
 				orderByComparator);
 		}
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
 			if (useFinderCache) {
-				finderArgs = new Object[] {
-					StringUtil.merge(groupIds),
-					StringUtil.merge(taskExecutorClassNames), completed
-				};
+				if (productionMode) {
+					finderArgs = new Object[] {
+						StringUtil.merge(groupIds),
+						StringUtil.merge(taskExecutorClassNames), completed
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						StringUtil.merge(groupIds),
+						StringUtil.merge(taskExecutorClassNames), completed
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
-			finderArgs = new Object[] {
-				StringUtil.merge(groupIds),
-				StringUtil.merge(taskExecutorClassNames), completed, start, end,
-				orderByComparator
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					StringUtil.merge(groupIds),
+					StringUtil.merge(taskExecutorClassNames), completed, start,
+					end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					StringUtil.merge(groupIds),
+					StringUtil.merge(taskExecutorClassNames), completed, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -6388,13 +6811,28 @@ public class BackgroundTaskPersistenceImpl
 
 		taskExecutorClassName = Objects.toString(taskExecutorClassName, "");
 
-		FinderPath finderPath = _finderPathCountByG_T_C;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			groupId, taskExecutorClassName, completed
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByG_T_C;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				groupId, taskExecutorClassName, completed
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				taskExecutorClassName, completed
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -6482,12 +6920,27 @@ public class BackgroundTaskPersistenceImpl
 				taskExecutorClassNames);
 		}
 
-		Object[] finderArgs = new Object[] {
-			StringUtil.merge(groupIds),
-			StringUtil.merge(taskExecutorClassNames), completed
-		};
+		boolean productionMode = true;
 
-		Long count = (Long)finderCache.getResult(
+		Object[] finderArgs = null;
+
+		Long count = null;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				StringUtil.merge(groupIds),
+				StringUtil.merge(taskExecutorClassNames), completed
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				StringUtil.merge(groupIds),
+				StringUtil.merge(taskExecutorClassNames), completed
+			};
+		}
+
+		count = (Long)finderCache.getResult(
 			_finderPathWithPaginationCountByG_T_C, finderArgs, this);
 
 		if (count == null) {
@@ -6691,6 +7144,8 @@ public class BackgroundTaskPersistenceImpl
 
 		taskExecutorClassName = Objects.toString(taskExecutorClassName, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -6699,17 +7154,35 @@ public class BackgroundTaskPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_T_S;
-				finderArgs = new Object[] {
-					groupId, taskExecutorClassName, status
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, taskExecutorClassName, status
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						taskExecutorClassName, status
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_T_S;
-			finderArgs = new Object[] {
-				groupId, taskExecutorClassName, status, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, taskExecutorClassName, status, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					taskExecutorClassName, status, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -7232,22 +7705,42 @@ public class BackgroundTaskPersistenceImpl
 				orderByComparator);
 		}
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
 			if (useFinderCache) {
-				finderArgs = new Object[] {
-					groupId, StringUtil.merge(taskExecutorClassNames), status
-				};
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, StringUtil.merge(taskExecutorClassNames),
+						status
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						StringUtil.merge(taskExecutorClassNames), status
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
-			finderArgs = new Object[] {
-				groupId, StringUtil.merge(taskExecutorClassNames), status,
-				start, end, orderByComparator
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, StringUtil.merge(taskExecutorClassNames), status,
+					start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					StringUtil.merge(taskExecutorClassNames), status, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -7393,13 +7886,26 @@ public class BackgroundTaskPersistenceImpl
 
 		taskExecutorClassName = Objects.toString(taskExecutorClassName, "");
 
-		FinderPath finderPath = _finderPathCountByG_T_S;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			groupId, taskExecutorClassName, status
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByG_T_S;
+
+		if (productionMode) {
+			finderArgs = new Object[] {groupId, taskExecutorClassName, status};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				taskExecutorClassName, status
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -7480,11 +7986,25 @@ public class BackgroundTaskPersistenceImpl
 				taskExecutorClassNames);
 		}
 
-		Object[] finderArgs = new Object[] {
-			groupId, StringUtil.merge(taskExecutorClassNames), status
-		};
+		boolean productionMode = true;
 
-		Long count = (Long)finderCache.getResult(
+		Object[] finderArgs = null;
+
+		Long count = null;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				groupId, StringUtil.merge(taskExecutorClassNames), status
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				StringUtil.merge(taskExecutorClassNames), status
+			};
+		}
+
+		count = (Long)finderCache.getResult(
 			_finderPathWithPaginationCountByG_T_S, finderArgs, this);
 
 		if (count == null) {
@@ -7683,6 +8203,8 @@ public class BackgroundTaskPersistenceImpl
 		name = Objects.toString(name, "");
 		taskExecutorClassName = Objects.toString(taskExecutorClassName, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -7691,17 +8213,36 @@ public class BackgroundTaskPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_N_T_C;
-				finderArgs = new Object[] {
-					groupId, name, taskExecutorClassName, completed
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, name, taskExecutorClassName, completed
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						name, taskExecutorClassName, completed
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_N_T_C;
-			finderArgs = new Object[] {
-				groupId, name, taskExecutorClassName, completed, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, name, taskExecutorClassName, completed, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId, name,
+					taskExecutorClassName, completed, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -8278,23 +8819,43 @@ public class BackgroundTaskPersistenceImpl
 				orderByComparator);
 		}
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
 			if (useFinderCache) {
-				finderArgs = new Object[] {
-					StringUtil.merge(groupIds), name, taskExecutorClassName,
-					completed
-				};
+				if (productionMode) {
+					finderArgs = new Object[] {
+						StringUtil.merge(groupIds), name, taskExecutorClassName,
+						completed
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						StringUtil.merge(groupIds), name, taskExecutorClassName,
+						completed
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
-			finderArgs = new Object[] {
-				StringUtil.merge(groupIds), name, taskExecutorClassName,
-				completed, start, end, orderByComparator
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					StringUtil.merge(groupIds), name, taskExecutorClassName,
+					completed, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					StringUtil.merge(groupIds), name, taskExecutorClassName,
+					completed, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -8456,13 +9017,28 @@ public class BackgroundTaskPersistenceImpl
 		name = Objects.toString(name, "");
 		taskExecutorClassName = Objects.toString(taskExecutorClassName, "");
 
-		FinderPath finderPath = _finderPathCountByG_N_T_C;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			groupId, name, taskExecutorClassName, completed
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByG_N_T_C;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				groupId, name, taskExecutorClassName, completed
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId, name,
+				taskExecutorClassName, completed
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -8557,11 +9133,27 @@ public class BackgroundTaskPersistenceImpl
 		name = Objects.toString(name, "");
 		taskExecutorClassName = Objects.toString(taskExecutorClassName, "");
 
-		Object[] finderArgs = new Object[] {
-			StringUtil.merge(groupIds), name, taskExecutorClassName, completed
-		};
+		boolean productionMode = true;
 
-		Long count = (Long)finderCache.getResult(
+		Object[] finderArgs = null;
+
+		Long count = null;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				StringUtil.merge(groupIds), name, taskExecutorClassName,
+				completed
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				StringUtil.merge(groupIds), name, taskExecutorClassName,
+				completed
+			};
+		}
+
+		count = (Long)finderCache.getResult(
 			_finderPathWithPaginationCountByG_N_T_C, finderArgs, this);
 
 		if (count == null) {
@@ -9055,6 +9647,8 @@ public class BackgroundTaskPersistenceImpl
 		int start, int end, OrderByComparator<BackgroundTask> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -9063,12 +9657,29 @@ public class BackgroundTaskPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<BackgroundTask> list = null;
@@ -9144,8 +9755,20 @@ public class BackgroundTaskPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -9157,8 +9780,18 @@ public class BackgroundTaskPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

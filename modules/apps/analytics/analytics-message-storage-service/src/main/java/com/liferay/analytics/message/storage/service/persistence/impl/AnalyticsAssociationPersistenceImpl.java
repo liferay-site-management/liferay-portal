@@ -23,6 +23,7 @@ import com.liferay.analytics.message.storage.service.persistence.AnalyticsAssoci
 import com.liferay.analytics.message.storage.service.persistence.AnalyticsAssociationUtil;
 import com.liferay.analytics.message.storage.service.persistence.impl.constants.AnalyticsPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -182,6 +183,8 @@ public class AnalyticsAssociationPersistenceImpl
 
 		associationClassName = Objects.toString(associationClassName, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -190,14 +193,33 @@ public class AnalyticsAssociationPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByC_A;
-				finderArgs = new Object[] {companyId, associationClassName};
+
+				if (productionMode) {
+					finderArgs = new Object[] {companyId, associationClassName};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), companyId,
+						associationClassName
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByC_A;
-			finderArgs = new Object[] {
-				companyId, associationClassName, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, associationClassName, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					associationClassName, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<AnalyticsAssociation> list = null;
@@ -621,11 +643,26 @@ public class AnalyticsAssociationPersistenceImpl
 	public int countByC_A(long companyId, String associationClassName) {
 		associationClassName = Objects.toString(associationClassName, "");
 
-		FinderPath finderPath = _finderPathCountByC_A;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {companyId, associationClassName};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByC_A;
+
+		if (productionMode) {
+			finderArgs = new Object[] {companyId, associationClassName};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				associationClassName
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -780,14 +817,26 @@ public class AnalyticsAssociationPersistenceImpl
 
 		associationClassName = Objects.toString(associationClassName, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		finderPath = _finderPathWithPaginationFindByC_GtM_A;
-		finderArgs = new Object[] {
-			companyId, _getTime(modifiedDate), associationClassName, start, end,
-			orderByComparator
-		};
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				companyId, _getTime(modifiedDate), associationClassName, start,
+				end, orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				_getTime(modifiedDate), associationClassName, start, end,
+				orderByComparator
+			};
+		}
 
 		List<AnalyticsAssociation> list = null;
 
@@ -1262,13 +1311,28 @@ public class AnalyticsAssociationPersistenceImpl
 
 		associationClassName = Objects.toString(associationClassName, "");
 
-		FinderPath finderPath = _finderPathWithPaginationCountByC_GtM_A;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			companyId, _getTime(modifiedDate), associationClassName
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathWithPaginationCountByC_GtM_A;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				companyId, _getTime(modifiedDate), associationClassName
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				_getTime(modifiedDate), associationClassName
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -1446,6 +1510,8 @@ public class AnalyticsAssociationPersistenceImpl
 
 		associationClassName = Objects.toString(associationClassName, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1454,17 +1520,36 @@ public class AnalyticsAssociationPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByC_A_A;
-				finderArgs = new Object[] {
-					companyId, associationClassName, associationClassPK
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						companyId, associationClassName, associationClassPK
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), companyId,
+						associationClassName, associationClassPK
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByC_A_A;
-			finderArgs = new Object[] {
-				companyId, associationClassName, associationClassPK, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, associationClassName, associationClassPK, start,
+					end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					associationClassName, associationClassPK, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<AnalyticsAssociation> list = null;
@@ -1921,13 +2006,28 @@ public class AnalyticsAssociationPersistenceImpl
 
 		associationClassName = Objects.toString(associationClassName, "");
 
-		FinderPath finderPath = _finderPathCountByC_A_A;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			companyId, associationClassName, associationClassPK
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByC_A_A;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				companyId, associationClassName, associationClassPK
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				associationClassName, associationClassPK
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -2400,6 +2500,8 @@ public class AnalyticsAssociationPersistenceImpl
 		OrderByComparator<AnalyticsAssociation> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -2408,12 +2510,29 @@ public class AnalyticsAssociationPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<AnalyticsAssociation> list = null;
@@ -2489,8 +2608,20 @@ public class AnalyticsAssociationPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -2503,8 +2634,18 @@ public class AnalyticsAssociationPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

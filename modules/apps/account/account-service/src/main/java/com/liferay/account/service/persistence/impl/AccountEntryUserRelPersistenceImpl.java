@@ -23,6 +23,7 @@ import com.liferay.account.service.persistence.AccountEntryUserRelPersistence;
 import com.liferay.account.service.persistence.AccountEntryUserRelUtil;
 import com.liferay.account.service.persistence.impl.constants.AccountPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -168,6 +169,8 @@ public class AccountEntryUserRelPersistenceImpl
 		OrderByComparator<AccountEntryUserRel> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -176,14 +179,32 @@ public class AccountEntryUserRelPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByAccountEntryId;
-				finderArgs = new Object[] {accountEntryId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {accountEntryId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						accountEntryId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByAccountEntryId;
-			finderArgs = new Object[] {
-				accountEntryId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					accountEntryId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), accountEntryId,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<AccountEntryUserRel> list = null;
@@ -557,11 +578,25 @@ public class AccountEntryUserRelPersistenceImpl
 	 */
 	@Override
 	public int countByAccountEntryId(long accountEntryId) {
-		FinderPath finderPath = _finderPathCountByAccountEntryId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {accountEntryId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByAccountEntryId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {accountEntryId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), accountEntryId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -678,6 +713,8 @@ public class AccountEntryUserRelPersistenceImpl
 		OrderByComparator<AccountEntryUserRel> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -686,14 +723,32 @@ public class AccountEntryUserRelPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByAccountUserId;
-				finderArgs = new Object[] {accountUserId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {accountUserId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						accountUserId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByAccountUserId;
-			finderArgs = new Object[] {
-				accountUserId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					accountUserId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), accountUserId,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<AccountEntryUserRel> list = null;
@@ -1067,11 +1122,25 @@ public class AccountEntryUserRelPersistenceImpl
 	 */
 	@Override
 	public int countByAccountUserId(long accountUserId) {
-		FinderPath finderPath = _finderPathCountByAccountUserId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {accountUserId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByAccountUserId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {accountUserId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), accountUserId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1179,10 +1248,20 @@ public class AccountEntryUserRelPersistenceImpl
 	public AccountEntryUserRel fetchByAEI_AUI(
 		long accountEntryId, long accountUserId, boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {accountEntryId, accountUserId};
+			if (productionMode) {
+				finderArgs = new Object[] {accountEntryId, accountUserId};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), accountEntryId,
+					accountUserId
+				};
+			}
 		}
 
 		Object result = null;
@@ -1303,11 +1382,26 @@ public class AccountEntryUserRelPersistenceImpl
 	 */
 	@Override
 	public int countByAEI_AUI(long accountEntryId, long accountUserId) {
-		FinderPath finderPath = _finderPathCountByAEI_AUI;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {accountEntryId, accountUserId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByAEI_AUI;
+
+		if (productionMode) {
+			finderArgs = new Object[] {accountEntryId, accountUserId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), accountEntryId,
+				accountUserId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1750,6 +1844,8 @@ public class AccountEntryUserRelPersistenceImpl
 		OrderByComparator<AccountEntryUserRel> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1758,12 +1854,29 @@ public class AccountEntryUserRelPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<AccountEntryUserRel> list = null;
@@ -1839,8 +1952,20 @@ public class AccountEntryUserRelPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -1853,8 +1978,18 @@ public class AccountEntryUserRelPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

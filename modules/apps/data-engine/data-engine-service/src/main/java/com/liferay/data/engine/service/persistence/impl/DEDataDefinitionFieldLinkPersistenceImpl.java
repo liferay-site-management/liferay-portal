@@ -23,6 +23,7 @@ import com.liferay.data.engine.service.persistence.DEDataDefinitionFieldLinkPers
 import com.liferay.data.engine.service.persistence.DEDataDefinitionFieldLinkUtil;
 import com.liferay.data.engine.service.persistence.impl.constants.DEPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -192,19 +193,36 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByUuid;
-				finderArgs = new Object[] {uuid};
+
+				if (productionMode) {
+					finderArgs = new Object[] {uuid};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), uuid
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUuid;
-			finderArgs = new Object[] {uuid, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {uuid, start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<DEDataDefinitionFieldLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DEDataDefinitionFieldLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -212,7 +230,11 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				for (DEDataDefinitionFieldLink deDataDefinitionFieldLink :
 						list) {
 
-					if (!uuid.equals(deDataDefinitionFieldLink.getUuid())) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 deDataDefinitionFieldLink.getCtCollectionId())) ||
+						!uuid.equals(deDataDefinitionFieldLink.getUuid())) {
+
 						list = null;
 
 						break;
@@ -273,7 +295,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -606,13 +628,18 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByUuid;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByUuid;
-
 			finderArgs = new Object[] {uuid};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -647,9 +674,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -740,13 +765,20 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {uuid, groupId};
+		if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {uuid, groupId};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid, groupId
+				};
+			}
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs, this);
 		}
@@ -755,7 +787,10 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			DEDataDefinitionFieldLink deDataDefinitionFieldLink =
 				(DEDataDefinitionFieldLink)result;
 
-			if (!Objects.equals(uuid, deDataDefinitionFieldLink.getUuid()) ||
+			if ((!productionMode &&
+				 (CTCollectionThreadLocal.getCTCollectionId() !=
+					 deDataDefinitionFieldLink.getCtCollectionId())) ||
+				!Objects.equals(uuid, deDataDefinitionFieldLink.getUuid()) ||
 				(groupId != deDataDefinitionFieldLink.getGroupId())) {
 
 				result = null;
@@ -800,7 +835,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				List<DEDataDefinitionFieldLink> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -866,13 +901,18 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByUUID_G;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByUUID_G;
-
 			finderArgs = new Object[] {uuid, groupId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid, groupId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -911,9 +951,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1029,21 +1067,39 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByUuid_C;
-				finderArgs = new Object[] {uuid, companyId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {uuid, companyId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), uuid,
+						companyId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUuid_C;
-			finderArgs = new Object[] {
-				uuid, companyId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					uuid, companyId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid,
+					companyId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<DEDataDefinitionFieldLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DEDataDefinitionFieldLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -1051,7 +1107,10 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				for (DEDataDefinitionFieldLink deDataDefinitionFieldLink :
 						list) {
 
-					if (!uuid.equals(deDataDefinitionFieldLink.getUuid()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 deDataDefinitionFieldLink.getCtCollectionId())) ||
+						!uuid.equals(deDataDefinitionFieldLink.getUuid()) ||
 						(companyId !=
 							deDataDefinitionFieldLink.getCompanyId())) {
 
@@ -1119,7 +1178,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1471,13 +1530,18 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByUuid_C;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByUuid_C;
-
 			finderArgs = new Object[] {uuid, companyId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid, companyId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1516,9 +1580,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1628,21 +1690,39 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByDDMStructureId;
-				finderArgs = new Object[] {ddmStructureId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {ddmStructureId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						ddmStructureId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByDDMStructureId;
-			finderArgs = new Object[] {
-				ddmStructureId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					ddmStructureId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), ddmStructureId,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<DEDataDefinitionFieldLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DEDataDefinitionFieldLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -1650,8 +1730,11 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				for (DEDataDefinitionFieldLink deDataDefinitionFieldLink :
 						list) {
 
-					if (ddmStructureId !=
-							deDataDefinitionFieldLink.getDdmStructureId()) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 deDataDefinitionFieldLink.getCtCollectionId())) ||
+						(ddmStructureId !=
+							deDataDefinitionFieldLink.getDdmStructureId())) {
 
 						list = null;
 
@@ -1702,7 +1785,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -2022,13 +2105,18 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByDDMStructureId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByDDMStructureId;
-
 			finderArgs = new Object[] {ddmStructureId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), ddmStructureId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -2052,9 +2140,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2162,21 +2248,39 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByC_C;
-				finderArgs = new Object[] {classNameId, classPK};
+
+				if (productionMode) {
+					finderArgs = new Object[] {classNameId, classPK};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						classNameId, classPK
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByC_C;
-			finderArgs = new Object[] {
-				classNameId, classPK, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					classNameId, classPK, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+					classPK, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<DEDataDefinitionFieldLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DEDataDefinitionFieldLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -2184,7 +2288,10 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				for (DEDataDefinitionFieldLink deDataDefinitionFieldLink :
 						list) {
 
-					if ((classNameId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 deDataDefinitionFieldLink.getCtCollectionId())) ||
+						(classNameId !=
 							deDataDefinitionFieldLink.getClassNameId()) ||
 						(classPK != deDataDefinitionFieldLink.getClassPK())) {
 
@@ -2241,7 +2348,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -2578,13 +2685,19 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByC_C;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByC_C;
-
 			finderArgs = new Object[] {classNameId, classPK};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+				classPK
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -2612,9 +2725,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2726,21 +2837,39 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByC_DDMSI;
-				finderArgs = new Object[] {classNameId, ddmStructureId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {classNameId, ddmStructureId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						classNameId, ddmStructureId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByC_DDMSI;
-			finderArgs = new Object[] {
-				classNameId, ddmStructureId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					classNameId, ddmStructureId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+					ddmStructureId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<DEDataDefinitionFieldLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DEDataDefinitionFieldLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -2748,7 +2877,10 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				for (DEDataDefinitionFieldLink deDataDefinitionFieldLink :
 						list) {
 
-					if ((classNameId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 deDataDefinitionFieldLink.getCtCollectionId())) ||
+						(classNameId !=
 							deDataDefinitionFieldLink.getClassNameId()) ||
 						(ddmStructureId !=
 							deDataDefinitionFieldLink.getDdmStructureId())) {
@@ -2806,7 +2938,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -3145,13 +3277,19 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByC_DDMSI;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByC_DDMSI;
-
 			finderArgs = new Object[] {classNameId, ddmStructureId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+				ddmStructureId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -3179,9 +3317,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -3296,21 +3432,39 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByDDMSI_F;
-				finderArgs = new Object[] {ddmStructureId, fieldName};
+
+				if (productionMode) {
+					finderArgs = new Object[] {ddmStructureId, fieldName};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						ddmStructureId, fieldName
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByDDMSI_F;
-			finderArgs = new Object[] {
-				ddmStructureId, fieldName, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					ddmStructureId, fieldName, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), ddmStructureId,
+					fieldName, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<DEDataDefinitionFieldLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DEDataDefinitionFieldLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -3318,7 +3472,10 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				for (DEDataDefinitionFieldLink deDataDefinitionFieldLink :
 						list) {
 
-					if ((ddmStructureId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 deDataDefinitionFieldLink.getCtCollectionId())) ||
+						(ddmStructureId !=
 							deDataDefinitionFieldLink.getDdmStructureId()) ||
 						!fieldName.equals(
 							deDataDefinitionFieldLink.getFieldName())) {
@@ -3387,7 +3544,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -3812,22 +3969,38 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderArgs = new Object[] {
-					ddmStructureId, StringUtil.merge(fieldNames)
-				};
+			if (useFinderCache) {
+				if (productionMode) {
+					finderArgs = new Object[] {
+						ddmStructureId, StringUtil.merge(fieldNames)
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						ddmStructureId, StringUtil.merge(fieldNames)
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {
-				ddmStructureId, StringUtil.merge(fieldNames), start, end,
-				orderByComparator
-			};
+		else if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {
+					ddmStructureId, StringUtil.merge(fieldNames), start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), ddmStructureId,
+					StringUtil.merge(fieldNames), start, end, orderByComparator
+				};
+			}
 		}
 
 		List<DEDataDefinitionFieldLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DEDataDefinitionFieldLink>)finderCache.getResult(
 				_finderPathWithPaginationFindByDDMSI_F, finderArgs, this);
 
@@ -3835,7 +4008,10 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				for (DEDataDefinitionFieldLink deDataDefinitionFieldLink :
 						list) {
 
-					if ((ddmStructureId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 deDataDefinitionFieldLink.getCtCollectionId())) ||
+						(ddmStructureId !=
 							deDataDefinitionFieldLink.getDdmStructureId()) ||
 						!ArrayUtil.contains(
 							fieldNames,
@@ -3912,7 +4088,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(
 						_finderPathWithPaginationFindByDDMSI_F, finderArgs,
 						list);
@@ -3965,13 +4141,19 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByDDMSI_F;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByDDMSI_F;
-
 			finderArgs = new Object[] {ddmStructureId, fieldName};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), ddmStructureId,
+				fieldName
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -4010,9 +4192,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -4056,10 +4236,16 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			finderArgs = new Object[] {
 				ddmStructureId, StringUtil.merge(fieldNames)
 			};
-
-			count = (Long)finderCache.getResult(
-				_finderPathWithPaginationCountByDDMSI_F, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), ddmStructureId,
+				StringUtil.merge(fieldNames)
+			};
+		}
+
+		count = (Long)finderCache.getResult(
+			_finderPathWithPaginationCountByDDMSI_F, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler();
@@ -4113,11 +4299,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(
-						_finderPathWithPaginationCountByDDMSI_F, finderArgs,
-						count);
-				}
+				finderCache.putResult(
+					_finderPathWithPaginationCountByDDMSI_F, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -4243,24 +4426,42 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByC_DDMSI_F;
-				finderArgs = new Object[] {
-					classNameId, ddmStructureId, fieldName
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						classNameId, ddmStructureId, fieldName
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						classNameId, ddmStructureId, fieldName
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByC_DDMSI_F;
-			finderArgs = new Object[] {
-				classNameId, ddmStructureId, fieldName, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					classNameId, ddmStructureId, fieldName, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+					ddmStructureId, fieldName, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<DEDataDefinitionFieldLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DEDataDefinitionFieldLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -4268,7 +4469,10 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				for (DEDataDefinitionFieldLink deDataDefinitionFieldLink :
 						list) {
 
-					if ((classNameId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 deDataDefinitionFieldLink.getCtCollectionId())) ||
+						(classNameId !=
 							deDataDefinitionFieldLink.getClassNameId()) ||
 						(ddmStructureId !=
 							deDataDefinitionFieldLink.getDdmStructureId()) ||
@@ -4343,7 +4547,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -4795,22 +4999,41 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderArgs = new Object[] {
-					classNameId, ddmStructureId, StringUtil.merge(fieldNames)
-				};
+			if (useFinderCache) {
+				if (productionMode) {
+					finderArgs = new Object[] {
+						classNameId, ddmStructureId,
+						StringUtil.merge(fieldNames)
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						classNameId, ddmStructureId,
+						StringUtil.merge(fieldNames)
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {
-				classNameId, ddmStructureId, StringUtil.merge(fieldNames),
-				start, end, orderByComparator
-			};
+		else if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {
+					classNameId, ddmStructureId, StringUtil.merge(fieldNames),
+					start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+					ddmStructureId, StringUtil.merge(fieldNames), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<DEDataDefinitionFieldLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DEDataDefinitionFieldLink>)finderCache.getResult(
 				_finderPathWithPaginationFindByC_DDMSI_F, finderArgs, this);
 
@@ -4818,7 +5041,10 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				for (DEDataDefinitionFieldLink deDataDefinitionFieldLink :
 						list) {
 
-					if ((classNameId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 deDataDefinitionFieldLink.getCtCollectionId())) ||
+						(classNameId !=
 							deDataDefinitionFieldLink.getClassNameId()) ||
 						(ddmStructureId !=
 							deDataDefinitionFieldLink.getDdmStructureId()) ||
@@ -4901,7 +5127,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(
 						_finderPathWithPaginationFindByC_DDMSI_F, finderArgs,
 						list);
@@ -4960,13 +5186,19 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByC_DDMSI_F;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByC_DDMSI_F;
-
 			finderArgs = new Object[] {classNameId, ddmStructureId, fieldName};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+				ddmStructureId, fieldName
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -5009,9 +5241,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -5058,10 +5288,16 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			finderArgs = new Object[] {
 				classNameId, ddmStructureId, StringUtil.merge(fieldNames)
 			};
-
-			count = (Long)finderCache.getResult(
-				_finderPathWithPaginationCountByC_DDMSI_F, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+				ddmStructureId, StringUtil.merge(fieldNames)
+			};
+		}
+
+		count = (Long)finderCache.getResult(
+			_finderPathWithPaginationCountByC_DDMSI_F, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler();
@@ -5119,11 +5355,9 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(
-						_finderPathWithPaginationCountByC_DDMSI_F, finderArgs,
-						count);
-				}
+				finderCache.putResult(
+					_finderPathWithPaginationCountByC_DDMSI_F, finderArgs,
+					count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -5239,15 +5473,23 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {
-				classNameId, classPK, ddmStructureId, fieldName
-			};
+		if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {
+					classNameId, classPK, ddmStructureId, fieldName
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+					classPK, ddmStructureId, fieldName
+				};
+			}
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByC_C_DDMSI_F, finderArgs, this);
 		}
@@ -5256,7 +5498,10 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			DEDataDefinitionFieldLink deDataDefinitionFieldLink =
 				(DEDataDefinitionFieldLink)result;
 
-			if ((classNameId != deDataDefinitionFieldLink.getClassNameId()) ||
+			if ((!productionMode &&
+				 (CTCollectionThreadLocal.getCTCollectionId() !=
+					 deDataDefinitionFieldLink.getCtCollectionId())) ||
+				(classNameId != deDataDefinitionFieldLink.getClassNameId()) ||
 				(classPK != deDataDefinitionFieldLink.getClassPK()) ||
 				(ddmStructureId !=
 					deDataDefinitionFieldLink.getDdmStructureId()) ||
@@ -5313,7 +5558,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				List<DEDataDefinitionFieldLink> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_C_DDMSI_F, finderArgs, list);
 					}
@@ -5387,15 +5632,21 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 		Long count = null;
 
-		if (productionMode) {
-			finderPath = _finderPathCountByC_C_DDMSI_F;
+		finderPath = _finderPathCountByC_C_DDMSI_F;
 
+		if (productionMode) {
 			finderArgs = new Object[] {
 				classNameId, classPK, ddmStructureId, fieldName
 			};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+				classPK, ddmStructureId, fieldName
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -5442,9 +5693,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -5494,10 +5743,16 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				classNameId, classPK, ddmStructureId,
 				StringUtil.merge(fieldNames)
 			};
-
-			count = (Long)finderCache.getResult(
-				_finderPathWithPaginationCountByC_C_DDMSI_F, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+				classPK, ddmStructureId, StringUtil.merge(fieldNames)
+			};
+		}
+
+		count = (Long)finderCache.getResult(
+			_finderPathWithPaginationCountByC_C_DDMSI_F, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler();
@@ -5559,11 +5814,9 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(
-						_finderPathWithPaginationCountByC_C_DDMSI_F, finderArgs,
-						count);
-				}
+				finderCache.putResult(
+					_finderPathWithPaginationCountByC_C_DDMSI_F, finderArgs,
+					count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -5962,6 +6215,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				deDataDefinitionFieldLink.setNew(false);
 			}
 
+			clearCache();
+
 			deDataDefinitionFieldLink.resetOriginalValues();
 
 			return deDataDefinitionFieldLink;
@@ -6248,19 +6503,36 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<DEDataDefinitionFieldLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DEDataDefinitionFieldLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
@@ -6299,7 +6571,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -6341,6 +6613,12 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -6356,6 +6634,14 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				if (productionMode) {
 					finderCache.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
 				}
 			}
 			catch (Exception exception) {

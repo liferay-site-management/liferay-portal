@@ -23,6 +23,7 @@ import com.liferay.document.library.content.service.persistence.DLContentPersist
 import com.liferay.document.library.content.service.persistence.DLContentUtil;
 import com.liferay.document.library.content.service.persistence.impl.constants.DLPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -190,27 +191,48 @@ public class DLContentPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByC_R;
-				finderArgs = new Object[] {companyId, repositoryId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {companyId, repositoryId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), companyId,
+						repositoryId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByC_R;
-			finderArgs = new Object[] {
-				companyId, repositoryId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, repositoryId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					repositoryId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<DLContent> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DLContent>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DLContent dlContent : list) {
-					if ((companyId != dlContent.getCompanyId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 dlContent.getCtCollectionId())) ||
+						(companyId != dlContent.getCompanyId()) ||
 						(repositoryId != dlContent.getRepositoryId())) {
 
 						list = null;
@@ -266,7 +288,7 @@ public class DLContentPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -598,13 +620,19 @@ public class DLContentPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByC_R;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByC_R;
-
 			finderArgs = new Object[] {companyId, repositoryId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				repositoryId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -632,9 +660,7 @@ public class DLContentPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -752,27 +778,48 @@ public class DLContentPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByC_R_P;
-				finderArgs = new Object[] {companyId, repositoryId, path};
+
+				if (productionMode) {
+					finderArgs = new Object[] {companyId, repositoryId, path};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), companyId,
+						repositoryId, path
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByC_R_P;
-			finderArgs = new Object[] {
-				companyId, repositoryId, path, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, repositoryId, path, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					repositoryId, path, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<DLContent> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DLContent>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DLContent dlContent : list) {
-					if ((companyId != dlContent.getCompanyId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 dlContent.getCtCollectionId())) ||
+						(companyId != dlContent.getCompanyId()) ||
 						(repositoryId != dlContent.getRepositoryId()) ||
 						!path.equals(dlContent.getPath())) {
 
@@ -844,7 +891,7 @@ public class DLContentPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1209,13 +1256,19 @@ public class DLContentPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByC_R_P;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByC_R_P;
-
 			finderArgs = new Object[] {companyId, repositoryId, path};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				repositoryId, path
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -1258,9 +1311,7 @@ public class DLContentPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1381,19 +1432,31 @@ public class DLContentPersistenceImpl
 		Object[] finderArgs = null;
 
 		finderPath = _finderPathWithPaginationFindByC_R_LikeP;
-		finderArgs = new Object[] {
-			companyId, repositoryId, path, start, end, orderByComparator
-		};
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				companyId, repositoryId, path, start, end, orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				repositoryId, path, start, end, orderByComparator
+			};
+		}
 
 		List<DLContent> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DLContent>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DLContent dlContent : list) {
-					if ((companyId != dlContent.getCompanyId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 dlContent.getCtCollectionId())) ||
+						(companyId != dlContent.getCompanyId()) ||
 						(repositoryId != dlContent.getRepositoryId()) ||
 						!StringUtil.wildcardMatches(
 							dlContent.getPath(), path, '_', '%', '\\', true)) {
@@ -1466,7 +1529,7 @@ public class DLContentPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1835,13 +1898,19 @@ public class DLContentPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathWithPaginationCountByC_R_LikeP;
+
 		if (productionMode) {
-			finderPath = _finderPathWithPaginationCountByC_R_LikeP;
-
 			finderArgs = new Object[] {companyId, repositoryId, path};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				repositoryId, path
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -1884,9 +1953,7 @@ public class DLContentPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2000,13 +2067,23 @@ public class DLContentPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {companyId, repositoryId, path, version};
+		if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, repositoryId, path, version
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					repositoryId, path, version
+				};
+			}
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByC_R_P_V, finderArgs, this);
 		}
@@ -2014,7 +2091,10 @@ public class DLContentPersistenceImpl
 		if (result instanceof DLContent) {
 			DLContent dlContent = (DLContent)result;
 
-			if ((companyId != dlContent.getCompanyId()) ||
+			if ((!productionMode &&
+				 (CTCollectionThreadLocal.getCTCollectionId() !=
+					 dlContent.getCtCollectionId())) ||
+				(companyId != dlContent.getCompanyId()) ||
 				(repositoryId != dlContent.getRepositoryId()) ||
 				!Objects.equals(path, dlContent.getPath()) ||
 				!Objects.equals(version, dlContent.getVersion())) {
@@ -2080,7 +2160,7 @@ public class DLContentPersistenceImpl
 				List<DLContent> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_R_P_V, finderArgs, list);
 					}
@@ -2153,13 +2233,19 @@ public class DLContentPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByC_R_P_V;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByC_R_P_V;
-
 			finderArgs = new Object[] {companyId, repositoryId, path, version};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				repositoryId, path, version
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -2217,9 +2303,7 @@ public class DLContentPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2535,6 +2619,8 @@ public class DLContentPersistenceImpl
 				dlContent.setNew(false);
 			}
 
+			clearCache();
+
 			dlContent.resetOriginalValues();
 
 			return dlContent;
@@ -2802,19 +2888,36 @@ public class DLContentPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<DLContent> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DLContent>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
@@ -2852,7 +2955,7 @@ public class DLContentPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -2894,6 +2997,12 @@ public class DLContentPersistenceImpl
 			count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -2908,6 +3017,14 @@ public class DLContentPersistenceImpl
 				if (productionMode) {
 					finderCache.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
 				}
 			}
 			catch (Exception exception) {

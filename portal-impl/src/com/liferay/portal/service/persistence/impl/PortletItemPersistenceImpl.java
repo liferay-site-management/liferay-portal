@@ -15,6 +15,7 @@
 package com.liferay.portal.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -166,6 +167,8 @@ public class PortletItemPersistenceImpl
 		OrderByComparator<PortletItem> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -174,14 +177,32 @@ public class PortletItemPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_C;
-				finderArgs = new Object[] {groupId, classNameId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId, classNameId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						classNameId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_C;
-			finderArgs = new Object[] {
-				groupId, classNameId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, classNameId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					classNameId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<PortletItem> list = null;
@@ -573,12 +594,26 @@ public class PortletItemPersistenceImpl
 	 */
 	@Override
 	public int countByG_C(long groupId, long classNameId) {
-		FinderPath finderPath = _finderPathCountByG_C;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {groupId, classNameId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByG_C;
+
+		if (productionMode) {
+			finderArgs = new Object[] {groupId, classNameId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				classNameId
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -716,6 +751,8 @@ public class PortletItemPersistenceImpl
 
 		portletId = Objects.toString(portletId, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -724,14 +761,33 @@ public class PortletItemPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_P_C;
-				finderArgs = new Object[] {groupId, portletId, classNameId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId, portletId, classNameId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						portletId, classNameId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_P_C;
-			finderArgs = new Object[] {
-				groupId, portletId, classNameId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, portletId, classNameId, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					portletId, classNameId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<PortletItem> list = null;
@@ -1174,12 +1230,26 @@ public class PortletItemPersistenceImpl
 	public int countByG_P_C(long groupId, String portletId, long classNameId) {
 		portletId = Objects.toString(portletId, "");
 
-		FinderPath finderPath = _finderPathCountByG_P_C;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {groupId, portletId, classNameId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByG_P_C;
+
+		if (productionMode) {
+			finderArgs = new Object[] {groupId, portletId, classNameId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId, portletId,
+				classNameId
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -1331,10 +1401,22 @@ public class PortletItemPersistenceImpl
 		name = Objects.toString(name, "");
 		portletId = Objects.toString(portletId, "");
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, name, portletId, classNameId};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, name, portletId, classNameId
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId, name,
+					portletId, classNameId
+				};
+			}
 		}
 
 		Object result = null;
@@ -1495,14 +1577,26 @@ public class PortletItemPersistenceImpl
 		name = Objects.toString(name, "");
 		portletId = Objects.toString(portletId, "");
 
-		FinderPath finderPath = _finderPathCountByG_N_P_C;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			groupId, name, portletId, classNameId
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByG_N_P_C;
+
+		if (productionMode) {
+			finderArgs = new Object[] {groupId, name, portletId, classNameId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId, name,
+				portletId, classNameId
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -1998,6 +2092,8 @@ public class PortletItemPersistenceImpl
 		int start, int end, OrderByComparator<PortletItem> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -2006,12 +2102,29 @@ public class PortletItemPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<PortletItem> list = null;
@@ -2087,8 +2200,20 @@ public class PortletItemPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)FinderCacheUtil.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)FinderCacheUtil.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)FinderCacheUtil.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -2100,8 +2225,18 @@ public class PortletItemPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				FinderCacheUtil.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					FinderCacheUtil.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					FinderCacheUtil.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

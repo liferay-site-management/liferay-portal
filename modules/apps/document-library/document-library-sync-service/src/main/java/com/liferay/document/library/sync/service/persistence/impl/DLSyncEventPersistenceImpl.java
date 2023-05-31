@@ -23,6 +23,7 @@ import com.liferay.document.library.sync.service.persistence.DLSyncEventPersiste
 import com.liferay.document.library.sync.service.persistence.DLSyncEventUtil;
 import com.liferay.document.library.sync.service.persistence.impl.constants.DLSyncPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -166,11 +167,24 @@ public class DLSyncEventPersistenceImpl
 		OrderByComparator<DLSyncEvent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		finderPath = _finderPathWithPaginationFindByGtModifiedTime;
-		finderArgs = new Object[] {modifiedTime, start, end, orderByComparator};
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				modifiedTime, start, end, orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), modifiedTime,
+				start, end, orderByComparator
+			};
+		}
 
 		List<DLSyncEvent> list = null;
 
@@ -530,11 +544,25 @@ public class DLSyncEventPersistenceImpl
 	 */
 	@Override
 	public int countByGtModifiedTime(long modifiedTime) {
-		FinderPath finderPath = _finderPathWithPaginationCountByGtModifiedTime;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {modifiedTime};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathWithPaginationCountByGtModifiedTime;
+
+		if (productionMode) {
+			finderArgs = new Object[] {modifiedTime};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), modifiedTime
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -628,10 +656,19 @@ public class DLSyncEventPersistenceImpl
 	 */
 	@Override
 	public DLSyncEvent fetchByTypePK(long typePK, boolean useFinderCache) {
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {typePK};
+			if (productionMode) {
+				finderArgs = new Object[] {typePK};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), typePK
+				};
+			}
 		}
 
 		Object result = null;
@@ -722,11 +759,25 @@ public class DLSyncEventPersistenceImpl
 	 */
 	@Override
 	public int countByTypePK(long typePK) {
-		FinderPath finderPath = _finderPathCountByTypePK;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {typePK};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByTypePK;
+
+		if (productionMode) {
+			finderArgs = new Object[] {typePK};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), typePK
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1144,6 +1195,8 @@ public class DLSyncEventPersistenceImpl
 		int start, int end, OrderByComparator<DLSyncEvent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1152,12 +1205,29 @@ public class DLSyncEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<DLSyncEvent> list = null;
@@ -1233,8 +1303,20 @@ public class DLSyncEventPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -1246,8 +1328,18 @@ public class DLSyncEventPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

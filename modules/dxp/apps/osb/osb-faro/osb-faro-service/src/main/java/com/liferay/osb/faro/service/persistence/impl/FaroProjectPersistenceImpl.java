@@ -23,6 +23,7 @@ import com.liferay.osb.faro.service.persistence.FaroProjectPersistence;
 import com.liferay.osb.faro.service.persistence.FaroProjectUtil;
 import com.liferay.osb.faro.service.persistence.impl.constants.OSBFaroPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -147,10 +148,19 @@ public class FaroProjectPersistenceImpl
 	 */
 	@Override
 	public FaroProject fetchByGroupId(long groupId, boolean useFinderCache) {
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {groupId};
+			if (productionMode) {
+				finderArgs = new Object[] {groupId};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId
+				};
+			}
 		}
 
 		Object result = null;
@@ -243,11 +253,25 @@ public class FaroProjectPersistenceImpl
 	 */
 	@Override
 	public int countByGroupId(long groupId) {
-		FinderPath finderPath = _finderPathCountByGroupId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {groupId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByGroupId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {groupId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -360,6 +384,8 @@ public class FaroProjectPersistenceImpl
 		OrderByComparator<FaroProject> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -368,12 +394,31 @@ public class FaroProjectPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByUserId;
-				finderArgs = new Object[] {userId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {userId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUserId;
-			finderArgs = new Object[] {userId, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<FaroProject> list = null;
@@ -732,11 +777,25 @@ public class FaroProjectPersistenceImpl
 	 */
 	@Override
 	public int countByUserId(long userId) {
-		FinderPath finderPath = _finderPathCountByUserId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {userId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByUserId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {userId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -836,10 +895,19 @@ public class FaroProjectPersistenceImpl
 
 		corpProjectUuid = Objects.toString(corpProjectUuid, "");
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {corpProjectUuid};
+			if (productionMode) {
+				finderArgs = new Object[] {corpProjectUuid};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), corpProjectUuid
+				};
+			}
 		}
 
 		Object result = null;
@@ -948,11 +1016,25 @@ public class FaroProjectPersistenceImpl
 	public int countByCorpProjectUuid(String corpProjectUuid) {
 		corpProjectUuid = Objects.toString(corpProjectUuid, "");
 
-		FinderPath finderPath = _finderPathCountByCorpProjectUuid;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {corpProjectUuid};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByCorpProjectUuid;
+
+		if (productionMode) {
+			finderArgs = new Object[] {corpProjectUuid};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), corpProjectUuid
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1087,6 +1169,8 @@ public class FaroProjectPersistenceImpl
 
 		serverLocation = Objects.toString(serverLocation, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1095,14 +1179,32 @@ public class FaroProjectPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByServerLocation;
-				finderArgs = new Object[] {serverLocation};
+
+				if (productionMode) {
+					finderArgs = new Object[] {serverLocation};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						serverLocation
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByServerLocation;
-			finderArgs = new Object[] {
-				serverLocation, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					serverLocation, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), serverLocation,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<FaroProject> list = null;
@@ -1496,11 +1598,25 @@ public class FaroProjectPersistenceImpl
 	public int countByServerLocation(String serverLocation) {
 		serverLocation = Objects.toString(serverLocation, "");
 
-		FinderPath finderPath = _finderPathCountByServerLocation;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {serverLocation};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByServerLocation;
+
+		if (productionMode) {
+			finderArgs = new Object[] {serverLocation};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), serverLocation
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1614,10 +1730,19 @@ public class FaroProjectPersistenceImpl
 
 		weDeployKey = Objects.toString(weDeployKey, "");
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {weDeployKey};
+			if (productionMode) {
+				finderArgs = new Object[] {weDeployKey};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), weDeployKey
+				};
+			}
 		}
 
 		Object result = null;
@@ -1723,11 +1848,25 @@ public class FaroProjectPersistenceImpl
 	public int countByWeDeployKey(String weDeployKey) {
 		weDeployKey = Objects.toString(weDeployKey, "");
 
-		FinderPath finderPath = _finderPathCountByWeDeployKey;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {weDeployKey};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByWeDeployKey;
+
+		if (productionMode) {
+			finderArgs = new Object[] {weDeployKey};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), weDeployKey
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -2183,6 +2322,8 @@ public class FaroProjectPersistenceImpl
 		int start, int end, OrderByComparator<FaroProject> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -2191,12 +2332,29 @@ public class FaroProjectPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<FaroProject> list = null;
@@ -2272,8 +2430,20 @@ public class FaroProjectPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -2285,8 +2455,18 @@ public class FaroProjectPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

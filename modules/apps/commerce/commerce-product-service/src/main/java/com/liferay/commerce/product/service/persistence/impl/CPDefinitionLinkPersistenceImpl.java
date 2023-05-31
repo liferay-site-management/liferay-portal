@@ -23,6 +23,7 @@ import com.liferay.commerce.product.service.persistence.CPDefinitionLinkPersiste
 import com.liferay.commerce.product.service.persistence.CPDefinitionLinkUtil;
 import com.liferay.commerce.product.service.persistence.impl.constants.CommercePersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -190,25 +191,46 @@ public class CPDefinitionLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByUuid;
-				finderArgs = new Object[] {uuid};
+
+				if (productionMode) {
+					finderArgs = new Object[] {uuid};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), uuid
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUuid;
-			finderArgs = new Object[] {uuid, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {uuid, start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<CPDefinitionLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CPDefinitionLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (CPDefinitionLink cpDefinitionLink : list) {
-					if (!uuid.equals(cpDefinitionLink.getUuid())) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 cpDefinitionLink.getCtCollectionId())) ||
+						!uuid.equals(cpDefinitionLink.getUuid())) {
+
 						list = null;
 
 						break;
@@ -269,7 +291,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -593,13 +615,18 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByUuid;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByUuid;
-
 			finderArgs = new Object[] {uuid};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -634,9 +661,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -726,13 +751,20 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {uuid, groupId};
+		if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {uuid, groupId};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid, groupId
+				};
+			}
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs, this);
 		}
@@ -740,7 +772,10 @@ public class CPDefinitionLinkPersistenceImpl
 		if (result instanceof CPDefinitionLink) {
 			CPDefinitionLink cpDefinitionLink = (CPDefinitionLink)result;
 
-			if (!Objects.equals(uuid, cpDefinitionLink.getUuid()) ||
+			if ((!productionMode &&
+				 (CTCollectionThreadLocal.getCTCollectionId() !=
+					 cpDefinitionLink.getCtCollectionId())) ||
+				!Objects.equals(uuid, cpDefinitionLink.getUuid()) ||
 				(groupId != cpDefinitionLink.getGroupId())) {
 
 				result = null;
@@ -785,7 +820,7 @@ public class CPDefinitionLinkPersistenceImpl
 				List<CPDefinitionLink> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -849,13 +884,18 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByUUID_G;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByUUID_G;
-
 			finderArgs = new Object[] {uuid, groupId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid, groupId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -894,9 +934,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1010,27 +1048,48 @@ public class CPDefinitionLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByUuid_C;
-				finderArgs = new Object[] {uuid, companyId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {uuid, companyId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), uuid,
+						companyId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUuid_C;
-			finderArgs = new Object[] {
-				uuid, companyId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					uuid, companyId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid,
+					companyId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CPDefinitionLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CPDefinitionLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (CPDefinitionLink cpDefinitionLink : list) {
-					if (!uuid.equals(cpDefinitionLink.getUuid()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 cpDefinitionLink.getCtCollectionId())) ||
+						!uuid.equals(cpDefinitionLink.getUuid()) ||
 						(companyId != cpDefinitionLink.getCompanyId())) {
 
 						list = null;
@@ -1097,7 +1156,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1447,13 +1506,18 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByUuid_C;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByUuid_C;
-
 			finderArgs = new Object[] {uuid, companyId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid, companyId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1492,9 +1556,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1602,28 +1664,49 @@ public class CPDefinitionLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByCPDefinitionId;
-				finderArgs = new Object[] {CPDefinitionId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {CPDefinitionId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						CPDefinitionId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByCPDefinitionId;
-			finderArgs = new Object[] {
-				CPDefinitionId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					CPDefinitionId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), CPDefinitionId,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CPDefinitionLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CPDefinitionLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (CPDefinitionLink cpDefinitionLink : list) {
-					if (CPDefinitionId !=
-							cpDefinitionLink.getCPDefinitionId()) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 cpDefinitionLink.getCtCollectionId())) ||
+						(CPDefinitionId !=
+							cpDefinitionLink.getCPDefinitionId())) {
 
 						list = null;
 
@@ -1674,7 +1757,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1992,13 +2075,18 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByCPDefinitionId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByCPDefinitionId;
-
 			finderArgs = new Object[] {CPDefinitionId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), CPDefinitionId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -2022,9 +2110,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2126,27 +2212,48 @@ public class CPDefinitionLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByCProductId;
-				finderArgs = new Object[] {CProductId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {CProductId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), CProductId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByCProductId;
-			finderArgs = new Object[] {
-				CProductId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					CProductId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), CProductId,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CPDefinitionLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CPDefinitionLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (CPDefinitionLink cpDefinitionLink : list) {
-					if (CProductId != cpDefinitionLink.getCProductId()) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 cpDefinitionLink.getCtCollectionId())) ||
+						(CProductId != cpDefinitionLink.getCProductId())) {
+
 						list = null;
 
 						break;
@@ -2196,7 +2303,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -2512,13 +2619,18 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByCProductId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByCProductId;
-
 			finderArgs = new Object[] {CProductId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), CProductId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -2542,9 +2654,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2654,27 +2764,48 @@ public class CPDefinitionLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByCPD_T;
-				finderArgs = new Object[] {CPDefinitionId, type};
+
+				if (productionMode) {
+					finderArgs = new Object[] {CPDefinitionId, type};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						CPDefinitionId, type
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByCPD_T;
-			finderArgs = new Object[] {
-				CPDefinitionId, type, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					CPDefinitionId, type, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), CPDefinitionId,
+					type, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CPDefinitionLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CPDefinitionLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (CPDefinitionLink cpDefinitionLink : list) {
-					if ((CPDefinitionId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 cpDefinitionLink.getCtCollectionId())) ||
+						(CPDefinitionId !=
 							cpDefinitionLink.getCPDefinitionId()) ||
 						!type.equals(cpDefinitionLink.getType())) {
 
@@ -2742,7 +2873,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -3092,13 +3223,19 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByCPD_T;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByCPD_T;
-
 			finderArgs = new Object[] {CPDefinitionId, type};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), CPDefinitionId,
+				type
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -3137,9 +3274,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -3251,27 +3386,48 @@ public class CPDefinitionLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByCPD_S;
-				finderArgs = new Object[] {CPDefinitionId, status};
+
+				if (productionMode) {
+					finderArgs = new Object[] {CPDefinitionId, status};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						CPDefinitionId, status
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByCPD_S;
-			finderArgs = new Object[] {
-				CPDefinitionId, status, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					CPDefinitionId, status, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), CPDefinitionId,
+					status, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CPDefinitionLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CPDefinitionLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (CPDefinitionLink cpDefinitionLink : list) {
-					if ((CPDefinitionId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 cpDefinitionLink.getCtCollectionId())) ||
+						(CPDefinitionId !=
 							cpDefinitionLink.getCPDefinitionId()) ||
 						(status != cpDefinitionLink.getStatus())) {
 
@@ -3328,7 +3484,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -3663,13 +3819,19 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByCPD_S;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByCPD_S;
-
 			finderArgs = new Object[] {CPDefinitionId, status};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), CPDefinitionId,
+				status
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -3697,9 +3859,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -3810,27 +3970,48 @@ public class CPDefinitionLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByCP_T;
-				finderArgs = new Object[] {CProductId, type};
+
+				if (productionMode) {
+					finderArgs = new Object[] {CProductId, type};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), CProductId,
+						type
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByCP_T;
-			finderArgs = new Object[] {
-				CProductId, type, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					CProductId, type, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), CProductId,
+					type, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CPDefinitionLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CPDefinitionLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (CPDefinitionLink cpDefinitionLink : list) {
-					if ((CProductId != cpDefinitionLink.getCProductId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 cpDefinitionLink.getCtCollectionId())) ||
+						(CProductId != cpDefinitionLink.getCProductId()) ||
 						!type.equals(cpDefinitionLink.getType())) {
 
 						list = null;
@@ -3897,7 +4078,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -4247,13 +4428,18 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByCP_T;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByCP_T;
-
 			finderArgs = new Object[] {CProductId, type};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), CProductId, type
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -4292,9 +4478,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -4406,27 +4590,48 @@ public class CPDefinitionLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByCP_S;
-				finderArgs = new Object[] {CProductId, status};
+
+				if (productionMode) {
+					finderArgs = new Object[] {CProductId, status};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), CProductId,
+						status
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByCP_S;
-			finderArgs = new Object[] {
-				CProductId, status, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					CProductId, status, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), CProductId,
+					status, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CPDefinitionLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CPDefinitionLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (CPDefinitionLink cpDefinitionLink : list) {
-					if ((CProductId != cpDefinitionLink.getCProductId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 cpDefinitionLink.getCtCollectionId())) ||
+						(CProductId != cpDefinitionLink.getCProductId()) ||
 						(status != cpDefinitionLink.getStatus())) {
 
 						list = null;
@@ -4482,7 +4687,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -4817,13 +5022,18 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByCP_S;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByCP_S;
-
 			finderArgs = new Object[] {CProductId, status};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), CProductId, status
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -4851,9 +5061,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -4959,19 +5167,31 @@ public class CPDefinitionLinkPersistenceImpl
 		Object[] finderArgs = null;
 
 		finderPath = _finderPathWithPaginationFindByLtD_S;
-		finderArgs = new Object[] {
-			_getTime(displayDate), status, start, end, orderByComparator
-		};
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				_getTime(displayDate), status, start, end, orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				_getTime(displayDate), status, start, end, orderByComparator
+			};
+		}
 
 		List<CPDefinitionLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CPDefinitionLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (CPDefinitionLink cpDefinitionLink : list) {
-					if ((displayDate.getTime() <=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 cpDefinitionLink.getCtCollectionId())) ||
+						(displayDate.getTime() <=
 							cpDefinitionLink.getDisplayDate(
 							).getTime()) ||
 						(status != cpDefinitionLink.getStatus())) {
@@ -5040,7 +5260,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -5386,13 +5606,19 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathWithPaginationCountByLtD_S;
+
 		if (productionMode) {
-			finderPath = _finderPathWithPaginationCountByLtD_S;
-
 			finderArgs = new Object[] {_getTime(displayDate), status};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				_getTime(displayDate), status
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -5431,9 +5657,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -5542,19 +5766,31 @@ public class CPDefinitionLinkPersistenceImpl
 		Object[] finderArgs = null;
 
 		finderPath = _finderPathWithPaginationFindByLtE_S;
-		finderArgs = new Object[] {
-			_getTime(expirationDate), status, start, end, orderByComparator
-		};
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				_getTime(expirationDate), status, start, end, orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				_getTime(expirationDate), status, start, end, orderByComparator
+			};
+		}
 
 		List<CPDefinitionLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CPDefinitionLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (CPDefinitionLink cpDefinitionLink : list) {
-					if ((expirationDate.getTime() <=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 cpDefinitionLink.getCtCollectionId())) ||
+						(expirationDate.getTime() <=
 							cpDefinitionLink.getExpirationDate(
 							).getTime()) ||
 						(status != cpDefinitionLink.getStatus())) {
@@ -5623,7 +5859,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -5969,13 +6205,19 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathWithPaginationCountByLtE_S;
+
 		if (productionMode) {
-			finderPath = _finderPathWithPaginationCountByLtE_S;
-
 			finderArgs = new Object[] {_getTime(expirationDate), status};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				_getTime(expirationDate), status
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -6014,9 +6256,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -6120,13 +6360,21 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {CPDefinitionId, CProductId, type};
+		if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {CPDefinitionId, CProductId, type};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), CPDefinitionId,
+					CProductId, type
+				};
+			}
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByC_C_T, finderArgs, this);
 		}
@@ -6134,7 +6382,10 @@ public class CPDefinitionLinkPersistenceImpl
 		if (result instanceof CPDefinitionLink) {
 			CPDefinitionLink cpDefinitionLink = (CPDefinitionLink)result;
 
-			if ((CPDefinitionId != cpDefinitionLink.getCPDefinitionId()) ||
+			if ((!productionMode &&
+				 (CTCollectionThreadLocal.getCTCollectionId() !=
+					 cpDefinitionLink.getCtCollectionId())) ||
+				(CPDefinitionId != cpDefinitionLink.getCPDefinitionId()) ||
 				(CProductId != cpDefinitionLink.getCProductId()) ||
 				!Objects.equals(type, cpDefinitionLink.getType())) {
 
@@ -6184,7 +6435,7 @@ public class CPDefinitionLinkPersistenceImpl
 				List<CPDefinitionLink> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_C_T, finderArgs, list);
 					}
@@ -6252,13 +6503,19 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByC_C_T;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByC_C_T;
-
 			finderArgs = new Object[] {CPDefinitionId, CProductId, type};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), CPDefinitionId,
+				CProductId, type
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -6301,9 +6558,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -6427,27 +6682,48 @@ public class CPDefinitionLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByCPD_T_S;
-				finderArgs = new Object[] {CPDefinitionId, type, status};
+
+				if (productionMode) {
+					finderArgs = new Object[] {CPDefinitionId, type, status};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						CPDefinitionId, type, status
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByCPD_T_S;
-			finderArgs = new Object[] {
-				CPDefinitionId, type, status, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					CPDefinitionId, type, status, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), CPDefinitionId,
+					type, status, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CPDefinitionLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CPDefinitionLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (CPDefinitionLink cpDefinitionLink : list) {
-					if ((CPDefinitionId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 cpDefinitionLink.getCtCollectionId())) ||
+						(CPDefinitionId !=
 							cpDefinitionLink.getCPDefinitionId()) ||
 						!type.equals(cpDefinitionLink.getType()) ||
 						(status != cpDefinitionLink.getStatus())) {
@@ -6520,7 +6796,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -6888,13 +7164,19 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByCPD_T_S;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByCPD_T_S;
-
 			finderArgs = new Object[] {CPDefinitionId, type, status};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), CPDefinitionId,
+				type, status
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -6937,9 +7219,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -7063,27 +7343,48 @@ public class CPDefinitionLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByCP_T_S;
-				finderArgs = new Object[] {CProductId, type, status};
+
+				if (productionMode) {
+					finderArgs = new Object[] {CProductId, type, status};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), CProductId,
+						type, status
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByCP_T_S;
-			finderArgs = new Object[] {
-				CProductId, type, status, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					CProductId, type, status, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), CProductId,
+					type, status, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CPDefinitionLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CPDefinitionLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (CPDefinitionLink cpDefinitionLink : list) {
-					if ((CProductId != cpDefinitionLink.getCProductId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 cpDefinitionLink.getCtCollectionId())) ||
+						(CProductId != cpDefinitionLink.getCProductId()) ||
 						!type.equals(cpDefinitionLink.getType()) ||
 						(status != cpDefinitionLink.getStatus())) {
 
@@ -7155,7 +7456,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -7523,13 +7824,19 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByCP_T_S;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByCP_T_S;
-
 			finderArgs = new Object[] {CProductId, type, status};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), CProductId, type,
+				status
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -7572,9 +7879,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -7939,6 +8244,8 @@ public class CPDefinitionLinkPersistenceImpl
 				cpDefinitionLink.setNew(false);
 			}
 
+			clearCache();
+
 			cpDefinitionLink.resetOriginalValues();
 
 			return cpDefinitionLink;
@@ -8213,19 +8520,36 @@ public class CPDefinitionLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<CPDefinitionLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CPDefinitionLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
@@ -8263,7 +8587,7 @@ public class CPDefinitionLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -8305,6 +8629,12 @@ public class CPDefinitionLinkPersistenceImpl
 			count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -8319,6 +8649,14 @@ public class CPDefinitionLinkPersistenceImpl
 				if (productionMode) {
 					finderCache.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
 				}
 			}
 			catch (Exception exception) {

@@ -23,6 +23,7 @@ import com.liferay.commerce.shop.by.diagram.service.persistence.CSDiagramEntryPe
 import com.liferay.commerce.shop.by.diagram.service.persistence.CSDiagramEntryUtil;
 import com.liferay.commerce.shop.by.diagram.service.persistence.impl.constants.CommercePersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -187,27 +188,50 @@ public class CSDiagramEntryPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByCPDefinitionId;
-				finderArgs = new Object[] {CPDefinitionId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {CPDefinitionId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						CPDefinitionId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByCPDefinitionId;
-			finderArgs = new Object[] {
-				CPDefinitionId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					CPDefinitionId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), CPDefinitionId,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CSDiagramEntry> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CSDiagramEntry>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (CSDiagramEntry csDiagramEntry : list) {
-					if (CPDefinitionId != csDiagramEntry.getCPDefinitionId()) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 csDiagramEntry.getCtCollectionId())) ||
+						(CPDefinitionId !=
+							csDiagramEntry.getCPDefinitionId())) {
+
 						list = null;
 
 						break;
@@ -257,7 +281,7 @@ public class CSDiagramEntryPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -573,13 +597,18 @@ public class CSDiagramEntryPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByCPDefinitionId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByCPDefinitionId;
-
 			finderArgs = new Object[] {CPDefinitionId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), CPDefinitionId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -603,9 +632,7 @@ public class CSDiagramEntryPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -707,27 +734,49 @@ public class CSDiagramEntryPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByCPInstanceId;
-				finderArgs = new Object[] {CPInstanceId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {CPInstanceId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						CPInstanceId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByCPInstanceId;
-			finderArgs = new Object[] {
-				CPInstanceId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					CPInstanceId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), CPInstanceId,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CSDiagramEntry> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CSDiagramEntry>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (CSDiagramEntry csDiagramEntry : list) {
-					if (CPInstanceId != csDiagramEntry.getCPInstanceId()) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 csDiagramEntry.getCtCollectionId())) ||
+						(CPInstanceId != csDiagramEntry.getCPInstanceId())) {
+
 						list = null;
 
 						break;
@@ -777,7 +826,7 @@ public class CSDiagramEntryPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1091,13 +1140,18 @@ public class CSDiagramEntryPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByCPInstanceId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByCPInstanceId;
-
 			finderArgs = new Object[] {CPInstanceId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), CPInstanceId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1121,9 +1175,7 @@ public class CSDiagramEntryPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1225,27 +1277,48 @@ public class CSDiagramEntryPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByCProductId;
-				finderArgs = new Object[] {CProductId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {CProductId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), CProductId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByCProductId;
-			finderArgs = new Object[] {
-				CProductId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					CProductId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), CProductId,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CSDiagramEntry> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CSDiagramEntry>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (CSDiagramEntry csDiagramEntry : list) {
-					if (CProductId != csDiagramEntry.getCProductId()) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 csDiagramEntry.getCtCollectionId())) ||
+						(CProductId != csDiagramEntry.getCProductId())) {
+
 						list = null;
 
 						break;
@@ -1295,7 +1368,7 @@ public class CSDiagramEntryPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1606,13 +1679,18 @@ public class CSDiagramEntryPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByCProductId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByCProductId;
-
 			finderArgs = new Object[] {CProductId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), CProductId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1636,9 +1714,7 @@ public class CSDiagramEntryPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1725,13 +1801,21 @@ public class CSDiagramEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {CPDefinitionId, sequence};
+		if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {CPDefinitionId, sequence};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), CPDefinitionId,
+					sequence
+				};
+			}
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByCPDI_S, finderArgs, this);
 		}
@@ -1739,7 +1823,10 @@ public class CSDiagramEntryPersistenceImpl
 		if (result instanceof CSDiagramEntry) {
 			CSDiagramEntry csDiagramEntry = (CSDiagramEntry)result;
 
-			if ((CPDefinitionId != csDiagramEntry.getCPDefinitionId()) ||
+			if ((!productionMode &&
+				 (CTCollectionThreadLocal.getCTCollectionId() !=
+					 csDiagramEntry.getCtCollectionId())) ||
+				(CPDefinitionId != csDiagramEntry.getCPDefinitionId()) ||
 				!Objects.equals(sequence, csDiagramEntry.getSequence())) {
 
 				result = null;
@@ -1784,7 +1871,7 @@ public class CSDiagramEntryPersistenceImpl
 				List<CSDiagramEntry> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByCPDI_S, finderArgs, list);
 					}
@@ -1848,13 +1935,19 @@ public class CSDiagramEntryPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByCPDI_S;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByCPDI_S;
-
 			finderArgs = new Object[] {CPDefinitionId, sequence};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), CPDefinitionId,
+				sequence
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1893,9 +1986,7 @@ public class CSDiagramEntryPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2220,6 +2311,8 @@ public class CSDiagramEntryPersistenceImpl
 				csDiagramEntry.setNew(false);
 			}
 
+			clearCache();
+
 			csDiagramEntry.resetOriginalValues();
 
 			return csDiagramEntry;
@@ -2493,19 +2586,36 @@ public class CSDiagramEntryPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<CSDiagramEntry> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CSDiagramEntry>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
@@ -2543,7 +2653,7 @@ public class CSDiagramEntryPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -2585,6 +2695,12 @@ public class CSDiagramEntryPersistenceImpl
 			count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -2599,6 +2715,14 @@ public class CSDiagramEntryPersistenceImpl
 				if (productionMode) {
 					finderCache.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
 				}
 			}
 			catch (Exception exception) {

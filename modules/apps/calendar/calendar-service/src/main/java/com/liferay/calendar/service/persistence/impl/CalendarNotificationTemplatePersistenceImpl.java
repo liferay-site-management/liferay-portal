@@ -23,6 +23,7 @@ import com.liferay.calendar.service.persistence.CalendarNotificationTemplatePers
 import com.liferay.calendar.service.persistence.CalendarNotificationTemplateUtil;
 import com.liferay.calendar.service.persistence.impl.constants.CalendarPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -191,19 +192,36 @@ public class CalendarNotificationTemplatePersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByUuid;
-				finderArgs = new Object[] {uuid};
+
+				if (productionMode) {
+					finderArgs = new Object[] {uuid};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), uuid
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUuid;
-			finderArgs = new Object[] {uuid, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {uuid, start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<CalendarNotificationTemplate> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CalendarNotificationTemplate>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -211,7 +229,12 @@ public class CalendarNotificationTemplatePersistenceImpl
 				for (CalendarNotificationTemplate calendarNotificationTemplate :
 						list) {
 
-					if (!uuid.equals(calendarNotificationTemplate.getUuid())) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 calendarNotificationTemplate.
+								 getCtCollectionId())) ||
+						!uuid.equals(calendarNotificationTemplate.getUuid())) {
+
 						list = null;
 
 						break;
@@ -272,7 +295,7 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -605,13 +628,18 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByUuid;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByUuid;
-
 			finderArgs = new Object[] {uuid};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -646,9 +674,7 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -741,13 +767,20 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {uuid, groupId};
+		if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {uuid, groupId};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid, groupId
+				};
+			}
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs, this);
 		}
@@ -756,7 +789,10 @@ public class CalendarNotificationTemplatePersistenceImpl
 			CalendarNotificationTemplate calendarNotificationTemplate =
 				(CalendarNotificationTemplate)result;
 
-			if (!Objects.equals(uuid, calendarNotificationTemplate.getUuid()) ||
+			if ((!productionMode &&
+				 (CTCollectionThreadLocal.getCTCollectionId() !=
+					 calendarNotificationTemplate.getCtCollectionId())) ||
+				!Objects.equals(uuid, calendarNotificationTemplate.getUuid()) ||
 				(groupId != calendarNotificationTemplate.getGroupId())) {
 
 				result = null;
@@ -801,7 +837,7 @@ public class CalendarNotificationTemplatePersistenceImpl
 				List<CalendarNotificationTemplate> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -868,13 +904,18 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByUUID_G;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByUUID_G;
-
 			finderArgs = new Object[] {uuid, groupId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid, groupId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -913,9 +954,7 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1031,21 +1070,39 @@ public class CalendarNotificationTemplatePersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByUuid_C;
-				finderArgs = new Object[] {uuid, companyId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {uuid, companyId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), uuid,
+						companyId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUuid_C;
-			finderArgs = new Object[] {
-				uuid, companyId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					uuid, companyId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid,
+					companyId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CalendarNotificationTemplate> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CalendarNotificationTemplate>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -1053,7 +1110,11 @@ public class CalendarNotificationTemplatePersistenceImpl
 				for (CalendarNotificationTemplate calendarNotificationTemplate :
 						list) {
 
-					if (!uuid.equals(calendarNotificationTemplate.getUuid()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 calendarNotificationTemplate.
+								 getCtCollectionId())) ||
+						!uuid.equals(calendarNotificationTemplate.getUuid()) ||
 						(companyId !=
 							calendarNotificationTemplate.getCompanyId())) {
 
@@ -1121,7 +1182,7 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1474,13 +1535,18 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByUuid_C;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByUuid_C;
-
 			finderArgs = new Object[] {uuid, companyId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid, companyId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1519,9 +1585,7 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1631,21 +1695,38 @@ public class CalendarNotificationTemplatePersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByCalendarId;
-				finderArgs = new Object[] {calendarId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {calendarId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), calendarId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByCalendarId;
-			finderArgs = new Object[] {
-				calendarId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					calendarId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), calendarId,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CalendarNotificationTemplate> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CalendarNotificationTemplate>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -1653,8 +1734,12 @@ public class CalendarNotificationTemplatePersistenceImpl
 				for (CalendarNotificationTemplate calendarNotificationTemplate :
 						list) {
 
-					if (calendarId !=
-							calendarNotificationTemplate.getCalendarId()) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 calendarNotificationTemplate.
+								 getCtCollectionId())) ||
+						(calendarId !=
+							calendarNotificationTemplate.getCalendarId())) {
 
 						list = null;
 
@@ -1705,7 +1790,7 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -2025,13 +2110,18 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByCalendarId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByCalendarId;
-
 			finderArgs = new Object[] {calendarId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), calendarId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -2055,9 +2145,7 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2161,15 +2249,23 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {
-				calendarId, notificationType, notificationTemplateType
-			};
+		if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {
+					calendarId, notificationType, notificationTemplateType
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), calendarId,
+					notificationType, notificationTemplateType
+				};
+			}
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByC_NT_NTT, finderArgs, this);
 		}
@@ -2178,7 +2274,10 @@ public class CalendarNotificationTemplatePersistenceImpl
 			CalendarNotificationTemplate calendarNotificationTemplate =
 				(CalendarNotificationTemplate)result;
 
-			if ((calendarId != calendarNotificationTemplate.getCalendarId()) ||
+			if ((!productionMode &&
+				 (CTCollectionThreadLocal.getCTCollectionId() !=
+					 calendarNotificationTemplate.getCtCollectionId())) ||
+				(calendarId != calendarNotificationTemplate.getCalendarId()) ||
 				!Objects.equals(
 					notificationType,
 					calendarNotificationTemplate.getNotificationType()) ||
@@ -2244,7 +2343,7 @@ public class CalendarNotificationTemplatePersistenceImpl
 				List<CalendarNotificationTemplate> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByC_NT_NTT, finderArgs, list);
 					}
@@ -2254,7 +2353,7 @@ public class CalendarNotificationTemplatePersistenceImpl
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
+							if (!useFinderCache) {
 								finderArgs = new Object[] {
 									calendarId, notificationType,
 									notificationTemplateType
@@ -2338,15 +2437,21 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 		Long count = null;
 
-		if (productionMode) {
-			finderPath = _finderPathCountByC_NT_NTT;
+		finderPath = _finderPathCountByC_NT_NTT;
 
+		if (productionMode) {
 			finderArgs = new Object[] {
 				calendarId, notificationType, notificationTemplateType
 			};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), calendarId,
+				notificationType, notificationTemplateType
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -2400,9 +2505,7 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2813,6 +2916,8 @@ public class CalendarNotificationTemplatePersistenceImpl
 				calendarNotificationTemplate.setNew(false);
 			}
 
+			clearCache();
+
 			calendarNotificationTemplate.resetOriginalValues();
 
 			return calendarNotificationTemplate;
@@ -3101,19 +3206,36 @@ public class CalendarNotificationTemplatePersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<CalendarNotificationTemplate> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<CalendarNotificationTemplate>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
@@ -3152,7 +3274,7 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -3196,6 +3318,12 @@ public class CalendarNotificationTemplatePersistenceImpl
 			count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -3211,6 +3339,14 @@ public class CalendarNotificationTemplatePersistenceImpl
 				if (productionMode) {
 					finderCache.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
 				}
 			}
 			catch (Exception exception) {

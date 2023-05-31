@@ -23,6 +23,7 @@ import com.liferay.fragment.service.persistence.FragmentEntryLinkPersistence;
 import com.liferay.fragment.service.persistence.FragmentEntryLinkUtil;
 import com.liferay.fragment.service.persistence.impl.constants.FragmentPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -190,25 +191,46 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByUuid;
-				finderArgs = new Object[] {uuid};
+
+				if (productionMode) {
+					finderArgs = new Object[] {uuid};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), uuid
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUuid;
-			finderArgs = new Object[] {uuid, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {uuid, start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if (!uuid.equals(fragmentEntryLink.getUuid())) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						!uuid.equals(fragmentEntryLink.getUuid())) {
+
 						list = null;
 
 						break;
@@ -269,7 +291,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -594,13 +616,18 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByUuid;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByUuid;
-
 			finderArgs = new Object[] {uuid};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -635,9 +662,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -727,13 +752,20 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {uuid, groupId};
+		if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {uuid, groupId};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid, groupId
+				};
+			}
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByUUID_G, finderArgs, this);
 		}
@@ -741,7 +773,10 @@ public class FragmentEntryLinkPersistenceImpl
 		if (result instanceof FragmentEntryLink) {
 			FragmentEntryLink fragmentEntryLink = (FragmentEntryLink)result;
 
-			if (!Objects.equals(uuid, fragmentEntryLink.getUuid()) ||
+			if ((!productionMode &&
+				 (CTCollectionThreadLocal.getCTCollectionId() !=
+					 fragmentEntryLink.getCtCollectionId())) ||
+				!Objects.equals(uuid, fragmentEntryLink.getUuid()) ||
 				(groupId != fragmentEntryLink.getGroupId())) {
 
 				result = null;
@@ -786,7 +821,7 @@ public class FragmentEntryLinkPersistenceImpl
 				List<FragmentEntryLink> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByUUID_G, finderArgs, list);
 					}
@@ -850,13 +885,18 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByUUID_G;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByUUID_G;
-
 			finderArgs = new Object[] {uuid, groupId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid, groupId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -895,9 +935,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1011,27 +1049,48 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByUuid_C;
-				finderArgs = new Object[] {uuid, companyId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {uuid, companyId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), uuid,
+						companyId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUuid_C;
-			finderArgs = new Object[] {
-				uuid, companyId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					uuid, companyId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid,
+					companyId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if (!uuid.equals(fragmentEntryLink.getUuid()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						!uuid.equals(fragmentEntryLink.getUuid()) ||
 						(companyId != fragmentEntryLink.getCompanyId())) {
 
 						list = null;
@@ -1098,7 +1157,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1448,13 +1507,18 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByUuid_C;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByUuid_C;
-
 			finderArgs = new Object[] {uuid, companyId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid, companyId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1493,9 +1557,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1602,25 +1664,48 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByGroupId;
-				finderArgs = new Object[] {groupId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByGroupId;
-			finderArgs = new Object[] {groupId, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if (groupId != fragmentEntryLink.getGroupId()) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						(groupId != fragmentEntryLink.getGroupId())) {
+
 						list = null;
 
 						break;
@@ -1670,7 +1755,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1983,13 +2068,18 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByGroupId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByGroupId;
-
 			finderArgs = new Object[] {groupId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -2013,9 +2103,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2118,28 +2206,49 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByFragmentEntryId;
-				finderArgs = new Object[] {fragmentEntryId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {fragmentEntryId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						fragmentEntryId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByFragmentEntryId;
-			finderArgs = new Object[] {
-				fragmentEntryId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					fragmentEntryId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					fragmentEntryId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if (fragmentEntryId !=
-							fragmentEntryLink.getFragmentEntryId()) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						(fragmentEntryId !=
+							fragmentEntryLink.getFragmentEntryId())) {
 
 						list = null;
 
@@ -2190,7 +2299,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -2576,27 +2685,49 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderArgs = new Object[] {StringUtil.merge(fragmentEntryIds)};
+			if (useFinderCache) {
+				if (productionMode) {
+					finderArgs = new Object[] {
+						StringUtil.merge(fragmentEntryIds)
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						StringUtil.merge(fragmentEntryIds)
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {
-				StringUtil.merge(fragmentEntryIds), start, end,
-				orderByComparator
-			};
+		else if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {
+					StringUtil.merge(fragmentEntryIds), start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					StringUtil.merge(fragmentEntryIds), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				_finderPathWithPaginationFindByFragmentEntryId, finderArgs,
 				this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if (!ArrayUtil.contains(
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						!ArrayUtil.contains(
 							fragmentEntryIds,
 							fragmentEntryLink.getFragmentEntryId())) {
 
@@ -2650,7 +2781,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(
 						_finderPathWithPaginationFindByFragmentEntryId,
 						finderArgs, list);
@@ -2699,13 +2830,18 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByFragmentEntryId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByFragmentEntryId;
-
 			finderArgs = new Object[] {fragmentEntryId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), fragmentEntryId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -2729,9 +2865,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2768,11 +2902,16 @@ public class FragmentEntryLinkPersistenceImpl
 
 		if (productionMode) {
 			finderArgs = new Object[] {StringUtil.merge(fragmentEntryIds)};
-
-			count = (Long)finderCache.getResult(
-				_finderPathWithPaginationCountByFragmentEntryId, finderArgs,
-				this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				StringUtil.merge(fragmentEntryIds)
+			};
+		}
+
+		count = (Long)finderCache.getResult(
+			_finderPathWithPaginationCountByFragmentEntryId, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler();
@@ -2805,11 +2944,9 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(
-						_finderPathWithPaginationCountByFragmentEntryId,
-						finderArgs, count);
-				}
+				finderCache.putResult(
+					_finderPathWithPaginationCountByFragmentEntryId, finderArgs,
+					count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2918,27 +3055,47 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByRendererKey;
-				finderArgs = new Object[] {rendererKey};
+
+				if (productionMode) {
+					finderArgs = new Object[] {rendererKey};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), rendererKey
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByRendererKey;
-			finderArgs = new Object[] {
-				rendererKey, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					rendererKey, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), rendererKey,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if (!rendererKey.equals(
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						!rendererKey.equals(
 							fragmentEntryLink.getRendererKey())) {
 
 						list = null;
@@ -3001,7 +3158,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -3334,13 +3491,18 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByRendererKey;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByRendererKey;
-
 			finderArgs = new Object[] {rendererKey};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), rendererKey
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -3375,9 +3537,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -3489,27 +3649,48 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_F;
-				finderArgs = new Object[] {groupId, fragmentEntryId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId, fragmentEntryId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						fragmentEntryId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_F;
-			finderArgs = new Object[] {
-				groupId, fragmentEntryId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, fragmentEntryId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					fragmentEntryId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if ((groupId != fragmentEntryLink.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						(groupId != fragmentEntryLink.getGroupId()) ||
 						(fragmentEntryId !=
 							fragmentEntryLink.getFragmentEntryId())) {
 
@@ -3566,7 +3747,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -3902,13 +4083,19 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByG_F;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByG_F;
-
 			finderArgs = new Object[] {groupId, fragmentEntryId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				fragmentEntryId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -3936,9 +4123,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -4046,27 +4231,48 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_P;
-				finderArgs = new Object[] {groupId, plid};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId, plid};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						plid
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_P;
-			finderArgs = new Object[] {
-				groupId, plid, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, plid, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId, plid,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if ((groupId != fragmentEntryLink.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						(groupId != fragmentEntryLink.getGroupId()) ||
 						(plid != fragmentEntryLink.getPlid())) {
 
 						list = null;
@@ -4122,7 +4328,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -4457,13 +4663,18 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByG_P;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByG_P;
-
 			finderArgs = new Object[] {groupId, plid};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId, plid
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -4491,9 +4702,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -4607,27 +4816,48 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByC_R;
-				finderArgs = new Object[] {companyId, rendererKey};
+
+				if (productionMode) {
+					finderArgs = new Object[] {companyId, rendererKey};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), companyId,
+						rendererKey
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByC_R;
-			finderArgs = new Object[] {
-				companyId, rendererKey, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, rendererKey, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					rendererKey, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if ((companyId != fragmentEntryLink.getCompanyId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						(companyId != fragmentEntryLink.getCompanyId()) ||
 						!rendererKey.equals(
 							fragmentEntryLink.getRendererKey())) {
 
@@ -4695,7 +4925,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -5118,28 +5348,48 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderArgs = new Object[] {
-					companyId, StringUtil.merge(rendererKeys)
-				};
+			if (useFinderCache) {
+				if (productionMode) {
+					finderArgs = new Object[] {
+						companyId, StringUtil.merge(rendererKeys)
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), companyId,
+						StringUtil.merge(rendererKeys)
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {
-				companyId, StringUtil.merge(rendererKeys), start, end,
-				orderByComparator
-			};
+		else if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, StringUtil.merge(rendererKeys), start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					StringUtil.merge(rendererKeys), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				_finderPathWithPaginationFindByC_R, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if ((companyId != fragmentEntryLink.getCompanyId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						(companyId != fragmentEntryLink.getCompanyId()) ||
 						!ArrayUtil.contains(
 							rendererKeys, fragmentEntryLink.getRendererKey())) {
 
@@ -5214,7 +5464,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(
 						_finderPathWithPaginationFindByC_R, finderArgs, list);
 				}
@@ -5266,13 +5516,19 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByC_R;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByC_R;
-
 			finderArgs = new Object[] {companyId, rendererKey};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				rendererKey
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -5311,9 +5567,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -5357,10 +5611,16 @@ public class FragmentEntryLinkPersistenceImpl
 			finderArgs = new Object[] {
 				companyId, StringUtil.merge(rendererKeys)
 			};
-
-			count = (Long)finderCache.getResult(
-				_finderPathWithPaginationCountByC_R, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				StringUtil.merge(rendererKeys)
+			};
+		}
+
+		count = (Long)finderCache.getResult(
+			_finderPathWithPaginationCountByC_R, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler();
@@ -5414,10 +5674,8 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(
-						_finderPathWithPaginationCountByC_R, finderArgs, count);
-				}
+				finderCache.putResult(
+					_finderPathWithPaginationCountByC_R, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -5533,27 +5791,48 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByF_D;
-				finderArgs = new Object[] {fragmentEntryId, deleted};
+
+				if (productionMode) {
+					finderArgs = new Object[] {fragmentEntryId, deleted};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						fragmentEntryId, deleted
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByF_D;
-			finderArgs = new Object[] {
-				fragmentEntryId, deleted, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					fragmentEntryId, deleted, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					fragmentEntryId, deleted, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if ((fragmentEntryId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						(fragmentEntryId !=
 							fragmentEntryLink.getFragmentEntryId()) ||
 						(deleted != fragmentEntryLink.isDeleted())) {
 
@@ -5610,7 +5889,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -6016,28 +6295,48 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderArgs = new Object[] {
-					StringUtil.merge(fragmentEntryIds), deleted
-				};
+			if (useFinderCache) {
+				if (productionMode) {
+					finderArgs = new Object[] {
+						StringUtil.merge(fragmentEntryIds), deleted
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						StringUtil.merge(fragmentEntryIds), deleted
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {
-				StringUtil.merge(fragmentEntryIds), deleted, start, end,
-				orderByComparator
-			};
+		else if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {
+					StringUtil.merge(fragmentEntryIds), deleted, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					StringUtil.merge(fragmentEntryIds), deleted, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				_finderPathWithPaginationFindByF_D, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if (!ArrayUtil.contains(
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						!ArrayUtil.contains(
 							fragmentEntryIds,
 							fragmentEntryLink.getFragmentEntryId()) ||
 						(deleted != fragmentEntryLink.isDeleted())) {
@@ -6100,7 +6399,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(
 						_finderPathWithPaginationFindByF_D, finderArgs, list);
 				}
@@ -6150,13 +6449,19 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByF_D;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByF_D;
-
 			finderArgs = new Object[] {fragmentEntryId, deleted};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), fragmentEntryId,
+				deleted
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -6184,9 +6489,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -6226,10 +6529,16 @@ public class FragmentEntryLinkPersistenceImpl
 			finderArgs = new Object[] {
 				StringUtil.merge(fragmentEntryIds), deleted
 			};
-
-			count = (Long)finderCache.getResult(
-				_finderPathWithPaginationCountByF_D, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				StringUtil.merge(fragmentEntryIds), deleted
+			};
+		}
+
+		count = (Long)finderCache.getResult(
+			_finderPathWithPaginationCountByF_D, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler();
@@ -6270,10 +6579,8 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(
-						_finderPathWithPaginationCountByF_D, finderArgs, count);
-				}
+				finderCache.putResult(
+					_finderPathWithPaginationCountByF_D, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -6395,30 +6702,52 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_OFELI_P;
-				finderArgs = new Object[] {
-					groupId, originalFragmentEntryLinkId, plid
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, originalFragmentEntryLinkId, plid
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						originalFragmentEntryLinkId, plid
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_OFELI_P;
-			finderArgs = new Object[] {
-				groupId, originalFragmentEntryLinkId, plid, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, originalFragmentEntryLinkId, plid, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					originalFragmentEntryLinkId, plid, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if ((groupId != fragmentEntryLink.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						(groupId != fragmentEntryLink.getGroupId()) ||
 						(originalFragmentEntryLinkId !=
 							fragmentEntryLink.
 								getOriginalFragmentEntryLinkId()) ||
@@ -6481,7 +6810,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -6842,15 +7171,21 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
-		if (productionMode) {
-			finderPath = _finderPathCountByG_OFELI_P;
+		finderPath = _finderPathCountByG_OFELI_P;
 
+		if (productionMode) {
 			finderArgs = new Object[] {
 				groupId, originalFragmentEntryLinkId, plid
 			};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				originalFragmentEntryLinkId, plid
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -6882,9 +7217,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -7007,30 +7340,51 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_F_C;
-				finderArgs = new Object[] {
-					groupId, fragmentEntryId, classNameId
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, fragmentEntryId, classNameId
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						fragmentEntryId, classNameId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_F_C;
-			finderArgs = new Object[] {
-				groupId, fragmentEntryId, classNameId, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, fragmentEntryId, classNameId, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					fragmentEntryId, classNameId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if ((groupId != fragmentEntryLink.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						(groupId != fragmentEntryLink.getGroupId()) ||
 						(fragmentEntryId !=
 							fragmentEntryLink.getFragmentEntryId()) ||
 						(classNameId != fragmentEntryLink.getClassNameId())) {
@@ -7092,7 +7446,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -7451,13 +7805,19 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByG_F_C;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByG_F_C;
-
 			finderArgs = new Object[] {groupId, fragmentEntryId, classNameId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				fragmentEntryId, classNameId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -7489,9 +7849,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -7611,27 +7969,49 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_F_P;
-				finderArgs = new Object[] {groupId, fragmentEntryId, plid};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId, fragmentEntryId, plid};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						fragmentEntryId, plid
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_F_P;
-			finderArgs = new Object[] {
-				groupId, fragmentEntryId, plid, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, fragmentEntryId, plid, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					fragmentEntryId, plid, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if ((groupId != fragmentEntryLink.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						(groupId != fragmentEntryLink.getGroupId()) ||
 						(fragmentEntryId !=
 							fragmentEntryLink.getFragmentEntryId()) ||
 						(plid != fragmentEntryLink.getPlid())) {
@@ -7693,7 +8073,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -8047,13 +8427,19 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByG_F_P;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByG_F_P;
-
 			finderArgs = new Object[] {groupId, fragmentEntryId, plid};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				fragmentEntryId, plid
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -8085,9 +8471,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -8210,28 +8594,51 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_S_P;
-				finderArgs = new Object[] {groupId, segmentsExperienceId, plid};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, segmentsExperienceId, plid
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						segmentsExperienceId, plid
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_S_P;
-			finderArgs = new Object[] {
-				groupId, segmentsExperienceId, plid, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, segmentsExperienceId, plid, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					segmentsExperienceId, plid, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if ((groupId != fragmentEntryLink.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						(groupId != fragmentEntryLink.getGroupId()) ||
 						(segmentsExperienceId !=
 							fragmentEntryLink.getSegmentsExperienceId()) ||
 						(plid != fragmentEntryLink.getPlid())) {
@@ -8293,7 +8700,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -8724,28 +9131,48 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderArgs = new Object[] {
-					groupId, StringUtil.merge(segmentsExperienceIds), plid
-				};
+			if (useFinderCache) {
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, StringUtil.merge(segmentsExperienceIds), plid
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						StringUtil.merge(segmentsExperienceIds), plid
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {
-				groupId, StringUtil.merge(segmentsExperienceIds), plid, start,
-				end, orderByComparator
-			};
+		else if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, StringUtil.merge(segmentsExperienceIds), plid,
+					start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					StringUtil.merge(segmentsExperienceIds), plid, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				_finderPathWithPaginationFindByG_S_P, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if ((groupId != fragmentEntryLink.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						(groupId != fragmentEntryLink.getGroupId()) ||
 						!ArrayUtil.contains(
 							segmentsExperienceIds,
 							fragmentEntryLink.getSegmentsExperienceId()) ||
@@ -8813,7 +9240,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(
 						_finderPathWithPaginationFindByG_S_P, finderArgs, list);
 				}
@@ -8869,13 +9296,19 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByG_S_P;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByG_S_P;
-
 			finderArgs = new Object[] {groupId, segmentsExperienceId, plid};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				segmentsExperienceId, plid
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -8907,9 +9340,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -8953,10 +9384,16 @@ public class FragmentEntryLinkPersistenceImpl
 			finderArgs = new Object[] {
 				groupId, StringUtil.merge(segmentsExperienceIds), plid
 			};
-
-			count = (Long)finderCache.getResult(
-				_finderPathWithPaginationCountByG_S_P, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				StringUtil.merge(segmentsExperienceIds), plid
+			};
+		}
+
+		count = (Long)finderCache.getResult(
+			_finderPathWithPaginationCountByG_S_P, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler();
@@ -9001,11 +9438,8 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(
-						_finderPathWithPaginationCountByG_S_P, finderArgs,
-						count);
-				}
+				finderCache.putResult(
+					_finderPathWithPaginationCountByG_S_P, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -9127,27 +9561,48 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_C_C;
-				finderArgs = new Object[] {groupId, classNameId, classPK};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId, classNameId, classPK};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						classNameId, classPK
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_C_C;
-			finderArgs = new Object[] {
-				groupId, classNameId, classPK, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, classNameId, classPK, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					classNameId, classPK, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if ((groupId != fragmentEntryLink.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						(groupId != fragmentEntryLink.getGroupId()) ||
 						(classNameId != fragmentEntryLink.getClassNameId()) ||
 						(classPK != fragmentEntryLink.getClassPK())) {
 
@@ -9208,7 +9663,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -9562,13 +10017,19 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByG_C_C;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByG_C_C;
-
 			finderArgs = new Object[] {groupId, classNameId, classPK};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				classNameId, classPK
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -9600,9 +10061,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -9720,27 +10179,48 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_P_D;
-				finderArgs = new Object[] {groupId, plid, deleted};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId, plid, deleted};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						plid, deleted
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_P_D;
-			finderArgs = new Object[] {
-				groupId, plid, deleted, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, plid, deleted, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId, plid,
+					deleted, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if ((groupId != fragmentEntryLink.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						(groupId != fragmentEntryLink.getGroupId()) ||
 						(plid != fragmentEntryLink.getPlid()) ||
 						(deleted != fragmentEntryLink.isDeleted())) {
 
@@ -9801,7 +10281,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -10154,13 +10634,19 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByG_P_D;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByG_P_D;
-
 			finderArgs = new Object[] {groupId, plid, deleted};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId, plid,
+				deleted
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -10192,9 +10678,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -10322,30 +10806,52 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_F_C_C;
-				finderArgs = new Object[] {
-					groupId, fragmentEntryId, classNameId, classPK
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, fragmentEntryId, classNameId, classPK
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						fragmentEntryId, classNameId, classPK
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_F_C_C;
-			finderArgs = new Object[] {
-				groupId, fragmentEntryId, classNameId, classPK, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, fragmentEntryId, classNameId, classPK, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					fragmentEntryId, classNameId, classPK, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if ((groupId != fragmentEntryLink.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						(groupId != fragmentEntryLink.getGroupId()) ||
 						(fragmentEntryId !=
 							fragmentEntryLink.getFragmentEntryId()) ||
 						(classNameId != fragmentEntryLink.getClassNameId()) ||
@@ -10412,7 +10918,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -10790,15 +11296,21 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
-		if (productionMode) {
-			finderPath = _finderPathCountByG_F_C_C;
+		finderPath = _finderPathCountByG_F_C_C;
 
+		if (productionMode) {
 			finderArgs = new Object[] {
 				groupId, fragmentEntryId, classNameId, classPK
 			};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				fragmentEntryId, classNameId, classPK
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -10834,9 +11346,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -10969,30 +11479,52 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_S_C_C;
-				finderArgs = new Object[] {
-					groupId, segmentsExperienceId, classNameId, classPK
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, segmentsExperienceId, classNameId, classPK
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						segmentsExperienceId, classNameId, classPK
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_S_C_C;
-			finderArgs = new Object[] {
-				groupId, segmentsExperienceId, classNameId, classPK, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, segmentsExperienceId, classNameId, classPK, start,
+					end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					segmentsExperienceId, classNameId, classPK, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if ((groupId != fragmentEntryLink.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						(groupId != fragmentEntryLink.getGroupId()) ||
 						(segmentsExperienceId !=
 							fragmentEntryLink.getSegmentsExperienceId()) ||
 						(classNameId != fragmentEntryLink.getClassNameId()) ||
@@ -11059,7 +11591,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -11443,15 +11975,21 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
-		if (productionMode) {
-			finderPath = _finderPathCountByG_S_C_C;
+		finderPath = _finderPathCountByG_S_C_C;
 
+		if (productionMode) {
 			finderArgs = new Object[] {
 				groupId, segmentsExperienceId, classNameId, classPK
 			};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				segmentsExperienceId, classNameId, classPK
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -11487,9 +12025,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -11623,30 +12159,52 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_S_P_R;
-				finderArgs = new Object[] {
-					groupId, segmentsExperienceId, plid, rendererKey
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, segmentsExperienceId, plid, rendererKey
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						segmentsExperienceId, plid, rendererKey
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_S_P_R;
-			finderArgs = new Object[] {
-				groupId, segmentsExperienceId, plid, rendererKey, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, segmentsExperienceId, plid, rendererKey, start,
+					end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					segmentsExperienceId, plid, rendererKey, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FragmentEntryLink fragmentEntryLink : list) {
-					if ((groupId != fragmentEntryLink.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 fragmentEntryLink.getCtCollectionId())) ||
+						(groupId != fragmentEntryLink.getGroupId()) ||
 						(segmentsExperienceId !=
 							fragmentEntryLink.getSegmentsExperienceId()) ||
 						(plid != fragmentEntryLink.getPlid()) ||
@@ -11725,7 +12283,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -12124,15 +12682,21 @@ public class FragmentEntryLinkPersistenceImpl
 
 		Long count = null;
 
-		if (productionMode) {
-			finderPath = _finderPathCountByG_S_P_R;
+		finderPath = _finderPathCountByG_S_P_R;
 
+		if (productionMode) {
 			finderArgs = new Object[] {
 				groupId, segmentsExperienceId, plid, rendererKey
 			};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				segmentsExperienceId, plid, rendererKey
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -12179,9 +12743,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -12535,6 +13097,8 @@ public class FragmentEntryLinkPersistenceImpl
 				fragmentEntryLink.setNew(false);
 			}
 
+			clearCache();
+
 			fragmentEntryLink.resetOriginalValues();
 
 			return fragmentEntryLink;
@@ -12811,19 +13375,36 @@ public class FragmentEntryLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<FragmentEntryLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FragmentEntryLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
@@ -12861,7 +13442,7 @@ public class FragmentEntryLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -12903,6 +13484,12 @@ public class FragmentEntryLinkPersistenceImpl
 			count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -12917,6 +13504,14 @@ public class FragmentEntryLinkPersistenceImpl
 				if (productionMode) {
 					finderCache.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
 				}
 			}
 			catch (Exception exception) {

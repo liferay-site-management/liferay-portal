@@ -15,6 +15,7 @@
 package com.liferay.portal.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -158,6 +159,8 @@ public class LayoutBranchPersistenceImpl
 		OrderByComparator<LayoutBranch> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -167,14 +170,32 @@ public class LayoutBranchPersistenceImpl
 			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByLayoutSetBranchId;
-				finderArgs = new Object[] {layoutSetBranchId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {layoutSetBranchId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						layoutSetBranchId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByLayoutSetBranchId;
-			finderArgs = new Object[] {
-				layoutSetBranchId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					layoutSetBranchId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					layoutSetBranchId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<LayoutBranch> list = null;
@@ -544,12 +565,25 @@ public class LayoutBranchPersistenceImpl
 	 */
 	@Override
 	public int countByLayoutSetBranchId(long layoutSetBranchId) {
-		FinderPath finderPath = _finderPathCountByLayoutSetBranchId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {layoutSetBranchId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByLayoutSetBranchId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {layoutSetBranchId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), layoutSetBranchId
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -663,6 +697,8 @@ public class LayoutBranchPersistenceImpl
 		OrderByComparator<LayoutBranch> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -671,12 +707,29 @@ public class LayoutBranchPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByPlid;
-				finderArgs = new Object[] {plid};
+
+				if (productionMode) {
+					finderArgs = new Object[] {plid};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), plid
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByPlid;
-			finderArgs = new Object[] {plid, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {plid, start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), plid, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<LayoutBranch> list = null;
@@ -1033,12 +1086,25 @@ public class LayoutBranchPersistenceImpl
 	 */
 	@Override
 	public int countByPlid(long plid) {
-		FinderPath finderPath = _finderPathCountByPlid;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {plid};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByPlid;
+
+		if (productionMode) {
+			finderArgs = new Object[] {plid};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), plid
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1160,6 +1226,8 @@ public class LayoutBranchPersistenceImpl
 		OrderByComparator<LayoutBranch> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1168,14 +1236,32 @@ public class LayoutBranchPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByL_P;
-				finderArgs = new Object[] {layoutSetBranchId, plid};
+
+				if (productionMode) {
+					finderArgs = new Object[] {layoutSetBranchId, plid};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						layoutSetBranchId, plid
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByL_P;
-			finderArgs = new Object[] {
-				layoutSetBranchId, plid, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					layoutSetBranchId, plid, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					layoutSetBranchId, plid, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<LayoutBranch> list = null;
@@ -1568,12 +1654,26 @@ public class LayoutBranchPersistenceImpl
 	 */
 	@Override
 	public int countByL_P(long layoutSetBranchId, long plid) {
-		FinderPath finderPath = _finderPathCountByL_P;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {layoutSetBranchId, plid};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByL_P;
+
+		if (productionMode) {
+			finderArgs = new Object[] {layoutSetBranchId, plid};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), layoutSetBranchId,
+				plid
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1696,10 +1796,20 @@ public class LayoutBranchPersistenceImpl
 
 		name = Objects.toString(name, "");
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {layoutSetBranchId, plid, name};
+			if (productionMode) {
+				finderArgs = new Object[] {layoutSetBranchId, plid, name};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					layoutSetBranchId, plid, name
+				};
+			}
 		}
 
 		Object result = null;
@@ -1821,12 +1931,26 @@ public class LayoutBranchPersistenceImpl
 	public int countByL_P_N(long layoutSetBranchId, long plid, String name) {
 		name = Objects.toString(name, "");
 
-		FinderPath finderPath = _finderPathCountByL_P_N;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {layoutSetBranchId, plid, name};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByL_P_N;
+
+		if (productionMode) {
+			finderArgs = new Object[] {layoutSetBranchId, plid, name};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), layoutSetBranchId,
+				plid, name
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -1983,6 +2107,8 @@ public class LayoutBranchPersistenceImpl
 		OrderByComparator<LayoutBranch> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1991,14 +2117,34 @@ public class LayoutBranchPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByL_P_M;
-				finderArgs = new Object[] {layoutSetBranchId, plid, master};
+
+				if (productionMode) {
+					finderArgs = new Object[] {layoutSetBranchId, plid, master};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						layoutSetBranchId, plid, master
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByL_P_M;
-			finderArgs = new Object[] {
-				layoutSetBranchId, plid, master, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					layoutSetBranchId, plid, master, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					layoutSetBranchId, plid, master, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<LayoutBranch> list = null;
@@ -2416,12 +2562,26 @@ public class LayoutBranchPersistenceImpl
 	 */
 	@Override
 	public int countByL_P_M(long layoutSetBranchId, long plid, boolean master) {
-		FinderPath finderPath = _finderPathCountByL_P_M;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {layoutSetBranchId, plid, master};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByL_P_M;
+
+		if (productionMode) {
+			finderArgs = new Object[] {layoutSetBranchId, plid, master};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), layoutSetBranchId,
+				plid, master
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -2858,6 +3018,8 @@ public class LayoutBranchPersistenceImpl
 		int start, int end, OrderByComparator<LayoutBranch> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -2866,12 +3028,29 @@ public class LayoutBranchPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<LayoutBranch> list = null;
@@ -2947,8 +3126,20 @@ public class LayoutBranchPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)FinderCacheUtil.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)FinderCacheUtil.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)FinderCacheUtil.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -2960,8 +3151,18 @@ public class LayoutBranchPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				FinderCacheUtil.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					FinderCacheUtil.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					FinderCacheUtil.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

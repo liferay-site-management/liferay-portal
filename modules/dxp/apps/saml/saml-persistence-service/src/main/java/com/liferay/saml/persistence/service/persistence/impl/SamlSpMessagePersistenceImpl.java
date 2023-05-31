@@ -15,6 +15,7 @@
 package com.liferay.saml.persistence.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -173,13 +174,24 @@ public class SamlSpMessagePersistenceImpl
 		OrderByComparator<SamlSpMessage> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		finderPath = _finderPathWithPaginationFindByLtExpirationDate;
-		finderArgs = new Object[] {
-			_getTime(expirationDate), start, end, orderByComparator
-		};
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				_getTime(expirationDate), start, end, orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				_getTime(expirationDate), start, end, orderByComparator
+			};
+		}
 
 		List<SamlSpMessage> list = null;
 
@@ -572,12 +584,26 @@ public class SamlSpMessagePersistenceImpl
 	 */
 	@Override
 	public int countByLtExpirationDate(Date expirationDate) {
-		FinderPath finderPath =
-			_finderPathWithPaginationCountByLtExpirationDate;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {_getTime(expirationDate)};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathWithPaginationCountByLtExpirationDate;
+
+		if (productionMode) {
+			finderArgs = new Object[] {_getTime(expirationDate)};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				_getTime(expirationDate)
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -705,10 +731,20 @@ public class SamlSpMessagePersistenceImpl
 		samlIdpEntityId = Objects.toString(samlIdpEntityId, "");
 		samlIdpResponseKey = Objects.toString(samlIdpResponseKey, "");
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {samlIdpEntityId, samlIdpResponseKey};
+			if (productionMode) {
+				finderArgs = new Object[] {samlIdpEntityId, samlIdpResponseKey};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					samlIdpEntityId, samlIdpResponseKey
+				};
+			}
 		}
 
 		Object result = null;
@@ -858,13 +894,26 @@ public class SamlSpMessagePersistenceImpl
 		samlIdpEntityId = Objects.toString(samlIdpEntityId, "");
 		samlIdpResponseKey = Objects.toString(samlIdpResponseKey, "");
 
-		FinderPath finderPath = _finderPathCountBySIEI_SIRK;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			samlIdpEntityId, samlIdpResponseKey
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountBySIEI_SIRK;
+
+		if (productionMode) {
+			finderArgs = new Object[] {samlIdpEntityId, samlIdpResponseKey};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), samlIdpEntityId,
+				samlIdpResponseKey
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1338,6 +1387,8 @@ public class SamlSpMessagePersistenceImpl
 		int start, int end, OrderByComparator<SamlSpMessage> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1346,12 +1397,29 @@ public class SamlSpMessagePersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<SamlSpMessage> list = null;
@@ -1427,8 +1495,20 @@ public class SamlSpMessagePersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -1440,8 +1520,18 @@ public class SamlSpMessagePersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

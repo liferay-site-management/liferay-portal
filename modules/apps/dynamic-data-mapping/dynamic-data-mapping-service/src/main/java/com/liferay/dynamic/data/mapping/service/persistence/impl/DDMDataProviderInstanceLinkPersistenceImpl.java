@@ -23,6 +23,7 @@ import com.liferay.dynamic.data.mapping.service.persistence.DDMDataProviderInsta
 import com.liferay.dynamic.data.mapping.service.persistence.DDMDataProviderInstanceLinkUtil;
 import com.liferay.dynamic.data.mapping.service.persistence.impl.constants.DDMPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -186,22 +187,40 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByDataProviderInstanceId;
-				finderArgs = new Object[] {dataProviderInstanceId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {dataProviderInstanceId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						dataProviderInstanceId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByDataProviderInstanceId;
-			finderArgs = new Object[] {
-				dataProviderInstanceId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					dataProviderInstanceId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					dataProviderInstanceId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<DDMDataProviderInstanceLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DDMDataProviderInstanceLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -209,9 +228,13 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 				for (DDMDataProviderInstanceLink ddmDataProviderInstanceLink :
 						list) {
 
-					if (dataProviderInstanceId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 ddmDataProviderInstanceLink.
+								 getCtCollectionId())) ||
+						(dataProviderInstanceId !=
 							ddmDataProviderInstanceLink.
-								getDataProviderInstanceId()) {
+								getDataProviderInstanceId())) {
 
 						list = null;
 
@@ -263,7 +286,7 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -590,13 +613,19 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByDataProviderInstanceId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByDataProviderInstanceId;
-
 			finderArgs = new Object[] {dataProviderInstanceId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				dataProviderInstanceId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -621,9 +650,7 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -728,21 +755,38 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByStructureId;
-				finderArgs = new Object[] {structureId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {structureId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), structureId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByStructureId;
-			finderArgs = new Object[] {
-				structureId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					structureId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), structureId,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<DDMDataProviderInstanceLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DDMDataProviderInstanceLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -750,8 +794,12 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 				for (DDMDataProviderInstanceLink ddmDataProviderInstanceLink :
 						list) {
 
-					if (structureId !=
-							ddmDataProviderInstanceLink.getStructureId()) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 ddmDataProviderInstanceLink.
+								 getCtCollectionId())) ||
+						(structureId !=
+							ddmDataProviderInstanceLink.getStructureId())) {
 
 						list = null;
 
@@ -802,7 +850,7 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1122,13 +1170,18 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByStructureId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByStructureId;
-
 			finderArgs = new Object[] {structureId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), structureId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1152,9 +1205,7 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1243,13 +1294,21 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {dataProviderInstanceId, structureId};
+		if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {dataProviderInstanceId, structureId};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					dataProviderInstanceId, structureId
+				};
+			}
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByD_S, finderArgs, this);
 		}
@@ -1258,7 +1317,10 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 			DDMDataProviderInstanceLink ddmDataProviderInstanceLink =
 				(DDMDataProviderInstanceLink)result;
 
-			if ((dataProviderInstanceId !=
+			if ((!productionMode &&
+				 (CTCollectionThreadLocal.getCTCollectionId() !=
+					 ddmDataProviderInstanceLink.getCtCollectionId())) ||
+				(dataProviderInstanceId !=
 					ddmDataProviderInstanceLink.getDataProviderInstanceId()) ||
 				(structureId != ddmDataProviderInstanceLink.getStructureId())) {
 
@@ -1293,7 +1355,7 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 				List<DDMDataProviderInstanceLink> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByD_S, finderArgs, list);
 					}
@@ -1358,13 +1420,19 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByD_S;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByD_S;
-
 			finderArgs = new Object[] {dataProviderInstanceId, structureId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				dataProviderInstanceId, structureId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1392,9 +1460,7 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1726,6 +1792,8 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 				ddmDataProviderInstanceLink.setNew(false);
 			}
 
+			clearCache();
+
 			ddmDataProviderInstanceLink.resetOriginalValues();
 
 			return ddmDataProviderInstanceLink;
@@ -2013,19 +2081,36 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<DDMDataProviderInstanceLink> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<DDMDataProviderInstanceLink>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
@@ -2064,7 +2149,7 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -2108,6 +2193,12 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 			count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -2123,6 +2214,14 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 				if (productionMode) {
 					finderCache.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
 				}
 			}
 			catch (Exception exception) {

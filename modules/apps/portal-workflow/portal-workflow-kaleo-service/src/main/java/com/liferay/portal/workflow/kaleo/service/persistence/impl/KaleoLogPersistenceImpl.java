@@ -15,6 +15,7 @@
 package com.liferay.portal.workflow.kaleo.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -183,27 +184,48 @@ public class KaleoLogPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByCompanyId;
-				finderArgs = new Object[] {companyId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {companyId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), companyId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByCompanyId;
-			finderArgs = new Object[] {
-				companyId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<KaleoLog> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<KaleoLog>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoLog kaleoLog : list) {
-					if (companyId != kaleoLog.getCompanyId()) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 kaleoLog.getCtCollectionId())) ||
+						(companyId != kaleoLog.getCompanyId())) {
+
 						list = null;
 
 						break;
@@ -253,7 +275,7 @@ public class KaleoLogPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -560,13 +582,18 @@ public class KaleoLogPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByCompanyId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByCompanyId;
-
 			finderArgs = new Object[] {companyId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -590,9 +617,7 @@ public class KaleoLogPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -698,30 +723,51 @@ public class KaleoLogPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByKaleoDefinitionVersionId;
-				finderArgs = new Object[] {kaleoDefinitionVersionId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {kaleoDefinitionVersionId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						kaleoDefinitionVersionId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath =
 				_finderPathWithPaginationFindByKaleoDefinitionVersionId;
-			finderArgs = new Object[] {
-				kaleoDefinitionVersionId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					kaleoDefinitionVersionId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					kaleoDefinitionVersionId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<KaleoLog> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<KaleoLog>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoLog kaleoLog : list) {
-					if (kaleoDefinitionVersionId !=
-							kaleoLog.getKaleoDefinitionVersionId()) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 kaleoLog.getCtCollectionId())) ||
+						(kaleoDefinitionVersionId !=
+							kaleoLog.getKaleoDefinitionVersionId())) {
 
 						list = null;
 
@@ -773,7 +819,7 @@ public class KaleoLogPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1091,13 +1137,19 @@ public class KaleoLogPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByKaleoDefinitionVersionId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByKaleoDefinitionVersionId;
-
 			finderArgs = new Object[] {kaleoDefinitionVersionId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				kaleoDefinitionVersionId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1122,9 +1174,7 @@ public class KaleoLogPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1226,27 +1276,49 @@ public class KaleoLogPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByKaleoInstanceId;
-				finderArgs = new Object[] {kaleoInstanceId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {kaleoInstanceId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						kaleoInstanceId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByKaleoInstanceId;
-			finderArgs = new Object[] {
-				kaleoInstanceId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					kaleoInstanceId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					kaleoInstanceId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<KaleoLog> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<KaleoLog>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoLog kaleoLog : list) {
-					if (kaleoInstanceId != kaleoLog.getKaleoInstanceId()) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 kaleoLog.getCtCollectionId())) ||
+						(kaleoInstanceId != kaleoLog.getKaleoInstanceId())) {
+
 						list = null;
 
 						break;
@@ -1296,7 +1368,7 @@ public class KaleoLogPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1605,13 +1677,18 @@ public class KaleoLogPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByKaleoInstanceId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByKaleoInstanceId;
-
 			finderArgs = new Object[] {kaleoInstanceId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), kaleoInstanceId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1635,9 +1712,7 @@ public class KaleoLogPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1744,30 +1819,51 @@ public class KaleoLogPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByKaleoTaskInstanceTokenId;
-				finderArgs = new Object[] {kaleoTaskInstanceTokenId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {kaleoTaskInstanceTokenId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						kaleoTaskInstanceTokenId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath =
 				_finderPathWithPaginationFindByKaleoTaskInstanceTokenId;
-			finderArgs = new Object[] {
-				kaleoTaskInstanceTokenId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					kaleoTaskInstanceTokenId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					kaleoTaskInstanceTokenId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<KaleoLog> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<KaleoLog>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoLog kaleoLog : list) {
-					if (kaleoTaskInstanceTokenId !=
-							kaleoLog.getKaleoTaskInstanceTokenId()) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 kaleoLog.getCtCollectionId())) ||
+						(kaleoTaskInstanceTokenId !=
+							kaleoLog.getKaleoTaskInstanceTokenId())) {
 
 						list = null;
 
@@ -1819,7 +1915,7 @@ public class KaleoLogPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -2137,13 +2233,19 @@ public class KaleoLogPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByKaleoTaskInstanceTokenId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByKaleoTaskInstanceTokenId;
-
 			finderArgs = new Object[] {kaleoTaskInstanceTokenId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				kaleoTaskInstanceTokenId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -2168,9 +2270,7 @@ public class KaleoLogPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2279,27 +2379,48 @@ public class KaleoLogPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByKITI_T;
-				finderArgs = new Object[] {kaleoInstanceTokenId, type};
+
+				if (productionMode) {
+					finderArgs = new Object[] {kaleoInstanceTokenId, type};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						kaleoInstanceTokenId, type
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByKITI_T;
-			finderArgs = new Object[] {
-				kaleoInstanceTokenId, type, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					kaleoInstanceTokenId, type, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					kaleoInstanceTokenId, type, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<KaleoLog> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<KaleoLog>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoLog kaleoLog : list) {
-					if ((kaleoInstanceTokenId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 kaleoLog.getCtCollectionId())) ||
+						(kaleoInstanceTokenId !=
 							kaleoLog.getKaleoInstanceTokenId()) ||
 						!type.equals(kaleoLog.getType())) {
 
@@ -2367,7 +2488,7 @@ public class KaleoLogPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -2715,13 +2836,19 @@ public class KaleoLogPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByKITI_T;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByKITI_T;
-
 			finderArgs = new Object[] {kaleoInstanceTokenId, type};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				kaleoInstanceTokenId, type
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -2760,9 +2887,7 @@ public class KaleoLogPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2894,30 +3019,52 @@ public class KaleoLogPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByKCN_KCPK_KITI_T;
-				finderArgs = new Object[] {
-					kaleoClassName, kaleoClassPK, kaleoInstanceTokenId, type
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						kaleoClassName, kaleoClassPK, kaleoInstanceTokenId, type
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						kaleoClassName, kaleoClassPK, kaleoInstanceTokenId, type
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByKCN_KCPK_KITI_T;
-			finderArgs = new Object[] {
-				kaleoClassName, kaleoClassPK, kaleoInstanceTokenId, type, start,
-				end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					kaleoClassName, kaleoClassPK, kaleoInstanceTokenId, type,
+					start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), kaleoClassName,
+					kaleoClassPK, kaleoInstanceTokenId, type, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<KaleoLog> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<KaleoLog>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoLog kaleoLog : list) {
-					if (!kaleoClassName.equals(kaleoLog.getKaleoClassName()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 kaleoLog.getCtCollectionId())) ||
+						!kaleoClassName.equals(kaleoLog.getKaleoClassName()) ||
 						(kaleoClassPK != kaleoLog.getKaleoClassPK()) ||
 						(kaleoInstanceTokenId !=
 							kaleoLog.getKaleoInstanceTokenId()) ||
@@ -3006,7 +3153,7 @@ public class KaleoLogPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -3413,15 +3560,21 @@ public class KaleoLogPersistenceImpl
 
 		Long count = null;
 
-		if (productionMode) {
-			finderPath = _finderPathCountByKCN_KCPK_KITI_T;
+		finderPath = _finderPathCountByKCN_KCPK_KITI_T;
 
+		if (productionMode) {
 			finderArgs = new Object[] {
 				kaleoClassName, kaleoClassPK, kaleoInstanceTokenId, type
 			};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), kaleoClassName,
+				kaleoClassPK, kaleoInstanceTokenId, type
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -3479,9 +3632,7 @@ public class KaleoLogPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -3790,6 +3941,8 @@ public class KaleoLogPersistenceImpl
 				kaleoLog.setNew(false);
 			}
 
+			clearCache();
+
 			kaleoLog.resetOriginalValues();
 
 			return kaleoLog;
@@ -4054,19 +4207,36 @@ public class KaleoLogPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<KaleoLog> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<KaleoLog>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
@@ -4104,7 +4274,7 @@ public class KaleoLogPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -4146,6 +4316,12 @@ public class KaleoLogPersistenceImpl
 			count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -4160,6 +4336,14 @@ public class KaleoLogPersistenceImpl
 				if (productionMode) {
 					finderCache.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
 				}
 			}
 			catch (Exception exception) {
