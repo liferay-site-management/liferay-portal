@@ -33,12 +33,7 @@
 
 <#assign
 	finderFieldSQLSuffix = "_SQL"
-	useCache = "useFinderCache"
 />
-
-<#if entity.isChangeTrackingEnabled()>
-	<#assign useCache = "useFinderCache && productionMode" />
-</#if>
 
 <#if osgiModule && serviceBuilder.isVersionGTE_7_4_0() && entity.hasUuid()>
 	<#assign
@@ -81,6 +76,7 @@ import ${apiPackagePath}.service.persistence.${entity.name}Util;
 </#if>
 
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.ArgumentsResolver;
@@ -1036,6 +1032,8 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 					}
 				</#if>
 
+				clearCache();
+
 				${entity.variableName}.resetOriginalValues();
 
 				return ${entity.variableName};
@@ -1589,25 +1587,39 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 	public List<${entity.name}> findAll(int start, int end, OrderByComparator<${entity.name}> orderByComparator, boolean useFinderCache) {
 		<#if entity.isChangeTrackingEnabled()>
 			boolean productionMode = ${ctPersistenceHelper}.isProductionMode(${entity.name}.class);
+		<#else>
+			boolean productionMode = true;
 		</#if>
 
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) && (orderByComparator == null)) {
-			if (${useCache}) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {CTCollectionThreadLocal.getCTCollectionId()};
+				}
 			}
 		}
-		else if (${useCache}) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {CTCollectionThreadLocal.getCTCollectionId(), start, end, orderByComparator};
+			}
 		}
 
 		List<${entity.name}> list = null;
 
-		if (${useCache}) {
+		if (useFinderCache) {
 			list = (List<${entity.name}>)${finderCache}.getResult(finderPath, finderArgs, this);
 		}
 
@@ -1641,13 +1653,13 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 
 				cacheResult(list);
 
-				if (${useCache}) {
+				if (useFinderCache) {
 					${finderCache}.putResult(finderPath, finderArgs, list);
 				}
 			}
 			catch (Exception exception) {
 				<#if serviceBuilder.isVersionLTE_7_2_0()>
-					if (${useCache}) {
+					if (useFinderCache) {
 						${finderCache}.removeResult(finderPath, finderArgs);
 					}
 				</#if>
@@ -1682,15 +1694,18 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 	public int countAll() {
 		<#if entity.isChangeTrackingEnabled()>
 			boolean productionMode = ${ctPersistenceHelper}.isProductionMode(${entity.name}.class);
-
-			Long count = null;
-
-			if (productionMode) {
-				count = (Long)${finderCache}.getResult(_finderPathCountAll, FINDER_ARGS_EMPTY, this);
-			}
 		<#else>
-			Long count = (Long)${finderCache}.getResult(_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+			boolean productionMode = true;
 		</#if>
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)${finderCache}.getResult(_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)${finderCache}.getResult(_finderPathCountAll, new Object[] {CTCollectionThreadLocal.getCTCollectionId()}, this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -1702,23 +1717,21 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 
 				count = (Long)query.uniqueResult();
 
-				<#if entity.isChangeTrackingEnabled()>
-					if (productionMode) {
-						${finderCache}.putResult(_finderPathCountAll, FINDER_ARGS_EMPTY, count);
-					}
-				<#else>
+				if (productionMode) {
 					${finderCache}.putResult(_finderPathCountAll, FINDER_ARGS_EMPTY, count);
-				</#if>
+				}
+				else {
+					${finderCache}.putResult(_finderPathCountAll, new Object[] {CTCollectionThreadLocal.getCTCollectionId()}, count);
+				}
 			}
 			catch (Exception exception) {
 				<#if serviceBuilder.isVersionLTE_7_2_0()>
-					<#if entity.isChangeTrackingEnabled()>
-						if (productionMode) {
-							${finderCache}.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-						}
-					<#else>
+					if (productionMode) {
 						${finderCache}.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-					</#if>
+					}
+					else {
+						${finderCache}.removeResult(_finderPathCountAll, new Object[] {CTCollectionThreadLocal.getCTCollectionId()});
+					}
 				</#if>
 
 				throw processException(exception);

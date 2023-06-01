@@ -23,6 +23,7 @@ import com.liferay.commerce.inventory.service.persistence.CommerceInventoryWareh
 import com.liferay.commerce.inventory.service.persistence.CommerceInventoryWarehouseRelUtil;
 import com.liferay.commerce.inventory.service.persistence.impl.constants.CommercePersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -181,6 +182,8 @@ public class CommerceInventoryWarehouseRelPersistenceImpl
 			OrderByComparator<CommerceInventoryWarehouseRel> orderByComparator,
 			boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -190,15 +193,33 @@ public class CommerceInventoryWarehouseRelPersistenceImpl
 			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByCommerceInventoryWarehouseId;
-				finderArgs = new Object[] {commerceInventoryWarehouseId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {commerceInventoryWarehouseId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						commerceInventoryWarehouseId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath =
 				_finderPathWithPaginationFindByCommerceInventoryWarehouseId;
-			finderArgs = new Object[] {
-				commerceInventoryWarehouseId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					commerceInventoryWarehouseId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					commerceInventoryWarehouseId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CommerceInventoryWarehouseRel> list = null;
@@ -601,11 +622,26 @@ public class CommerceInventoryWarehouseRelPersistenceImpl
 	public int countByCommerceInventoryWarehouseId(
 		long commerceInventoryWarehouseId) {
 
-		FinderPath finderPath = _finderPathCountByCommerceInventoryWarehouseId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {commerceInventoryWarehouseId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByCommerceInventoryWarehouseId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {commerceInventoryWarehouseId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				commerceInventoryWarehouseId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -734,6 +770,8 @@ public class CommerceInventoryWarehouseRelPersistenceImpl
 		OrderByComparator<CommerceInventoryWarehouseRel> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -742,17 +780,35 @@ public class CommerceInventoryWarehouseRelPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByC_C;
-				finderArgs = new Object[] {
-					classNameId, commerceInventoryWarehouseId
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						classNameId, commerceInventoryWarehouseId
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						classNameId, commerceInventoryWarehouseId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByC_C;
-			finderArgs = new Object[] {
-				classNameId, commerceInventoryWarehouseId, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					classNameId, commerceInventoryWarehouseId, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+					commerceInventoryWarehouseId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CommerceInventoryWarehouseRel> list = null;
@@ -1160,13 +1216,28 @@ public class CommerceInventoryWarehouseRelPersistenceImpl
 	 */
 	@Override
 	public int countByC_C(long classNameId, long commerceInventoryWarehouseId) {
-		FinderPath finderPath = _finderPathCountByC_C;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			classNameId, commerceInventoryWarehouseId
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByC_C;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				classNameId, commerceInventoryWarehouseId
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+				commerceInventoryWarehouseId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1290,12 +1361,22 @@ public class CommerceInventoryWarehouseRelPersistenceImpl
 		long classNameId, long classPK, long commerceInventoryWarehouseId,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {
-				classNameId, classPK, commerceInventoryWarehouseId
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					classNameId, classPK, commerceInventoryWarehouseId
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+					classPK, commerceInventoryWarehouseId
+				};
+			}
 		}
 
 		Object result = null;
@@ -1412,13 +1493,28 @@ public class CommerceInventoryWarehouseRelPersistenceImpl
 	public int countByC_C_CIWI(
 		long classNameId, long classPK, long commerceInventoryWarehouseId) {
 
-		FinderPath finderPath = _finderPathCountByC_C_CIWI;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			classNameId, classPK, commerceInventoryWarehouseId
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByC_C_CIWI;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				classNameId, classPK, commerceInventoryWarehouseId
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+				classPK, commerceInventoryWarehouseId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -1943,6 +2039,8 @@ public class CommerceInventoryWarehouseRelPersistenceImpl
 		OrderByComparator<CommerceInventoryWarehouseRel> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1951,12 +2049,29 @@ public class CommerceInventoryWarehouseRelPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<CommerceInventoryWarehouseRel> list = null;
@@ -2035,8 +2150,20 @@ public class CommerceInventoryWarehouseRelPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -2049,8 +2176,18 @@ public class CommerceInventoryWarehouseRelPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

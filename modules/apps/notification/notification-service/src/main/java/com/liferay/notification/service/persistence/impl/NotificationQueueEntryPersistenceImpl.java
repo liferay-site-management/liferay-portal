@@ -23,6 +23,7 @@ import com.liferay.notification.service.persistence.NotificationQueueEntryPersis
 import com.liferay.notification.service.persistence.NotificationQueueEntryUtil;
 import com.liferay.notification.service.persistence.impl.constants.NotificationPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -179,6 +180,8 @@ public class NotificationQueueEntryPersistenceImpl
 		OrderByComparator<NotificationQueueEntry> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -188,14 +191,32 @@ public class NotificationQueueEntryPersistenceImpl
 			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByNotificationTemplateId;
-				finderArgs = new Object[] {notificationTemplateId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {notificationTemplateId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						notificationTemplateId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByNotificationTemplateId;
-			finderArgs = new Object[] {
-				notificationTemplateId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					notificationTemplateId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					notificationTemplateId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<NotificationQueueEntry> list = null;
@@ -921,11 +942,26 @@ public class NotificationQueueEntryPersistenceImpl
 	 */
 	@Override
 	public int countByNotificationTemplateId(long notificationTemplateId) {
-		FinderPath finderPath = _finderPathCountByNotificationTemplateId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {notificationTemplateId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByNotificationTemplateId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {notificationTemplateId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				notificationTemplateId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1093,13 +1129,24 @@ public class NotificationQueueEntryPersistenceImpl
 		OrderByComparator<NotificationQueueEntry> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		finderPath = _finderPathWithPaginationFindByLtSentDate;
-		finderArgs = new Object[] {
-			_getTime(sentDate), start, end, orderByComparator
-		};
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				_getTime(sentDate), start, end, orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), _getTime(sentDate),
+				start, end, orderByComparator
+			};
+		}
 
 		List<NotificationQueueEntry> list = null;
 
@@ -1854,11 +1901,25 @@ public class NotificationQueueEntryPersistenceImpl
 	 */
 	@Override
 	public int countByLtSentDate(Date sentDate) {
-		FinderPath finderPath = _finderPathWithPaginationCountByLtSentDate;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {_getTime(sentDate)};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathWithPaginationCountByLtSentDate;
+
+		if (productionMode) {
+			finderArgs = new Object[] {_getTime(sentDate)};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), _getTime(sentDate)
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -2053,6 +2114,8 @@ public class NotificationQueueEntryPersistenceImpl
 
 		type = Objects.toString(type, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -2061,14 +2124,32 @@ public class NotificationQueueEntryPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByT_S;
-				finderArgs = new Object[] {type, status};
+
+				if (productionMode) {
+					finderArgs = new Object[] {type, status};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), type,
+						status
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByT_S;
-			finderArgs = new Object[] {
-				type, status, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					type, status, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), type, status,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<NotificationQueueEntry> list = null;
@@ -2866,11 +2947,25 @@ public class NotificationQueueEntryPersistenceImpl
 	public int countByT_S(String type, int status) {
 		type = Objects.toString(type, "");
 
-		FinderPath finderPath = _finderPathCountByT_S;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {type, status};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByT_S;
+
+		if (productionMode) {
+			finderArgs = new Object[] {type, status};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), type, status
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -3423,6 +3518,8 @@ public class NotificationQueueEntryPersistenceImpl
 		OrderByComparator<NotificationQueueEntry> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -3431,12 +3528,29 @@ public class NotificationQueueEntryPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<NotificationQueueEntry> list = null;
@@ -3512,8 +3626,20 @@ public class NotificationQueueEntryPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -3526,8 +3652,18 @@ public class NotificationQueueEntryPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

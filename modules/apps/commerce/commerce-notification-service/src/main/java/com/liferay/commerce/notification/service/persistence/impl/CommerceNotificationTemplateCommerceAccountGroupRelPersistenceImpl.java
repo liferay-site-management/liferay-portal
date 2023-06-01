@@ -23,6 +23,7 @@ import com.liferay.commerce.notification.service.persistence.CommerceNotificatio
 import com.liferay.commerce.notification.service.persistence.CommerceNotificationTemplateCommerceAccountGroupRelUtil;
 import com.liferay.commerce.notification.service.persistence.impl.constants.CommercePersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -189,6 +190,8 @@ public class CommerceNotificationTemplateCommerceAccountGroupRelPersistenceImpl
 					orderByComparator,
 			boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -198,15 +201,35 @@ public class CommerceNotificationTemplateCommerceAccountGroupRelPersistenceImpl
 			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByCommerceNotificationTemplateId;
-				finderArgs = new Object[] {commerceNotificationTemplateId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {commerceNotificationTemplateId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						commerceNotificationTemplateId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath =
 				_finderPathWithPaginationFindByCommerceNotificationTemplateId;
-			finderArgs = new Object[] {
-				commerceNotificationTemplateId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					commerceNotificationTemplateId, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					commerceNotificationTemplateId, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<CommerceNotificationTemplateCommerceAccountGroupRel> list = null;
@@ -633,12 +656,26 @@ public class CommerceNotificationTemplateCommerceAccountGroupRelPersistenceImpl
 	public int countByCommerceNotificationTemplateId(
 		long commerceNotificationTemplateId) {
 
-		FinderPath finderPath =
-			_finderPathCountByCommerceNotificationTemplateId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {commerceNotificationTemplateId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByCommerceNotificationTemplateId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {commerceNotificationTemplateId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				commerceNotificationTemplateId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -768,6 +805,8 @@ public class CommerceNotificationTemplateCommerceAccountGroupRelPersistenceImpl
 					orderByComparator,
 			boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -777,14 +816,32 @@ public class CommerceNotificationTemplateCommerceAccountGroupRelPersistenceImpl
 			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByCommerceAccountGroupId;
-				finderArgs = new Object[] {commerceAccountGroupId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {commerceAccountGroupId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						commerceAccountGroupId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByCommerceAccountGroupId;
-			finderArgs = new Object[] {
-				commerceAccountGroupId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					commerceAccountGroupId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					commerceAccountGroupId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CommerceNotificationTemplateCommerceAccountGroupRel> list = null;
@@ -1205,11 +1262,26 @@ public class CommerceNotificationTemplateCommerceAccountGroupRelPersistenceImpl
 	 */
 	@Override
 	public int countByCommerceAccountGroupId(long commerceAccountGroupId) {
-		FinderPath finderPath = _finderPathCountByCommerceAccountGroupId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {commerceAccountGroupId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByCommerceAccountGroupId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {commerceAccountGroupId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				commerceAccountGroupId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1324,12 +1396,22 @@ public class CommerceNotificationTemplateCommerceAccountGroupRelPersistenceImpl
 		long commerceNotificationTemplateId, long commerceAccountGroupId,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {
-				commerceNotificationTemplateId, commerceAccountGroupId
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					commerceNotificationTemplateId, commerceAccountGroupId
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					commerceNotificationTemplateId, commerceAccountGroupId
+				};
+			}
 		}
 
 		Object result = null;
@@ -1449,13 +1531,28 @@ public class CommerceNotificationTemplateCommerceAccountGroupRelPersistenceImpl
 	public int countByC_C(
 		long commerceNotificationTemplateId, long commerceAccountGroupId) {
 
-		FinderPath finderPath = _finderPathCountByC_C;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			commerceNotificationTemplateId, commerceAccountGroupId
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByC_C;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				commerceNotificationTemplateId, commerceAccountGroupId
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				commerceNotificationTemplateId, commerceAccountGroupId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -2031,6 +2128,8 @@ public class CommerceNotificationTemplateCommerceAccountGroupRelPersistenceImpl
 			orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -2039,12 +2138,29 @@ public class CommerceNotificationTemplateCommerceAccountGroupRelPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<CommerceNotificationTemplateCommerceAccountGroupRel> list = null;
@@ -2128,8 +2244,20 @@ public class CommerceNotificationTemplateCommerceAccountGroupRelPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -2142,8 +2270,18 @@ public class CommerceNotificationTemplateCommerceAccountGroupRelPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

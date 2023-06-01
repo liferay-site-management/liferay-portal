@@ -15,6 +15,7 @@
 package com.liferay.push.notifications.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -155,10 +156,19 @@ public class PushNotificationsDevicePersistenceImpl
 
 		token = Objects.toString(token, "");
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {token};
+			if (productionMode) {
+				finderArgs = new Object[] {token};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), token
+				};
+			}
 		}
 
 		Object result = null;
@@ -266,11 +276,25 @@ public class PushNotificationsDevicePersistenceImpl
 	public int countByToken(String token) {
 		token = Objects.toString(token, "");
 
-		FinderPath finderPath = _finderPathCountByToken;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {token};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByToken;
+
+		if (productionMode) {
+			finderArgs = new Object[] {token};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), token
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -409,6 +433,8 @@ public class PushNotificationsDevicePersistenceImpl
 
 		platform = Objects.toString(platform, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -417,14 +443,32 @@ public class PushNotificationsDevicePersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_P;
-				finderArgs = new Object[] {userId, platform};
+
+				if (productionMode) {
+					finderArgs = new Object[] {userId, platform};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						platform
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_P;
-			finderArgs = new Object[] {
-				userId, platform, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, platform, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId,
+					platform, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<PushNotificationsDevice> list = null;
@@ -916,20 +960,41 @@ public class PushNotificationsDevicePersistenceImpl
 				userIds[0], platform, start, end, orderByComparator);
 		}
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
 			if (useFinderCache) {
-				finderArgs = new Object[] {StringUtil.merge(userIds), platform};
+				if (productionMode) {
+					finderArgs = new Object[] {
+						StringUtil.merge(userIds), platform
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						StringUtil.merge(userIds), platform
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
-			finderArgs = new Object[] {
-				StringUtil.merge(userIds), platform, start, end,
-				orderByComparator
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					StringUtil.merge(userIds), platform, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					StringUtil.merge(userIds), platform, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<PushNotificationsDevice> list = null;
@@ -1058,11 +1123,25 @@ public class PushNotificationsDevicePersistenceImpl
 	public int countByU_P(long userId, String platform) {
 		platform = Objects.toString(platform, "");
 
-		FinderPath finderPath = _finderPathCountByU_P;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {userId, platform};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByU_P;
+
+		if (productionMode) {
+			finderArgs = new Object[] {userId, platform};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId, platform
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1132,11 +1211,23 @@ public class PushNotificationsDevicePersistenceImpl
 
 		platform = Objects.toString(platform, "");
 
-		Object[] finderArgs = new Object[] {
-			StringUtil.merge(userIds), platform
-		};
+		boolean productionMode = true;
 
-		Long count = (Long)finderCache.getResult(
+		Object[] finderArgs = null;
+
+		Long count = null;
+
+		if (productionMode) {
+			finderArgs = new Object[] {StringUtil.merge(userIds), platform};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				StringUtil.merge(userIds), platform
+			};
+		}
+
+		count = (Long)finderCache.getResult(
 			_finderPathWithPaginationCountByU_P, finderArgs, this);
 
 		if (count == null) {
@@ -1639,6 +1730,8 @@ public class PushNotificationsDevicePersistenceImpl
 		OrderByComparator<PushNotificationsDevice> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1647,12 +1740,29 @@ public class PushNotificationsDevicePersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<PushNotificationsDevice> list = null;
@@ -1729,8 +1839,20 @@ public class PushNotificationsDevicePersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -1743,8 +1865,18 @@ public class PushNotificationsDevicePersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

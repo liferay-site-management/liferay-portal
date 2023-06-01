@@ -15,6 +15,7 @@
 package com.liferay.portal.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -161,6 +162,8 @@ public class ServiceComponentPersistenceImpl
 
 		buildNamespace = Objects.toString(buildNamespace, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -169,14 +172,32 @@ public class ServiceComponentPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByBuildNamespace;
-				finderArgs = new Object[] {buildNamespace};
+
+				if (productionMode) {
+					finderArgs = new Object[] {buildNamespace};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						buildNamespace
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByBuildNamespace;
-			finderArgs = new Object[] {
-				buildNamespace, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					buildNamespace, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), buildNamespace,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<ServiceComponent> list = null;
@@ -576,12 +597,25 @@ public class ServiceComponentPersistenceImpl
 	public int countByBuildNamespace(String buildNamespace) {
 		buildNamespace = Objects.toString(buildNamespace, "");
 
-		FinderPath finderPath = _finderPathCountByBuildNamespace;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {buildNamespace};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByBuildNamespace;
+
+		if (productionMode) {
+			finderArgs = new Object[] {buildNamespace};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), buildNamespace
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -705,10 +739,20 @@ public class ServiceComponentPersistenceImpl
 
 		buildNamespace = Objects.toString(buildNamespace, "");
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {buildNamespace, buildNumber};
+			if (productionMode) {
+				finderArgs = new Object[] {buildNamespace, buildNumber};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), buildNamespace,
+					buildNumber
+				};
+			}
 		}
 
 		Object result = null;
@@ -825,12 +869,26 @@ public class ServiceComponentPersistenceImpl
 	public int countByBNS_BNU(String buildNamespace, long buildNumber) {
 		buildNamespace = Objects.toString(buildNamespace, "");
 
-		FinderPath finderPath = _finderPathCountByBNS_BNU;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {buildNamespace, buildNumber};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByBNS_BNU;
+
+		if (productionMode) {
+			finderArgs = new Object[] {buildNamespace, buildNumber};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), buildNamespace,
+				buildNumber
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1287,6 +1345,8 @@ public class ServiceComponentPersistenceImpl
 		OrderByComparator<ServiceComponent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1295,12 +1355,29 @@ public class ServiceComponentPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<ServiceComponent> list = null;
@@ -1376,8 +1453,20 @@ public class ServiceComponentPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)FinderCacheUtil.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)FinderCacheUtil.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)FinderCacheUtil.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -1389,8 +1478,18 @@ public class ServiceComponentPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				FinderCacheUtil.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					FinderCacheUtil.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					FinderCacheUtil.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

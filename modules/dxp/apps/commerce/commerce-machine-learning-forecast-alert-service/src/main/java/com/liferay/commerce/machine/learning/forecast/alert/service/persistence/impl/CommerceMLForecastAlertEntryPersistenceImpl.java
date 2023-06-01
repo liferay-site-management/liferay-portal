@@ -23,6 +23,7 @@ import com.liferay.commerce.machine.learning.forecast.alert.service.persistence.
 import com.liferay.commerce.machine.learning.forecast.alert.service.persistence.CommerceMLForecastAlertEntryUtil;
 import com.liferay.commerce.machine.learning.forecast.alert.service.persistence.impl.constants.CommercePersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -179,6 +180,8 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -187,12 +190,29 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByUuid;
-				finderArgs = new Object[] {uuid};
+
+				if (productionMode) {
+					finderArgs = new Object[] {uuid};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), uuid
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUuid;
-			finderArgs = new Object[] {uuid, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {uuid, start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<CommerceMLForecastAlertEntry> list = null;
@@ -591,11 +611,25 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 	public int countByUuid(String uuid) {
 		uuid = Objects.toString(uuid, "");
 
-		FinderPath finderPath = _finderPathCountByUuid;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {uuid};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByUuid;
+
+		if (productionMode) {
+			finderArgs = new Object[] {uuid};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -734,6 +768,8 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -742,14 +778,32 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByUuid_C;
-				finderArgs = new Object[] {uuid, companyId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {uuid, companyId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), uuid,
+						companyId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUuid_C;
-			finderArgs = new Object[] {
-				uuid, companyId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					uuid, companyId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid,
+					companyId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CommerceMLForecastAlertEntry> list = null;
@@ -1175,11 +1229,25 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 	public int countByUuid_C(String uuid, long companyId) {
 		uuid = Objects.toString(uuid, "");
 
-		FinderPath finderPath = _finderPathCountByUuid_C;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {uuid, companyId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByUuid_C;
+
+		if (productionMode) {
+			finderArgs = new Object[] {uuid, companyId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid, companyId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1315,12 +1383,22 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 		long companyId, long commerceAccountId, Date timestamp,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {
-				companyId, commerceAccountId, _getTime(timestamp)
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, commerceAccountId, _getTime(timestamp)
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					commerceAccountId, _getTime(timestamp)
+				};
+			}
 		}
 
 		Object result = null;
@@ -1465,13 +1543,28 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 	public int countByC_C_T(
 		long companyId, long commerceAccountId, Date timestamp) {
 
-		FinderPath finderPath = _finderPathCountByC_C_T;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			companyId, commerceAccountId, _getTime(timestamp)
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByC_C_T;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				companyId, commerceAccountId, _getTime(timestamp)
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				commerceAccountId, _getTime(timestamp)
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -1631,6 +1724,8 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 		OrderByComparator<CommerceMLForecastAlertEntry> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1639,17 +1734,35 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByC_C_S;
-				finderArgs = new Object[] {
-					companyId, commerceAccountId, status
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						companyId, commerceAccountId, status
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), companyId,
+						commerceAccountId, status
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByC_C_S;
-			finderArgs = new Object[] {
-				companyId, commerceAccountId, status, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, commerceAccountId, status, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					commerceAccountId, status, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CommerceMLForecastAlertEntry> list = null;
@@ -2155,22 +2268,41 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 				orderByComparator);
 		}
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
 			if (useFinderCache) {
-				finderArgs = new Object[] {
-					companyId, StringUtil.merge(commerceAccountIds), status
-				};
+				if (productionMode) {
+					finderArgs = new Object[] {
+						companyId, StringUtil.merge(commerceAccountIds), status
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), companyId,
+						StringUtil.merge(commerceAccountIds), status
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
-			finderArgs = new Object[] {
-				companyId, StringUtil.merge(commerceAccountIds), status, start,
-				end, orderByComparator
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, StringUtil.merge(commerceAccountIds), status,
+					start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					StringUtil.merge(commerceAccountIds), status, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<CommerceMLForecastAlertEntry> list = null;
@@ -2301,13 +2433,26 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 	public int countByC_C_S(
 		long companyId, long commerceAccountId, int status) {
 
-		FinderPath finderPath = _finderPathCountByC_C_S;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			companyId, commerceAccountId, status
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByC_C_S;
+
+		if (productionMode) {
+			finderArgs = new Object[] {companyId, commerceAccountId, status};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				commerceAccountId, status
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -2371,11 +2516,25 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 			commerceAccountIds = ArrayUtil.sortedUnique(commerceAccountIds);
 		}
 
-		Object[] finderArgs = new Object[] {
-			companyId, StringUtil.merge(commerceAccountIds), status
-		};
+		boolean productionMode = true;
 
-		Long count = (Long)finderCache.getResult(
+		Object[] finderArgs = null;
+
+		Long count = null;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				companyId, StringUtil.merge(commerceAccountIds), status
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				StringUtil.merge(commerceAccountIds), status
+			};
+		}
+
+		count = (Long)finderCache.getResult(
 			_finderPathWithPaginationCountByC_C_S, finderArgs, this);
 
 		if (count == null) {
@@ -2545,14 +2704,26 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 		OrderByComparator<CommerceMLForecastAlertEntry> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		finderPath = _finderPathWithPaginationFindByC_C_GtRc_S;
-		finderArgs = new Object[] {
-			companyId, commerceAccountId, relativeChange, status, start, end,
-			orderByComparator
-		};
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				companyId, commerceAccountId, relativeChange, status, start,
+				end, orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				commerceAccountId, relativeChange, status, start, end,
+				orderByComparator
+			};
+		}
 
 		List<CommerceMLForecastAlertEntry> list = null;
 
@@ -3095,23 +3266,43 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 				end, orderByComparator);
 		}
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
 			if (useFinderCache) {
-				finderArgs = new Object[] {
-					companyId, StringUtil.merge(commerceAccountIds),
-					relativeChange, status
-				};
+				if (productionMode) {
+					finderArgs = new Object[] {
+						companyId, StringUtil.merge(commerceAccountIds),
+						relativeChange, status
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), companyId,
+						StringUtil.merge(commerceAccountIds), relativeChange,
+						status
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
-			finderArgs = new Object[] {
-				companyId, StringUtil.merge(commerceAccountIds), relativeChange,
-				status, start, end, orderByComparator
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, StringUtil.merge(commerceAccountIds),
+					relativeChange, status, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					StringUtil.merge(commerceAccountIds), relativeChange,
+					status, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CommerceMLForecastAlertEntry> list = null;
@@ -3253,13 +3444,28 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 		long companyId, long commerceAccountId, double relativeChange,
 		int status) {
 
-		FinderPath finderPath = _finderPathWithPaginationCountByC_C_GtRc_S;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			companyId, commerceAccountId, relativeChange, status
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathWithPaginationCountByC_C_GtRc_S;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				companyId, commerceAccountId, relativeChange, status
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				commerceAccountId, relativeChange, status
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -3329,12 +3535,26 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 			commerceAccountIds = ArrayUtil.sortedUnique(commerceAccountIds);
 		}
 
-		Object[] finderArgs = new Object[] {
-			companyId, StringUtil.merge(commerceAccountIds), relativeChange,
-			status
-		};
+		boolean productionMode = true;
 
-		Long count = (Long)finderCache.getResult(
+		Object[] finderArgs = null;
+
+		Long count = null;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				companyId, StringUtil.merge(commerceAccountIds), relativeChange,
+				status
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				StringUtil.merge(commerceAccountIds), relativeChange, status
+			};
+		}
+
+		count = (Long)finderCache.getResult(
 			_finderPathWithPaginationCountByC_C_GtRc_S, finderArgs, this);
 
 		if (count == null) {
@@ -3512,14 +3732,26 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 		OrderByComparator<CommerceMLForecastAlertEntry> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		finderPath = _finderPathWithPaginationFindByC_C_LtRc_S;
-		finderArgs = new Object[] {
-			companyId, commerceAccountId, relativeChange, status, start, end,
-			orderByComparator
-		};
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				companyId, commerceAccountId, relativeChange, status, start,
+				end, orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				commerceAccountId, relativeChange, status, start, end,
+				orderByComparator
+			};
+		}
 
 		List<CommerceMLForecastAlertEntry> list = null;
 
@@ -4062,23 +4294,43 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 				end, orderByComparator);
 		}
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
 			if (useFinderCache) {
-				finderArgs = new Object[] {
-					companyId, StringUtil.merge(commerceAccountIds),
-					relativeChange, status
-				};
+				if (productionMode) {
+					finderArgs = new Object[] {
+						companyId, StringUtil.merge(commerceAccountIds),
+						relativeChange, status
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), companyId,
+						StringUtil.merge(commerceAccountIds), relativeChange,
+						status
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
-			finderArgs = new Object[] {
-				companyId, StringUtil.merge(commerceAccountIds), relativeChange,
-				status, start, end, orderByComparator
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, StringUtil.merge(commerceAccountIds),
+					relativeChange, status, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					StringUtil.merge(commerceAccountIds), relativeChange,
+					status, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CommerceMLForecastAlertEntry> list = null;
@@ -4220,13 +4472,28 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 		long companyId, long commerceAccountId, double relativeChange,
 		int status) {
 
-		FinderPath finderPath = _finderPathWithPaginationCountByC_C_LtRc_S;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			companyId, commerceAccountId, relativeChange, status
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathWithPaginationCountByC_C_LtRc_S;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				companyId, commerceAccountId, relativeChange, status
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				commerceAccountId, relativeChange, status
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -4296,12 +4563,26 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 			commerceAccountIds = ArrayUtil.sortedUnique(commerceAccountIds);
 		}
 
-		Object[] finderArgs = new Object[] {
-			companyId, StringUtil.merge(commerceAccountIds), relativeChange,
-			status
-		};
+		boolean productionMode = true;
 
-		Long count = (Long)finderCache.getResult(
+		Object[] finderArgs = null;
+
+		Long count = null;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				companyId, StringUtil.merge(commerceAccountIds), relativeChange,
+				status
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId,
+				StringUtil.merge(commerceAccountIds), relativeChange, status
+			};
+		}
+
+		count = (Long)finderCache.getResult(
 			_finderPathWithPaginationCountByC_C_LtRc_S, finderArgs, this);
 
 		if (count == null) {
@@ -4857,6 +5138,8 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 		OrderByComparator<CommerceMLForecastAlertEntry> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -4865,12 +5148,29 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<CommerceMLForecastAlertEntry> list = null;
@@ -4949,8 +5249,20 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -4963,8 +5275,18 @@ public class CommerceMLForecastAlertEntryPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

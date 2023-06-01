@@ -15,6 +15,7 @@
 package com.liferay.portal.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -162,6 +163,8 @@ public class UserNotificationEventPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -170,12 +173,29 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByUuid;
-				finderArgs = new Object[] {uuid};
+
+				if (productionMode) {
+					finderArgs = new Object[] {uuid};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), uuid
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUuid;
-			finderArgs = new Object[] {uuid, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {uuid, start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -568,12 +588,25 @@ public class UserNotificationEventPersistenceImpl
 	public int countByUuid(String uuid) {
 		uuid = Objects.toString(uuid, "");
 
-		FinderPath finderPath = _finderPathCountByUuid;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {uuid};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByUuid;
+
+		if (productionMode) {
+			finderArgs = new Object[] {uuid};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -712,6 +745,8 @@ public class UserNotificationEventPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -720,14 +755,32 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByUuid_C;
-				finderArgs = new Object[] {uuid, companyId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {uuid, companyId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), uuid,
+						companyId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUuid_C;
-			finderArgs = new Object[] {
-				uuid, companyId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					uuid, companyId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid,
+					companyId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -1148,12 +1201,25 @@ public class UserNotificationEventPersistenceImpl
 	public int countByUuid_C(String uuid, long companyId) {
 		uuid = Objects.toString(uuid, "");
 
-		FinderPath finderPath = _finderPathCountByUuid_C;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {uuid, companyId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByUuid_C;
+
+		if (productionMode) {
+			finderArgs = new Object[] {uuid, companyId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid, companyId
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1289,6 +1355,8 @@ public class UserNotificationEventPersistenceImpl
 		OrderByComparator<UserNotificationEvent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1297,12 +1365,31 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByUserId;
-				finderArgs = new Object[] {userId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {userId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUserId;
-			finderArgs = new Object[] {userId, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -1672,12 +1759,25 @@ public class UserNotificationEventPersistenceImpl
 	 */
 	@Override
 	public int countByUserId(long userId) {
-		FinderPath finderPath = _finderPathCountByUserId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {userId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByUserId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {userId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1794,6 +1894,8 @@ public class UserNotificationEventPersistenceImpl
 
 		type = Objects.toString(type, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1802,12 +1904,29 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByType;
-				finderArgs = new Object[] {type};
+
+				if (productionMode) {
+					finderArgs = new Object[] {type};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), type
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByType;
-			finderArgs = new Object[] {type, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {type, start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), type, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -2200,12 +2319,25 @@ public class UserNotificationEventPersistenceImpl
 	public int countByType(String type) {
 		type = Objects.toString(type, "");
 
-		FinderPath finderPath = _finderPathCountByType;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {type};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByType;
+
+		if (productionMode) {
+			finderArgs = new Object[] {type};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), type
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -2342,6 +2474,8 @@ public class UserNotificationEventPersistenceImpl
 		OrderByComparator<UserNotificationEvent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -2350,14 +2484,32 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_DT;
-				finderArgs = new Object[] {userId, deliveryType};
+
+				if (productionMode) {
+					finderArgs = new Object[] {userId, deliveryType};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						deliveryType
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_DT;
-			finderArgs = new Object[] {
-				userId, deliveryType, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, deliveryType, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId,
+					deliveryType, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -2753,12 +2905,26 @@ public class UserNotificationEventPersistenceImpl
 	 */
 	@Override
 	public int countByU_DT(long userId, int deliveryType) {
-		FinderPath finderPath = _finderPathCountByU_DT;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {userId, deliveryType};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByU_DT;
+
+		if (productionMode) {
+			finderArgs = new Object[] {userId, deliveryType};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId,
+				deliveryType
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -2888,6 +3054,8 @@ public class UserNotificationEventPersistenceImpl
 		OrderByComparator<UserNotificationEvent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -2896,14 +3064,32 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_D;
-				finderArgs = new Object[] {userId, delivered};
+
+				if (productionMode) {
+					finderArgs = new Object[] {userId, delivered};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						delivered
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_D;
-			finderArgs = new Object[] {
-				userId, delivered, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, delivered, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId,
+					delivered, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -3298,12 +3484,25 @@ public class UserNotificationEventPersistenceImpl
 	 */
 	@Override
 	public int countByU_D(long userId, boolean delivered) {
-		FinderPath finderPath = _finderPathCountByU_D;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {userId, delivered};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByU_D;
+
+		if (productionMode) {
+			finderArgs = new Object[] {userId, delivered};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId, delivered
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -3432,6 +3631,8 @@ public class UserNotificationEventPersistenceImpl
 		OrderByComparator<UserNotificationEvent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -3440,14 +3641,32 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_A;
-				finderArgs = new Object[] {userId, archived};
+
+				if (productionMode) {
+					finderArgs = new Object[] {userId, archived};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						archived
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_A;
-			finderArgs = new Object[] {
-				userId, archived, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, archived, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId,
+					archived, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -3842,12 +4061,25 @@ public class UserNotificationEventPersistenceImpl
 	 */
 	@Override
 	public int countByU_A(long userId, boolean archived) {
-		FinderPath finderPath = _finderPathCountByU_A;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {userId, archived};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByU_A;
+
+		if (productionMode) {
+			finderArgs = new Object[] {userId, archived};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId, archived
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -3983,6 +4215,8 @@ public class UserNotificationEventPersistenceImpl
 		OrderByComparator<UserNotificationEvent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -3991,14 +4225,33 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_DT_D;
-				finderArgs = new Object[] {userId, deliveryType, delivered};
+
+				if (productionMode) {
+					finderArgs = new Object[] {userId, deliveryType, delivered};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						deliveryType, delivered
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_DT_D;
-			finderArgs = new Object[] {
-				userId, deliveryType, delivered, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, deliveryType, delivered, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId,
+					deliveryType, delivered, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -4420,12 +4673,26 @@ public class UserNotificationEventPersistenceImpl
 	 */
 	@Override
 	public int countByU_DT_D(long userId, int deliveryType, boolean delivered) {
-		FinderPath finderPath = _finderPathCountByU_DT_D;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {userId, deliveryType, delivered};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByU_DT_D;
+
+		if (productionMode) {
+			finderArgs = new Object[] {userId, deliveryType, delivered};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId,
+				deliveryType, delivered
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -4568,6 +4835,8 @@ public class UserNotificationEventPersistenceImpl
 		OrderByComparator<UserNotificationEvent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -4576,14 +4845,33 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_DT_A;
-				finderArgs = new Object[] {userId, deliveryType, archived};
+
+				if (productionMode) {
+					finderArgs = new Object[] {userId, deliveryType, archived};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						deliveryType, archived
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_DT_A;
-			finderArgs = new Object[] {
-				userId, deliveryType, archived, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, deliveryType, archived, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId,
+					deliveryType, archived, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -5005,12 +5293,26 @@ public class UserNotificationEventPersistenceImpl
 	 */
 	@Override
 	public int countByU_DT_A(long userId, int deliveryType, boolean archived) {
-		FinderPath finderPath = _finderPathCountByU_DT_A;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {userId, deliveryType, archived};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByU_DT_A;
+
+		if (productionMode) {
+			finderArgs = new Object[] {userId, deliveryType, archived};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId,
+				deliveryType, archived
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -5155,6 +5457,8 @@ public class UserNotificationEventPersistenceImpl
 		int end, OrderByComparator<UserNotificationEvent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -5163,14 +5467,35 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_D_AR;
-				finderArgs = new Object[] {userId, delivered, actionRequired};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						userId, delivered, actionRequired
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						delivered, actionRequired
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_D_AR;
-			finderArgs = new Object[] {
-				userId, delivered, actionRequired, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, delivered, actionRequired, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId,
+					delivered, actionRequired, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -5594,12 +5919,26 @@ public class UserNotificationEventPersistenceImpl
 	public int countByU_D_AR(
 		long userId, boolean delivered, boolean actionRequired) {
 
-		FinderPath finderPath = _finderPathCountByU_D_AR;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {userId, delivered, actionRequired};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByU_D_AR;
+
+		if (productionMode) {
+			finderArgs = new Object[] {userId, delivered, actionRequired};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId, delivered,
+				actionRequired
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -5741,6 +6080,8 @@ public class UserNotificationEventPersistenceImpl
 		OrderByComparator<UserNotificationEvent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -5749,14 +6090,32 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_D_A;
-				finderArgs = new Object[] {userId, delivered, archived};
+
+				if (productionMode) {
+					finderArgs = new Object[] {userId, delivered, archived};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						delivered, archived
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_D_A;
-			finderArgs = new Object[] {
-				userId, delivered, archived, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, delivered, archived, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId,
+					delivered, archived, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -6176,12 +6535,26 @@ public class UserNotificationEventPersistenceImpl
 	 */
 	@Override
 	public int countByU_D_A(long userId, boolean delivered, boolean archived) {
-		FinderPath finderPath = _finderPathCountByU_D_A;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {userId, delivered, archived};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByU_D_A;
+
+		if (productionMode) {
+			finderArgs = new Object[] {userId, delivered, archived};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId, delivered,
+				archived
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -6325,6 +6698,8 @@ public class UserNotificationEventPersistenceImpl
 		int end, OrderByComparator<UserNotificationEvent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -6333,14 +6708,35 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_AR_A;
-				finderArgs = new Object[] {userId, actionRequired, archived};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						userId, actionRequired, archived
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						actionRequired, archived
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_AR_A;
-			finderArgs = new Object[] {
-				userId, actionRequired, archived, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, actionRequired, archived, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId,
+					actionRequired, archived, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -6764,12 +7160,26 @@ public class UserNotificationEventPersistenceImpl
 	public int countByU_AR_A(
 		long userId, boolean actionRequired, boolean archived) {
 
-		FinderPath finderPath = _finderPathCountByU_AR_A;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {userId, actionRequired, archived};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByU_AR_A;
+
+		if (productionMode) {
+			finderArgs = new Object[] {userId, actionRequired, archived};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId,
+				actionRequired, archived
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -6922,6 +7332,8 @@ public class UserNotificationEventPersistenceImpl
 
 		type = Objects.toString(type, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -6930,17 +7342,35 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_T_DT_D;
-				finderArgs = new Object[] {
-					userId, type, deliveryType, delivered
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						userId, type, deliveryType, delivered
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						type, deliveryType, delivered
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_T_DT_D;
-			finderArgs = new Object[] {
-				userId, type, deliveryType, delivered, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, type, deliveryType, delivered, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId, type,
+					deliveryType, delivered, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -7412,14 +7842,26 @@ public class UserNotificationEventPersistenceImpl
 
 		type = Objects.toString(type, "");
 
-		FinderPath finderPath = _finderPathCountByU_T_DT_D;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			userId, type, deliveryType, delivered
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByU_T_DT_D;
+
+		if (productionMode) {
+			finderArgs = new Object[] {userId, type, deliveryType, delivered};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId, type,
+				deliveryType, delivered
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -7592,6 +8034,8 @@ public class UserNotificationEventPersistenceImpl
 		OrderByComparator<UserNotificationEvent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -7600,17 +8044,36 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_DT_D_AR;
-				finderArgs = new Object[] {
-					userId, deliveryType, delivered, actionRequired
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						userId, deliveryType, delivered, actionRequired
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						deliveryType, delivered, actionRequired
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_DT_D_AR;
-			finderArgs = new Object[] {
-				userId, deliveryType, delivered, actionRequired, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, deliveryType, delivered, actionRequired, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId,
+					deliveryType, delivered, actionRequired, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -8066,14 +8529,28 @@ public class UserNotificationEventPersistenceImpl
 		long userId, int deliveryType, boolean delivered,
 		boolean actionRequired) {
 
-		FinderPath finderPath = _finderPathCountByU_DT_D_AR;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			userId, deliveryType, delivered, actionRequired
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByU_DT_D_AR;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				userId, deliveryType, delivered, actionRequired
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId,
+				deliveryType, delivered, actionRequired
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -8231,6 +8708,8 @@ public class UserNotificationEventPersistenceImpl
 		OrderByComparator<UserNotificationEvent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -8239,17 +8718,36 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_DT_D_A;
-				finderArgs = new Object[] {
-					userId, deliveryType, delivered, archived
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						userId, deliveryType, delivered, archived
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						deliveryType, delivered, archived
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_DT_D_A;
-			finderArgs = new Object[] {
-				userId, deliveryType, delivered, archived, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, deliveryType, delivered, archived, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId,
+					deliveryType, delivered, archived, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -8695,14 +9193,28 @@ public class UserNotificationEventPersistenceImpl
 	public int countByU_DT_D_A(
 		long userId, int deliveryType, boolean delivered, boolean archived) {
 
-		FinderPath finderPath = _finderPathCountByU_DT_D_A;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			userId, deliveryType, delivered, archived
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByU_DT_D_A;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				userId, deliveryType, delivered, archived
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId,
+				deliveryType, delivered, archived
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -8861,6 +9373,8 @@ public class UserNotificationEventPersistenceImpl
 		OrderByComparator<UserNotificationEvent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -8869,17 +9383,36 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_DT_AR_A;
-				finderArgs = new Object[] {
-					userId, deliveryType, actionRequired, archived
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						userId, deliveryType, actionRequired, archived
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						deliveryType, actionRequired, archived
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_DT_AR_A;
-			finderArgs = new Object[] {
-				userId, deliveryType, actionRequired, archived, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, deliveryType, actionRequired, archived, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId,
+					deliveryType, actionRequired, archived, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -9332,14 +9865,28 @@ public class UserNotificationEventPersistenceImpl
 		long userId, int deliveryType, boolean actionRequired,
 		boolean archived) {
 
-		FinderPath finderPath = _finderPathCountByU_DT_AR_A;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			userId, deliveryType, actionRequired, archived
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByU_DT_AR_A;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				userId, deliveryType, actionRequired, archived
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId,
+				deliveryType, actionRequired, archived
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -9498,6 +10045,8 @@ public class UserNotificationEventPersistenceImpl
 		OrderByComparator<UserNotificationEvent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -9506,17 +10055,36 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_D_AR_A;
-				finderArgs = new Object[] {
-					userId, delivered, actionRequired, archived
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						userId, delivered, actionRequired, archived
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						delivered, actionRequired, archived
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_D_AR_A;
-			finderArgs = new Object[] {
-				userId, delivered, actionRequired, archived, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, delivered, actionRequired, archived, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId,
+					delivered, actionRequired, archived, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -9971,14 +10539,28 @@ public class UserNotificationEventPersistenceImpl
 		long userId, boolean delivered, boolean actionRequired,
 		boolean archived) {
 
-		FinderPath finderPath = _finderPathCountByU_D_AR_A;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			userId, delivered, actionRequired, archived
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByU_D_AR_A;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				userId, delivered, actionRequired, archived
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId, delivered,
+				actionRequired, archived
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -10143,6 +10725,8 @@ public class UserNotificationEventPersistenceImpl
 
 		type = Objects.toString(type, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -10151,17 +10735,36 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_T_DT_D_A;
-				finderArgs = new Object[] {
-					userId, type, deliveryType, delivered, archived
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						userId, type, deliveryType, delivered, archived
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						type, deliveryType, delivered, archived
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_T_DT_D_A;
-			finderArgs = new Object[] {
-				userId, type, deliveryType, delivered, archived, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, type, deliveryType, delivered, archived, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId, type,
+					deliveryType, delivered, archived, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -10664,14 +11267,28 @@ public class UserNotificationEventPersistenceImpl
 
 		type = Objects.toString(type, "");
 
-		FinderPath finderPath = _finderPathCountByU_T_DT_D_A;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			userId, type, deliveryType, delivered, archived
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByU_T_DT_D_A;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				userId, type, deliveryType, delivered, archived
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId, type,
+				deliveryType, delivered, archived
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(6);
@@ -10856,6 +11473,8 @@ public class UserNotificationEventPersistenceImpl
 		OrderByComparator<UserNotificationEvent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -10864,17 +11483,37 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByU_DT_D_AR_A;
-				finderArgs = new Object[] {
-					userId, deliveryType, delivered, actionRequired, archived
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						userId, deliveryType, delivered, actionRequired,
+						archived
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), userId,
+						deliveryType, delivered, actionRequired, archived
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByU_DT_D_AR_A;
-			finderArgs = new Object[] {
-				userId, deliveryType, delivered, actionRequired, archived,
-				start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					userId, deliveryType, delivered, actionRequired, archived,
+					start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), userId,
+					deliveryType, delivered, actionRequired, archived, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -11354,14 +11993,28 @@ public class UserNotificationEventPersistenceImpl
 		long userId, int deliveryType, boolean delivered,
 		boolean actionRequired, boolean archived) {
 
-		FinderPath finderPath = _finderPathCountByU_DT_D_AR_A;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			userId, deliveryType, delivered, actionRequired, archived
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)FinderCacheUtil.getResult(
-			finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByU_DT_D_AR_A;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				userId, deliveryType, delivered, actionRequired, archived
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), userId,
+				deliveryType, delivered, actionRequired, archived
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(6);
@@ -11832,6 +12485,8 @@ public class UserNotificationEventPersistenceImpl
 		OrderByComparator<UserNotificationEvent> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -11840,12 +12495,29 @@ public class UserNotificationEventPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<UserNotificationEvent> list = null;
@@ -11921,8 +12593,20 @@ public class UserNotificationEventPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)FinderCacheUtil.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)FinderCacheUtil.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)FinderCacheUtil.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -11935,8 +12619,18 @@ public class UserNotificationEventPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				FinderCacheUtil.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					FinderCacheUtil.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					FinderCacheUtil.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

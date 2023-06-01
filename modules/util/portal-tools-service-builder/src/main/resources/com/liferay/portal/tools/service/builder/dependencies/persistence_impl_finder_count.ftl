@@ -31,45 +31,24 @@ public int countBy${entityFinder.name}(
 
 	<#if entity.isChangeTrackingEnabled()>
 		boolean productionMode = ${ctPersistenceHelper}.isProductionMode(${entity.name}.class);
-
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
-
-		Long count = null;
-
-		if (productionMode) {
-			finderPath =
-				<#if !entityFinder.hasCustomComparator()>
-					_finderPathCountBy${entityFinder.name};
-				<#else>
-					_finderPathWithPaginationCountBy${entityFinder.name};
-				</#if>
-
-			finderArgs = new Object[] {
-				<#list entityColumns as entityColumn>
-					<#if stringUtil.equals(entityColumn.type, "Date")>
-						_getTime(${entityColumn.name})
-					<#else>
-						${entityColumn.name}
-					</#if>
-
-					<#if entityColumn_has_next>
-						,
-					</#if>
-				</#list>
-			};
-
-			count = (Long)${finderCache}.getResult(finderPath, finderArgs, this);
-		}
 	<#else>
-		FinderPath finderPath =
-			<#if !entityFinder.hasCustomComparator()>
-				_finderPathCountBy${entityFinder.name};
-			<#else>
-				_finderPathWithPaginationCountBy${entityFinder.name};
-			</#if>
+		boolean productionMode = true;
+	</#if>
 
-		Object[] finderArgs = new Object[] {
+	FinderPath finderPath = null;
+	Object[] finderArgs = null;
+
+	Long count = null;
+
+	finderPath =
+		<#if !entityFinder.hasCustomComparator()>
+			_finderPathCountBy${entityFinder.name};
+		<#else>
+			_finderPathWithPaginationCountBy${entityFinder.name};
+		</#if>
+
+	if (productionMode) {
+		finderArgs = new Object[] {
 			<#list entityColumns as entityColumn>
 				<#if stringUtil.equals(entityColumn.type, "Date")>
 					_getTime(${entityColumn.name})
@@ -82,9 +61,25 @@ public int countBy${entityFinder.name}(
 				</#if>
 			</#list>
 		};
+	}
+	else {
+		finderArgs = new Object[] {
+			CTCollectionThreadLocal.getCTCollectionId(),
+			<#list entityColumns as entityColumn>
+				<#if stringUtil.equals(entityColumn.type, "Date")>
+					_getTime(${entityColumn.name})
+				<#else>
+					${entityColumn.name}
+				</#if>
 
-		Long count = (Long)${finderCache}.getResult(finderPath, finderArgs, this);
-	</#if>
+				<#if entityColumn_has_next>
+					,
+				</#if>
+			</#list>
+		};
+	}
+
+	count = (Long)${finderCache}.getResult(finderPath, finderArgs, this);
 
 	if (count == null) {
 		<#include "persistence_impl_count_by_query.ftl">
@@ -104,23 +99,11 @@ public int countBy${entityFinder.name}(
 
 			count = (Long)query.uniqueResult();
 
-			<#if entity.isChangeTrackingEnabled()>
-				if (productionMode) {
-					${finderCache}.putResult(finderPath, finderArgs, count);
-				}
-			<#else>
-				${finderCache}.putResult(finderPath, finderArgs, count);
-			</#if>
+			${finderCache}.putResult(finderPath, finderArgs, count);
 		}
 		catch (Exception exception) {
 			<#if serviceBuilder.isVersionLTE_7_2_0()>
-				<#if entity.isChangeTrackingEnabled()>
-					if (productionMode) {
-						${finderCache}.removeResult(finderPath, finderArgs);
-					}
-				<#else>
-					${finderCache}.removeResult(finderPath, finderArgs);
-				</#if>
+				${finderCache}.removeResult(finderPath, finderArgs);
 			</#if>
 
 			throw processException(exception);
@@ -198,32 +181,16 @@ public int countBy${entityFinder.name}(
 
 		<#if entity.isChangeTrackingEnabled()>
 			boolean productionMode = ${ctPersistenceHelper}.isProductionMode(${entity.name}.class);
-
-			Object[] finderArgs = null;
-
-			Long count = null;
-
-			if (productionMode) {
-				finderArgs = new Object[] {
-					<#list entityColumns as entityColumn>
-						<#if entityColumn.hasArrayableOperator()>
-								StringUtil.merge(${entityColumn.pluralName})
-						<#elseif stringUtil.equals(entityColumn.type, "Date")>
-								_getTime(${entityColumn.name})
-						<#else>
-							${entityColumn.name}
-						</#if>
-
-						<#if entityColumn_has_next>
-								,
-						</#if>
-					</#list>
-				};
-
-				count = (Long)${finderCache}.getResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs, this);
-			}
 		<#else>
-			Object[] finderArgs = new Object[] {
+			boolean productionMode = true;
+		</#if>
+
+		Object[] finderArgs = null;
+
+		Long count = null;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
 				<#list entityColumns as entityColumn>
 					<#if entityColumn.hasArrayableOperator()>
 							StringUtil.merge(${entityColumn.pluralName})
@@ -238,9 +205,27 @@ public int countBy${entityFinder.name}(
 					</#if>
 				</#list>
 			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				<#list entityColumns as entityColumn>
+					<#if entityColumn.hasArrayableOperator()>
+						StringUtil.merge(${entityColumn.pluralName})
+					<#elseif stringUtil.equals(entityColumn.type, "Date")>
+						_getTime(${entityColumn.name})
+					<#else>
+						${entityColumn.name}
+					</#if>
 
-			Long count = (Long)${finderCache}.getResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs, this);
-		</#if>
+					<#if entityColumn_has_next>
+						,
+					</#if>
+				</#list>
+			};
+		}
+
+		count = (Long)${finderCache}.getResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs, this);
 
 		if (count == null) {
 			<#include "persistence_impl_count_by_arrayable_query.ftl">
@@ -262,23 +247,11 @@ public int countBy${entityFinder.name}(
 
 				count = (Long)query.uniqueResult();
 
-				<#if entity.isChangeTrackingEnabled()>
-					if (productionMode) {
-						${finderCache}.putResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs, count);
-					}
-				<#else>
-					${finderCache}.putResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs, count);
-				</#if>
+				${finderCache}.putResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs, count);
 			}
 			catch (Exception exception) {
 				<#if serviceBuilder.isVersionLTE_7_2_0()>
-					<#if entity.isChangeTrackingEnabled()>
-						if (productionMode) {
-							${finderCache}.removeResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs);
-						}
-					<#else>
-						${finderCache}.removeResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs);
-					</#if>
+					${finderCache}.removeResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs);
 				</#if>
 
 				throw processException(exception);
@@ -357,30 +330,16 @@ public int countBy${entityFinder.name}(
 
 		<#if entity.isChangeTrackingEnabled()>
 			boolean productionMode = ${ctPersistenceHelper}.isProductionMode(${entity.name}.class);
-
-			Object[] finderArgs = null;
-
-			Long count = null;
-
-			if (productionMode) {
-				finderArgs = new Object[] {
-					<#list entityColumns as entityColumn>
-						<#if entityColumn.hasArrayableOperator()>
-							StringUtil.merge(${entityColumn.pluralName})
-						<#else>
-							${entityColumn.name}
-						</#if>
-
-						<#if entityColumn_has_next>
-							,
-						</#if>
-					</#list>
-				};
-
-				count = (Long)${finderCache}.getResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs, this);
-			}
 		<#else>
-			Object[] finderArgs = new Object[] {
+			boolean productionMode = true;
+		</#if>
+
+		Object[] finderArgs = null;
+
+		Long count = null;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
 				<#list entityColumns as entityColumn>
 					<#if entityColumn.hasArrayableOperator()>
 						StringUtil.merge(${entityColumn.pluralName})
@@ -393,9 +352,25 @@ public int countBy${entityFinder.name}(
 					</#if>
 				</#list>
 			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				<#list entityColumns as entityColumn>
+					<#if entityColumn.hasArrayableOperator()>
+						StringUtil.merge(${entityColumn.pluralName})
+					<#else>
+						${entityColumn.name}
+					</#if>
 
-			Long count = (Long)${finderCache}.getResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs, this);
-		</#if>
+					<#if entityColumn_has_next>
+						,
+					</#if>
+				</#list>
+			};
+		}
+
+		count = (Long)${finderCache}.getResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs, this);
 
 		if (count == null) {
 			try {
@@ -450,23 +425,11 @@ public int countBy${entityFinder.name}(
 						</#list>));
 					}
 
-					<#if entity.isChangeTrackingEnabled()>
-						if (productionMode) {
-							${finderCache}.putResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs, count);
-						}
-					<#else>
-						${finderCache}.putResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs, count);
-					</#if>
+					${finderCache}.putResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs, count);
 			}
 			catch (Exception exception) {
 				<#if serviceBuilder.isVersionLTE_7_2_0()>
-					<#if entity.isChangeTrackingEnabled()>
-						if (productionMode) {
-							${finderCache}.removeResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs);
-						}
-					<#else>
-						${finderCache}.removeResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs);
-					</#if>
+					${finderCache}.removeResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs);
 				</#if>
 
 				throw processException(exception);

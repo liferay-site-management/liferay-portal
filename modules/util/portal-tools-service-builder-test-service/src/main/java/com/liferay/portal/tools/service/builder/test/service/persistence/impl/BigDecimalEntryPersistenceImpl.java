@@ -16,6 +16,7 @@ package com.liferay.portal.tools.service.builder.test.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -169,6 +170,8 @@ public class BigDecimalEntryPersistenceImpl
 		OrderByComparator<BigDecimalEntry> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -177,14 +180,32 @@ public class BigDecimalEntryPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByBigDecimalValue;
-				finderArgs = new Object[] {bigDecimalValue};
+
+				if (productionMode) {
+					finderArgs = new Object[] {bigDecimalValue};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						bigDecimalValue
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByBigDecimalValue;
-			finderArgs = new Object[] {
-				bigDecimalValue, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					bigDecimalValue, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					bigDecimalValue, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<BigDecimalEntry> list = null;
@@ -580,11 +601,25 @@ public class BigDecimalEntryPersistenceImpl
 	 */
 	@Override
 	public int countByBigDecimalValue(BigDecimal bigDecimalValue) {
-		FinderPath finderPath = _finderPathCountByBigDecimalValue;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {bigDecimalValue};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByBigDecimalValue;
+
+		if (productionMode) {
+			finderArgs = new Object[] {bigDecimalValue};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), bigDecimalValue
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -718,13 +753,24 @@ public class BigDecimalEntryPersistenceImpl
 		OrderByComparator<BigDecimalEntry> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		finderPath = _finderPathWithPaginationFindByGtBigDecimalValue;
-		finderArgs = new Object[] {
-			bigDecimalValue, start, end, orderByComparator
-		};
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				bigDecimalValue, start, end, orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), bigDecimalValue,
+				start, end, orderByComparator
+			};
+		}
 
 		List<BigDecimalEntry> list = null;
 
@@ -1118,12 +1164,25 @@ public class BigDecimalEntryPersistenceImpl
 	 */
 	@Override
 	public int countByGtBigDecimalValue(BigDecimal bigDecimalValue) {
-		FinderPath finderPath =
-			_finderPathWithPaginationCountByGtBigDecimalValue;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {bigDecimalValue};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathWithPaginationCountByGtBigDecimalValue;
+
+		if (productionMode) {
+			finderArgs = new Object[] {bigDecimalValue};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), bigDecimalValue
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1257,13 +1316,24 @@ public class BigDecimalEntryPersistenceImpl
 		OrderByComparator<BigDecimalEntry> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		finderPath = _finderPathWithPaginationFindByLtBigDecimalValue;
-		finderArgs = new Object[] {
-			bigDecimalValue, start, end, orderByComparator
-		};
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				bigDecimalValue, start, end, orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), bigDecimalValue,
+				start, end, orderByComparator
+			};
+		}
 
 		List<BigDecimalEntry> list = null;
 
@@ -1657,12 +1727,25 @@ public class BigDecimalEntryPersistenceImpl
 	 */
 	@Override
 	public int countByLtBigDecimalValue(BigDecimal bigDecimalValue) {
-		FinderPath finderPath =
-			_finderPathWithPaginationCountByLtBigDecimalValue;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {bigDecimalValue};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathWithPaginationCountByLtBigDecimalValue;
+
+		if (productionMode) {
+			finderArgs = new Object[] {bigDecimalValue};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), bigDecimalValue
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -2087,6 +2170,8 @@ public class BigDecimalEntryPersistenceImpl
 		OrderByComparator<BigDecimalEntry> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -2095,12 +2180,29 @@ public class BigDecimalEntryPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<BigDecimalEntry> list = null;
@@ -2176,8 +2278,20 @@ public class BigDecimalEntryPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -2189,8 +2303,18 @@ public class BigDecimalEntryPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

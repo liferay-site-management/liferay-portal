@@ -23,6 +23,7 @@ import com.liferay.depot.service.persistence.DepotAppCustomizationPersistence;
 import com.liferay.depot.service.persistence.DepotAppCustomizationUtil;
 import com.liferay.depot.service.persistence.impl.constants.DepotPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -169,6 +170,8 @@ public class DepotAppCustomizationPersistenceImpl
 		OrderByComparator<DepotAppCustomization> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -177,14 +180,32 @@ public class DepotAppCustomizationPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByDepotEntryId;
-				finderArgs = new Object[] {depotEntryId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {depotEntryId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						depotEntryId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByDepotEntryId;
-			finderArgs = new Object[] {
-				depotEntryId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					depotEntryId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), depotEntryId,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<DepotAppCustomization> list = null;
@@ -557,11 +578,25 @@ public class DepotAppCustomizationPersistenceImpl
 	 */
 	@Override
 	public int countByDepotEntryId(long depotEntryId) {
-		FinderPath finderPath = _finderPathCountByDepotEntryId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {depotEntryId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByDepotEntryId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {depotEntryId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), depotEntryId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -668,10 +703,20 @@ public class DepotAppCustomizationPersistenceImpl
 	public DepotAppCustomization fetchByD_E(
 		long depotEntryId, boolean enabled, boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {depotEntryId, enabled};
+			if (productionMode) {
+				finderArgs = new Object[] {depotEntryId, enabled};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), depotEntryId,
+					enabled
+				};
+			}
 		}
 
 		Object result = null;
@@ -791,11 +836,26 @@ public class DepotAppCustomizationPersistenceImpl
 	 */
 	@Override
 	public int countByD_E(long depotEntryId, boolean enabled) {
-		FinderPath finderPath = _finderPathCountByD_E;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {depotEntryId, enabled};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByD_E;
+
+		if (productionMode) {
+			finderArgs = new Object[] {depotEntryId, enabled};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), depotEntryId,
+				enabled
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -911,10 +971,20 @@ public class DepotAppCustomizationPersistenceImpl
 
 		portletId = Objects.toString(portletId, "");
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {depotEntryId, portletId};
+			if (productionMode) {
+				finderArgs = new Object[] {depotEntryId, portletId};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), depotEntryId,
+					portletId
+				};
+			}
 		}
 
 		Object result = null;
@@ -1032,11 +1102,26 @@ public class DepotAppCustomizationPersistenceImpl
 	public int countByD_P(long depotEntryId, String portletId) {
 		portletId = Objects.toString(portletId, "");
 
-		FinderPath finderPath = _finderPathCountByD_P;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {depotEntryId, portletId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByD_P;
+
+		if (productionMode) {
+			finderArgs = new Object[] {depotEntryId, portletId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), depotEntryId,
+				portletId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1523,6 +1608,8 @@ public class DepotAppCustomizationPersistenceImpl
 		OrderByComparator<DepotAppCustomization> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1531,12 +1618,29 @@ public class DepotAppCustomizationPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<DepotAppCustomization> list = null;
@@ -1612,8 +1716,20 @@ public class DepotAppCustomizationPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -1626,8 +1742,18 @@ public class DepotAppCustomizationPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

@@ -15,6 +15,7 @@
 package com.liferay.saml.persistence.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -186,6 +187,8 @@ public class SamlPeerBindingPersistenceImpl
 
 		samlNameIdValue = Objects.toString(samlNameIdValue, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -194,15 +197,35 @@ public class SamlPeerBindingPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByC_D_SNIV;
-				finderArgs = new Object[] {companyId, deleted, samlNameIdValue};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						companyId, deleted, samlNameIdValue
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), companyId,
+						deleted, samlNameIdValue
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByC_D_SNIV;
-			finderArgs = new Object[] {
-				companyId, deleted, samlNameIdValue, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, deleted, samlNameIdValue, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					deleted, samlNameIdValue, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<SamlPeerBinding> list = null;
@@ -651,13 +674,26 @@ public class SamlPeerBindingPersistenceImpl
 
 		samlNameIdValue = Objects.toString(samlNameIdValue, "");
 
-		FinderPath finderPath = _finderPathCountByC_D_SNIV;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			companyId, deleted, samlNameIdValue
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByC_D_SNIV;
+
+		if (productionMode) {
+			finderArgs = new Object[] {companyId, deleted, samlNameIdValue};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId, deleted,
+				samlNameIdValue
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -824,6 +860,8 @@ public class SamlPeerBindingPersistenceImpl
 
 		samlPeerEntityId = Objects.toString(samlPeerEntityId, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -832,17 +870,36 @@ public class SamlPeerBindingPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByC_U_D_SPEI;
-				finderArgs = new Object[] {
-					companyId, userId, deleted, samlPeerEntityId
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						companyId, userId, deleted, samlPeerEntityId
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), companyId,
+						userId, deleted, samlPeerEntityId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByC_U_D_SPEI;
-			finderArgs = new Object[] {
-				companyId, userId, deleted, samlPeerEntityId, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					companyId, userId, deleted, samlPeerEntityId, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), companyId,
+					userId, deleted, samlPeerEntityId, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<SamlPeerBinding> list = null;
@@ -1317,13 +1374,28 @@ public class SamlPeerBindingPersistenceImpl
 
 		samlPeerEntityId = Objects.toString(samlPeerEntityId, "");
 
-		FinderPath finderPath = _finderPathCountByC_U_D_SPEI;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			companyId, userId, deleted, samlPeerEntityId
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByC_U_D_SPEI;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				companyId, userId, deleted, samlPeerEntityId
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), companyId, userId,
+				deleted, samlPeerEntityId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -1779,6 +1851,8 @@ public class SamlPeerBindingPersistenceImpl
 		OrderByComparator<SamlPeerBinding> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1787,12 +1861,29 @@ public class SamlPeerBindingPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<SamlPeerBinding> list = null;
@@ -1868,8 +1959,20 @@ public class SamlPeerBindingPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -1881,8 +1984,18 @@ public class SamlPeerBindingPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

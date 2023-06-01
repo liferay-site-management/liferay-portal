@@ -23,6 +23,7 @@ import com.liferay.friendly.url.service.persistence.FriendlyURLEntryLocalization
 import com.liferay.friendly.url.service.persistence.FriendlyURLEntryLocalizationUtil;
 import com.liferay.friendly.url.service.persistence.impl.constants.FURLPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -186,22 +187,40 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByFriendlyURLEntryId;
-				finderArgs = new Object[] {friendlyURLEntryId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {friendlyURLEntryId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						friendlyURLEntryId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByFriendlyURLEntryId;
-			finderArgs = new Object[] {
-				friendlyURLEntryId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					friendlyURLEntryId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					friendlyURLEntryId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<FriendlyURLEntryLocalization> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FriendlyURLEntryLocalization>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -209,9 +228,13 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 				for (FriendlyURLEntryLocalization friendlyURLEntryLocalization :
 						list) {
 
-					if (friendlyURLEntryId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 friendlyURLEntryLocalization.
+								 getCtCollectionId())) ||
+						(friendlyURLEntryId !=
 							friendlyURLEntryLocalization.
-								getFriendlyURLEntryId()) {
+								getFriendlyURLEntryId())) {
 
 						list = null;
 
@@ -262,7 +285,7 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -585,13 +608,18 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByFriendlyURLEntryId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByFriendlyURLEntryId;
-
 			finderArgs = new Object[] {friendlyURLEntryId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), friendlyURLEntryId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -615,9 +643,7 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -712,13 +738,21 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {friendlyURLEntryId, languageId};
+		if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {friendlyURLEntryId, languageId};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					friendlyURLEntryId, languageId
+				};
+			}
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByFriendlyURLEntryId_LanguageId, finderArgs,
 				this);
@@ -728,7 +762,10 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 			FriendlyURLEntryLocalization friendlyURLEntryLocalization =
 				(FriendlyURLEntryLocalization)result;
 
-			if ((friendlyURLEntryId !=
+			if ((!productionMode &&
+				 (CTCollectionThreadLocal.getCTCollectionId() !=
+					 friendlyURLEntryLocalization.getCtCollectionId())) ||
+				(friendlyURLEntryId !=
 					friendlyURLEntryLocalization.getFriendlyURLEntryId()) ||
 				!Objects.equals(
 					languageId, friendlyURLEntryLocalization.getLanguageId())) {
@@ -778,7 +815,7 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 				List<FriendlyURLEntryLocalization> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByFriendlyURLEntryId_LanguageId,
 							finderArgs, list);
@@ -848,13 +885,19 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByFriendlyURLEntryId_LanguageId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByFriendlyURLEntryId_LanguageId;
-
 			finderArgs = new Object[] {friendlyURLEntryId, languageId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), friendlyURLEntryId,
+				languageId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -896,9 +939,7 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1023,21 +1064,40 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_C_U;
-				finderArgs = new Object[] {groupId, classNameId, urlTitle};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId, classNameId, urlTitle};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						classNameId, urlTitle
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_C_U;
-			finderArgs = new Object[] {
-				groupId, classNameId, urlTitle, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, classNameId, urlTitle, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					classNameId, urlTitle, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<FriendlyURLEntryLocalization> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FriendlyURLEntryLocalization>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -1045,7 +1105,11 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 				for (FriendlyURLEntryLocalization friendlyURLEntryLocalization :
 						list) {
 
-					if ((groupId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 friendlyURLEntryLocalization.
+								 getCtCollectionId())) ||
+						(groupId !=
 							friendlyURLEntryLocalization.getGroupId()) ||
 						(classNameId !=
 							friendlyURLEntryLocalization.getClassNameId()) ||
@@ -1120,7 +1184,7 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1494,13 +1558,19 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByG_C_U;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByG_C_U;
-
 			finderArgs = new Object[] {groupId, classNameId, urlTitle};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				classNameId, urlTitle
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -1543,9 +1613,7 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1678,24 +1746,43 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_C_C_L;
-				finderArgs = new Object[] {
-					groupId, classNameId, classPK, languageId
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						groupId, classNameId, classPK, languageId
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						classNameId, classPK, languageId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_C_C_L;
-			finderArgs = new Object[] {
-				groupId, classNameId, classPK, languageId, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, classNameId, classPK, languageId, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					classNameId, classPK, languageId, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<FriendlyURLEntryLocalization> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FriendlyURLEntryLocalization>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -1703,7 +1790,11 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 				for (FriendlyURLEntryLocalization friendlyURLEntryLocalization :
 						list) {
 
-					if ((groupId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 friendlyURLEntryLocalization.
+								 getCtCollectionId())) ||
+						(groupId !=
 							friendlyURLEntryLocalization.getGroupId()) ||
 						(classNameId !=
 							friendlyURLEntryLocalization.getClassNameId()) ||
@@ -1784,7 +1875,7 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -2179,15 +2270,21 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 		Long count = null;
 
-		if (productionMode) {
-			finderPath = _finderPathCountByG_C_C_L;
+		finderPath = _finderPathCountByG_C_C_L;
 
+		if (productionMode) {
 			finderArgs = new Object[] {
 				groupId, classNameId, classPK, languageId
 			};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				classNameId, classPK, languageId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -2234,9 +2331,7 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2354,15 +2449,23 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {
-				groupId, classNameId, languageId, urlTitle
-			};
+		if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, classNameId, languageId, urlTitle
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					classNameId, languageId, urlTitle
+				};
+			}
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByG_C_L_U, finderArgs, this);
 		}
@@ -2371,7 +2474,10 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 			FriendlyURLEntryLocalization friendlyURLEntryLocalization =
 				(FriendlyURLEntryLocalization)result;
 
-			if ((groupId != friendlyURLEntryLocalization.getGroupId()) ||
+			if ((!productionMode &&
+				 (CTCollectionThreadLocal.getCTCollectionId() !=
+					 friendlyURLEntryLocalization.getCtCollectionId())) ||
+				(groupId != friendlyURLEntryLocalization.getGroupId()) ||
 				(classNameId !=
 					friendlyURLEntryLocalization.getClassNameId()) ||
 				!Objects.equals(
@@ -2440,7 +2546,7 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 				List<FriendlyURLEntryLocalization> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByG_C_L_U, finderArgs, list);
 					}
@@ -2514,15 +2620,21 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 		Long count = null;
 
-		if (productionMode) {
-			finderPath = _finderPathCountByG_C_L_U;
+		finderPath = _finderPathCountByG_C_L_U;
 
+		if (productionMode) {
 			finderArgs = new Object[] {
 				groupId, classNameId, languageId, urlTitle
 			};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				classNameId, languageId, urlTitle
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -2580,9 +2692,7 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2719,14 +2829,23 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		Object[] finderArgs = null;
 
 		finderPath = _finderPathWithPaginationFindByG_C_NotL_U;
-		finderArgs = new Object[] {
-			groupId, classNameId, languageId, urlTitle, start, end,
-			orderByComparator
-		};
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				groupId, classNameId, languageId, urlTitle, start, end,
+				orderByComparator
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				classNameId, languageId, urlTitle, start, end, orderByComparator
+			};
+		}
 
 		List<FriendlyURLEntryLocalization> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FriendlyURLEntryLocalization>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -2734,7 +2853,11 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 				for (FriendlyURLEntryLocalization friendlyURLEntryLocalization :
 						list) {
 
-					if ((groupId !=
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 friendlyURLEntryLocalization.
+								 getCtCollectionId())) ||
+						(groupId !=
 							friendlyURLEntryLocalization.getGroupId()) ||
 						(classNameId !=
 							friendlyURLEntryLocalization.getClassNameId()) ||
@@ -2826,7 +2949,7 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -3236,15 +3359,21 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 		Long count = null;
 
-		if (productionMode) {
-			finderPath = _finderPathWithPaginationCountByG_C_NotL_U;
+		finderPath = _finderPathWithPaginationCountByG_C_NotL_U;
 
+		if (productionMode) {
 			finderArgs = new Object[] {
 				groupId, classNameId, languageId, urlTitle
 			};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				classNameId, languageId, urlTitle
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(5);
@@ -3302,9 +3431,7 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -3680,6 +3807,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 				friendlyURLEntryLocalization.setNew(false);
 			}
 
+			clearCache();
+
 			friendlyURLEntryLocalization.resetOriginalValues();
 
 			return friendlyURLEntryLocalization;
@@ -3968,19 +4097,36 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<FriendlyURLEntryLocalization> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<FriendlyURLEntryLocalization>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
@@ -4019,7 +4165,7 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -4063,6 +4209,12 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 			count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -4078,6 +4230,14 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 				if (productionMode) {
 					finderCache.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
 				}
 			}
 			catch (Exception exception) {

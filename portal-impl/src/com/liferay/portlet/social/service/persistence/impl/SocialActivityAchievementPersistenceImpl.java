@@ -15,6 +15,7 @@
 package com.liferay.portlet.social.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -174,19 +175,38 @@ public class SocialActivityAchievementPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByGroupId;
-				finderArgs = new Object[] {groupId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByGroupId;
-			finderArgs = new Object[] {groupId, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<SocialActivityAchievement> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<SocialActivityAchievement>)FinderCacheUtil.getResult(
 				finderPath, finderArgs, this);
 
@@ -194,7 +214,11 @@ public class SocialActivityAchievementPersistenceImpl
 				for (SocialActivityAchievement socialActivityAchievement :
 						list) {
 
-					if (groupId != socialActivityAchievement.getGroupId()) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 socialActivityAchievement.getCtCollectionId())) ||
+						(groupId != socialActivityAchievement.getGroupId())) {
+
 						list = null;
 
 						break;
@@ -244,7 +268,7 @@ public class SocialActivityAchievementPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					FinderCacheUtil.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -563,14 +587,18 @@ public class SocialActivityAchievementPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByGroupId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByGroupId;
-
 			finderArgs = new Object[] {groupId};
-
-			count = (Long)FinderCacheUtil.getResult(
-				finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -594,9 +622,7 @@ public class SocialActivityAchievementPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					FinderCacheUtil.putResult(finderPath, finderArgs, count);
-				}
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -703,21 +729,39 @@ public class SocialActivityAchievementPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_U;
-				finderArgs = new Object[] {groupId, userId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId, userId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						userId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_U;
-			finderArgs = new Object[] {
-				groupId, userId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, userId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					userId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<SocialActivityAchievement> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<SocialActivityAchievement>)FinderCacheUtil.getResult(
 				finderPath, finderArgs, this);
 
@@ -725,7 +769,10 @@ public class SocialActivityAchievementPersistenceImpl
 				for (SocialActivityAchievement socialActivityAchievement :
 						list) {
 
-					if ((groupId != socialActivityAchievement.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 socialActivityAchievement.getCtCollectionId())) ||
+						(groupId != socialActivityAchievement.getGroupId()) ||
 						(userId != socialActivityAchievement.getUserId())) {
 
 						list = null;
@@ -781,7 +828,7 @@ public class SocialActivityAchievementPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					FinderCacheUtil.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1118,14 +1165,18 @@ public class SocialActivityAchievementPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByG_U;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByG_U;
-
 			finderArgs = new Object[] {groupId, userId};
-
-			count = (Long)FinderCacheUtil.getResult(
-				finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId, userId
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1153,9 +1204,7 @@ public class SocialActivityAchievementPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					FinderCacheUtil.putResult(finderPath, finderArgs, count);
-				}
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1267,21 +1316,39 @@ public class SocialActivityAchievementPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_N;
-				finderArgs = new Object[] {groupId, name};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId, name};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						name
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_N;
-			finderArgs = new Object[] {
-				groupId, name, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, name, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId, name,
+					start, end, orderByComparator
+				};
+			}
 		}
 
 		List<SocialActivityAchievement> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<SocialActivityAchievement>)FinderCacheUtil.getResult(
 				finderPath, finderArgs, this);
 
@@ -1289,7 +1356,10 @@ public class SocialActivityAchievementPersistenceImpl
 				for (SocialActivityAchievement socialActivityAchievement :
 						list) {
 
-					if ((groupId != socialActivityAchievement.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 socialActivityAchievement.getCtCollectionId())) ||
+						(groupId != socialActivityAchievement.getGroupId()) ||
 						!name.equals(socialActivityAchievement.getName())) {
 
 						list = null;
@@ -1356,7 +1426,7 @@ public class SocialActivityAchievementPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					FinderCacheUtil.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1708,14 +1778,18 @@ public class SocialActivityAchievementPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByG_N;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByG_N;
-
 			finderArgs = new Object[] {groupId, name};
-
-			count = (Long)FinderCacheUtil.getResult(
-				finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId, name
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1754,9 +1828,7 @@ public class SocialActivityAchievementPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					FinderCacheUtil.putResult(finderPath, finderArgs, count);
-				}
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1870,21 +1942,39 @@ public class SocialActivityAchievementPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_F;
-				finderArgs = new Object[] {groupId, firstInGroup};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId, firstInGroup};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						firstInGroup
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_F;
-			finderArgs = new Object[] {
-				groupId, firstInGroup, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, firstInGroup, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					firstInGroup, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<SocialActivityAchievement> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<SocialActivityAchievement>)FinderCacheUtil.getResult(
 				finderPath, finderArgs, this);
 
@@ -1892,7 +1982,10 @@ public class SocialActivityAchievementPersistenceImpl
 				for (SocialActivityAchievement socialActivityAchievement :
 						list) {
 
-					if ((groupId != socialActivityAchievement.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 socialActivityAchievement.getCtCollectionId())) ||
+						(groupId != socialActivityAchievement.getGroupId()) ||
 						(firstInGroup !=
 							socialActivityAchievement.isFirstInGroup())) {
 
@@ -1949,7 +2042,7 @@ public class SocialActivityAchievementPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					FinderCacheUtil.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -2286,14 +2379,19 @@ public class SocialActivityAchievementPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByG_F;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByG_F;
-
 			finderArgs = new Object[] {groupId, firstInGroup};
-
-			count = (Long)FinderCacheUtil.getResult(
-				finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId,
+				firstInGroup
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -2321,9 +2419,7 @@ public class SocialActivityAchievementPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					FinderCacheUtil.putResult(finderPath, finderArgs, count);
-				}
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2423,13 +2519,21 @@ public class SocialActivityAchievementPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {groupId, userId, name};
+		if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {groupId, userId, name};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					userId, name
+				};
+			}
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = FinderCacheUtil.getResult(
 				_finderPathFetchByG_U_N, finderArgs, this);
 		}
@@ -2438,7 +2542,10 @@ public class SocialActivityAchievementPersistenceImpl
 			SocialActivityAchievement socialActivityAchievement =
 				(SocialActivityAchievement)result;
 
-			if ((groupId != socialActivityAchievement.getGroupId()) ||
+			if ((!productionMode &&
+				 (CTCollectionThreadLocal.getCTCollectionId() !=
+					 socialActivityAchievement.getCtCollectionId())) ||
+				(groupId != socialActivityAchievement.getGroupId()) ||
 				(userId != socialActivityAchievement.getUserId()) ||
 				!Objects.equals(name, socialActivityAchievement.getName())) {
 
@@ -2488,7 +2595,7 @@ public class SocialActivityAchievementPersistenceImpl
 				List<SocialActivityAchievement> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						FinderCacheUtil.putResult(
 							_finderPathFetchByG_U_N, finderArgs, list);
 					}
@@ -2557,14 +2664,19 @@ public class SocialActivityAchievementPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByG_U_N;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByG_U_N;
-
 			finderArgs = new Object[] {groupId, userId, name};
-
-			count = (Long)FinderCacheUtil.getResult(
-				finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId, userId,
+				name
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -2607,9 +2719,7 @@ public class SocialActivityAchievementPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					FinderCacheUtil.putResult(finderPath, finderArgs, count);
-				}
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -2731,21 +2841,39 @@ public class SocialActivityAchievementPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByG_U_F;
-				finderArgs = new Object[] {groupId, userId, firstInGroup};
+
+				if (productionMode) {
+					finderArgs = new Object[] {groupId, userId, firstInGroup};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), groupId,
+						userId, firstInGroup
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByG_U_F;
-			finderArgs = new Object[] {
-				groupId, userId, firstInGroup, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					groupId, userId, firstInGroup, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), groupId,
+					userId, firstInGroup, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<SocialActivityAchievement> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<SocialActivityAchievement>)FinderCacheUtil.getResult(
 				finderPath, finderArgs, this);
 
@@ -2753,7 +2881,10 @@ public class SocialActivityAchievementPersistenceImpl
 				for (SocialActivityAchievement socialActivityAchievement :
 						list) {
 
-					if ((groupId != socialActivityAchievement.getGroupId()) ||
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 socialActivityAchievement.getCtCollectionId())) ||
+						(groupId != socialActivityAchievement.getGroupId()) ||
 						(userId != socialActivityAchievement.getUserId()) ||
 						(firstInGroup !=
 							socialActivityAchievement.isFirstInGroup())) {
@@ -2815,7 +2946,7 @@ public class SocialActivityAchievementPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					FinderCacheUtil.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -3171,14 +3302,19 @@ public class SocialActivityAchievementPersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByG_U_F;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByG_U_F;
-
 			finderArgs = new Object[] {groupId, userId, firstInGroup};
-
-			count = (Long)FinderCacheUtil.getResult(
-				finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), groupId, userId,
+				firstInGroup
+			};
+		}
+
+		count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -3210,9 +3346,7 @@ public class SocialActivityAchievementPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					FinderCacheUtil.putResult(finderPath, finderArgs, count);
-				}
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -3544,6 +3678,8 @@ public class SocialActivityAchievementPersistenceImpl
 				socialActivityAchievement.setNew(false);
 			}
 
+			clearCache();
+
 			socialActivityAchievement.resetOriginalValues();
 
 			return socialActivityAchievement;
@@ -3830,19 +3966,36 @@ public class SocialActivityAchievementPersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<SocialActivityAchievement> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<SocialActivityAchievement>)FinderCacheUtil.getResult(
 				finderPath, finderArgs, this);
 		}
@@ -3881,7 +4034,7 @@ public class SocialActivityAchievementPersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					FinderCacheUtil.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -3923,6 +4076,12 @@ public class SocialActivityAchievementPersistenceImpl
 			count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 		}
+		else {
+			count = (Long)FinderCacheUtil.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -3938,6 +4097,14 @@ public class SocialActivityAchievementPersistenceImpl
 				if (productionMode) {
 					FinderCacheUtil.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					FinderCacheUtil.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
 				}
 			}
 			catch (Exception exception) {

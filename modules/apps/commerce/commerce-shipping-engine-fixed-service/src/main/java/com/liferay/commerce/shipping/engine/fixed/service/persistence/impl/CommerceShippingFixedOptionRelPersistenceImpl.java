@@ -23,6 +23,7 @@ import com.liferay.commerce.shipping.engine.fixed.service.persistence.CommerceSh
 import com.liferay.commerce.shipping.engine.fixed.service.persistence.CommerceShippingFixedOptionRelUtil;
 import com.liferay.commerce.shipping.engine.fixed.service.persistence.impl.constants.CommercePersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -176,6 +177,8 @@ public class CommerceShippingFixedOptionRelPersistenceImpl
 		OrderByComparator<CommerceShippingFixedOptionRel> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -185,15 +188,33 @@ public class CommerceShippingFixedOptionRelPersistenceImpl
 			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByCommerceShippingMethodId;
-				finderArgs = new Object[] {commerceShippingMethodId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {commerceShippingMethodId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						commerceShippingMethodId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath =
 				_finderPathWithPaginationFindByCommerceShippingMethodId;
-			finderArgs = new Object[] {
-				commerceShippingMethodId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					commerceShippingMethodId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					commerceShippingMethodId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CommerceShippingFixedOptionRel> list = null;
@@ -585,11 +606,26 @@ public class CommerceShippingFixedOptionRelPersistenceImpl
 	 */
 	@Override
 	public int countByCommerceShippingMethodId(long commerceShippingMethodId) {
-		FinderPath finderPath = _finderPathCountByCommerceShippingMethodId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {commerceShippingMethodId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByCommerceShippingMethodId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {commerceShippingMethodId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				commerceShippingMethodId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -719,6 +755,8 @@ public class CommerceShippingFixedOptionRelPersistenceImpl
 			OrderByComparator<CommerceShippingFixedOptionRel> orderByComparator,
 			boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -728,15 +766,33 @@ public class CommerceShippingFixedOptionRelPersistenceImpl
 			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByCommerceShippingFixedOptionId;
-				finderArgs = new Object[] {commerceShippingFixedOptionId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {commerceShippingFixedOptionId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						commerceShippingFixedOptionId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath =
 				_finderPathWithPaginationFindByCommerceShippingFixedOptionId;
-			finderArgs = new Object[] {
-				commerceShippingFixedOptionId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					commerceShippingFixedOptionId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					commerceShippingFixedOptionId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<CommerceShippingFixedOptionRel> list = null;
@@ -1140,11 +1196,26 @@ public class CommerceShippingFixedOptionRelPersistenceImpl
 	public int countByCommerceShippingFixedOptionId(
 		long commerceShippingFixedOptionId) {
 
-		FinderPath finderPath = _finderPathCountByCommerceShippingFixedOptionId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {commerceShippingFixedOptionId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByCommerceShippingFixedOptionId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {commerceShippingFixedOptionId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				commerceShippingFixedOptionId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1627,6 +1698,8 @@ public class CommerceShippingFixedOptionRelPersistenceImpl
 		OrderByComparator<CommerceShippingFixedOptionRel> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1635,12 +1708,29 @@ public class CommerceShippingFixedOptionRelPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<CommerceShippingFixedOptionRel> list = null;
@@ -1719,8 +1809,20 @@ public class CommerceShippingFixedOptionRelPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -1733,8 +1835,18 @@ public class CommerceShippingFixedOptionRelPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

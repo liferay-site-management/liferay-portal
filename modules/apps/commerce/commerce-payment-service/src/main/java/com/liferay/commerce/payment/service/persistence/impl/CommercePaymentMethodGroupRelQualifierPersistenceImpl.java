@@ -23,6 +23,7 @@ import com.liferay.commerce.payment.service.persistence.CommercePaymentMethodGro
 import com.liferay.commerce.payment.service.persistence.CommercePaymentMethodGroupRelQualifierUtil;
 import com.liferay.commerce.payment.service.persistence.impl.constants.CommercePersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -184,6 +185,8 @@ public class CommercePaymentMethodGroupRelQualifierPersistenceImpl
 				orderByComparator,
 			boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -193,15 +196,35 @@ public class CommercePaymentMethodGroupRelQualifierPersistenceImpl
 			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByCommercePaymentMethodGroupRelId;
-				finderArgs = new Object[] {CommercePaymentMethodGroupRelId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {CommercePaymentMethodGroupRelId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						CommercePaymentMethodGroupRelId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath =
 				_finderPathWithPaginationFindByCommercePaymentMethodGroupRelId;
-			finderArgs = new Object[] {
-				CommercePaymentMethodGroupRelId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					CommercePaymentMethodGroupRelId, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					CommercePaymentMethodGroupRelId, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<CommercePaymentMethodGroupRelQualifier> list = null;
@@ -615,12 +638,26 @@ public class CommercePaymentMethodGroupRelQualifierPersistenceImpl
 	public int countByCommercePaymentMethodGroupRelId(
 		long CommercePaymentMethodGroupRelId) {
 
-		FinderPath finderPath =
-			_finderPathCountByCommercePaymentMethodGroupRelId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {CommercePaymentMethodGroupRelId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByCommercePaymentMethodGroupRelId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {CommercePaymentMethodGroupRelId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				CommercePaymentMethodGroupRelId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -753,6 +790,8 @@ public class CommercePaymentMethodGroupRelQualifierPersistenceImpl
 			orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -761,17 +800,36 @@ public class CommercePaymentMethodGroupRelQualifierPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByC_C;
-				finderArgs = new Object[] {
-					classNameId, CommercePaymentMethodGroupRelId
-				};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						classNameId, CommercePaymentMethodGroupRelId
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						classNameId, CommercePaymentMethodGroupRelId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByC_C;
-			finderArgs = new Object[] {
-				classNameId, CommercePaymentMethodGroupRelId, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					classNameId, CommercePaymentMethodGroupRelId, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+					CommercePaymentMethodGroupRelId, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<CommercePaymentMethodGroupRelQualifier> list = null;
@@ -1199,13 +1257,28 @@ public class CommercePaymentMethodGroupRelQualifierPersistenceImpl
 	public int countByC_C(
 		long classNameId, long CommercePaymentMethodGroupRelId) {
 
-		FinderPath finderPath = _finderPathCountByC_C;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			classNameId, CommercePaymentMethodGroupRelId
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByC_C;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				classNameId, CommercePaymentMethodGroupRelId
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+				CommercePaymentMethodGroupRelId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1332,12 +1405,22 @@ public class CommercePaymentMethodGroupRelQualifierPersistenceImpl
 		long classNameId, long classPK, long CommercePaymentMethodGroupRelId,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {
-				classNameId, classPK, CommercePaymentMethodGroupRelId
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					classNameId, classPK, CommercePaymentMethodGroupRelId
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+					classPK, CommercePaymentMethodGroupRelId
+				};
+			}
 		}
 
 		Object result = null;
@@ -1459,13 +1542,28 @@ public class CommercePaymentMethodGroupRelQualifierPersistenceImpl
 	public int countByC_C_C(
 		long classNameId, long classPK, long CommercePaymentMethodGroupRelId) {
 
-		FinderPath finderPath = _finderPathCountByC_C_C;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			classNameId, classPK, CommercePaymentMethodGroupRelId
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByC_C_C;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				classNameId, classPK, CommercePaymentMethodGroupRelId
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), classNameId,
+				classPK, CommercePaymentMethodGroupRelId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -2023,6 +2121,8 @@ public class CommercePaymentMethodGroupRelQualifierPersistenceImpl
 			orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -2031,12 +2131,29 @@ public class CommercePaymentMethodGroupRelQualifierPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<CommercePaymentMethodGroupRelQualifier> list = null;
@@ -2118,8 +2235,20 @@ public class CommercePaymentMethodGroupRelQualifierPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -2132,8 +2261,18 @@ public class CommercePaymentMethodGroupRelQualifierPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);

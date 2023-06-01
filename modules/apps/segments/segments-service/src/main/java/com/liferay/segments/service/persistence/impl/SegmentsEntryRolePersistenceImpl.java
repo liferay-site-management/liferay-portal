@@ -15,6 +15,7 @@
 package com.liferay.segments.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -186,28 +187,49 @@ public class SegmentsEntryRolePersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindBySegmentsEntryId;
-				finderArgs = new Object[] {segmentsEntryId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {segmentsEntryId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						segmentsEntryId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindBySegmentsEntryId;
-			finderArgs = new Object[] {
-				segmentsEntryId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					segmentsEntryId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					segmentsEntryId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<SegmentsEntryRole> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<SegmentsEntryRole>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (SegmentsEntryRole segmentsEntryRole : list) {
-					if (segmentsEntryId !=
-							segmentsEntryRole.getSegmentsEntryId()) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 segmentsEntryRole.getCtCollectionId())) ||
+						(segmentsEntryId !=
+							segmentsEntryRole.getSegmentsEntryId())) {
 
 						list = null;
 
@@ -258,7 +280,7 @@ public class SegmentsEntryRolePersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -577,13 +599,18 @@ public class SegmentsEntryRolePersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountBySegmentsEntryId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountBySegmentsEntryId;
-
 			finderArgs = new Object[] {segmentsEntryId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), segmentsEntryId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -607,9 +634,7 @@ public class SegmentsEntryRolePersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -710,25 +735,48 @@ public class SegmentsEntryRolePersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByRoleId;
-				finderArgs = new Object[] {roleId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {roleId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), roleId
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByRoleId;
-			finderArgs = new Object[] {roleId, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					roleId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), roleId, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<SegmentsEntryRole> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<SegmentsEntryRole>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (SegmentsEntryRole segmentsEntryRole : list) {
-					if (roleId != segmentsEntryRole.getRoleId()) {
+					if ((!productionMode &&
+						 (CTCollectionThreadLocal.getCTCollectionId() !=
+							 segmentsEntryRole.getCtCollectionId())) ||
+						(roleId != segmentsEntryRole.getRoleId())) {
+
 						list = null;
 
 						break;
@@ -778,7 +826,7 @@ public class SegmentsEntryRolePersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -1089,13 +1137,18 @@ public class SegmentsEntryRolePersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByRoleId;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByRoleId;
-
 			finderArgs = new Object[] {roleId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), roleId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1119,9 +1172,7 @@ public class SegmentsEntryRolePersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1207,13 +1258,21 @@ public class SegmentsEntryRolePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache && productionMode) {
-			finderArgs = new Object[] {segmentsEntryId, roleId};
+		if (useFinderCache) {
+			if (productionMode) {
+				finderArgs = new Object[] {segmentsEntryId, roleId};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					segmentsEntryId, roleId
+				};
+			}
 		}
 
 		Object result = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			result = finderCache.getResult(
 				_finderPathFetchByS_R, finderArgs, this);
 		}
@@ -1221,7 +1280,10 @@ public class SegmentsEntryRolePersistenceImpl
 		if (result instanceof SegmentsEntryRole) {
 			SegmentsEntryRole segmentsEntryRole = (SegmentsEntryRole)result;
 
-			if ((segmentsEntryId != segmentsEntryRole.getSegmentsEntryId()) ||
+			if ((!productionMode &&
+				 (CTCollectionThreadLocal.getCTCollectionId() !=
+					 segmentsEntryRole.getCtCollectionId())) ||
+				(segmentsEntryId != segmentsEntryRole.getSegmentsEntryId()) ||
 				(roleId != segmentsEntryRole.getRoleId())) {
 
 				result = null;
@@ -1255,7 +1317,7 @@ public class SegmentsEntryRolePersistenceImpl
 				List<SegmentsEntryRole> list = query.list();
 
 				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
+					if (useFinderCache) {
 						finderCache.putResult(
 							_finderPathFetchByS_R, finderArgs, list);
 					}
@@ -1318,13 +1380,19 @@ public class SegmentsEntryRolePersistenceImpl
 
 		Long count = null;
 
+		finderPath = _finderPathCountByS_R;
+
 		if (productionMode) {
-			finderPath = _finderPathCountByS_R;
-
 			finderArgs = new Object[] {segmentsEntryId, roleId};
-
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), segmentsEntryId,
+				roleId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1352,9 +1420,7 @@ public class SegmentsEntryRolePersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				if (productionMode) {
-					finderCache.putResult(finderPath, finderArgs, count);
-				}
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
 				throw processException(exception);
@@ -1683,6 +1749,8 @@ public class SegmentsEntryRolePersistenceImpl
 				segmentsEntryRole.setNew(false);
 			}
 
+			clearCache();
+
 			segmentsEntryRole.resetOriginalValues();
 
 			return segmentsEntryRole;
@@ -1959,19 +2027,36 @@ public class SegmentsEntryRolePersistenceImpl
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
+			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
-		else if (useFinderCache && productionMode) {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<SegmentsEntryRole> list = null;
 
-		if (useFinderCache && productionMode) {
+		if (useFinderCache) {
 			list = (List<SegmentsEntryRole>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
@@ -2009,7 +2094,7 @@ public class SegmentsEntryRolePersistenceImpl
 
 				cacheResult(list);
 
-				if (useFinderCache && productionMode) {
+				if (useFinderCache) {
 					finderCache.putResult(finderPath, finderArgs, list);
 				}
 			}
@@ -2051,6 +2136,12 @@ public class SegmentsEntryRolePersistenceImpl
 			count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -2065,6 +2156,14 @@ public class SegmentsEntryRolePersistenceImpl
 				if (productionMode) {
 					finderCache.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
 				}
 			}
 			catch (Exception exception) {

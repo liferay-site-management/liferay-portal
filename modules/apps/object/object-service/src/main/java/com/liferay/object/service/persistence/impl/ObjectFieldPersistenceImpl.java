@@ -23,6 +23,7 @@ import com.liferay.object.service.persistence.ObjectFieldPersistence;
 import com.liferay.object.service.persistence.ObjectFieldUtil;
 import com.liferay.object.service.persistence.impl.constants.ObjectPersistenceConstants;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -173,6 +174,8 @@ public class ObjectFieldPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -181,12 +184,29 @@ public class ObjectFieldPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByUuid;
-				finderArgs = new Object[] {uuid};
+
+				if (productionMode) {
+					finderArgs = new Object[] {uuid};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), uuid
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUuid;
-			finderArgs = new Object[] {uuid, start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {uuid, start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid, start,
+					end, orderByComparator
+				};
+			}
 		}
 
 		List<ObjectField> list = null;
@@ -569,11 +589,25 @@ public class ObjectFieldPersistenceImpl
 	public int countByUuid(String uuid) {
 		uuid = Objects.toString(uuid, "");
 
-		FinderPath finderPath = _finderPathCountByUuid;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {uuid};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByUuid;
+
+		if (productionMode) {
+			finderArgs = new Object[] {uuid};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -710,6 +744,8 @@ public class ObjectFieldPersistenceImpl
 
 		uuid = Objects.toString(uuid, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -718,14 +754,32 @@ public class ObjectFieldPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByUuid_C;
-				finderArgs = new Object[] {uuid, companyId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {uuid, companyId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(), uuid,
+						companyId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUuid_C;
-			finderArgs = new Object[] {
-				uuid, companyId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					uuid, companyId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), uuid,
+					companyId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<ObjectField> list = null;
@@ -1141,11 +1195,25 @@ public class ObjectFieldPersistenceImpl
 	public int countByUuid_C(String uuid, long companyId) {
 		uuid = Objects.toString(uuid, "");
 
-		FinderPath finderPath = _finderPathCountByUuid_C;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {uuid, companyId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByUuid_C;
+
+		if (productionMode) {
+			finderArgs = new Object[] {uuid, companyId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), uuid, companyId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -1286,6 +1354,8 @@ public class ObjectFieldPersistenceImpl
 		OrderByComparator<ObjectField> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1295,14 +1365,32 @@ public class ObjectFieldPersistenceImpl
 			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByListTypeDefinitionId;
-				finderArgs = new Object[] {listTypeDefinitionId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {listTypeDefinitionId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						listTypeDefinitionId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByListTypeDefinitionId;
-			finderArgs = new Object[] {
-				listTypeDefinitionId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					listTypeDefinitionId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					listTypeDefinitionId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<ObjectField> list = null;
@@ -1673,11 +1761,26 @@ public class ObjectFieldPersistenceImpl
 	 */
 	@Override
 	public int countByListTypeDefinitionId(long listTypeDefinitionId) {
-		FinderPath finderPath = _finderPathCountByListTypeDefinitionId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {listTypeDefinitionId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByListTypeDefinitionId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {listTypeDefinitionId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				listTypeDefinitionId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -1796,6 +1899,8 @@ public class ObjectFieldPersistenceImpl
 		OrderByComparator<ObjectField> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -1805,14 +1910,32 @@ public class ObjectFieldPersistenceImpl
 			if (useFinderCache) {
 				finderPath =
 					_finderPathWithoutPaginationFindByObjectDefinitionId;
-				finderArgs = new Object[] {objectDefinitionId};
+
+				if (productionMode) {
+					finderArgs = new Object[] {objectDefinitionId};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						objectDefinitionId
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByObjectDefinitionId;
-			finderArgs = new Object[] {
-				objectDefinitionId, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					objectDefinitionId, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					objectDefinitionId, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<ObjectField> list = null;
@@ -2182,11 +2305,25 @@ public class ObjectFieldPersistenceImpl
 	 */
 	@Override
 	public int countByObjectDefinitionId(long objectDefinitionId) {
-		FinderPath finderPath = _finderPathCountByObjectDefinitionId;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {objectDefinitionId};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByObjectDefinitionId;
+
+		if (productionMode) {
+			finderArgs = new Object[] {objectDefinitionId};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), objectDefinitionId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(2);
@@ -2311,6 +2448,8 @@ public class ObjectFieldPersistenceImpl
 		OrderByComparator<ObjectField> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -2319,14 +2458,32 @@ public class ObjectFieldPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByLTDI_S;
-				finderArgs = new Object[] {listTypeDefinitionId, state};
+
+				if (productionMode) {
+					finderArgs = new Object[] {listTypeDefinitionId, state};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						listTypeDefinitionId, state
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByLTDI_S;
-			finderArgs = new Object[] {
-				listTypeDefinitionId, state, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					listTypeDefinitionId, state, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					listTypeDefinitionId, state, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<ObjectField> list = null;
@@ -2719,11 +2876,26 @@ public class ObjectFieldPersistenceImpl
 	 */
 	@Override
 	public int countByLTDI_S(long listTypeDefinitionId, boolean state) {
-		FinderPath finderPath = _finderPathCountByLTDI_S;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {listTypeDefinitionId, state};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByLTDI_S;
+
+		if (productionMode) {
+			finderArgs = new Object[] {listTypeDefinitionId, state};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				listTypeDefinitionId, state
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -2857,6 +3029,8 @@ public class ObjectFieldPersistenceImpl
 
 		dbTableName = Objects.toString(dbTableName, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -2865,14 +3039,34 @@ public class ObjectFieldPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByODI_DTN;
-				finderArgs = new Object[] {objectDefinitionId, dbTableName};
+
+				if (productionMode) {
+					finderArgs = new Object[] {objectDefinitionId, dbTableName};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						objectDefinitionId, dbTableName
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByODI_DTN;
-			finderArgs = new Object[] {
-				objectDefinitionId, dbTableName, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					objectDefinitionId, dbTableName, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					objectDefinitionId, dbTableName, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<ObjectField> list = null;
@@ -3292,11 +3486,26 @@ public class ObjectFieldPersistenceImpl
 	public int countByODI_DTN(long objectDefinitionId, String dbTableName) {
 		dbTableName = Objects.toString(dbTableName, "");
 
-		FinderPath finderPath = _finderPathCountByODI_DTN;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {objectDefinitionId, dbTableName};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByODI_DTN;
+
+		if (productionMode) {
+			finderArgs = new Object[] {objectDefinitionId, dbTableName};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), objectDefinitionId,
+				dbTableName
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -3441,6 +3650,8 @@ public class ObjectFieldPersistenceImpl
 		OrderByComparator<ObjectField> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -3449,14 +3660,32 @@ public class ObjectFieldPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByODI_I;
-				finderArgs = new Object[] {objectDefinitionId, indexed};
+
+				if (productionMode) {
+					finderArgs = new Object[] {objectDefinitionId, indexed};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						objectDefinitionId, indexed
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByODI_I;
-			finderArgs = new Object[] {
-				objectDefinitionId, indexed, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					objectDefinitionId, indexed, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					objectDefinitionId, indexed, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<ObjectField> list = null;
@@ -3849,11 +4078,26 @@ public class ObjectFieldPersistenceImpl
 	 */
 	@Override
 	public int countByODI_I(long objectDefinitionId, boolean indexed) {
-		FinderPath finderPath = _finderPathCountByODI_I;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {objectDefinitionId, indexed};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByODI_I;
+
+		if (productionMode) {
+			finderArgs = new Object[] {objectDefinitionId, indexed};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), objectDefinitionId,
+				indexed
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -3984,6 +4228,8 @@ public class ObjectFieldPersistenceImpl
 		OrderByComparator<ObjectField> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -3992,14 +4238,32 @@ public class ObjectFieldPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByODI_L;
-				finderArgs = new Object[] {objectDefinitionId, localized};
+
+				if (productionMode) {
+					finderArgs = new Object[] {objectDefinitionId, localized};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						objectDefinitionId, localized
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByODI_L;
-			finderArgs = new Object[] {
-				objectDefinitionId, localized, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					objectDefinitionId, localized, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					objectDefinitionId, localized, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<ObjectField> list = null;
@@ -4392,11 +4656,26 @@ public class ObjectFieldPersistenceImpl
 	 */
 	@Override
 	public int countByODI_L(long objectDefinitionId, boolean localized) {
-		FinderPath finderPath = _finderPathCountByODI_L;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {objectDefinitionId, localized};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByODI_L;
+
+		if (productionMode) {
+			finderArgs = new Object[] {objectDefinitionId, localized};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), objectDefinitionId,
+				localized
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -4509,10 +4788,20 @@ public class ObjectFieldPersistenceImpl
 
 		name = Objects.toString(name, "");
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {objectDefinitionId, name};
+			if (productionMode) {
+				finderArgs = new Object[] {objectDefinitionId, name};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					objectDefinitionId, name
+				};
+			}
 		}
 
 		Object result = null;
@@ -4643,11 +4932,26 @@ public class ObjectFieldPersistenceImpl
 	public int countByODI_N(long objectDefinitionId, String name) {
 		name = Objects.toString(name, "");
 
-		FinderPath finderPath = _finderPathCountByODI_N;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {objectDefinitionId, name};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByODI_N;
+
+		if (productionMode) {
+			finderArgs = new Object[] {objectDefinitionId, name};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), objectDefinitionId,
+				name
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -4792,6 +5096,8 @@ public class ObjectFieldPersistenceImpl
 		OrderByComparator<ObjectField> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -4800,14 +5106,32 @@ public class ObjectFieldPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByODI_S;
-				finderArgs = new Object[] {objectDefinitionId, system};
+
+				if (productionMode) {
+					finderArgs = new Object[] {objectDefinitionId, system};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						objectDefinitionId, system
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByODI_S;
-			finderArgs = new Object[] {
-				objectDefinitionId, system, start, end, orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					objectDefinitionId, system, start, end, orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					objectDefinitionId, system, start, end, orderByComparator
+				};
+			}
 		}
 
 		List<ObjectField> list = null;
@@ -5200,11 +5524,26 @@ public class ObjectFieldPersistenceImpl
 	 */
 	@Override
 	public int countByODI_S(long objectDefinitionId, boolean system) {
-		FinderPath finderPath = _finderPathCountByODI_S;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {objectDefinitionId, system};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByODI_S;
+
+		if (productionMode) {
+			finderArgs = new Object[] {objectDefinitionId, system};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), objectDefinitionId,
+				system
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(3);
@@ -5330,12 +5669,22 @@ public class ObjectFieldPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
+		boolean productionMode = true;
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {
-				externalReferenceCode, companyId, objectDefinitionId
-			};
+			if (productionMode) {
+				finderArgs = new Object[] {
+					externalReferenceCode, companyId, objectDefinitionId
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					externalReferenceCode, companyId, objectDefinitionId
+				};
+			}
 		}
 
 		Object result = null;
@@ -5463,13 +5812,28 @@ public class ObjectFieldPersistenceImpl
 
 		externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
-		FinderPath finderPath = _finderPathCountByERC_C_ODI;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			externalReferenceCode, companyId, objectDefinitionId
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByERC_C_ODI;
+
+		if (productionMode) {
+			finderArgs = new Object[] {
+				externalReferenceCode, companyId, objectDefinitionId
+			};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(),
+				externalReferenceCode, companyId, objectDefinitionId
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -5632,6 +5996,8 @@ public class ObjectFieldPersistenceImpl
 
 		dbType = Objects.toString(dbType, "");
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -5640,15 +6006,36 @@ public class ObjectFieldPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindByODI_DBT_I;
-				finderArgs = new Object[] {objectDefinitionId, dbType, indexed};
+
+				if (productionMode) {
+					finderArgs = new Object[] {
+						objectDefinitionId, dbType, indexed
+					};
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId(),
+						objectDefinitionId, dbType, indexed
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByODI_DBT_I;
-			finderArgs = new Object[] {
-				objectDefinitionId, dbType, indexed, start, end,
-				orderByComparator
-			};
+
+			if (productionMode) {
+				finderArgs = new Object[] {
+					objectDefinitionId, dbType, indexed, start, end,
+					orderByComparator
+				};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(),
+					objectDefinitionId, dbType, indexed, start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<ObjectField> list = null;
@@ -6094,13 +6481,26 @@ public class ObjectFieldPersistenceImpl
 
 		dbType = Objects.toString(dbType, "");
 
-		FinderPath finderPath = _finderPathCountByODI_DBT_I;
+		boolean productionMode = true;
 
-		Object[] finderArgs = new Object[] {
-			objectDefinitionId, dbType, indexed
-		};
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = null;
+
+		finderPath = _finderPathCountByODI_DBT_I;
+
+		if (productionMode) {
+			finderArgs = new Object[] {objectDefinitionId, dbType, indexed};
+		}
+		else {
+			finderArgs = new Object[] {
+				CTCollectionThreadLocal.getCTCollectionId(), objectDefinitionId,
+				dbType, indexed
+			};
+		}
+
+		count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler sb = new StringBundler(4);
@@ -6613,6 +7013,8 @@ public class ObjectFieldPersistenceImpl
 		int start, int end, OrderByComparator<ObjectField> orderByComparator,
 		boolean useFinderCache) {
 
+		boolean productionMode = true;
+
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
@@ -6621,12 +7023,29 @@ public class ObjectFieldPersistenceImpl
 
 			if (useFinderCache) {
 				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
+
+				if (productionMode) {
+					finderArgs = FINDER_ARGS_EMPTY;
+				}
+				else {
+					finderArgs = new Object[] {
+						CTCollectionThreadLocal.getCTCollectionId()
+					};
+				}
 			}
 		}
 		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
+
+			if (productionMode) {
+				finderArgs = new Object[] {start, end, orderByComparator};
+			}
+			else {
+				finderArgs = new Object[] {
+					CTCollectionThreadLocal.getCTCollectionId(), start, end,
+					orderByComparator
+				};
+			}
 		}
 
 		List<ObjectField> list = null;
@@ -6702,8 +7121,20 @@ public class ObjectFieldPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
-			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		boolean productionMode = true;
+
+		Long count = null;
+
+		if (productionMode) {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		}
+		else {
+			count = (Long)finderCache.getResult(
+				_finderPathCountAll,
+				new Object[] {CTCollectionThreadLocal.getCTCollectionId()},
+				this);
+		}
 
 		if (count == null) {
 			Session session = null;
@@ -6715,8 +7146,18 @@ public class ObjectFieldPersistenceImpl
 
 				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				if (productionMode) {
+					finderCache.putResult(
+						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				}
+				else {
+					finderCache.putResult(
+						_finderPathCountAll,
+						new Object[] {
+							CTCollectionThreadLocal.getCTCollectionId()
+						},
+						count);
+				}
 			}
 			catch (Exception exception) {
 				throw processException(exception);
