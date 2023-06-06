@@ -131,7 +131,9 @@ public abstract class SettingsConfigurationAction
 
 			String oldValue = settings.getValue(name, null);
 
-			if (!StringUtil.equalsIgnoreBreakLine(value, oldValue)) {
+			if ((oldValue != null) &&
+				!StringUtil.equalsIgnoreBreakLine(value, oldValue)) {
+
 				modifiableSettings.setValue(name, value);
 			}
 		}
@@ -149,7 +151,7 @@ public abstract class SettingsConfigurationAction
 
 				String[] oldValues = settings.getValues(name, null);
 
-				if (!Objects.equals(values, oldValues)) {
+				if ((oldValues != null) && !Objects.equals(values, oldValues)) {
 					modifiableSettings.setValues(name, values);
 				}
 			}
