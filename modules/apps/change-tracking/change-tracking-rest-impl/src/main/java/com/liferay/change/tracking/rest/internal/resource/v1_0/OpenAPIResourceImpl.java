@@ -100,6 +100,8 @@ public class OpenAPIResourceImpl {
 
 			add(CTProcessResourceImpl.class);
 
+			add(CTRemoteResourceImpl.class);
+
 			add(OpenAPIResourceImpl.class);
 		}
 	};
