@@ -21,7 +21,6 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemListBuil
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.LabelItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.LabelItemListBuilder;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
@@ -122,11 +121,7 @@ public class TrashManagementToolbarDisplayContext
 		throws PortalException {
 
 		if (_isDeletable(trashEntry)) {
-			if (CTCollectionThreadLocal.isProductionMode()) {
-				return "deleteSelectedEntries,restoreSelectedEntries";
-			}
-
-			return "restoreSelectedEntries";
+			return "deleteSelectedEntries,restoreSelectedEntries";
 		}
 
 		return StringPool.BLANK;
