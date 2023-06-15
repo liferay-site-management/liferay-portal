@@ -387,21 +387,21 @@ definition {
 
 		Publications.viewNeedsManualResolution(
 			entryTitle = "Asset",
-			warningMessage = "Modification Conflict: The conflict cannot be automatically resolved.");
+			warningMessage = "Modification Deletion Conflict: Deletion conflicts with a modification.");
 
 		Publications.viewNeedsManualResolution(
 			entryTitle = "Message Boards Thread",
-			warningMessage = "Modification Conflict: The conflict cannot be automatically resolved.");
+			warningMessage = "Modification Deletion Conflict: Deletion conflicts with a modification.");
 
 		Publications.viewNeedsManualResolution(
 			entryTitle = "Message Boards Message",
-			warningMessage = "Modification Conflict: The conflict cannot be automatically resolved.");
+			warningMessage = "Modification Deletion Conflict: Deletion conflicts with a modification.");
 
 		PublicationsChanges.discardChanges(
 			changeCategory = "Message Boards Thread",
-			changeTitle = "MB Thread Message Subject",
+			changeTitle = "Message Boards Thread",
 			conflictingChanges = "true",
-			entryTitle = "MB Thread Message Subject");
+			entryTitle = "Message Boards Thread");
 
 		Publications.publishPublication(publicationName = "Publication Name 2");
 
