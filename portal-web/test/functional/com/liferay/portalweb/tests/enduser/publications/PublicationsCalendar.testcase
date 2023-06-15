@@ -148,6 +148,12 @@ definition {
 
 		CalendarEvent.delete();
 
+		RecycleBin.openRecycleBinAdmin(siteURLKey = "site-name");
+
+		RecycleBin.deleteCP(
+			assetName = "Publication Calendar Event Title",
+			assetType = "Calendar Event");
+
 		PublicationsNavigator.gotoReviewChanges(publicationName = "Publication Name 2");
 
 		PublicationsChanges.viewChanges(

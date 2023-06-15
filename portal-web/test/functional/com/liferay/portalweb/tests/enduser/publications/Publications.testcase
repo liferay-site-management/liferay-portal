@@ -331,6 +331,12 @@ definition {
 
 		WebContent.moveToRecycleBinCP(webContentTitle = "WC WebContent Title 1");
 
+		RecycleBin.openRecycleBinAdmin(siteURLKey = "guest");
+
+		RecycleBin.deleteCP(
+			assetName = "WC WebContent Title 1",
+			assetType = "Web Content Article");
+
 		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "guest");
 
 		DMDocument.editCP(

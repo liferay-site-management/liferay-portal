@@ -117,6 +117,8 @@ definition {
 			assetType = "Wiki Node",
 			wikiNodeName = "Wiki Node Name");
 
+		JSONRecycleBin.emptyRecycleBin();
+
 		PublicationsNavigator.gotoReviewChanges(
 			gotoPublicationsAdmin = "true",
 			publicationName = "Publication Name");
