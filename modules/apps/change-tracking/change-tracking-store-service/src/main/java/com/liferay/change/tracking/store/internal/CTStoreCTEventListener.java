@@ -15,20 +15,25 @@
 package com.liferay.change.tracking.store.internal;
 
 import com.liferay.change.tracking.constants.CTConstants;
+import com.liferay.change.tracking.model.CTCollectionTable;
 import com.liferay.change.tracking.model.CTEntry;
+import com.liferay.change.tracking.model.CTEntryTable;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.spi.exception.CTEventException;
 import com.liferay.change.tracking.spi.listener.CTEventListener;
 import com.liferay.change.tracking.store.model.CTSContent;
+import com.liferay.change.tracking.store.model.CTSContentTable;
 import com.liferay.change.tracking.store.service.CTSContentLocalService;
 import com.liferay.document.library.kernel.store.Store;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.petra.lang.SafeCloseable;
+import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.sql.CTSQLModeThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,28 +76,89 @@ public class CTStoreCTEventListener implements CTEventListener {
 		// Deleted CTEntries need to read CTSContent from CTCollection
 
 		if (!deletedCTEnties.isEmpty()) {
-			try (SafeCloseable safeCloseable1 =
-					CTSQLModeThreadLocal.setCTSQLModeWithSafeCloseable(
-						CTSQLModeThreadLocal.CTSQLMode.CT_ONLY);
-				SafeCloseable safeCloseable2 =
-					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
-						ctCollectionId)) {
+			for (CTEntry ctEntry : deletedCTEnties) {
+				CTSContent ctsContent = null;
+				boolean deletedByAnotherCTCollection = false;
 
-				for (CTEntry ctEntry : deletedCTEnties) {
-					CTSContent ctsContent =
-						_ctsContentLocalService.getCTSContent(
-							ctEntry.getModelClassPK());
+				try (SafeCloseable safeCloseable1 =
+						CTSQLModeThreadLocal.setCTSQLModeWithSafeCloseable(
+							CTSQLModeThreadLocal.CTSQLMode.CT_ONLY);
+					SafeCloseable safeCloseable2 =
+						CTCollectionThreadLocal.
+							setCTCollectionIdWithSafeCloseable(
+								ctCollectionId)) {
 
-					Store store = _storeServiceTrackerMap.getService(
-						ctsContent.getStoreType());
-
-					store.deleteFile(
-						ctsContent.getCompanyId(), ctsContent.getRepositoryId(),
-						ctsContent.getPath(), ctsContent.getVersion());
+					ctsContent = _ctsContentLocalService.getCTSContent(
+						ctEntry.getModelClassPK());
 				}
-			}
-			catch (PortalException portalException) {
-				throw new CTEventException(portalException);
+				catch (PortalException portalException) {
+					if (portalException.getMessage(
+						).contains(
+							"No CTSContent exists with the primary key"
+						)) {
+
+						try (SafeCloseable safeCloseable1 =
+								CTSQLModeThreadLocal.
+									setCTSQLModeWithSafeCloseable(
+										CTSQLModeThreadLocal.CTSQLMode.
+											CT_ALL)) {
+
+							List<CTSContent> ctsContents =
+								_ctsContentLocalService.dslQuery(
+									DSLQueryFactoryUtil.select(
+										CTSContentTable.INSTANCE
+									).from(
+										CTSContentTable.INSTANCE
+									).innerJoinON(
+										CTEntryTable.INSTANCE,
+										CTEntryTable.INSTANCE.changeType.eq(
+											1
+										).and(
+											CTEntryTable.INSTANCE.modelClassPK.
+												eq(
+													CTSContentTable.INSTANCE.
+														ctsContentId)
+										).and(
+											CTEntryTable.INSTANCE.
+												ctCollectionId.neq(
+													ctCollectionId)
+										)
+									).innerJoinON(
+										CTCollectionTable.INSTANCE,
+										CTCollectionTable.INSTANCE.
+											ctCollectionId.eq(
+												CTEntryTable.INSTANCE.
+													ctCollectionId
+											).and(
+												CTCollectionTable.INSTANCE.
+													status.eq(
+														WorkflowConstants.
+															STATUS_APPROVED)
+											)
+									).where(
+										CTSContentTable.INSTANCE.ctsContentId.
+											eq(ctEntry.getModelClassPK())
+									));
+
+							if (ctsContents.isEmpty()) {
+								throw new CTEventException(portalException);
+							}
+
+							deletedByAnotherCTCollection = true;
+						}
+					}
+				}
+
+				if (deletedByAnotherCTCollection) {
+					continue;
+				}
+
+				Store store = _storeServiceTrackerMap.getService(
+					ctsContent.getStoreType());
+
+				store.deleteFile(
+					ctsContent.getCompanyId(), ctsContent.getRepositoryId(),
+					ctsContent.getPath(), ctsContent.getVersion());
 			}
 		}
 
