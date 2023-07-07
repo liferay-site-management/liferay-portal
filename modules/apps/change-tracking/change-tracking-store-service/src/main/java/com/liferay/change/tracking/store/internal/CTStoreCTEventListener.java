@@ -112,7 +112,7 @@ public class CTStoreCTEventListener implements CTEventListener {
 									).innerJoinON(
 										CTEntryTable.INSTANCE,
 										CTEntryTable.INSTANCE.changeType.eq(
-											1
+											CTConstants.CT_CHANGE_TYPE_DELETION
 										).and(
 											CTEntryTable.INSTANCE.modelClassPK.
 												eq(
