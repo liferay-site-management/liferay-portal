@@ -38,7 +38,7 @@ import org.osgi.service.component.annotations.Component;
 	property = "model.class.name=com.liferay.document.library.model.DLStorageQuota",
 	service = AopService.class
 )
-@CTAware
+@CTAware(onProduction = true)
 public class DLStorageQuotaLocalServiceImpl
 	extends DLStorageQuotaLocalServiceBaseImpl {
 
