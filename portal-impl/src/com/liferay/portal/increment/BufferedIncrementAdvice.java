@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.aop.AopMethodInvocation;
 import com.liferay.portal.kernel.aop.ChainableMethodAdvice;
 import com.liferay.portal.kernel.cache.key.CacheKeyGenerator;
 import com.liferay.portal.kernel.cache.key.CacheKeyGeneratorUtil;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.increment.BufferedIncrement;
 import com.liferay.portal.kernel.increment.Increment;
 import com.liferay.portal.kernel.increment.IncrementFactory;
@@ -66,6 +67,10 @@ public class BufferedIncrementAdvice extends ChainableMethodAdvice {
 	@SuppressWarnings("rawtypes")
 	protected Object before(
 		AopMethodInvocation aopMethodInvocation, Object[] arguments) {
+
+		if (!CTCollectionThreadLocal.isProductionMode()) {
+			return nullResult;
+		}
 
 		BufferedIncrementContext bufferedIncrementContext =
 			aopMethodInvocation.getAdviceMethodContext();
