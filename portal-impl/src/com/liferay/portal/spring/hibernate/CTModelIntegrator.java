@@ -122,12 +122,12 @@ public class CTModelIntegrator implements Integrator {
 				if (entity instanceof CTModel) {
 					CTModel<?> ctModel = (CTModel<?>)entity;
 
-					if (ctModel.getCtCollectionId() != ctCollectionId) {
-						return true;
+					if (ctModel.getCtCollectionId() == ctCollectionId) {
+						return false;
 					}
 				}
 
-				return false;
+				return true;
 			});
 	}
 
