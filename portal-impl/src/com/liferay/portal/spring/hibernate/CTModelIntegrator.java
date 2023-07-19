@@ -122,12 +122,24 @@ public class CTModelIntegrator implements Integrator {
 				if (entity instanceof CTModel) {
 					CTModel<?> ctModel = (CTModel<?>)entity;
 
-					if (ctModel.getCtCollectionId() != ctCollectionId) {
-						return true;
+					if (ctModel.getCtCollectionId() == ctCollectionId) {
+						return false;
+					}
+				}
+				else {
+					Class<?> clazz = entity.getClass();
+
+					String className = clazz.getName();
+
+					if (className.equals(
+							"com.liferay.change.tracking.store.model." +
+								"CTSContentDataBlobModel")) {
+
+						return false;
 					}
 				}
 
-				return false;
+				return true;
 			});
 	}
 
