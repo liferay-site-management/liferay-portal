@@ -31,6 +31,7 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.cache.thread.local.ThreadLocalCachable;
+import com.liferay.portal.kernel.change.tracking.CTAware;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.NoSuchGroupException;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -2297,6 +2298,7 @@ public class DLAppServiceImpl extends DLAppServiceBaseImpl {
 	 * @see    #addTempFileEntry(long, long, String, String, File, String)
 	 * @see    TempFileEntryUtil
 	 */
+	@CTAware(onProduction = true)
 	@Override
 	public String[] getTempFileNames(
 			long groupId, long folderId, String folderName)
