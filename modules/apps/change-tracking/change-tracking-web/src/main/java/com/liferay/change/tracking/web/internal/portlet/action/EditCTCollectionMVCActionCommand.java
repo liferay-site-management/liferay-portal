@@ -54,6 +54,7 @@ public class EditCTCollectionMVCActionCommand extends BaseMVCActionCommand {
 
 		long ctCollectionId = ParamUtil.getLong(
 			actionRequest, "ctCollectionId");
+		long ctRemoteId = ParamUtil.getLong(actionRequest, "ctRemoteId");
 
 		String name = ParamUtil.getString(actionRequest, "name");
 		String description = ParamUtil.getString(actionRequest, "description");
@@ -68,7 +69,8 @@ public class EditCTCollectionMVCActionCommand extends BaseMVCActionCommand {
 				CTCollection ctCollection =
 					_ctCollectionService.addCTCollection(
 						null, themeDisplay.getCompanyId(),
-						themeDisplay.getUserId(), 0, name, description);
+						themeDisplay.getUserId(), ctRemoteId, name,
+						description);
 
 				CTPreferences ctPreferences =
 					_ctPreferencesLocalService.getCTPreferences(
