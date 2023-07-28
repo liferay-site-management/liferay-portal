@@ -22,6 +22,8 @@ import {
 } from 'frontend-js-web';
 import React, {useEffect, useRef, useState} from 'react';
 
+import ExperienceDropdown from '../components/ExperienceDropdown';
+
 const LocalizationDropdown = ({
 	currentLocale,
 	defaultLocale,
@@ -132,6 +134,7 @@ export default function ChangeTrackingRenderView({
 	getCache,
 	handleNavigation,
 	handleShowHideable,
+	namespace,
 	parentEntries,
 	showDropdown,
 	showHeader = true,
@@ -412,6 +415,8 @@ export default function ChangeTrackingRenderView({
 
 		return Liferay.Language.get('unified-view');
 	};
+
+	const updatePreviewRender = () => {};
 
 	const renderPreviewLeft = () => {
 		if (
@@ -1443,19 +1448,43 @@ export default function ChangeTrackingRenderView({
 		<div className={`sheet ${loading ? 'publications-loading' : ''}`}>
 			{state.renderData && (
 				<div className="autofit-row sheet-title">
-					{state.renderData.locales &&
-						!!state.renderData.locales.length && (
-							<LocalizationDropdown
-								currentLocale={currentLocale}
-								defaultLocale={state.renderData.defaultLocale}
-								locales={state.renderData.locales}
-								setSelectedLocale={setSelectedLocale}
-								spritemap={spritemap}
-							/>
-						)}
-
 					<div className="autofit-col autofit-col-expand">
-						<h2>{currentTitle}</h2>
+						<div className="align-items-baseline autofit-row mb-3">
+							<h2 className="mr-3">{currentTitle}</h2>
+
+							{state.renderData.userExperiences &&
+								!!state.renderData.userExperiences.length && (
+									<ExperienceDropdown
+										activeSegmentsExperience={
+											state.renderData.userExperiences.filter(
+												(experience) =>
+													experience.active
+											)[0]
+										}
+										getEntryRenderDataURL={dataURL}
+										namespace={namespace}
+										updatePreviewRender={
+											updatePreviewRender
+										}
+										userExperiences={
+											state.renderData.userExperiences
+										}
+									/>
+								)}
+
+							{state.renderData.locales &&
+								!!state.renderData.locales.length && (
+									<LocalizationDropdown
+										currentLocale={currentLocale}
+										defaultLocale={
+											state.renderData.defaultLocale
+										}
+										locales={state.renderData.locales}
+										setSelectedLocale={setSelectedLocale}
+										spritemap={spritemap}
+									/>
+								)}
+						</div>
 
 						<div className="entry-description">{description}</div>
 					</div>
