@@ -10,6 +10,7 @@ import com.liferay.change.tracking.rest.dto.v1_0.CTEntry;
 import com.liferay.change.tracking.rest.internal.odata.entity.v1_0.CTEntryEntityModel;
 import com.liferay.change.tracking.rest.resource.v1_0.CTEntryResource;
 import com.liferay.change.tracking.service.CTEntryLocalService;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.Filter;
@@ -91,6 +92,24 @@ public class CTEntryResourceImpl extends BaseCTEntryResourceImpl {
 				addAction(
 					ActionKeys.VIEW, ctEntry.getCtCollectionId(), "getCTEntry",
 					_ctCollectionModelResourcePermission)
+			).put(
+				"move-changes",
+				() -> {
+					if (!FeatureFlagManagerUtil.isEnabled(
+							contextCompany.getCompanyId(), "LPS-171364")) {
+
+						return null;
+					}
+
+					return addAction(
+						ActionKeys.VIEW, ctEntry.getCtCollectionId(),
+						"getCTEntry", _ctCollectionModelResourcePermission);
+				}
+			).put(
+				"view-discard",
+				addAction(
+					ActionKeys.VIEW, ctEntry.getCtCollectionId(), "getCTEntry",
+					_ctCollectionModelResourcePermission)
 			).build(),
 			null, contextHttpServletRequest, ctEntry.getCtCollectionId(),
 			contextAcceptLanguage.getPreferredLocale(), contextUriInfo,
@@ -112,8 +131,7 @@ public class CTEntryResourceImpl extends BaseCTEntryResourceImpl {
 		policyOption = ReferencePolicyOption.GREEDY,
 		target = "(model.class.name=com.liferay.change.tracking.model.CTCollection)"
 	)
-	private volatile ModelResourcePermission
-		<CTCollection>
+	private volatile ModelResourcePermission<CTCollection>
 		_ctCollectionModelResourcePermission;
 
 	@Reference(
