@@ -36,6 +36,7 @@ import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermi
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -44,6 +45,8 @@ import java.util.Map;
 
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -86,6 +89,9 @@ public class ViewChangesMVCRenderCommand implements MVCRenderCommand {
 		CTCollection ctCollection = _ctCollectionLocalService.fetchCTCollection(
 			ctCollectionId);
 
+		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
+			renderRequest);
+
 		try {
 			if ((ctCollection == null) ||
 				!_ctCollectionModelResourcePermission.contains(
@@ -106,9 +112,8 @@ public class ViewChangesMVCRenderCommand implements MVCRenderCommand {
 					new PublicationsDisplayContext(
 						_ctCollectionLocalService, _ctCollectionService,
 						_ctDisplayRendererRegistry, _ctEntryLocalService,
-						_ctPreferencesLocalService,
-						_portal.getHttpServletRequest(renderRequest), _language,
-						renderRequest, renderResponse),
+						_ctPreferencesLocalService, httpServletRequest,
+						_language, renderRequest, renderResponse),
 					_publishSchedulerSnapshot.get(), renderRequest,
 					renderResponse, _userLocalService);
 
@@ -122,6 +127,14 @@ public class ViewChangesMVCRenderCommand implements MVCRenderCommand {
 			}
 
 			return "/publications/view_publications.jsp";
+		}
+
+		if (GetterUtil.getBoolean(
+				httpServletRequest.getParameter("relationships"))) {
+
+			renderRequest.setAttribute("relationships", Boolean.TRUE);
+
+			return "/publications/view_relationships.jsp";
 		}
 
 		return "/publications/view_changes.jsp";
