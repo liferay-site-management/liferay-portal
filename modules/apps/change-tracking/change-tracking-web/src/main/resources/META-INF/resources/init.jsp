@@ -66,6 +66,7 @@ page import="com.liferay.portal.kernel.util.WebKeys" %>
 <%@ page import="java.text.Format" %>
 
 <%@ page import="java.util.Date" %><%@
+page import="java.util.Map" %><%@
 page import="java.util.Objects" %>
 
 <%@ page import="javax.portlet.RenderResponse" %>
