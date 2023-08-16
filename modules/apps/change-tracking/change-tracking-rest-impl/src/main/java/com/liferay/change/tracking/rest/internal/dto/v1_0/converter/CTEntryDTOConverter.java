@@ -148,6 +148,10 @@ public class CTEntryDTOConverter
 	private Status _toStatus(Locale locale, BaseModel<?> model)
 		throws Exception {
 
+		if (model == null) {
+			return null;
+		}
+
 		Map<String, Object> modelAttributes = model.getModelAttributes();
 
 		if (!modelAttributes.containsKey("status")) {
