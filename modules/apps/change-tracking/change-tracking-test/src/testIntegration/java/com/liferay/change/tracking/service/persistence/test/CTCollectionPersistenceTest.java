@@ -130,6 +130,8 @@ public class CTCollectionPersistenceTest {
 
 		newCTCollection.setModifiedDate(RandomTestUtil.nextDate());
 
+		newCTCollection.setCtRemoteId(RandomTestUtil.nextLong());
+
 		newCTCollection.setSchemaVersionId(RandomTestUtil.nextLong());
 
 		newCTCollection.setName(RandomTestUtil.randomString());
@@ -169,6 +171,9 @@ public class CTCollectionPersistenceTest {
 		Assert.assertEquals(
 			Time.getShortTimestamp(existingCTCollection.getModifiedDate()),
 			Time.getShortTimestamp(newCTCollection.getModifiedDate()));
+		Assert.assertEquals(
+			existingCTCollection.getCtRemoteId(),
+			newCTCollection.getCtRemoteId());
 		Assert.assertEquals(
 			existingCTCollection.getSchemaVersionId(),
 			newCTCollection.getSchemaVersionId());
@@ -290,8 +295,9 @@ public class CTCollectionPersistenceTest {
 			"CTCollection", "mvccVersion", true, "uuid", true,
 			"externalReferenceCode", true, "ctCollectionId", true, "companyId",
 			true, "userId", true, "createDate", true, "modifiedDate", true,
-			"schemaVersionId", true, "name", true, "description", true,
-			"status", true, "statusByUserId", true, "statusDate", true);
+			"ctRemoteId", true, "schemaVersionId", true, "name", true,
+			"description", true, "status", true, "statusByUserId", true,
+			"statusDate", true);
 	}
 
 	@Test
@@ -588,6 +594,8 @@ public class CTCollectionPersistenceTest {
 		ctCollection.setCreateDate(RandomTestUtil.nextDate());
 
 		ctCollection.setModifiedDate(RandomTestUtil.nextDate());
+
+		ctCollection.setCtRemoteId(RandomTestUtil.nextLong());
 
 		ctCollection.setSchemaVersionId(RandomTestUtil.nextLong());
 
