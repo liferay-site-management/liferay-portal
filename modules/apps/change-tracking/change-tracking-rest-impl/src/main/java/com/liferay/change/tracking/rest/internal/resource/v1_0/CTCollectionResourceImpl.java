@@ -77,7 +77,7 @@ public class CTCollectionResourceImpl extends BaseCTCollectionResourceImpl {
 
 		com.liferay.change.tracking.model.CTCollection ctCollection =
 			_ctCollectionLocalService.fetchCTCollectionByExternalReferenceCode(
-				contextCompany.getCompanyId(), externalReferenceCode);
+				externalReferenceCode, contextCompany.getCompanyId());
 
 		if (ctCollection != null) {
 			_ctCollectionService.deleteCTCollection(ctCollection);
@@ -133,9 +133,9 @@ public class CTCollectionResourceImpl extends BaseCTCollectionResourceImpl {
 
 		return _toCTCollection(
 			_ctCollectionService.addCTCollection(
-				contextCompany.getCompanyId(), contextUser.getUserId(),
-				ctCollection.getName(), ctCollection.getDescription(),
-				ctCollection.getExternalReferenceCode(), 0));
+				ctCollection.getExternalReferenceCode(),
+				contextCompany.getCompanyId(), contextUser.getUserId(), 0,
+				ctCollection.getName(), ctCollection.getDescription()));
 	}
 
 	@Override
@@ -214,7 +214,7 @@ public class CTCollectionResourceImpl extends BaseCTCollectionResourceImpl {
 
 		return _toCTCollection(
 			_ctCollectionService.updateCTCollectionByExternalReferenceCode(
-				contextUser.getUserId(), externalReferenceCode,
+				externalReferenceCode, contextUser.getUserId(),
 				ctCollection.getName(), ctCollection.getDescription()));
 	}
 
@@ -343,7 +343,7 @@ public class CTCollectionResourceImpl extends BaseCTCollectionResourceImpl {
 
 		com.liferay.change.tracking.model.CTCollection ctCollection =
 			_ctCollectionLocalService.getCTCollectionByExternalReferenceCode(
-				contextCompany.getCompanyId(), externalReferenceCode);
+				externalReferenceCode, contextCompany.getCompanyId());
 
 		return _ctCollectionDTOConverter.toDTO(
 			_getDTOConverterContext(ctCollection), ctCollection);
