@@ -132,6 +132,7 @@ export default function ChangeTrackingRenderView({
 	getCache,
 	handleNavigation,
 	handleShowHideable,
+	moveChangesURL,
 	parentEntries,
 	showDropdown,
 	showHeader = true,
@@ -854,6 +855,12 @@ export default function ChangeTrackingRenderView({
 		dropdownItems.push({
 			label: Liferay.Language.get('discard'),
 			onClick: () => navigate(discardURL),
+			symbolLeft: 'times-circle',
+		});
+
+		dropdownItems.push({
+			label: Liferay.Language.get('move-changes'),
+			onClick: () => navigate(moveChangesURL),
 			symbolLeft: 'times-circle',
 		});
 
