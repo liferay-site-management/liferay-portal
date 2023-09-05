@@ -42,7 +42,7 @@ const ManageCollaborators = ({
 	setCollaboratorData,
 	setShowModal,
 	showModal,
-	showShareLink,
+	showShareLinkTab,
 	spritemap,
 	trigger,
 	verifyEmailAddressURL,
@@ -460,7 +460,7 @@ const ManageCollaborators = ({
 			return '';
 		}
 
-		if (showShareLink) {
+		if (showShareLinkTab) {
 			return (
 				<ClayModal
 					className="publications-invite-users-modal"
@@ -728,7 +728,7 @@ const ManageCollaborators = ({
 	};
 
 	const renderTabs = () => {
-		if (!showShareLink) {
+		if (!showShareLinkTab) {
 			return '';
 		}
 
@@ -772,8 +772,12 @@ const ManageCollaborators = ({
 					displayType="secondary"
 					onClick={() => setShowModal(true)}
 					small
-					symbol="plus"
-					title={Liferay.Language.get('invite-users')}
+					symbol={showShareLinkTab ? 'link' : 'plus'}
+					title={
+						showShareLinkTab
+							? Liferay.Language.get('share-access')
+							: Liferay.Language.get('invite-users')
+					}
 				/>
 			);
 		}
@@ -787,9 +791,13 @@ const ManageCollaborators = ({
 						className="sticker-user-icon user-icon-color-0"
 						data-tooltip-align="top"
 						size="md"
-						title={Liferay.Language.get('invite-users')}
+						title={
+							showShareLinkTab
+								? Liferay.Language.get('share-access')
+								: Liferay.Language.get('invite-users')
+						}
 					>
-						<ClayIcon symbol="plus" />
+						<ClayIcon symbol={showShareLinkTab ? 'link' : 'plus'} />
 					</ClaySticker>
 				</div>
 			);
