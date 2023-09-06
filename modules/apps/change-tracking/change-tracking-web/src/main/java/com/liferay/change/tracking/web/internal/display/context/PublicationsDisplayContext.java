@@ -29,6 +29,7 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.DisplayTerms;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
@@ -296,6 +297,8 @@ public class PublicationsDisplayContext extends BasePublicationsDisplayContext {
 			"sharePublicationLink",
 			() -> _publicationHelper.getShareURL(
 				ctCollectionId, _renderResponse)
+		).put(
+			"showShareLinkTab", FeatureFlagManagerUtil.isEnabled("LPS-187436")
 		).put(
 			"spritemap", _themeDisplay.getPathThemeSpritemap()
 		).put(
