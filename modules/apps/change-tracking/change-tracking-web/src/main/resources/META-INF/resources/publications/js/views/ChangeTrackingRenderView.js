@@ -127,13 +127,13 @@ const LocalizationDropdown = ({
 
 export default function ChangeTrackingRenderView({
 	childEntries,
-	dataURL,
 	defaultLocale,
 	description,
 	discardURL,
 	getCache,
 	handleNavigation,
 	handleShowHideable,
+	initialDataURL,
 	namespace,
 	parentEntries,
 	showDropdown,
@@ -156,8 +156,13 @@ export default function ChangeTrackingRenderView({
 	const VIEW_SPLIT = 'VIEW_SPLIT';
 	const VIEW_UNIFIED = 'VIEW_UNIFIED';
 
+	const [dataURL, setDataURL] = useState(initialDataURL);
 	const [loading, setLoading] = useState(false);
 	const [selectedLocale, setSelectedLocale] = useState(defaultLocale);
+	const [
+		selectedSegmentsExperienceId,
+		setSelectedSegmentsExperienceId,
+	] = useState(null);
 	const [state, setState] = useState({
 		contentType: CONTENT_TYPE_PREVIEW,
 		renderData: null,
@@ -179,7 +184,11 @@ export default function ChangeTrackingRenderView({
 			cachedData = getCache();
 		}
 
-		if (cachedData && cachedData.changeType) {
+		if (
+			cachedData &&
+			cachedData.changeType &&
+			!selectedSegmentsExperienceId
+		) {
 			if (cachedData.changeType === CHANGE_TYPE_PRODUCTION) {
 				setState({
 					children: childEntries,
@@ -363,7 +372,14 @@ export default function ChangeTrackingRenderView({
 					},
 				});
 			});
-	}, [childEntries, dataURL, getCache, parentEntries, updateCache]);
+	}, [
+		childEntries,
+		dataURL,
+		getCache,
+		parentEntries,
+		selectedSegmentsExperienceId,
+		updateCache,
+	]);
 
 	let currentLocale = selectedLocale;
 	let currentTitle = title;
@@ -415,8 +431,6 @@ export default function ChangeTrackingRenderView({
 
 		return Liferay.Language.get('unified-view');
 	};
-
-	const updatePreviewRender = () => {};
 
 	const renderPreviewLeft = () => {
 		if (
@@ -1444,6 +1458,39 @@ export default function ChangeTrackingRenderView({
 		return renderEntry();
 	}
 
+	const updatePreviewRender = (segmentsExperienceId) => {
+		if (segmentsExperienceId) {
+			let newDataURL;
+
+			if (initialDataURL.includes('segmentsExperienceId=')) {
+				const regex = /segmentsExperienceId=\d*/i;
+
+				newDataURL = initialDataURL.replace(
+					regex,
+					'segmentsExperienceId=' +
+						encodeURIComponent(segmentsExperienceId)
+				);
+			}
+			else {
+				newDataURL =
+					initialDataURL +
+					'&' +
+					namespace +
+					'segmentsExperienceId=' +
+					encodeURIComponent(segmentsExperienceId);
+			}
+
+			setDataURL(newDataURL);
+			setSelectedSegmentsExperienceId(segmentsExperienceId);
+		}
+		else {
+			console.error(
+				'A SegmentsExperience was selected from ExperienceDropdown but no segmentsExperienceId ' +
+					'from the selected option was passed into the onSelectionChange method'
+			);
+		}
+	};
+
 	return (
 		<div className={`sheet ${loading ? 'publications-loading' : ''}`}>
 			{state.renderData && (
@@ -1461,13 +1508,11 @@ export default function ChangeTrackingRenderView({
 													experience.active
 											)[0]
 										}
-										getEntryRenderDataURL={dataURL}
-										namespace={namespace}
+										segmentsExperiences={
+											state.renderData.userExperiences
+										}
 										updatePreviewRender={
 											updatePreviewRender
-										}
-										userExperiences={
-											state.renderData.userExperiences
 										}
 									/>
 								)}
