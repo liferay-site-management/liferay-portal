@@ -16,6 +16,8 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupedModel;
 import com.liferay.portal.kernel.model.WorkflowedModel;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterContext;
@@ -88,6 +90,27 @@ public class CTEntryDTOConverter
 			}
 		}
 
+		Map<String, Object> attributesMap = model.getModelAttributes();
+
+		long groupId = GetterUtil.getLong(attributesMap.get("groupId"));
+
+		if (groupId == 0) {
+			long classNameId = GetterUtil.getLong(
+				attributesMap.get("classNameId"));
+
+			if (classNameId == _portal.getClassNameId(Group.class)) {
+				groupId = GetterUtil.getLong(attributesMap.get("classPK"));
+			}
+		}
+
+		if (groupId != 0) {
+			Group group = _groupLocalService.fetchGroup(groupId);
+
+			if (group != null) {
+				return group.getGroupId();
+			}
+		}
+
 		return 0;
 	}
 
@@ -97,6 +120,27 @@ public class CTEntryDTOConverter
 
 			Group group = _groupLocalService.fetchGroup(
 				groupedModel.getGroupId());
+
+			if (group != null) {
+				return group.getName(locale);
+			}
+		}
+
+		Map<String, Object> attributesMap = model.getModelAttributes();
+
+		long groupId = GetterUtil.getLong(attributesMap.get("groupId"));
+
+		if (groupId == 0) {
+			long classNameId = GetterUtil.getLong(
+				attributesMap.get("classNameId"));
+
+			if (classNameId == _portal.getClassNameId(Group.class)) {
+				groupId = GetterUtil.getLong(attributesMap.get("classPK"));
+			}
+		}
+
+		if (groupId != 0) {
+			Group group = _groupLocalService.fetchGroup(groupId);
 
 			if (group != null) {
 				return group.getName(locale);
@@ -183,5 +227,8 @@ public class CTEntryDTOConverter
 
 	@Reference
 	private Language _language;
+
+	@Reference
+	private Portal _portal;
 
 }
