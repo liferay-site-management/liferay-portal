@@ -1693,6 +1693,7 @@ export default function ChangeTrackingChangesView({
 			rows.push(
 				<ClayTable.Row
 					className="cursor-pointer"
+					key={node.nodeId}
 					onClick={() => navigate(node.nodeId)}
 				>
 					<ClayTable.Cell>
