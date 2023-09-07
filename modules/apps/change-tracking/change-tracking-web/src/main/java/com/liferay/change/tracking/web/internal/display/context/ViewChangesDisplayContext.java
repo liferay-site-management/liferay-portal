@@ -678,6 +678,17 @@ public class ViewChangesDisplayContext {
 				).buildString();
 			}
 		).put(
+			"showActionItems",
+			() -> {
+				User user = _themeDisplay.getUser();
+
+				if (user.isOnDemandUser()) {
+					return false;
+				}
+
+				return true;
+			}
+		).put(
 			"showAllItemsEnabled", _ctConfiguration.showAllItemsEnabled()
 		).put(
 			"showHideableFromURL", showHideable
