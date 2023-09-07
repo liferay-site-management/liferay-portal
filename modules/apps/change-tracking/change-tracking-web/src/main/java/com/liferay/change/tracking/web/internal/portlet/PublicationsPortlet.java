@@ -14,6 +14,7 @@ import com.liferay.change.tracking.spi.display.CTDisplayRendererRegistry;
 import com.liferay.change.tracking.web.internal.configuration.helper.CTSettingsConfigurationHelper;
 import com.liferay.change.tracking.web.internal.constants.CTWebKeys;
 import com.liferay.change.tracking.web.internal.display.context.PublicationsDisplayContext;
+import com.liferay.change.tracking.web.internal.helper.PublicationHelper;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.Release;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
@@ -82,7 +83,7 @@ public class PublicationsPortlet extends MVCPortlet {
 				_ctDisplayRendererRegistry, _ctEntryLocalService,
 				_ctPreferencesLocalService,
 				_portal.getHttpServletRequest(renderRequest), _language,
-				renderRequest, renderResponse);
+				_publicationHelper, renderRequest, renderResponse);
 
 		renderRequest.setAttribute(
 			CTWebKeys.PUBLICATIONS_DISPLAY_CONTEXT, publicationsDisplayContext);
@@ -143,6 +144,9 @@ public class PublicationsPortlet extends MVCPortlet {
 
 	@Reference
 	private PortletPermission _portletPermission;
+
+	@Reference
+	private PublicationHelper _publicationHelper;
 
 	@Reference(
 		target = "(&(release.bundle.symbolic.name=com.liferay.change.tracking.web)(&(release.schema.version>=1.0.2)(!(release.schema.version>=2.0.0))))"
