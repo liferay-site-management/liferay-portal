@@ -102,6 +102,7 @@ export default function ChangeTrackingChangesView({
 	orderByTypeFromURL,
 	pageFromURL,
 	showAllItemsEnabled,
+	showDropdown,
 	showHideableFromURL,
 	siteNames,
 	sitesFromURL,
@@ -2709,7 +2710,7 @@ export default function ChangeTrackingChangesView({
 								}
 								handleShowHideable={handleShowHideableToggle}
 								parentEntries={renderState.parents}
-								showDropdown={renderState.node.modelClassNameId}
+								showDropdown={showDropdown}
 								showHideable={renderState.showHideable}
 								spritemap={spritemap}
 								title={renderState.node.title}
