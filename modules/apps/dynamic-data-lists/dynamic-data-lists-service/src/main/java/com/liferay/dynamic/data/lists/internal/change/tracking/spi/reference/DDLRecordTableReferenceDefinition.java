@@ -16,6 +16,7 @@ import com.liferay.dynamic.data.lists.model.DDLRecordTable;
 import com.liferay.dynamic.data.lists.model.DDLRecordVersionTable;
 import com.liferay.dynamic.data.lists.service.persistence.DDLRecordPersistence;
 import com.liferay.dynamic.data.mapping.model.DDMFieldTable;
+import com.liferay.dynamic.data.mapping.model.DDMStorageLinkTable;
 import com.liferay.portal.kernel.model.ClassNameTable;
 import com.liferay.portal.kernel.service.persistence.BasePersistence;
 
@@ -36,6 +37,9 @@ public class DDLRecordTableReferenceDefinition
 
 		childTableReferenceInfoBuilder.assetEntryReference(
 			DDLRecordTable.INSTANCE.recordId, DDLRecord.class
+		).classNameReference(
+			DDLRecordTable.INSTANCE.DDMStorageId,
+			DDMStorageLinkTable.INSTANCE.classPK, DDLRecord.class
 		).referenceInnerJoin(
 			fromStep -> fromStep.from(
 				AssetEntryTable.INSTANCE
