@@ -5,6 +5,7 @@
 
 package com.liferay.dynamic.data.lists.internal.change.tracking.spi.reference;
 
+import com.liferay.asset.kernel.model.AssetEntryTable;
 import com.liferay.change.tracking.spi.reference.TableReferenceDefinition;
 import com.liferay.change.tracking.spi.reference.builder.ChildTableReferenceInfoBuilder;
 import com.liferay.change.tracking.spi.reference.builder.ParentTableReferenceInfoBuilder;
@@ -12,6 +13,7 @@ import com.liferay.dynamic.data.lists.model.DDLFormRecord;
 import com.liferay.dynamic.data.lists.model.DDLRecord;
 import com.liferay.dynamic.data.lists.model.DDLRecordSetTable;
 import com.liferay.dynamic.data.lists.model.DDLRecordTable;
+import com.liferay.dynamic.data.lists.model.DDLRecordVersion;
 import com.liferay.dynamic.data.lists.model.DDLRecordVersionTable;
 import com.liferay.dynamic.data.lists.service.persistence.DDLRecordVersionPersistence;
 import com.liferay.dynamic.data.mapping.model.DDMStructureLinkTable;
@@ -34,7 +36,10 @@ public class DDLRecordVersionTableReferenceDefinition
 		ChildTableReferenceInfoBuilder<DDLRecordVersionTable>
 			childTableReferenceInfoBuilder) {
 
-		childTableReferenceInfoBuilder.singleColumnReference(
+		childTableReferenceInfoBuilder.assetEntryReference(
+			DDLRecordVersionTable.INSTANCE.recordVersionId,
+			DDLRecordVersion.class
+		).singleColumnReference(
 			DDLRecordVersionTable.INSTANCE.DDMStorageId,
 			DDMStructureLinkTable.INSTANCE.classPK
 		).referenceInnerJoin(
@@ -82,6 +87,9 @@ public class DDLRecordVersionTableReferenceDefinition
 					ClassNameTable.INSTANCE.value.eq(DDLRecord.class.getName())
 				)
 			)
+		).singleColumnReference(
+			DDLRecordVersionTable.INSTANCE.companyId,
+			AssetEntryTable.INSTANCE.companyId
 		);
 	}
 
