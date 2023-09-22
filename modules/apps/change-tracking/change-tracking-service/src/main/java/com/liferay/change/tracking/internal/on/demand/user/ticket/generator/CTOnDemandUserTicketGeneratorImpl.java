@@ -143,6 +143,7 @@ public class CTOnDemandUserTicketGeneratorImpl
 			UserConstants.TYPE_ON_DEMAND_USER, null, null,
 			new long[] {role.getRoleId()}, null, false, new ServiceContext());
 
+		user.setAgreedToTermsOfUse(true);
 		user.setEmailAddressVerified(true);
 
 		user = _userLocalService.updateUser(user);
