@@ -22,7 +22,6 @@ import com.liferay.change.tracking.web.internal.configuration.CTConfiguration;
 import com.liferay.change.tracking.web.internal.display.BasePersistenceRegistry;
 import com.liferay.change.tracking.web.internal.display.CTModelDisplayRendererAdapter;
 import com.liferay.change.tracking.web.internal.frontend.data.set.filter.ChangeTypeSelectionFDSFilter;
-import com.liferay.change.tracking.web.internal.frontend.data.set.filter.HideableSelectionFDSFilter;
 import com.liferay.change.tracking.web.internal.frontend.data.set.filter.SiteSelectionFDSFilter;
 import com.liferay.change.tracking.web.internal.frontend.data.set.filter.TypeNameSelectionFDSFilter;
 import com.liferay.change.tracking.web.internal.frontend.data.set.filter.UserSelectionFDSFilter;
@@ -149,9 +148,13 @@ public class ViewChangesDisplayContext {
 	}
 
 	public String getAPIURL() {
+		boolean showHideable = ParamUtil.getBoolean(
+			_renderRequest, "showHideable");
+
 		return StringBundler.concat(
 			"/o/change-tracking-rest/v1.0/ct-collections/",
-			_ctCollection.getCtCollectionId(), "/ct-entries");
+			_ctCollection.getCtCollectionId(), "/ct-entries?showHideable=",
+			showHideable);
 	}
 
 	public String getBackURL() {
@@ -236,7 +239,6 @@ public class ViewChangesDisplayContext {
 
 		return ListUtil.fromArray(
 			new ChangeTypeSelectionFDSFilter(),
-			new HideableSelectionFDSFilter(),
 			new SiteSelectionFDSFilter(siteNames),
 			new TypeNameSelectionFDSFilter(typeNames),
 			new UserSelectionFDSFilter(usersJSONObject.toMap()));
@@ -1034,6 +1036,54 @@ public class ViewChangesDisplayContext {
 		}
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
+
+		if (FeatureFlagManagerUtil.isEnabled("LPS-179035")) {
+			boolean showHideable = ParamUtil.getBoolean(
+				_renderRequest, "showHideable");
+
+			if (showHideable) {
+				jsonArray.put(
+					JSONUtil.put(
+						"href",
+						PortletURLBuilder.createRenderURL(
+							_renderResponse
+						).setMVCRenderCommandName(
+							"/change_tracking/view_changes"
+						).setParameter(
+							"ctCollectionId", _ctCollection.getCtCollectionId()
+						).setParameter(
+							"showHideable", false
+						).buildString()
+					).put(
+						"label",
+						_language.get(
+							_httpServletRequest, "hide-system-changes")
+					).put(
+						"symbolLeft", "hidden"
+					));
+			}
+			else {
+				jsonArray.put(
+					JSONUtil.put(
+						"href",
+						PortletURLBuilder.createRenderURL(
+							_renderResponse
+						).setMVCRenderCommandName(
+							"/change_tracking/view_changes"
+						).setParameter(
+							"ctCollectionId", _ctCollection.getCtCollectionId()
+						).setParameter(
+							"showHideable", true
+						).buildString()
+					).put(
+						"label",
+						_language.get(
+							_httpServletRequest, "show-system-changes")
+					).put(
+						"symbolLeft", "view"
+					));
+			}
+		}
 
 		if (CTCollectionPermission.contains(
 				permissionChecker, _ctCollection, ActionKeys.UPDATE)) {
