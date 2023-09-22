@@ -5,6 +5,7 @@
 
 package com.liferay.layout.admin.web.internal.change.tracking.spi.display;
 
+import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.spi.display.BaseCTDisplayRenderer;
 import com.liferay.change.tracking.spi.display.CTDisplayRenderer;
 import com.liferay.change.tracking.spi.display.context.DisplayContext;
@@ -15,11 +16,12 @@ import com.liferay.portal.kernel.model.ColorScheme;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.Theme;
+import com.liferay.portal.kernel.portlet.PortletURLFactory;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.permission.LayoutPermission;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.HttpComponentsUtil;
+import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -111,31 +113,24 @@ public class LayoutCTDisplayRenderer extends BaseCTDisplayRenderer<Layout> {
 
 		Layout layout = displayContext.getModel();
 
-		HttpServletRequest httpServletRequest =
-			displayContext.getHttpServletRequest();
-
-		ThemeDisplay themeDisplay =
-			(ThemeDisplay)httpServletRequest.getAttribute(
-				WebKeys.THEME_DISPLAY);
-
-		String url = null;
-
-		if (!layout.isDenied() && !layout.isPending()) {
-			url = _portal.getLayoutFriendlyURL(layout, themeDisplay);
-		}
-		else {
-			url = _portal.getLayoutFriendlyURL(
-				layout.fetchDraftLayout(), themeDisplay);
-		}
-
-		url = HttpComponentsUtil.addParameter(url, "p_l_mode", "preview");
-		url = HttpComponentsUtil.addParameter(
-			url, "previewCTCollectionId", layout.getCtCollectionId());
-
 		return StringBundler.concat(
 			"<iframe frameborder=\"0\" onload=\"this.style.height = ",
 			"(this.contentWindow.document.body.scrollHeight+20) + 'px';\" ",
-			"src=\"", url, "\" width=\"100%\"></iframe>");
+			"src=\"",
+			PortletURLBuilder.create(
+				_portletURLFactory.create(
+					displayContext.getHttpServletRequest(),
+					CTPortletKeys.PUBLICATIONS, PortletRequest.ACTION_PHASE)
+			).setActionName(
+				"/change_tracking/get_page_preview"
+			).setParameter(
+				"ctCollectionId", layout.getCtCollectionId()
+			).setParameter(
+				"p_l_mode", Constants.PREVIEW
+			).setParameter(
+				"selPlid", layout.getPlid()
+			).buildString(),
+			"\" width=\"100%\"></iframe>");
 	}
 
 	@Override
@@ -231,6 +226,9 @@ public class LayoutCTDisplayRenderer extends BaseCTDisplayRenderer<Layout> {
 
 	@Reference
 	private Portal _portal;
+
+	@Reference
+	private PortletURLFactory _portletURLFactory;
 
 	@Reference
 	private StyleBookEntryLocalService _styleBookEntryLocalService;
