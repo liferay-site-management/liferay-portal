@@ -26,6 +26,13 @@ import org.osgi.annotation.versioning.ProviderType;
 public interface DisplayContext<T> {
 
 	/**
+	 * Returns the ctCollectionId.
+	 *
+	 * @return the ctCollectionId
+	 */
+	public long getCTCollectionId();
+
+	/**
 	 * Creates a download URL for use while rendering. This is only used for
 	 * {@link CTModel}
 	 * renderers.

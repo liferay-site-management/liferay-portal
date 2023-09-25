@@ -5,6 +5,7 @@
 
 package com.liferay.change.tracking.web.internal.display;
 
+import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.spi.display.CTDisplayRenderer;
 import com.liferay.change.tracking.spi.display.CTDisplayRendererRegistry;
 import com.liferay.change.tracking.spi.display.context.DisplayContext;
@@ -32,22 +33,31 @@ public class DisplayContextImpl<T> implements DisplayContext<T> {
 		HttpServletRequest httpServletRequest,
 		HttpServletResponse httpServletResponse,
 		ClassNameLocalService classNameLocalService,
-		CTDisplayRendererRegistry ctDisplayRendererRegistry, long ctEntryId,
+		CTDisplayRendererRegistry ctDisplayRendererRegistry, CTEntry ctEntry,
 		Locale locale, T model, String type) {
 
 		_httpServletRequest = httpServletRequest;
 		_httpServletResponse = httpServletResponse;
 		_classNameLocalService = classNameLocalService;
 		_ctDisplayRendererRegistry = ctDisplayRendererRegistry;
-		_ctEntryId = ctEntryId;
+		_ctEntry = ctEntry;
 		_locale = locale;
 		_model = model;
 		_type = type;
 	}
 
 	@Override
+	public long getCTCollectionId() {
+		if (_ctEntry == null) {
+			return 0;
+		}
+
+		return _ctEntry.getCtCollectionId();
+	}
+
+	@Override
 	public String getDownloadURL(String key, long size, String title) {
-		if (_ctEntryId <= 0) {
+		if ((_ctEntry == null) || (_ctEntry.getCtEntryId() <= 0)) {
 			return null;
 		}
 
@@ -60,7 +70,7 @@ public class DisplayContextImpl<T> implements DisplayContext<T> {
 		sb.append(themeDisplay.getPortalURL());
 		sb.append(Portal.PATH_MODULE);
 		sb.append("/change_tracking/documents/");
-		sb.append(_ctEntryId);
+		sb.append(_ctEntry.getCtEntryId());
 		sb.append(StringPool.SLASH);
 		sb.append(_type);
 
@@ -136,7 +146,7 @@ public class DisplayContextImpl<T> implements DisplayContext<T> {
 
 		DisplayContext<M> displayContext = new DisplayContextImpl<>(
 			_httpServletRequest, _httpServletResponse, _classNameLocalService,
-			_ctDisplayRendererRegistry, _ctEntryId, locale, baseModel, _type);
+			_ctDisplayRendererRegistry, _ctEntry, locale, baseModel, _type);
 
 		String result = null;
 
@@ -152,7 +162,7 @@ public class DisplayContextImpl<T> implements DisplayContext<T> {
 
 	private final ClassNameLocalService _classNameLocalService;
 	private final CTDisplayRendererRegistry _ctDisplayRendererRegistry;
-	private final long _ctEntryId;
+	private final CTEntry _ctEntry;
 	private final HttpServletRequest _httpServletRequest;
 	private final HttpServletResponse _httpServletResponse;
 	private final Locale _locale;

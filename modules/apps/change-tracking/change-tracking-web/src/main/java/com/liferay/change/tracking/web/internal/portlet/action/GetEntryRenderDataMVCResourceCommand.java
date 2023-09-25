@@ -216,25 +216,25 @@ public class GetEntryRenderDataMVCResourceCommand
 					rightLocalizedPreviewJSONObject =
 						_getLocalizedPreviewJSONObject(
 							availableLanguageIds, ctCollectionId,
-							ctDisplayRenderer, ctEntryId, ctSQLMode,
+							ctDisplayRenderer, ctEntry, ctSQLMode,
 							httpServletRequest, httpServletResponse, rightModel,
 							CTConstants.TYPE_AFTER);
 					rightLocalizedRenderJSONObject =
 						_getLocalizedRenderJSONObject(
 							availableLanguageIds, httpServletRequest,
 							httpServletResponse, ctCollectionId,
-							ctDisplayRenderer, ctEntryId, ctSQLMode, rightModel,
+							ctDisplayRenderer, ctEntry, ctSQLMode, rightModel,
 							CTConstants.TYPE_AFTER);
 				}
 				else {
 					rightPreview = _getPreview(
-						ctCollectionId, ctDisplayRenderer, ctEntryId, ctSQLMode,
+						ctCollectionId, ctDisplayRenderer, ctEntry, ctSQLMode,
 						httpServletRequest, httpServletResponse,
 						themeDisplay.getLocale(), rightModel,
 						CTConstants.TYPE_AFTER);
 					rightRender = _getRender(
 						httpServletRequest, httpServletResponse, ctCollectionId,
-						ctDisplayRenderer, ctEntryId, ctSQLMode,
+						ctDisplayRenderer, ctEntry, ctSQLMode,
 						themeDisplay.getLocale(), rightModel,
 						CTConstants.TYPE_AFTER);
 				}
@@ -318,25 +318,25 @@ public class GetEntryRenderDataMVCResourceCommand
 						leftLocalizedPreviewJSONObject =
 							_getLocalizedPreviewJSONObject(
 								availableLanguageIds, leftCtCollectionId,
-								ctDisplayRenderer, ctEntryId, leftCTSQLMode,
+								ctDisplayRenderer, ctEntry, leftCTSQLMode,
 								httpServletRequest, httpServletResponse,
 								leftModel, CTConstants.TYPE_LATEST);
 						leftLocalizedRenderJSONObject =
 							_getLocalizedRenderJSONObject(
 								availableLanguageIds, httpServletRequest,
 								httpServletResponse, leftCtCollectionId,
-								ctDisplayRenderer, ctEntryId, leftCTSQLMode,
+								ctDisplayRenderer, ctEntry, leftCTSQLMode,
 								leftModel, CTConstants.TYPE_LATEST);
 					}
 					else {
 						leftPreview = _getPreview(
-							leftCtCollectionId, ctDisplayRenderer, ctEntryId,
+							leftCtCollectionId, ctDisplayRenderer, ctEntry,
 							leftCTSQLMode, httpServletRequest,
 							httpServletResponse, themeDisplay.getLocale(),
 							leftModel, CTConstants.TYPE_LATEST);
 						leftRender = _getRender(
 							httpServletRequest, httpServletResponse,
-							leftCtCollectionId, ctDisplayRenderer, ctEntryId,
+							leftCtCollectionId, ctDisplayRenderer, ctEntry,
 							leftCTSQLMode, themeDisplay.getLocale(), leftModel,
 							CTConstants.TYPE_LATEST);
 					}
@@ -400,25 +400,25 @@ public class GetEntryRenderDataMVCResourceCommand
 					leftLocalizedPreviewJSONObject =
 						_getLocalizedPreviewJSONObject(
 							availableLanguageIds, leftCtCollectionId,
-							ctDisplayRenderer, ctEntryId, leftCTSQLMode,
+							ctDisplayRenderer, ctEntry, leftCTSQLMode,
 							httpServletRequest, httpServletResponse, leftModel,
 							CTConstants.TYPE_BEFORE);
 					leftLocalizedRenderJSONObject =
 						_getLocalizedRenderJSONObject(
 							availableLanguageIds, httpServletRequest,
 							httpServletResponse, leftCtCollectionId,
-							ctDisplayRenderer, ctEntryId, leftCTSQLMode,
+							ctDisplayRenderer, ctEntry, leftCTSQLMode,
 							leftModel, CTConstants.TYPE_BEFORE);
 				}
 				else {
 					leftPreview = _getPreview(
-						leftCtCollectionId, ctDisplayRenderer, ctEntryId,
+						leftCtCollectionId, ctDisplayRenderer, ctEntry,
 						leftCTSQLMode, httpServletRequest, httpServletResponse,
 						themeDisplay.getLocale(), leftModel,
 						CTConstants.TYPE_BEFORE);
 					leftRender = _getRender(
 						httpServletRequest, httpServletResponse,
-						leftCtCollectionId, ctDisplayRenderer, ctEntryId,
+						leftCtCollectionId, ctDisplayRenderer, ctEntry,
 						leftCTSQLMode, themeDisplay.getLocale(), leftModel,
 						CTConstants.TYPE_BEFORE);
 				}
@@ -478,25 +478,25 @@ public class GetEntryRenderDataMVCResourceCommand
 						rightLocalizedPreviewJSONObject =
 							_getLocalizedPreviewJSONObject(
 								availableLanguageIds, ctCollectionId,
-								ctDisplayRenderer, ctEntryId, ctSQLMode,
+								ctDisplayRenderer, ctEntry, ctSQLMode,
 								httpServletRequest, httpServletResponse,
 								rightModel, CTConstants.TYPE_LATEST);
 						rightLocalizedRenderJSONObject =
 							_getLocalizedRenderJSONObject(
 								availableLanguageIds, httpServletRequest,
 								httpServletResponse, ctCollectionId,
-								ctDisplayRenderer, ctEntryId, ctSQLMode,
+								ctDisplayRenderer, ctEntry, ctSQLMode,
 								rightModel, CTConstants.TYPE_LATEST);
 					}
 					else {
 						rightPreview = _getPreview(
-							ctCollectionId, ctDisplayRenderer, ctEntryId,
+							ctCollectionId, ctDisplayRenderer, ctEntry,
 							ctSQLMode, httpServletRequest, httpServletResponse,
 							themeDisplay.getLocale(), rightModel,
 							CTConstants.TYPE_LATEST);
 						rightRender = _getRender(
 							httpServletRequest, httpServletResponse,
-							ctCollectionId, ctDisplayRenderer, ctEntryId,
+							ctCollectionId, ctDisplayRenderer, ctEntry,
 							ctSQLMode, themeDisplay.getLocale(), rightModel,
 							CTConstants.TYPE_LATEST);
 					}
@@ -696,7 +696,7 @@ public class GetEntryRenderDataMVCResourceCommand
 
 	private <T extends BaseModel<T>> JSONObject _getLocalizedPreviewJSONObject(
 		String[] availableLanguageIds, long ctCollectionId,
-		CTDisplayRenderer<T> ctDisplayRenderer, long ctEntryId,
+		CTDisplayRenderer<T> ctDisplayRenderer, CTEntry ctEntry,
 		CTSQLModeThreadLocal.CTSQLMode ctSQLMode,
 		HttpServletRequest httpServletRequest,
 		HttpServletResponse httpServletResponse, T model, String type) {
@@ -714,7 +714,7 @@ public class GetEntryRenderDataMVCResourceCommand
 					new DisplayContextImpl<>(
 						httpServletRequest, httpServletResponse,
 						_classNameLocalService, _ctDisplayRendererRegistry,
-						ctEntryId, LocaleUtil.fromLanguageId(languageId), model,
+						ctEntry, LocaleUtil.fromLanguageId(languageId), model,
 						type));
 
 				if (preview != null) {
@@ -739,7 +739,7 @@ public class GetEntryRenderDataMVCResourceCommand
 			String[] availableLanguageIds,
 			HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, long ctCollectionId,
-			CTDisplayRenderer<T> ctDisplayRenderer, long ctEntryId,
+			CTDisplayRenderer<T> ctDisplayRenderer, CTEntry ctEntry,
 			CTSQLModeThreadLocal.CTSQLMode ctSQLMode, T model, String type)
 		throws Exception {
 
@@ -750,7 +750,7 @@ public class GetEntryRenderDataMVCResourceCommand
 				languageId,
 				_getRender(
 					httpServletRequest, httpServletResponse, ctCollectionId,
-					ctDisplayRenderer, ctEntryId, ctSQLMode,
+					ctDisplayRenderer, ctEntry, ctSQLMode,
 					LocaleUtil.fromLanguageId(languageId), model, type));
 		}
 
@@ -759,7 +759,7 @@ public class GetEntryRenderDataMVCResourceCommand
 
 	private <T extends BaseModel<T>> String _getPreview(
 		long ctCollectionId, CTDisplayRenderer<T> ctDisplayRenderer,
-		long ctEntryId, CTSQLModeThreadLocal.CTSQLMode ctSQLMode,
+		CTEntry ctEntry, CTSQLModeThreadLocal.CTSQLMode ctSQLMode,
 		HttpServletRequest httpServletRequest,
 		HttpServletResponse httpServletResponse, Locale locale, T model,
 		String type) {
@@ -773,8 +773,8 @@ public class GetEntryRenderDataMVCResourceCommand
 			return ctDisplayRenderer.renderPreview(
 				new DisplayContextImpl<>(
 					httpServletRequest, httpServletResponse,
-					_classNameLocalService, _ctDisplayRendererRegistry,
-					ctEntryId, locale, model, type));
+					_classNameLocalService, _ctDisplayRendererRegistry, ctEntry,
+					locale, model, type));
 		}
 		catch (Exception exception) {
 			_log.error(exception);
@@ -818,7 +818,7 @@ public class GetEntryRenderDataMVCResourceCommand
 				CTConstants.CT_COLLECTION_ID_PRODUCTION,
 				_ctDisplayRendererRegistry.getCTDisplayRenderer(
 					modelClassNameId),
-				0, CTSQLModeThreadLocal.CTSQLMode.DEFAULT,
+				null, CTSQLModeThreadLocal.CTSQLMode.DEFAULT,
 				themeDisplay.getLocale(), model, CTConstants.TYPE_BEFORE)
 		).put(
 			"leftTitle", _language.get(httpServletRequest, "production")
@@ -828,7 +828,7 @@ public class GetEntryRenderDataMVCResourceCommand
 	private <T extends BaseModel<T>> String _getRender(
 			HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, long ctCollectionId,
-			CTDisplayRenderer<T> ctDisplayRenderer, long ctEntryId,
+			CTDisplayRenderer<T> ctDisplayRenderer, CTEntry ctEntry,
 			CTSQLModeThreadLocal.CTSQLMode ctSQLMode, Locale locale, T model,
 			String type)
 		throws Exception {
@@ -847,8 +847,8 @@ public class GetEntryRenderDataMVCResourceCommand
 			ctDisplayRenderer.render(
 				new DisplayContextImpl<>(
 					httpServletRequest, pipingServletResponse,
-					_classNameLocalService, _ctDisplayRendererRegistry,
-					ctEntryId, locale, model, type));
+					_classNameLocalService, _ctDisplayRendererRegistry, ctEntry,
+					locale, model, type));
 
 			StringBundler sb = unsyncStringWriter.getStringBundler();
 
@@ -870,8 +870,8 @@ public class GetEntryRenderDataMVCResourceCommand
 			ctDisplayRenderer.render(
 				new DisplayContextImpl<>(
 					httpServletRequest, pipingServletResponse,
-					_classNameLocalService, _ctDisplayRendererRegistry,
-					ctEntryId, locale, model, type));
+					_classNameLocalService, _ctDisplayRendererRegistry, ctEntry,
+					locale, model, type));
 
 			StringBundler sb = unsyncStringWriter.getStringBundler();
 

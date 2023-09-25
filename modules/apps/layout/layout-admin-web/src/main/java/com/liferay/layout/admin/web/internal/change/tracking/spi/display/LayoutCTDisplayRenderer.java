@@ -124,9 +124,11 @@ public class LayoutCTDisplayRenderer extends BaseCTDisplayRenderer<Layout> {
 			).setActionName(
 				"/change_tracking/get_page_preview"
 			).setParameter(
-				"ctCollectionId", layout.getCtCollectionId()
+				"currentCTCollectionId", displayContext.getCTCollectionId()
 			).setParameter(
 				"p_l_mode", Constants.PREVIEW
+			).setParameter(
+				"renderCTCollectionId", layout.getCtCollectionId()
 			).setParameter(
 				"selPlid", layout.getPlid()
 			).buildString(),

@@ -6,6 +6,7 @@
 package com.liferay.change.tracking.web.internal.portlet.action;
 
 import com.liferay.change.tracking.constants.CTPortletKeys;
+import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -16,7 +17,9 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactory;
+import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
@@ -54,35 +57,54 @@ public class GetPagePreviewMVCActionCommand extends BaseMVCActionCommand {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		long ctCollectionId = ParamUtil.getLong(
-			actionRequest, "ctCollectionId", -1);
+		long currentCTCollectionId = ParamUtil.getLong(
+			actionRequest, "currentCTCollectionId");
 
-		if (ctCollectionId < 0) {
+		if (currentCTCollectionId < 1) {
 			return;
+		}
+
+		ThemeDisplay originalThemeDisplay =
+			(ThemeDisplay)actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
+
+		_modelResourcePermission.check(
+			originalThemeDisplay.getPermissionChecker(), currentCTCollectionId,
+			ActionKeys.VIEW);
+
+		long plid = ParamUtil.getLong(actionRequest, "selPlid");
+
+		try (SafeCloseable safeCloseable =
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					currentCTCollectionId)) {
+
+			Layout layout = _layoutLocalService.getLayout(plid);
+
+			if (layout.getCtCollectionId() != currentCTCollectionId) {
+				throw new PortalException();
+			}
 		}
 
 		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
 			actionRequest);
 
-		ThemeDisplay originalThemeDisplay =
-			(ThemeDisplay)actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
+		long renderCTCollectionId = ParamUtil.getLong(
+			actionRequest, "renderCTCollectionId");
 
 		try (SafeCloseable safeCloseable =
 				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
-					ctCollectionId)) {
+					renderCTCollectionId)) {
 
 			ThemeDisplay themeDisplay =
 				(ThemeDisplay)originalThemeDisplay.clone();
 
 			themeDisplay.setLayouts(
-				_getLayouts(ParamUtil.getLong(actionRequest, "selPlid", -1)));
+				_getLayouts(_layoutLocalService.getLayout(plid)));
 
 			User user = _getAdminUser(themeDisplay.getCompanyId());
 
-			themeDisplay.setRealUser(user);
-
 			themeDisplay.setPermissionChecker(
 				_permissionCheckerFactory.create(user));
+			themeDisplay.setRealUser(user);
 
 			httpServletRequest.setAttribute(
 				WebKeys.THEME_DISPLAY, themeDisplay);
@@ -112,13 +134,7 @@ public class GetPagePreviewMVCActionCommand extends BaseMVCActionCommand {
 		return users.get(0);
 	}
 
-	private List<Layout> _getLayouts(long plid) throws PortalException {
-		if (plid < 0) {
-			return null;
-		}
-
-		Layout layout = _layoutLocalService.getLayout(plid);
-
+	private List<Layout> _getLayouts(Layout layout) throws PortalException {
 		List<Layout> layouts = new ArrayList<>();
 
 		for (Layout curLayout :
@@ -139,6 +155,11 @@ public class GetPagePreviewMVCActionCommand extends BaseMVCActionCommand {
 
 	@Reference
 	private LayoutLocalService _layoutLocalService;
+
+	@Reference(
+		target = "(model.class.name=com.liferay.change.tracking.model.CTCollection)"
+	)
+	private ModelResourcePermission<CTCollection> _modelResourcePermission;
 
 	@Reference
 	private PermissionCheckerFactory _permissionCheckerFactory;
