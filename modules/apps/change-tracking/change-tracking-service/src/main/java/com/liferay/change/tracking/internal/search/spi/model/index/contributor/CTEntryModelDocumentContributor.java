@@ -7,14 +7,10 @@ package com.liferay.change.tracking.internal.search.spi.model.index.contributor;
 
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.model.CTEntry;
-import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.spi.display.CTDisplayRenderer;
 import com.liferay.change.tracking.spi.display.CTDisplayRendererRegistry;
 import com.liferay.portal.kernel.change.tracking.sql.CTSQLModeThreadLocal;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupedModel;
@@ -24,7 +20,10 @@ import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.Localization;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.search.spi.model.index.contributor.ModelDocumentContributor;
 
 import java.util.HashMap;
@@ -84,23 +83,37 @@ public class CTEntryModelDocumentContributor
 		return locales.toArray(new Locale[0]);
 	}
 
-	private <T extends BaseModel<T>> Map<Locale, String> _getTitleMap(
-		Locale[] locales, T model, long modelClassNameId) {
+	private Map<Locale, String> _getChangeTypeLabeleMap(
+		Locale[] locales, long changeType) {
 
-		CTDisplayRenderer ctDisplayRenderer =
-			_ctDisplayRendererRegistry.getCTDisplayRenderer(modelClassNameId);
+		Map<Locale, String> map = new HashMap<>();
+
+		String changeTypeLabel = "modified";
+
+		if (changeType == CTConstants.CT_CHANGE_TYPE_ADDITION) {
+			changeTypeLabel = "added";
+		}
+		else if (changeType == CTConstants.CT_CHANGE_TYPE_DELETION) {
+			changeTypeLabel = "deleted";
+		}
+
+		for (Locale locale : locales) {
+			map.put(locale, _language.get(locale, changeTypeLabel));
+		}
+
+		return map;
+	}
+
+	private <T extends BaseModel<T>> Map<Locale, String> _getTitleMap(
+		CTEntry ctEntry, Locale[] locales) {
 
 		Map<Locale, String> map = new HashMap<>();
 
 		for (Locale locale : locales) {
-			try {
-				map.put(locale, ctDisplayRenderer.getTitle(locale, model));
-			}
-			catch (PortalException portalException) {
-				if (_log.isDebugEnabled()) {
-					_log.debug(portalException);
-				}
-			}
+			map.put(
+				locale,
+				_ctDisplayRendererRegistry.getTitle(
+					ctEntry.getCtCollectionId(), ctEntry, locale));
 		}
 
 		return map;
@@ -143,6 +156,10 @@ public class CTEntryModelDocumentContributor
 			"typeName", _getTypeNameMap(locales, ctEntry.getModelClassNameId()),
 			true);
 
+		document.addLocalizedText(
+			"changeTypeLabel",
+			_getChangeTypeLabeleMap(locales, ctEntry.getChangeType()), true);
+
 		if (model == null) {
 			return;
 		}
@@ -155,16 +172,45 @@ public class CTEntryModelDocumentContributor
 
 			if (group != null) {
 				document.addKeyword(Field.GROUP_ID, group.getGroupId());
-				document.addLocalizedKeyword("groupName", group.getNameMap());
+				document.addLocalizedKeyword(
+					"groupName",
+					_localization.populateLocalizationMap(
+						group.getNameMap(), group.getDefaultLanguageId(),
+						group.getGroupId()),
+					true, true);
+			}
+		}
+		else {
+			Map<String, Object> attributesMap = model.getModelAttributes();
+
+			long groupId = GetterUtil.getLong(attributesMap.get("groupId"));
+
+			if (groupId == 0) {
+				long classNameId = GetterUtil.getLong(
+					attributesMap.get("classNameId"));
+
+				if (classNameId == _portal.getClassNameId(Group.class)) {
+					groupId = GetterUtil.getLong(attributesMap.get("classPK"));
+				}
+			}
+
+			if (groupId != 0) {
+				Group group = _groupLocalService.fetchGroup(groupId);
+
+				if (group != null) {
+					document.addKeyword(Field.GROUP_ID, group.getGroupId());
+					document.addLocalizedKeyword(
+						"groupName",
+						_localization.populateLocalizationMap(
+							group.getNameMap(), group.getDefaultLanguageId(),
+							group.getGroupId()),
+						true, true);
+				}
 			}
 		}
 
-		document.addLocalizedKeyword(
-			Field.getSortableFieldName(Field.TITLE),
-			_getTitleMap(locales, model, ctEntry.getModelClassNameId()));
 		document.addLocalizedText(
-			Field.TITLE,
-			_getTitleMap(locales, model, ctEntry.getModelClassNameId()), true);
+			Field.TITLE, _getTitleMap(ctEntry, locales), true);
 
 		document.addKeyword(
 			"hideable",
@@ -179,20 +225,20 @@ public class CTEntryModelDocumentContributor
 		}
 	}
 
-	private static final Log _log = LogFactoryUtil.getLog(
-		CTEntryModelDocumentContributor.class);
-
 	@Reference
 	private CTDisplayRendererRegistry _ctDisplayRendererRegistry;
-
-	@Reference
-	private CTEntryLocalService _ctEntryLocalService;
 
 	@Reference
 	private GroupLocalService _groupLocalService;
 
 	@Reference
 	private Language _language;
+
+	@Reference
+	private Localization _localization;
+
+	@Reference
+	private Portal _portal;
 
 	@Reference
 	private UserLocalService _userLocalService;
