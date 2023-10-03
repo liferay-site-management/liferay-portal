@@ -73,6 +73,10 @@ public class CTEntryDTOConverter
 			return _language.get(locale, "added");
 		}
 
+		if (ctEntry.getChangeType() == CTConstants.CT_CHANGE_TYPE_DELETION) {
+			return _language.get(locale, "deleted");
+		}
+
 		return _language.get(locale, "modified");
 	}
 
