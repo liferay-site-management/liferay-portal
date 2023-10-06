@@ -11,6 +11,7 @@ import com.liferay.change.tracking.spi.reference.builder.ChildTableReferenceInfo
 import com.liferay.change.tracking.spi.reference.builder.ParentTableReferenceInfoBuilder;
 import com.liferay.portal.kernel.model.UserTable;
 import com.liferay.portal.kernel.service.persistence.BasePersistence;
+import com.liferay.social.kernel.model.SocialActivity;
 import com.liferay.social.kernel.model.SocialActivitySetTable;
 import com.liferay.social.kernel.model.SocialActivityTable;
 import com.liferay.social.kernel.service.persistence.SocialActivityPersistence;
@@ -29,6 +30,14 @@ public class SocialActivityTableReferenceDefinition
 	public void defineChildTableReferences(
 		ChildTableReferenceInfoBuilder<SocialActivityTable>
 			childTableReferenceInfoBuilder) {
+
+		childTableReferenceInfoBuilder.classNameReference(
+			SocialActivityTable.INSTANCE.activitySetId,
+			SocialActivitySetTable.INSTANCE.classPK, SocialActivity.class
+		).singleColumnReference(
+			SocialActivityTable.INSTANCE.activitySetId,
+			SocialActivitySetTable.INSTANCE.activitySetId
+		);
 	}
 
 	@Override
