@@ -49,6 +49,7 @@ import com.liferay.change.tracking.spi.display.CTDisplayRenderer;
 import com.liferay.change.tracking.spi.resolver.ConstraintResolver;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.petra.string.CharPool;
@@ -523,10 +524,24 @@ public class CTCollectionLocalServiceImpl
 		Map<Long, List<CTEntry>> relateCTEntriesMap = _getRelateCTEntriesMap(
 			ctCollection, modelClassNameId, modelClassPK);
 
+		List<CTEntry> ctEntries = new ArrayList<>();
+
 		for (Map.Entry<Long, List<CTEntry>> entry :
 				relateCTEntriesMap.entrySet()) {
 
+			ctEntries.addAll(entry.getValue());
+
 			_discardCTEntries(ctCollection, entry.getKey(), entry.getValue());
+		}
+
+		Indexer<CTEntry> indexer = _indexerRegistry.getIndexer(CTEntry.class);
+
+		if (indexer != null) {
+			_indexWriterHelper.deleteDocuments(
+				ctCollection.getCompanyId(),
+				TransformUtil.transform(
+					ctEntries, ctEntry -> _uidFactory.getUID(ctEntry)),
+				indexer.isCommitImmediately());
 		}
 	}
 
