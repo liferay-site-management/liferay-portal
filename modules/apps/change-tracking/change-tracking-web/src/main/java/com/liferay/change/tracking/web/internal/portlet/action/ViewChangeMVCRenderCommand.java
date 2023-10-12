@@ -105,22 +105,6 @@ public class ViewChangeMVCRenderCommand implements MVCRenderCommand {
 				return "/publications/view_publications.jsp";
 			}
 
-			if (ctEntry == null) {
-				return "/publications/view_changes.jsp";
-			}
-
-			LiferayPortletRequest liferayPortletRequest =
-				LiferayPortletUtil.getLiferayPortletRequest(renderRequest);
-
-			DynamicServletRequest dynamicServletRequest =
-				(DynamicServletRequest)
-					liferayPortletRequest.getHttpServletRequest();
-
-			dynamicServletRequest.setParameter(
-				"entry",
-				String.valueOf(ctEntry.getModelClassNameId()) + "-" +
-					String.valueOf(ctEntry.getModelClassPK()));
-
 			ViewChangesDisplayContext viewChangesDisplayContext =
 				new ViewChangesDisplayContext(
 					activeCtCollectionId, _basePersistenceRegistry,
@@ -141,6 +125,22 @@ public class ViewChangeMVCRenderCommand implements MVCRenderCommand {
 			renderRequest.setAttribute(
 				CTWebKeys.VIEW_CHANGES_DISPLAY_CONTEXT,
 				viewChangesDisplayContext);
+
+			if (ctEntry == null) {
+				return "/publications/view_changes.jsp";
+			}
+
+			LiferayPortletRequest liferayPortletRequest =
+				LiferayPortletUtil.getLiferayPortletRequest(renderRequest);
+
+			DynamicServletRequest dynamicServletRequest =
+				(DynamicServletRequest)
+					liferayPortletRequest.getHttpServletRequest();
+
+			dynamicServletRequest.setParameter(
+				"entry",
+				String.valueOf(ctEntry.getModelClassNameId()) + "-" +
+					String.valueOf(ctEntry.getModelClassPK()));
 		}
 		catch (PortalException portalException) {
 			if (_log.isWarnEnabled()) {
