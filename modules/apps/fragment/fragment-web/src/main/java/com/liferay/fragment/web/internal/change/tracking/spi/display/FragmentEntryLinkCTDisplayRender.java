@@ -56,7 +56,7 @@ public class FragmentEntryLinkCTDisplayRender
 
 	@Override
 	public boolean isHideable(FragmentEntryLink fragmentEntryLink) {
-		if (fragmentEntryLink.getOriginalFragmentEntryLinkId() == 0) {
+		if (fragmentEntryLink.getOriginalFragmentEntryLinkId() != 0) {
 			return false;
 		}
 
