@@ -71,6 +71,9 @@ public class DDMFormInstanceTableReferenceDefinition
 						DDMFormInstance.class.getName())
 				)
 			)
+		).singleColumnReference(
+			DDMFormInstanceTable.INSTANCE.structureId,
+			DDMStructureTable.INSTANCE.structureId
 		);
 	}
 
@@ -80,11 +83,7 @@ public class DDMFormInstanceTableReferenceDefinition
 			parentTableReferenceInfoBuilder) {
 
 		parentTableReferenceInfoBuilder.groupedModel(
-			DDMFormInstanceTable.INSTANCE
-		).singleColumnReference(
-			DDMFormInstanceTable.INSTANCE.structureId,
-			DDMStructureTable.INSTANCE.structureId
-		);
+			DDMFormInstanceTable.INSTANCE);
 	}
 
 	@Override
