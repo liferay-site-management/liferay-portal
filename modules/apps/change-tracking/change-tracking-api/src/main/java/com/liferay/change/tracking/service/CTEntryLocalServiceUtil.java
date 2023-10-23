@@ -258,6 +258,16 @@ public class CTEntryLocalServiceUtil {
 			ctCollectionId, start, end, orderByComparator);
 	}
 
+	public static List<CTEntry> getCTCollectionCTEntries(
+			long ctCollectionId, java.util.LinkedHashMap<String, Object> params,
+			int[] statuses, int start, int end,
+			OrderByComparator<CTEntry> orderByComparator)
+		throws PortalException {
+
+		return getService().getCTCollectionCTEntries(
+			ctCollectionId, params, statuses, start, end, orderByComparator);
+	}
+
 	public static int getCTCollectionCTEntriesCount(long ctCollectionId) {
 		return getService().getCTCollectionCTEntriesCount(ctCollectionId);
 	}

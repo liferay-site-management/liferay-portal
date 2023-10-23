@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 
 import java.io.Serializable;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.osgi.annotation.versioning.ProviderType;
@@ -229,6 +230,13 @@ public interface CTEntryLocalService
 	public List<CTEntry> getCTCollectionCTEntries(
 		long ctCollectionId, int start, int end,
 		OrderByComparator<CTEntry> orderByComparator);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<CTEntry> getCTCollectionCTEntries(
+			long ctCollectionId, LinkedHashMap<String, Object> params,
+			int[] statuses, int start, int end,
+			OrderByComparator<CTEntry> orderByComparator)
+		throws PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getCTCollectionCTEntriesCount(long ctCollectionId);
