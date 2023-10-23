@@ -295,6 +295,21 @@ public class CTEntryLocalServiceWrapper
 	}
 
 	@Override
+	public java.util.List<com.liferay.change.tracking.model.CTEntry>
+			getCTCollectionCTEntries(
+				long ctCollectionId,
+				java.util.LinkedHashMap<String, Object> params, int[] statuses,
+				int start, int end,
+				com.liferay.portal.kernel.util.OrderByComparator
+					<com.liferay.change.tracking.model.CTEntry>
+						orderByComparator)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _ctEntryLocalService.getCTCollectionCTEntries(
+			ctCollectionId, params, statuses, start, end, orderByComparator);
+	}
+
+	@Override
 	public int getCTCollectionCTEntriesCount(long ctCollectionId) {
 		return _ctEntryLocalService.getCTCollectionCTEntriesCount(
 			ctCollectionId);
