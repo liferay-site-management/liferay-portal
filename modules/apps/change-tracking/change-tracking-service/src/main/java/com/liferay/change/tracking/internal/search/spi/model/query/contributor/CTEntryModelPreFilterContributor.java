@@ -5,17 +5,21 @@
 
 package com.liferay.change.tracking.internal.search.spi.model.query.contributor;
 
+import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.portal.kernel.search.BooleanClauseOccur;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.filter.BooleanFilter;
 import com.liferay.portal.kernel.search.filter.TermsFilter;
+import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.spi.model.query.contributor.ModelPreFilterContributor;
 import com.liferay.portal.search.spi.model.registrar.ModelSearchSettings;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Pei-Jung Lan
@@ -73,6 +77,21 @@ public class CTEntryModelPreFilterContributor
 			searchContext.getAttribute("statuses"));
 
 		if (ArrayUtil.isNotEmpty(statuses)) {
+			if (ArrayUtil.contains(statuses, WorkflowConstants.STATUS_DRAFT)) {
+				BooleanFilter layoutPageTemplateEntryFilter =
+					new BooleanFilter();
+
+				layoutPageTemplateEntryFilter.addRequiredTerm(
+					"modelClassNameId",
+					_classNameLocalService.getClassNameId(
+						LayoutPageTemplateEntry.class));
+				layoutPageTemplateEntryFilter.addRequiredTerm(
+					"workflowStatus", WorkflowConstants.STATUS_DRAFT);
+
+				booleanFilter.add(
+					layoutPageTemplateEntryFilter, BooleanClauseOccur.MUST_NOT);
+			}
+
 			_addTermsFilter(
 				booleanFilter, "workflowStatus",
 				ArrayUtil.toStringArray(statuses));
@@ -92,5 +111,8 @@ public class CTEntryModelPreFilterContributor
 
 		booleanFilter.add(termsFilter, BooleanClauseOccur.MUST);
 	}
+
+	@Reference
+	private ClassNameLocalService _classNameLocalService;
 
 }
