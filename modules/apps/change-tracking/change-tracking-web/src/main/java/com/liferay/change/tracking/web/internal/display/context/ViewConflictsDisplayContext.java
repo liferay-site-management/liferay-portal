@@ -31,10 +31,13 @@ import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.LinkedHashMapBuilder;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.util.List;
 import java.util.Map;
@@ -109,6 +112,23 @@ public class ViewConflictsDisplayContext {
 		}
 
 		return HashMapBuilder.<String, Object>put(
+			"hasDraftChanges",
+			() -> {
+				List<CTEntry> ctEntries =
+					_ctEntryLocalService.getCTCollectionCTEntries(
+						_ctCollection.getCtCollectionId(),
+						LinkedHashMapBuilder.<String, Object>put(
+							"showHideable", true
+						).build(),
+						new int[] {WorkflowConstants.STATUS_DRAFT}, 0, 1, null);
+
+				if (ListUtil.isNotEmpty(ctEntries)) {
+					return true;
+				}
+
+				return false;
+			}
+		).put(
 			"hasUnapprovedChanges", _hasUnapprovedChanges
 		).put(
 			"learnLink",
