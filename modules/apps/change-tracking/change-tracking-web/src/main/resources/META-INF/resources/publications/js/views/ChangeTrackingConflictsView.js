@@ -24,6 +24,7 @@ class ChangeTrackingConflictsView extends ChangeTrackingBaseScheduleView {
 		super(props);
 
 		const {
+			hasDraftChanges,
 			hasUnapprovedChanges,
 			learnLink,
 			publishURL,
@@ -38,6 +39,7 @@ class ChangeTrackingConflictsView extends ChangeTrackingBaseScheduleView {
 			unresolvedConflicts,
 		} = props;
 
+		this.hasDraftChanges = hasDraftChanges;
 		this.hasUnapprovedChanges = hasUnapprovedChanges;
 		this.learnLink = learnLink;
 		this.publishURL = publishURL;
@@ -50,6 +52,16 @@ class ChangeTrackingConflictsView extends ChangeTrackingBaseScheduleView {
 		this.timeZone = timeZone;
 		this.unapprovedChangesAllowed = unapprovedChangesAllowed;
 		this.unresolvedConflicts = unresolvedConflicts;
+
+		this.disablePublish = false;
+
+		if (
+			(!this.unapprovedChangesAllowed &&
+				(this.hasDraftChanges || this.hasUnapprovedChanges)) ||
+			unresolvedConflicts.length
+		) {
+			this.disablePublish = true;
+		}
 
 		this.state = {
 			date: null,
@@ -81,6 +93,22 @@ class ChangeTrackingConflictsView extends ChangeTrackingBaseScheduleView {
 					<h2 className="sheet-title">
 						{Liferay.Language.get('checking-changes')}
 					</h2>
+
+					{this.hasDraftChanges && (
+						<ClayAlert
+							displayType="warning"
+							spritemap={this.spritemap}
+							title={
+								this.unapprovedChangesAllowed
+									? Liferay.Language.get(
+											'this-publication-contains-draft-changes'
+									  )
+									: Liferay.Language.get(
+											'this-publication-contains-draft-changes-that-must-be-published-before-publishing'
+									  )
+							}
+						/>
+					)}
 
 					{this.hasUnapprovedChanges && (
 						<ClayAlert
@@ -115,18 +143,15 @@ class ChangeTrackingConflictsView extends ChangeTrackingBaseScheduleView {
 						</ClayAlert>
 					)}
 
-					{(!this.hasUnapprovedChanges ||
-						(this.hasUnapprovedChanges &&
-							this.unapprovedChangesAllowed)) &&
-						!this.unresolvedConflicts.length && (
-							<ClayAlert
-								displayType="success"
-								spritemap={this.spritemap}
-								title={Liferay.Language.get(
-									'no-unresolved-conflicts-ready-to-publish'
-								)}
-							/>
-						)}
+					{!this.disablePublish && (
+						<ClayAlert
+							displayType="success"
+							spritemap={this.spritemap}
+							title={Liferay.Language.get(
+								'no-unresolved-conflicts-ready-to-publish'
+							)}
+						/>
+					)}
 
 					{this.showPageOverwriteWarning && (
 						<ClayAlert
@@ -250,9 +275,7 @@ class ChangeTrackingConflictsView extends ChangeTrackingBaseScheduleView {
 						<div className="btn-group-item">
 							<button
 								className={
-									!!this.unresolvedConflicts.length ||
-									(this.hasUnapprovedChanges &&
-										!this.unapprovedChangesAllowed)
+									this.disablePublish
 										? 'btn btn-primary disabled'
 										: 'btn btn-primary'
 								}
