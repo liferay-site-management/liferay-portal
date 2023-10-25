@@ -5,11 +5,13 @@
 
 package com.liferay.dynamic.data.mapping.internal.change.tracking.spi.reference;
 
+import com.liferay.asset.kernel.model.AssetEntryTable;
 import com.liferay.change.tracking.spi.reference.TableReferenceDefinition;
 import com.liferay.change.tracking.spi.reference.builder.ChildTableReferenceInfoBuilder;
 import com.liferay.change.tracking.spi.reference.builder.ParentTableReferenceInfoBuilder;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecordTable;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecordVersionTable;
+import com.liferay.dynamic.data.mapping.model.DDMFormInstanceReportTable;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceTable;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceVersionTable;
 import com.liferay.dynamic.data.mapping.service.persistence.DDMFormInstanceRecordVersionPersistence;
@@ -29,6 +31,15 @@ public class DDMFormInstanceRecordVersionTableReferenceDefinition
 	public void defineChildTableReferences(
 		ChildTableReferenceInfoBuilder<DDMFormInstanceRecordVersionTable>
 			childTableReferenceInfoBuilder) {
+
+		childTableReferenceInfoBuilder.singleColumnReference(
+			DDMFormInstanceRecordVersionTable.INSTANCE.
+				formInstanceRecordVersionId,
+			AssetEntryTable.INSTANCE.classPK
+		).singleColumnReference(
+			DDMFormInstanceRecordVersionTable.INSTANCE.formInstanceId,
+			DDMFormInstanceReportTable.INSTANCE.formInstanceId
+		);
 	}
 
 	@Override
