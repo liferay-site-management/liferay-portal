@@ -12,11 +12,13 @@ import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.layout.test.util.LayoutTestUtil;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.Ticket;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactory;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.service.permission.LayoutPermission;
@@ -26,7 +28,9 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -42,7 +46,15 @@ public class CTOnDemandUserPermissionCheckerWrapperTest {
 	@ClassRule
 	@Rule
 	public static final AggregateTestRule aggregateTestRule =
-		new LiferayIntegrationTestRule();
+		new AggregateTestRule(
+			new LiferayIntegrationTestRule(),
+			PermissionCheckerMethodTestRule.INSTANCE);
+
+	@After
+	public void tearDown() throws Exception {
+		GroupLocalServiceUtil.deleteUserGroup(
+			TestPropsValues.getUserId(), _group.getGroupId());
+	}
 
 	@Test
 	public void testHasPermission() throws Exception {
@@ -61,8 +73,10 @@ public class CTOnDemandUserPermissionCheckerWrapperTest {
 		PermissionChecker permissionChecker = _permissionCheckerFactory.create(
 			_userLocalService.getUser(Long.valueOf(ticket.getExtraInfo())));
 
+		_group = GroupTestUtil.addGroup();
+
 		Layout layout = LayoutTestUtil.addTypeContentLayout(
-			GroupTestUtil.addGroup(), true, false);
+			_group, true, false);
 
 		Assert.assertFalse(
 			_layoutPermission.contains(
@@ -98,6 +112,8 @@ public class CTOnDemandUserPermissionCheckerWrapperTest {
 
 	@Inject
 	private CTOnDemandUserTicketGenerator _ctOnDemandUserTicketGenerator;
+
+	private Group _group;
 
 	@Inject
 	private LayoutLocalService _layoutLocalService;
