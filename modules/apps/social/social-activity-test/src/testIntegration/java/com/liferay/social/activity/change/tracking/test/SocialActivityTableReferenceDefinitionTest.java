@@ -13,11 +13,12 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.social.activity.service.test.util.SocialActivityTestUtil;
 import com.liferay.social.kernel.model.SocialActivity;
-import com.liferay.social.kernel.service.SocialActivityLocalServiceUtil;
+import com.liferay.social.kernel.service.SocialActivityLocalService;
 
 import java.util.List;
 
@@ -55,13 +56,17 @@ public class SocialActivityTableReferenceDefinitionTest
 		SocialActivityTestUtil.addActivity(_user, group, _assetEntry, 1);
 
 		List<SocialActivity> activities =
-			SocialActivityLocalServiceUtil.getGroupActivities(
+			_socialActivityLocalService.getGroupActivities(
 				group.getGroupId(), QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 
 		return activities.get(0);
 	}
 
 	private AssetEntry _assetEntry;
+
+	@Inject
+	private SocialActivityLocalService _socialActivityLocalService;
+
 	private User _user;
 
 }
