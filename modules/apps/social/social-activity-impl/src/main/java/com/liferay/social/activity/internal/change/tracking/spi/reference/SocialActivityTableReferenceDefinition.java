@@ -32,7 +32,7 @@ public class SocialActivityTableReferenceDefinition
 			childTableReferenceInfoBuilder) {
 
 		childTableReferenceInfoBuilder.classNameReference(
-			SocialActivityTable.INSTANCE.activitySetId,
+			SocialActivityTable.INSTANCE.activityId,
 			SocialActivitySetTable.INSTANCE.classPK, SocialActivity.class
 		).singleColumnReference(
 			SocialActivityTable.INSTANCE.activitySetId,
