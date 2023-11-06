@@ -1341,9 +1341,9 @@ definition {
 				key_toggleSwitchLabel = "Show All Items",
 				locator1 = "ToggleSwitch#ANY_TOGGLE_SWITCH");
 
-			AssertElementNotPresent(
+			AssertElementPresent(
 				key_navBarTitle = "Parents",
-				locator1 = "Publications#MANAGE_PUBLICATIONS_NAVBAR_TITLE");
+				locator1 = "Publications#MANAGE_PUBLICATIONS_NAVBAR_DISABLED");
 		}
 	}
 
