@@ -43,4 +43,11 @@ public interface CTConfiguration {
 	)
 	public String[] unsupportedApplication();
 
+	@Meta.AD(
+		deflt = "production",
+		description = "replaces-usages-of-the-term-'production'-with-a-custom-name",
+		name = "custom-production-name", required = false
+	)
+	public String customProductionName();
+
 }
