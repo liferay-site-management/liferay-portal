@@ -11,6 +11,7 @@ import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.spi.display.CTDisplayRendererRegistry;
+import com.liferay.change.tracking.web.internal.configuration.CTConfiguration;
 import com.liferay.change.tracking.web.internal.configuration.helper.CTSettingsConfigurationHelper;
 import com.liferay.change.tracking.web.internal.util.PublicationsPortletURLUtil;
 import com.liferay.layout.page.template.model.LayoutPageTemplateStructureRel;
@@ -56,7 +57,7 @@ public class ViewConflictsDisplayContext {
 	public ViewConflictsDisplayContext(
 		long activeCtCollectionId,
 		Map<Long, List<ConflictInfo>> conflictInfoMap,
-		CTCollection ctCollection,
+		CTCollection ctCollection, CTConfiguration ctConfiguration,
 		CTDisplayRendererRegistry ctDisplayRendererRegistry,
 		CTEntryLocalService ctEntryLocalService,
 		CTSettingsConfigurationHelper ctSettingsConfigurationHelper,
@@ -66,6 +67,7 @@ public class ViewConflictsDisplayContext {
 		_activeCtCollectionId = activeCtCollectionId;
 		_conflictInfoMap = conflictInfoMap;
 		_ctCollection = ctCollection;
+		_ctConfiguration = ctConfiguration;
 		_ctDisplayRendererRegistry = ctDisplayRendererRegistry;
 		_ctEntryLocalService = ctEntryLocalService;
 		_ctSettingsConfigurationHelper = ctSettingsConfigurationHelper;
@@ -330,9 +332,11 @@ public class ViewConflictsDisplayContext {
 							_createEditActionJSONObject(
 								_language.format(
 									_httpServletRequest,
-									"you-are-currently-working-on-" +
-										"production.-work-on-x",
-									new Object[] {_ctCollection.getName()},
+									"you-are-currently-working-on-x.-work-on-x",
+									new Object[] {
+										_ctConfiguration.customProductionName(),
+										_ctCollection.getName()
+									},
 									false),
 								_ctCollection.getCtCollectionId(), editURL,
 								_language.format(
@@ -350,17 +354,21 @@ public class ViewConflictsDisplayContext {
 						_createEditActionJSONObject(
 							_language.format(
 								_httpServletRequest,
-								"you-are-currently-working-on-x.-work-on-" +
-									"production",
-								new Object[] {_ctCollection.getName()}, false),
+								"you-are-currently-working-on-x.-work-on-x",
+								new Object[] {
+									_ctCollection.getName(),
+									_ctConfiguration.customProductionName()
+								},
+								false),
 							CTConstants.CT_COLLECTION_ID_PRODUCTION,
 							_ctDisplayRendererRegistry.getEditURL(
 								CTConstants.CT_COLLECTION_ID_PRODUCTION,
 								CTSQLModeThreadLocal.CTSQLMode.DEFAULT,
 								_httpServletRequest, productionModel,
 								modelClassNameId),
-							_language.get(
-								_httpServletRequest, "edit-in-production")));
+							_language.format(
+								_httpServletRequest, "edit-in-x",
+								_ctConfiguration.customProductionName())));
 				}
 
 				actionsJSONArray.put(
@@ -443,6 +451,7 @@ public class ViewConflictsDisplayContext {
 	private final long _activeCtCollectionId;
 	private final Map<Long, List<ConflictInfo>> _conflictInfoMap;
 	private final CTCollection _ctCollection;
+	private final CTConfiguration _ctConfiguration;
 	private final CTDisplayRendererRegistry _ctDisplayRendererRegistry;
 	private final CTEntryLocalService _ctEntryLocalService;
 	private final CTSettingsConfigurationHelper _ctSettingsConfigurationHelper;

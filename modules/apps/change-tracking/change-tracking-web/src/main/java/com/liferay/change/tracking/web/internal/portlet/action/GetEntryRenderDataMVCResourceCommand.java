@@ -14,6 +14,7 @@ import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.spi.display.CTDisplayRenderer;
 import com.liferay.change.tracking.spi.display.CTDisplayRendererRegistry;
+import com.liferay.change.tracking.web.internal.configuration.CTConfiguration;
 import com.liferay.change.tracking.web.internal.display.BasePersistenceRegistry;
 import com.liferay.change.tracking.web.internal.display.DisplayContextImpl;
 import com.liferay.change.tracking.web.internal.util.PublicationsPortletURLUtil;
@@ -23,6 +24,7 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.sql.CTSQLModeThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -158,6 +160,10 @@ public class GetEntryRenderDataMVCResourceCommand
 			(ThemeDisplay)httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
 
+		CTConfiguration ctConfiguration =
+			_configurationProvider.getCompanyConfiguration(
+				CTConfiguration.class, themeDisplay.getCompanyId());
+
 		String[] availableLanguageIds = null;
 		String defaultLanguageId = null;
 		JSONObject editInProductionJSONObject = null;
@@ -197,9 +203,12 @@ public class GetEntryRenderDataMVCResourceCommand
 					editInPublicationJSONObject = _getEditJSONObject(
 						_language.format(
 							httpServletRequest,
-							"you-are-currently-working-on-production.-work-" +
-								"on-x",
-							new Object[] {ctCollection.getName()}, false),
+							"you-are-currently-working-on-x.-work-on-x",
+							new Object[] {
+								ctConfiguration.customProductionName(),
+								ctCollection.getName()
+							},
+							false),
 						ctCollection.getCtCollectionId(), editURL,
 						_language.format(
 							httpServletRequest, "edit-in-x",
@@ -300,12 +309,16 @@ public class GetEntryRenderDataMVCResourceCommand
 						editInProductionJSONObject = _getEditJSONObject(
 							_language.format(
 								httpServletRequest,
-								"you-are-currently-working-on-x.-work-on-" +
-									"production",
-								new Object[] {ctCollection.getName()}, false),
+								"you-are-currently-working-on-x.-work-on-x",
+								new Object[] {
+									ctCollection.getName(),
+									ctConfiguration.customProductionName()
+								},
+								false),
 							CTConstants.CT_COLLECTION_ID_PRODUCTION, editURL,
-							_language.get(
-								httpServletRequest, "edit-in-production"),
+							_language.format(
+								httpServletRequest, "edit-in-x",
+								ctConfiguration.customProductionName()),
 							resourceRequest, resourceResponse);
 					}
 
@@ -314,13 +327,16 @@ public class GetEntryRenderDataMVCResourceCommand
 
 					if (Validator.isNull(leftVersionName)) {
 						leftTitle = _language.get(
-							httpServletRequest, "production");
+							httpServletRequest,
+							ctConfiguration.customProductionName());
 					}
 					else {
 						leftTitle = StringBundler.concat(
 							_language.get(httpServletRequest, "version"), ": ",
 							leftVersionName, " (",
-							_language.get(httpServletRequest, "production"),
+							_language.get(
+								httpServletRequest,
+								ctConfiguration.customProductionName()),
 							")");
 					}
 
@@ -360,7 +376,8 @@ public class GetEntryRenderDataMVCResourceCommand
 		else if (ctEntry.getChangeType() !=
 					CTConstants.CT_CHANGE_TYPE_ADDITION) {
 
-			leftTitle = _language.get(httpServletRequest, "production");
+			leftTitle = _language.get(
+				httpServletRequest, ctConfiguration.customProductionName());
 
 			leftModel = _ctDisplayRendererRegistry.fetchCTModel(
 				leftCtCollectionId, leftCTSQLMode,
@@ -378,12 +395,16 @@ public class GetEntryRenderDataMVCResourceCommand
 						editInProductionJSONObject = _getEditJSONObject(
 							_language.format(
 								httpServletRequest,
-								"you-are-currently-working-on-x.-work-on-" +
-									"production",
-								new Object[] {ctCollection.getName()}, false),
+								"you-are-currently-working-on-x.-work-on-x",
+								new Object[] {
+									ctCollection.getName(),
+									ctConfiguration.customProductionName()
+								},
+								false),
 							CTConstants.CT_COLLECTION_ID_PRODUCTION, editURL,
-							_language.get(
-								httpServletRequest, "edit-in-production"),
+							_language.format(
+								httpServletRequest, "edit-in-x",
+								ctConfiguration.customProductionName()),
 							resourceRequest, resourceResponse);
 					}
 				}
@@ -833,6 +854,10 @@ public class GetEntryRenderDataMVCResourceCommand
 			(ThemeDisplay)httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
 
+		CTConfiguration ctConfiguration =
+			_configurationProvider.getCompanyConfiguration(
+				CTConfiguration.class, themeDisplay.getCompanyId());
+
 		return JSONUtil.put(
 			"changeType", "production"
 		).put(
@@ -846,7 +871,9 @@ public class GetEntryRenderDataMVCResourceCommand
 				0, CTSQLModeThreadLocal.CTSQLMode.DEFAULT,
 				themeDisplay.getLocale(), model, CTConstants.TYPE_BEFORE)
 		).put(
-			"leftTitle", _language.get(httpServletRequest, "production")
+			"leftTitle",
+			_language.get(
+				httpServletRequest, ctConfiguration.customProductionName())
 		);
 	}
 
@@ -994,6 +1021,9 @@ public class GetEntryRenderDataMVCResourceCommand
 
 	@Reference
 	private ClassNameLocalService _classNameLocalService;
+
+	@Reference
+	private ConfigurationProvider _configurationProvider;
 
 	@Reference
 	private CTCollectionLocalService _ctCollectionLocalService;

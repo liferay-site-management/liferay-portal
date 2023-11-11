@@ -203,7 +203,11 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 
 			if (ctCollection == null) {
 				writer.write(
-					_language.get(themeDisplay.getLocale(), "production"));
+					_language.get(
+						themeDisplay.getLocale(),
+						_getCTConfiguration(
+							themeDisplay.getCompanyId()
+						).customProductionName()));
 			}
 			else {
 				writer.write(HtmlUtil.escape(ctCollection.getName()));
@@ -477,7 +481,12 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 			data.put("iconClass", "change-tracking-indicator-icon-production");
 			data.put("iconName", "simple-circle");
 			data.put(
-				"title", _language.get(themeDisplay.getLocale(), "production"));
+				"title",
+				_language.get(
+					themeDisplay.getLocale(),
+					_getCTConfiguration(
+						themeDisplay.getCompanyId()
+					).customProductionName()));
 		}
 
 		if (ctPreferences != null) {
@@ -524,17 +533,24 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 						"checkoutDropdownItem",
 						JSONUtil.put(
 							"confirmationMessage",
-							_language.get(
+							_language.format(
 								themeDisplay.getLocale(),
-								"any-changes-made-in-production-will-" +
-									"immediately-be-live.-continue-to-" +
-										"production")
+								"any-changes-made-in-x-will-immediately-be-" +
+									"live.-continue-to-x",
+								_getCTConfiguration(
+									themeDisplay.getCompanyId()
+								).customProductionName(),
+								true)
 						).put(
 							"href", checkoutURL.toString()
 						).put(
 							"label",
-							_language.get(
-								themeDisplay.getLocale(), "work-on-production")
+							_language.format(
+								themeDisplay.getLocale(), "work-on-x",
+								_getCTConfiguration(
+									themeDisplay.getCompanyId()
+								).customProductionName(),
+								true)
 						).put(
 							"symbolLeft", "simple-circle"
 						));
