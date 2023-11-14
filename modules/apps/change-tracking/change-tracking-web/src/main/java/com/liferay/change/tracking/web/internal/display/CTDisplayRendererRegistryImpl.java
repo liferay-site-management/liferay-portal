@@ -151,6 +151,12 @@ public class CTDisplayRendererRegistryImpl
 					return CTConstants.CT_CHANGE_TYPE_DELETION;
 				}
 			}
+
+			TrashedModel trashedModel = (TrashedModel)model;
+
+			if (trashedModel.isInTrash()) {
+				return CTConstants.CT_CHANGE_TYPE_DELETION;
+			}
 		}
 		else if (model instanceof WorkflowedModel) {
 			WorkflowedModel workflowedModel = (WorkflowedModel)model;
