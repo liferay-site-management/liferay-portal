@@ -8,7 +8,9 @@ package com.liferay.change.tracking.internal;
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.CTEntryLocalService;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
@@ -37,42 +39,46 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 			return ctModel.isNew();
 		}
 
-		long modelClassNameId = _classNameLocalService.getClassNameId(
-			ctModel.getModelClass());
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(false)) {
 
-		long modelClassPK = ctModel.getPrimaryKey();
+			long modelClassNameId = _classNameLocalService.getClassNameId(
+				ctModel.getModelClass());
 
-		CTEntry ctEntry = _ctEntryLocalService.fetchCTEntry(
-			ctCollectionId, modelClassNameId, modelClassPK);
+			long modelClassPK = ctModel.getPrimaryKey();
 
-		long userId = PrincipalThreadLocal.getUserId();
+			CTEntry ctEntry = _ctEntryLocalService.fetchCTEntry(
+				ctCollectionId, modelClassNameId, modelClassPK);
 
-		try {
-			if (ctEntry == null) {
-				int changeType = CTConstants.CT_CHANGE_TYPE_MODIFICATION;
+			long userId = PrincipalThreadLocal.getUserId();
 
-				if (ctModel.isNew()) {
-					changeType = CTConstants.CT_CHANGE_TYPE_ADDITION;
+			try {
+				if (ctEntry == null) {
+					int changeType = CTConstants.CT_CHANGE_TYPE_MODIFICATION;
+
+					if (ctModel.isNew()) {
+						changeType = CTConstants.CT_CHANGE_TYPE_ADDITION;
+					}
+
+					_ctEntryLocalService.addCTEntry(
+						null, ctCollectionId, modelClassNameId, ctModel, userId,
+						changeType);
+
+					return true;
 				}
 
-				_ctEntryLocalService.addCTEntry(
-					null, ctCollectionId, modelClassNameId, ctModel, userId,
-					changeType);
+				if (userId != ctEntry.getUserId()) {
+					ctEntry.setUserId(userId);
+				}
 
-				return true;
+				_ctEntryLocalService.updateCTEntry(ctEntry);
+			}
+			catch (PortalException portalException) {
+				throw new SystemException(portalException);
 			}
 
-			if (userId != ctEntry.getUserId()) {
-				ctEntry.setUserId(userId);
-			}
-
-			_ctEntryLocalService.updateCTEntry(ctEntry);
+			return false;
 		}
-		catch (PortalException portalException) {
-			throw new SystemException(portalException);
-		}
-
-		return false;
 	}
 
 	@Override
@@ -85,32 +91,36 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 	public <T extends CTModel<T>> boolean isProductionMode(
 		Class<T> ctModelClass, Serializable primaryKey) {
 
-		long ctCollectionId = CTCollectionThreadLocal.getCTCollectionId();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(false)) {
 
-		if (ctCollectionId == CTConstants.CT_COLLECTION_ID_PRODUCTION) {
-			return true;
-		}
+			long ctCollectionId = CTCollectionThreadLocal.getCTCollectionId();
 
-		long modelClassNameId = _classNameLocalService.getClassNameId(
-			ctModelClass);
+			if (ctCollectionId == CTConstants.CT_COLLECTION_ID_PRODUCTION) {
+				return true;
+			}
 
-		if (primaryKey instanceof Long) {
-			if (_ctEntryLocalService.hasCTEntry(
-					ctCollectionId, modelClassNameId, (Long)primaryKey)) {
+			long modelClassNameId = _classNameLocalService.getClassNameId(
+				ctModelClass);
+
+			if (primaryKey instanceof Long) {
+				if (_ctEntryLocalService.hasCTEntry(
+						ctCollectionId, modelClassNameId, (Long)primaryKey)) {
+
+					return false;
+				}
+
+				return true;
+			}
+
+			if (_ctEntryLocalService.hasCTEntries(
+					ctCollectionId, modelClassNameId)) {
 
 				return false;
 			}
 
 			return true;
 		}
-
-		if (_ctEntryLocalService.hasCTEntries(
-				ctCollectionId, modelClassNameId)) {
-
-			return false;
-		}
-
-		return true;
 	}
 
 	@Override
@@ -125,47 +135,52 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 			return true;
 		}
 
-		long modelClassNameId = _classNameLocalService.getClassNameId(
-			ctModel.getModelClass());
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(false)) {
 
-		long modelClassPK = ctModel.getPrimaryKey();
+			long modelClassNameId = _classNameLocalService.getClassNameId(
+				ctModel.getModelClass());
 
-		CTEntry ctEntry = _ctEntryLocalService.fetchCTEntry(
-			ctCollectionId, modelClassNameId, modelClassPK);
+			long modelClassPK = ctModel.getPrimaryKey();
 
-		try {
-			if (ctEntry == null) {
-				_ctEntryLocalService.addCTEntry(
-					null, ctCollectionId, modelClassNameId, ctModel,
-					PrincipalThreadLocal.getUserId(),
-					CTConstants.CT_CHANGE_TYPE_DELETION);
-			}
-			else {
-				int changeType = ctEntry.getChangeType();
+			CTEntry ctEntry = _ctEntryLocalService.fetchCTEntry(
+				ctCollectionId, modelClassNameId, modelClassPK);
 
-				if (changeType == CTConstants.CT_CHANGE_TYPE_ADDITION) {
-					_ctEntryLocalService.deleteCTEntry(ctEntry);
-
-					return true;
+			try {
+				if (ctEntry == null) {
+					_ctEntryLocalService.addCTEntry(
+						null, ctCollectionId, modelClassNameId, ctModel,
+						PrincipalThreadLocal.getUserId(),
+						CTConstants.CT_CHANGE_TYPE_DELETION);
 				}
+				else {
+					int changeType = ctEntry.getChangeType();
 
-				ctEntry.setChangeType(CTConstants.CT_CHANGE_TYPE_DELETION);
+					if (changeType == CTConstants.CT_CHANGE_TYPE_ADDITION) {
+						_ctEntryLocalService.deleteCTEntry(ctEntry);
 
-				_ctEntryLocalService.updateCTEntry(ctEntry);
+						return true;
+					}
 
-				if ((changeType == CTConstants.CT_CHANGE_TYPE_MODIFICATION) &&
-					(ctModel.getCtCollectionId() !=
-						CTConstants.CT_COLLECTION_ID_PRODUCTION)) {
+					ctEntry.setChangeType(CTConstants.CT_CHANGE_TYPE_DELETION);
 
-					return true;
+					_ctEntryLocalService.updateCTEntry(ctEntry);
+
+					if ((changeType ==
+							CTConstants.CT_CHANGE_TYPE_MODIFICATION) &&
+						(ctModel.getCtCollectionId() !=
+							CTConstants.CT_COLLECTION_ID_PRODUCTION)) {
+
+						return true;
+					}
 				}
 			}
-		}
-		catch (PortalException portalException) {
-			throw new SystemException(portalException);
-		}
+			catch (PortalException portalException) {
+				throw new SystemException(portalException);
+			}
 
-		return false;
+			return false;
+		}
 	}
 
 	@Reference
