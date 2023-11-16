@@ -9,6 +9,7 @@ import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.model.CTPreferences;
 import com.liferay.change.tracking.service.CTPreferencesLocalService;
 import com.liferay.portal.kernel.change.tracking.CTCollectionIdSupplier;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.model.UserConstants;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
@@ -25,6 +26,8 @@ public class CTCollectionIdSupplierImpl implements CTCollectionIdSupplier {
 
 	@Override
 	public long getCTCollectionId() {
+		CTCacheThreadLocal.setCTCacheEnabled(false);
+
 		long ctCollectionId =
 			CTCollectionPreviewThreadLocal.getCTCollectionId();
 

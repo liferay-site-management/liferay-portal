@@ -35,6 +35,14 @@ public class EntityCacheUtil {
 		entityCache.clearLocalCache();
 	}
 
+	public static PortalCache<Serializable, Serializable> getCTPortalCache(
+		Class<?> clazz) {
+
+		EntityCache entityCache = getEntityCache();
+
+		return entityCache.getCTPortalCache(clazz);
+	}
+
 	public static EntityCache getEntityCache() {
 		EntityCache entityCache = _entityCacheSnapshot.get();
 
