@@ -8,7 +8,9 @@ package com.liferay.change.tracking.internal;
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.model.CTPreferences;
 import com.liferay.change.tracking.service.CTPreferencesLocalService;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.portal.kernel.change.tracking.CTCollectionIdSupplier;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.model.UserConstants;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
@@ -25,31 +27,36 @@ public class CTCollectionIdSupplierImpl implements CTCollectionIdSupplier {
 
 	@Override
 	public long getCTCollectionId() {
-		long ctCollectionId =
-			CTCollectionPreviewThreadLocal.getCTCollectionId();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(false)) {
 
-		if (ctCollectionId > -1) {
-			return ctCollectionId;
+			long ctCollectionId =
+				CTCollectionPreviewThreadLocal.getCTCollectionId();
+
+			if (ctCollectionId > -1) {
+				return ctCollectionId;
+			}
+
+			long companyId = CompanyThreadLocal.getCompanyId();
+
+			long userId = PrincipalThreadLocal.getUserId();
+
+			if ((companyId == CompanyConstants.SYSTEM) &&
+				(userId == UserConstants.USER_ID_DEFAULT)) {
+
+				return CTConstants.CT_COLLECTION_ID_PRODUCTION;
+			}
+
+			CTPreferences ctPreferences =
+				_ctPreferencesLocalService.fetchCTPreferences(
+					companyId, userId);
+
+			if (ctPreferences == null) {
+				return CTConstants.CT_COLLECTION_ID_PRODUCTION;
+			}
+
+			return ctPreferences.getCtCollectionId();
 		}
-
-		long companyId = CompanyThreadLocal.getCompanyId();
-
-		long userId = PrincipalThreadLocal.getUserId();
-
-		if ((companyId == CompanyConstants.SYSTEM) &&
-			(userId == UserConstants.USER_ID_DEFAULT)) {
-
-			return CTConstants.CT_COLLECTION_ID_PRODUCTION;
-		}
-
-		CTPreferences ctPreferences =
-			_ctPreferencesLocalService.fetchCTPreferences(companyId, userId);
-
-		if (ctPreferences == null) {
-			return CTConstants.CT_COLLECTION_ID_PRODUCTION;
-		}
-
-		return ctPreferences.getCtCollectionId();
 	}
 
 	@Reference
