@@ -70,8 +70,18 @@ import ${apiPackagePath}.service.persistence.${entity.name}Util;
 	import ${packagePath}.service.persistence.impl.constants.${portletShortName}PersistenceConstants;
 </#if>
 
+<#if entity.isChangeTrackingEnabled()>
+	import com.liferay.petra.lang.SafeCloseable;
+</#if>
+
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+
+<#if entity.isChangeTrackingEnabled()>
+	import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
+	import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
+</#if>
+
 import com.liferay.portal.kernel.configuration.Configuration;
 
 <#if !serviceBuilder.isVersionGTE_7_1_0()>
@@ -334,20 +344,14 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 	@Override
 	public void cacheResult(${entity.name} ${entity.variableName}) {
 		<#if entity.isChangeTrackingEnabled()>
-			if (${entity.variableName}.getCtCollectionId() != 0) {
-				<#if serviceBuilder.isVersionLTE_7_2_0()>
-					${entity.variableName}.resetOriginalValues();
-				</#if>
-
-				return;
-			}
+			try (SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(${entity.variableName}.getCtCollectionId() != 0)) {
 		</#if>
 
 		${entityCache}.putResult(
-				<#if serviceBuilder.isVersionLTE_7_2_0()>
-					${entityCacheEnabled},
-				</#if>
-				${entity.name}Impl.class, ${entity.variableName}.getPrimaryKey(), ${entity.variableName});
+			<#if serviceBuilder.isVersionLTE_7_2_0()>
+				${entityCacheEnabled},
+			</#if>
+			${entity.name}Impl.class, ${entity.variableName}.getPrimaryKey(), ${entity.variableName});
 
 		<#list entity.uniqueEntityFinders as uniqueEntityFinder>
 			<#assign entityColumns = uniqueEntityFinder.entityColumns />
@@ -373,6 +377,10 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 		<#if serviceBuilder.isVersionLTE_7_2_0()>
 			${entity.variableName}.resetOriginalValues();
 		</#if>
+
+		<#if entity.isChangeTrackingEnabled()>
+			}
+		</#if>
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -395,13 +403,8 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 
 		for (${entity.name} ${entity.variableName} : ${entity.pluralVariableName}) {
 			<#if entity.isChangeTrackingEnabled()>
-				if (${entity.variableName}.getCtCollectionId() != 0) {
-					<#if serviceBuilder.isVersionLTE_7_2_0()>
-						${entity.variableName}.resetOriginalValues();
-					</#if>
-
-					continue;
-				}
+				try (SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					(${entity.variableName}.getCtCollectionId() != 0) && (${entity.variableName}.getCtCollectionId() == CTCollectionThreadLocal.getCTCollectionId()))) {
 			</#if>
 
 			<#if (cacheFields?size > 0)>
@@ -437,6 +440,10 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 						${entity.variableName}.resetOriginalValues();
 					}
 				</#if>
+			</#if>
+
+			<#if entity.isChangeTrackingEnabled()>
+				}
 			</#if>
 		}
 	}
@@ -527,6 +534,10 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 
 	<#if entity.uniqueEntityFinders?size &gt; 0>
 		protected void cacheUniqueFindersCache(${entity.name}ModelImpl ${entity.variableName}ModelImpl) {
+			<#if entity.isChangeTrackingEnabled()>
+				try (SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(${entity.variableName}ModelImpl.getCtCollectionId() != 0)) {
+			</#if>
+
 			<#list entity.uniqueEntityFinders as uniqueEntityFinder>
 				<#assign entityColumns = uniqueEntityFinder.entityColumns />
 
@@ -560,6 +571,11 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 					</#if>
 					);
 			</#list>
+
+			<#if entity.isChangeTrackingEnabled()>
+				}
+			</#if>
+
 		}
 
 		<#if serviceBuilder.isVersionLTE_7_2_0()>
@@ -784,6 +800,10 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 
 	@Override
 	public ${entity.name} updateImpl(${apiPackagePath}.model.${entity.name} ${entity.variableName}) {
+		<#if entity.isChangeTrackingEnabled()>
+			try (SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(!CTCollectionThreadLocal.isProductionMode())) {
+		</#if>
+
 		boolean isNew = ${entity.variableName}.isNew();
 
 		<#if entity.isHierarchicalTree() || (entity.collectionEntityFinders?size != 0) || (entity.uniqueEntityFinders?size &gt; 0) || entity.hasEntityColumn("createDate", "Date") || entity.hasEntityColumn("modifiedDate", "Date")>
@@ -977,15 +997,7 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 			<#if entity.isChangeTrackingEnabled()>
 				if (${ctPersistenceHelper}.isInsert(${entity.variableName})) {
 					if (!isNew) {
-						<#if serviceBuilder.isVersionGTE_7_3_0()>
-							session.evict(${entity.name}Impl.class, ${entity.variableName}.getPrimaryKeyObj());
-						<#else>
-							${entity.name} old${entity.name} = (${entity.name})session.get(${entity.name}Impl.class, ${entity.variableName}.getPrimaryKeyObj());
-
-							if (old${entity.name} != null) {
-								session.evict(old${entity.name});
-							}
-						</#if>
+						session.evict(${entity.name}Impl.class, ${entity.variableName}.getPrimaryKeyObj());
 					}
 			<#else>
 				if (isNew) {
@@ -1027,20 +1039,6 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 		finally {
 			closeSession(session);
 		}
-
-		<#if entity.isChangeTrackingEnabled()>
-			if (${entity.variableName}.getCtCollectionId() != 0) {
-				<#if serviceBuilder.isVersionGTE_7_3_0()>
-					if (isNew) {
-						${entity.variableName}.setNew(false);
-					}
-				</#if>
-
-				${entity.variableName}.resetOriginalValues();
-
-				return ${entity.variableName};
-			}
-		</#if>
 
 		<#if serviceBuilder.isVersionGTE_7_3_0()>
 			${entityCache}.putResult(
@@ -1173,6 +1171,10 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 		${entity.variableName}.resetOriginalValues();
 
 		return ${entity.variableName};
+
+		<#if entity.isChangeTrackingEnabled()>
+			}
+		</#if>
 	}
 
 	/**
@@ -1264,35 +1266,9 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 		 */
 		@Override
 		public ${entity.name} fetchByPrimaryKey(Serializable primaryKey) {
-			<#if serviceBuilder.isVersionGTE_7_3_0()>
-				if (${ctPersistenceHelper}.isProductionMode(${entity.name}.class, primaryKey)) {
-			<#else>
-				if (${ctPersistenceHelper}.isProductionMode(${entity.name}.class)) {
-			</#if>
+			try (SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(!${ctPersistenceHelper}.isProductionMode(${entity.name}.class, primaryKey))) {
 				return super.fetchByPrimaryKey(primaryKey);
 			}
-
-			${entity.name} ${entity.variableName} = null;
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				${entity.variableName} = (${entity.name})session.get(${entity.name}Impl.class, primaryKey);
-
-				if (${entity.variableName} != null) {
-					cacheResult(${entity.variableName});
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return ${entity.variableName};
 		}
 	</#if>
 
@@ -1462,86 +1438,9 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 	<#elseif entity.isChangeTrackingEnabled()>
 		@Override
 		public Map<Serializable, ${entity.name}> fetchByPrimaryKeys(Set<Serializable> primaryKeys) {
-			if (${ctPersistenceHelper}.isProductionMode(${entity.name}.class)) {
+			try (SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(!${ctPersistenceHelper}.isProductionMode(${entity.name}.class))) {
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
-
-			if (primaryKeys.isEmpty()) {
-				return Collections.emptyMap();
-			}
-
-			Map<Serializable, ${entity.name}> map = new HashMap<Serializable, ${entity.name}>();
-
-			if (primaryKeys.size() == 1) {
-				Iterator<Serializable> iterator = primaryKeys.iterator();
-
-				Serializable primaryKey = iterator.next();
-
-				${entity.name} ${entity.variableName} = fetchByPrimaryKey(primaryKey);
-
-				if (${entity.variableName} != null) {
-					map.put(primaryKey, ${entity.variableName});
-				}
-
-				return map;
-			}
-
-			if ((databaseInMaxParameters > 0) && (primaryKeys.size() > databaseInMaxParameters)) {
-				Iterator<Serializable> iterator = primaryKeys.iterator();
-
-				while (iterator.hasNext()) {
-					Set<Serializable> page = new HashSet<>();
-
-					for (int i = 0; (i < databaseInMaxParameters) && iterator.hasNext();i++) {
-						page.add(iterator.next());
-					}
-
-					map.putAll(fetchByPrimaryKeys(page));
-				}
-
-				return map;
-			}
-
-			StringBundler sb = new StringBundler(primaryKeys.size() * 2 + 1);
-
-			sb.append(getSelectSQL());
-			sb.append(" WHERE ");
-			sb.append(getPKDBName());
-			sb.append(" IN (");
-
-			for (Serializable primaryKey : primaryKeys) {
-				sb.append((${entity.PKClassName})primaryKey);
-
-				sb.append(",");
-			}
-
-			sb.setIndex(sb.index() - 1);
-
-			sb.append(")");
-
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				for (${entity.name} ${entity.variableName} : (List<${entity.name}>)query.list()) {
-					map.put(${entity.variableName}.getPrimaryKeyObj(), ${entity.variableName});
-
-					cacheResult(${entity.variableName});
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return map;
 		}
 	</#if>
 
@@ -1705,7 +1604,7 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 				count = (Long)${finderCache}.getResult(_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 			}
 		<#else>
-			Long count = (Long)${finderCache}.getResult(_finderPathCountAll, FINDER_ARGS_EMPTY, this);
+		Long count = (Long)${finderCache}.getResult(_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 		</#if>
 
 		if (count == null) {
@@ -1723,7 +1622,7 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 						${finderCache}.putResult(_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 					}
 				<#else>
-					${finderCache}.putResult(_finderPathCountAll, FINDER_ARGS_EMPTY, count);
+				${finderCache}.putResult(_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 				</#if>
 			}
 			catch (Exception exception) {

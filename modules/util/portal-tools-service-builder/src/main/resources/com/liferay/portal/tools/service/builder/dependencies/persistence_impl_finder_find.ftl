@@ -2279,6 +2279,10 @@ that may or may not be enforced with a unique index at the database level. Case
 
 		Object[] finderArgs = null;
 
+		<#if entity.isChangeTrackingEnabled()>
+			try (SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(!${ctPersistenceHelper}.isProductionMode(${entity.name}.class))) {
+		</#if>
+
 		if (useFinderCache) {
 			finderArgs = new Object[] {
 				<#list entityColumns as entityColumn>
@@ -2300,10 +2304,6 @@ that may or may not be enforced with a unique index at the database level. Case
 		if (useFinderCache) {
 			result = ${finderCache}.getResult(_finderPathFetchBy${entityFinder.name}, finderArgs, this);
 		}
-
-		<#if entity.isChangeTrackingEnabled()>
-			boolean productionMode = ${ctPersistenceHelper}.isProductionMode(${entity.name}.class);
-		</#if>
 
 		if (result instanceof ${entity.name}) {
 			${entity.name} ${entity.variableName} = (${entity.name})result;
@@ -2327,23 +2327,7 @@ that may or may not be enforced with a unique index at the database level. Case
 			) {
 				result = null;
 			}
-
-			<#if serviceBuilder.isVersionGTE_7_3_0() && entity.isChangeTrackingEnabled()>
-				else if (!${ctPersistenceHelper}.isProductionMode(${entity.name}.class, ${entity.variableName}.getPrimaryKey())) {
-					result = null;
-				}
-			<#elseif entity.isChangeTrackingEnabled()>
-				else if (!productionMode) {
-					result = null;
-				}
-			</#if>
 		}
-
-		<#if entity.isChangeTrackingEnabled()>
-			else if (!productionMode && result instanceof List<?>) {
-				result = null;
-			}
-		</#if>
 
 		if (result == null) {
 			StringBundler sb = new StringBundler(${entityColumns?size + 2});
@@ -2368,7 +2352,7 @@ that may or may not be enforced with a unique index at the database level. Case
 				List<${entity.name}> list = query.list();
 
 				if (list.isEmpty()) {
-					if (${useCache}) {
+					if (useFinderCache) {
 						${finderCache}.putResult(_finderPathFetchBy${entityFinder.name}, finderArgs, list);
 					}
 				}
@@ -2378,11 +2362,7 @@ that may or may not be enforced with a unique index at the database level. Case
 							Collections.sort(list, Collections.reverseOrder());
 
 							if (_log.isWarnEnabled()) {
-								<#if entity.isChangeTrackingEnabled()>
-									if (!productionMode || !useFinderCache) {
-								<#else>
-									if (!useFinderCache) {
-								</#if>
+								if (!useFinderCache) {
 									finderArgs = new Object[] {
 										<#list entityColumns as entityColumn>
 											<#if stringUtil.equals(entityColumn.type, "Date")>
@@ -2412,7 +2392,7 @@ that may or may not be enforced with a unique index at the database level. Case
 			}
 			catch (Exception exception) {
 				<#if serviceBuilder.isVersionLTE_7_2_0()>
-					if (${useCache}) {
+					if (useFinderCache) {
 						${finderCache}.removeResult(_finderPathFetchBy${entityFinder.name}, finderArgs);
 					}
 				</#if>
@@ -2430,5 +2410,9 @@ that may or may not be enforced with a unique index at the database level. Case
 		else {
 			return (${entity.name})result;
 		}
+
+		<#if entity.isChangeTrackingEnabled()>
+			}
+		</#if>
 	}
 </#if>

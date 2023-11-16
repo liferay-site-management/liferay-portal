@@ -29,10 +29,24 @@ public class EntityCacheUtil {
 		entityCache.clearCache(clazz);
 	}
 
+	public static void clearCTCache() {
+		EntityCache entityCache = getEntityCache();
+
+		entityCache.clearCTCache();
+	}
+
 	public static void clearLocalCache() {
 		EntityCache entityCache = getEntityCache();
 
 		entityCache.clearLocalCache();
+	}
+
+	public static Serializable getCTCacheResult(
+		Class<?> clazz, Serializable primaryKey) {
+
+		EntityCache entityCache = getEntityCache();
+
+		return entityCache.getCTCacheResult(clazz, primaryKey);
 	}
 
 	public static EntityCache getEntityCache() {

@@ -19,6 +19,8 @@ public interface FinderCache {
 
 	public void clearCache(Class<?> clazz);
 
+	public void clearCTCache();
+
 	public void clearDSLQueryCache(String tableName);
 
 	public void clearLocalCache();

@@ -15,6 +15,9 @@ import com.liferay.portal.kernel.cache.PortalCache;
 import com.liferay.portal.kernel.cache.PortalCacheHelperUtil;
 import com.liferay.portal.kernel.cache.PortalCacheManager;
 import com.liferay.portal.kernel.cache.PortalCacheManagerListener;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheKey;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.cluster.ClusterExecutor;
 import com.liferay.portal.kernel.cluster.ClusterInvokeThreadLocal;
 import com.liferay.portal.kernel.cluster.ClusterRequest;
@@ -26,6 +29,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.model.MVCCModel;
+import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.module.service.Snapshot;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -61,6 +65,8 @@ public class EntityCacheImpl
 	public void clearCache() {
 		_notifyFinderCache(null, null, false);
 
+		clearCTCache();
+
 		clearLocalCache();
 
 		for (PortalCache<?, ?> portalCache : _portalCaches.values()) {
@@ -72,11 +78,20 @@ public class EntityCacheImpl
 	public void clearCache(Class<?> clazz) {
 		_notifyFinderCache(clazz.getName(), null, false);
 
+		clearCTCache();
+
 		clearLocalCache();
 
 		PortalCache<?, ?> portalCache = getPortalCache(clazz);
 
 		portalCache.removeAll();
+	}
+
+	@Override
+	public void clearCTCache() {
+		if (_ctCache != null) {
+			_ctCache.remove();
+		}
 	}
 
 	@Override
@@ -89,6 +104,23 @@ public class EntityCacheImpl
 	@Override
 	public void dispose() {
 		_portalCaches.clear();
+	}
+
+	@Override
+	public Serializable getCTCacheResult(
+		Class<?> clazz, Serializable primaryKey) {
+
+		if ((_ctCache != null) && !CTCollectionThreadLocal.isProductionMode()) {
+			Map<Serializable, Serializable> ctCache = _ctCache.get();
+
+			Serializable ctCacheKey = new CTCacheKey(
+				clazz.getName(), CTCollectionThreadLocal.getCTCollectionId(),
+				primaryKey);
+
+			return ctCache.get(ctCacheKey);
+		}
+
+		return null;
 	}
 
 	@Override
@@ -152,6 +184,22 @@ public class EntityCacheImpl
 		}
 
 		Serializable result = null;
+
+		if (_isCTCacheEnabled()) {
+			CTCacheKey ctCacheKey = new CTCacheKey(
+				clazz.getName(), CTCollectionThreadLocal.getCTCollectionId(),
+				primaryKey);
+
+			Map<Serializable, Serializable> ctCache = _ctCache.get();
+
+			result = ctCache.get(ctCacheKey);
+
+			if (result == null) {
+				result = StringPool.BLANK;
+			}
+
+			return _toEntityModel(result);
+		}
 
 		Map<Serializable, Serializable> localCache = null;
 
@@ -252,6 +300,18 @@ public class EntityCacheImpl
 		_valueObjectMVCCEntityCacheEnabled = GetterUtil.getBoolean(
 			_props.get(PropsKeys.VALUE_OBJECT_MVCC_ENTITY_CACHE_ENABLED));
 
+		int ctCacheMaxSize = GetterUtil.getInteger(
+			_props.get(PropsKeys.VALUE_OBJECT_ENTITY_THREAD_CT_CACHE_MAX_SIZE));
+
+		if (ctCacheMaxSize > 0) {
+			_ctCache = new CentralizedThreadLocal<>(
+				EntityCacheImpl.class + "._ctCache",
+				() -> new LRUMap<>(ctCacheMaxSize));
+		}
+		else {
+			_ctCache = null;
+		}
+
 		int localCacheMaxSize = GetterUtil.getInteger(
 			_props.get(
 				PropsKeys.VALUE_OBJECT_ENTITY_THREAD_LOCAL_CACHE_MAX_SIZE));
@@ -290,6 +350,14 @@ public class EntityCacheImpl
 
 			return null;
 		}
+	}
+
+	private boolean _isCTCacheEnabled() {
+		if (_ctCache == null) {
+			return false;
+		}
+
+		return CTCacheThreadLocal.isCTCacheEnabled();
 	}
 
 	private boolean _isLocalCacheEnabled() {
@@ -386,6 +454,19 @@ public class EntityCacheImpl
 
 		CacheModel<?> result = baseModel.toCacheModel();
 
+		if (_isCTCacheEnabled() && (baseModel instanceof CTModel)) {
+			CTModel<?> ctModel = (CTModel<?>)baseModel;
+
+			Map<Serializable, Serializable> ctCache = _ctCache.get();
+
+			CTCacheKey ctCacheKey = new CTCacheKey(
+				clazz.getName(), ctModel.getCtCollectionId(), primaryKey);
+
+			ctCache.put(ctCacheKey, result);
+
+			return;
+		}
+
 		if (_isLocalCacheEnabled()) {
 			Map<Serializable, Serializable> localCache = _localCache.get();
 
@@ -416,6 +497,19 @@ public class EntityCacheImpl
 
 		if (baseModel != null) {
 			_notifyFinderCache(clazz.getName(), baseModel, false);
+		}
+
+		if ((baseModel instanceof CTModel) && (_ctCache != null)) {
+			CTModel<?> ctModel = (CTModel<?>)baseModel;
+
+			if (ctModel.getCtCollectionId() != 0) {
+				CTCacheKey ctCacheKey = new CTCacheKey(
+					clazz.getName(), ctModel.getCtCollectionId(), primaryKey);
+
+				Map<Serializable, Serializable> ctCache = _ctCache.get();
+
+				ctCache.remove(ctCacheKey);
+			}
 		}
 
 		if (_isLocalCacheEnabled()) {
@@ -462,6 +556,7 @@ public class EntityCacheImpl
 	@Reference
 	private ClusterExecutor _clusterExecutor;
 
+	private ThreadLocal<LRUMap<Serializable, Serializable>> _ctCache;
 	private ThreadLocal<LRUMap<Serializable, Serializable>> _localCache;
 
 	@Reference

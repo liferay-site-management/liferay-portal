@@ -298,9 +298,7 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 					defaultASTNodeListener.getEnd());
 			}
 
-			if (productionMode) {
-				finderCache.putResult(finderPath, arguments, result);
-			}
+			finderCache.putResult(finderPath, arguments, result);
 
 			return (R)result;
 		}

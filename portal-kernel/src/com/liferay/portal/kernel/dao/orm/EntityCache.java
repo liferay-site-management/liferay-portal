@@ -22,7 +22,12 @@ public interface EntityCache {
 
 	public void clearCache(Class<?> clazz);
 
+	public void clearCTCache();
+
 	public void clearLocalCache();
+
+	public Serializable getCTCacheResult(
+		Class<?> clazz, Serializable primaryKey);
 
 	public Serializable getLocalCacheResult(
 		Class<?> clazz, Serializable primaryKey);

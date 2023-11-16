@@ -31,14 +31,6 @@ public class MVCCSynchronizerPostUpdateEventListener
 		Object entity = postUpdateEvent.getEntity();
 
 		if (entity instanceof MVCCModel) {
-			if (entity instanceof CTModel) {
-				CTModel<?> ctModel = (CTModel<?>)entity;
-
-				if (ctModel.getCtCollectionId() != 0) {
-					return;
-				}
-			}
-
 			MVCCModel mvccModel = (MVCCModel)entity;
 
 			long mvccVersion = mvccModel.getMvccVersion();
@@ -48,6 +40,24 @@ public class MVCCSynchronizerPostUpdateEventListener
 			BaseModel<?> baseModel = (BaseModel<?>)entity;
 
 			Serializable primaryKeyObj = baseModel.getPrimaryKeyObj();
+
+			if (entity instanceof CTModel) {
+				CTModel<?> ctModel = (CTModel<?>)entity;
+
+				if (ctModel.getCtCollectionId() != 0) {
+					Serializable ctCacheResult =
+						EntityCacheUtil.getCTCacheResult(
+							modelClass, primaryKeyObj);
+
+					if (ctCacheResult instanceof MVCCModel) {
+						MVCCModel ctCacheMVCCModel = (MVCCModel)ctCacheResult;
+
+						ctCacheMVCCModel.setMvccVersion(mvccVersion);
+					}
+
+					return;
+				}
+			}
 
 			Serializable localCacheResult = EntityCacheUtil.getLocalCacheResult(
 				modelClass, primaryKeyObj);

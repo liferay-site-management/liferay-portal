@@ -20,6 +20,9 @@ import com.liferay.portal.kernel.cache.PortalCacheManager;
 import com.liferay.portal.kernel.cache.PortalCacheManagerListener;
 import com.liferay.portal.kernel.cache.key.CacheKeyGenerator;
 import com.liferay.portal.kernel.cache.key.CacheKeyGeneratorUtil;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheKey;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.cluster.ClusterExecutor;
 import com.liferay.portal.kernel.cluster.ClusterInvokeThreadLocal;
 import com.liferay.portal.kernel.cluster.ClusterRequest;
@@ -73,6 +76,7 @@ public class FinderCacheImpl
 	implements FinderCache, PortalCacheManagerListener {
 
 	public void clearByEntityCache(String className) {
+		clearCTCache();
 		clearLocalCache();
 
 		_clearCache(className);
@@ -84,6 +88,7 @@ public class FinderCacheImpl
 
 	@Override
 	public void clearCache() {
+		clearCTCache();
 		clearLocalCache();
 
 		for (PortalCache<?, ?> portalCache : _portalCaches.values()) {
@@ -94,6 +99,13 @@ public class FinderCacheImpl
 	@Override
 	public void clearCache(Class<?> clazz) {
 		clearByEntityCache(clazz.getName());
+	}
+
+	@Override
+	public void clearCTCache() {
+		if (_ctCache != null) {
+			_ctCache.remove();
+		}
 	}
 
 	@Override
@@ -143,10 +155,21 @@ public class FinderCacheImpl
 
 		Serializable cacheKey = _encodeCacheKey(finderPath, args);
 		Serializable cacheValue = null;
+
+		if (_isCTCacheEnabled()) {
+			Map<CTCacheKey, Serializable> ctCache = _ctCache.get();
+
+			CTCacheKey ctCacheKey = new CTCacheKey(
+				finderPath.getCacheName(),
+				CTCollectionThreadLocal.getCTCollectionId(), cacheKey);
+
+			cacheValue = ctCache.get(ctCacheKey);
+		}
+
 		Map<LocalCacheKey, Serializable> localCache = null;
 		LocalCacheKey localCacheKey = null;
 
-		if (_isLocalCacheEnabled()) {
+		if (_isLocalCacheEnabled() && !_isCTCacheEnabled()) {
 			localCache = _localCache.get();
 
 			localCacheKey = new LocalCacheKey(
@@ -155,7 +178,7 @@ public class FinderCacheImpl
 			cacheValue = localCache.get(localCacheKey);
 		}
 
-		if (cacheValue == null) {
+		if ((cacheValue == null) && !_isCTCacheEnabled()) {
 			PortalCache<Serializable, Serializable> portalCache =
 				_getPortalCache(finderPath.getCacheName());
 
@@ -324,6 +347,18 @@ public class FinderCacheImpl
 
 		Serializable cacheKey = _encodeCacheKey(finderPath, args);
 
+		if (_isCTCacheEnabled()) {
+			Map<CTCacheKey, Serializable> ctCache = _ctCache.get();
+
+			CTCacheKey ctCacheKey = new CTCacheKey(
+				finderPath.getCacheName(),
+				CTCollectionThreadLocal.getCTCollectionId(), cacheKey);
+
+			ctCache.put(ctCacheKey, cacheValue);
+
+			return;
+		}
+
 		if (_isLocalCacheEnabled()) {
 			Map<LocalCacheKey, Serializable> localCache = _localCache.get();
 
@@ -346,6 +381,7 @@ public class FinderCacheImpl
 			return;
 		}
 
+		clearCTCache();
 		clearLocalCache();
 
 		_clearCache(_getCacheNameWithPagination(className));
@@ -429,6 +465,7 @@ public class FinderCacheImpl
 			return;
 		}
 
+		clearCTCache();
 		clearLocalCache();
 
 		_clearCache(_getCacheNameWithPagination(className));
@@ -475,6 +512,18 @@ public class FinderCacheImpl
 
 		if (_valueObjectFinderCacheListThreshold == 0) {
 			_valueObjectFinderCacheEnabled = false;
+		}
+
+		int ctCacheMaxSize = GetterUtil.getInteger(
+			_props.get(PropsKeys.VALUE_OBJECT_FINDER_THREAD_CT_CACHE_MAX_SIZE));
+
+		if (ctCacheMaxSize > 0) {
+			_ctCache = new CentralizedThreadLocal<>(
+				FinderCacheImpl.class + "._ctCache",
+				() -> new LRUMap<>(ctCacheMaxSize));
+		}
+		else {
+			_localCache = null;
 		}
 
 		int localCacheMaxSize = GetterUtil.getInteger(
@@ -553,6 +602,7 @@ public class FinderCacheImpl
 		Set<String> dslQueryCacheNames = _dslQueryCacheNamesMap.get(tableName);
 
 		if (dslQueryCacheNames != null) {
+			clearCTCache();
 			clearLocalCache();
 
 			for (String dslQueryCacheName : dslQueryCacheNames) {
@@ -694,6 +744,14 @@ public class FinderCacheImpl
 		return portalCache;
 	}
 
+	private boolean _isCTCacheEnabled() {
+		if (_ctCache == null) {
+			return false;
+		}
+
+		return CTCacheThreadLocal.isCTCacheEnabled();
+	}
+
 	private boolean _isLocalCacheEnabled() {
 		if (_localCache == null) {
 			return false;
@@ -708,6 +766,16 @@ public class FinderCacheImpl
 		}
 
 		Serializable cacheKey = _encodeCacheKey(finderPath, args);
+
+		if ((_ctCache != null) && !CTCollectionThreadLocal.isProductionMode()) {
+			Map<CTCacheKey, Serializable> ctCache = _ctCache.get();
+
+			CTCacheKey ctCacheKey = new CTCacheKey(
+				finderPath.getCacheName(),
+				CTCollectionThreadLocal.getCTCollectionId(), cacheKey);
+
+			ctCache.remove(ctCacheKey);
+		}
 
 		if (_isLocalCacheEnabled()) {
 			Map<LocalCacheKey, Serializable> localCache = _localCache.get();
@@ -738,6 +806,7 @@ public class FinderCacheImpl
 	@Reference
 	private ClusterExecutor _clusterExecutor;
 
+	private ThreadLocal<LRUMap<CTCacheKey, Serializable>> _ctCache;
 	private final Map<String, Set<String>> _dslQueryCacheNamesMap =
 		new ConcurrentHashMap<>();
 	private final Map<String, Map<String, FinderPath>> _finderPathsMap =

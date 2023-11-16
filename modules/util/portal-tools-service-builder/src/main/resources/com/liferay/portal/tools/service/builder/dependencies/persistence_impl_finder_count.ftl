@@ -43,7 +43,7 @@ public int countBy${entityFinder.name}(
 					_finderPathCountBy${entityFinder.name};
 				<#else>
 					_finderPathWithPaginationCountBy${entityFinder.name};
-				</#if>
+	</#if>
 
 			finderArgs = new Object[] {
 				<#list entityColumns as entityColumn>
@@ -62,28 +62,28 @@ public int countBy${entityFinder.name}(
 			count = (Long)${finderCache}.getResult(finderPath, finderArgs, this);
 		}
 	<#else>
-		FinderPath finderPath =
-			<#if !entityFinder.hasCustomComparator()>
-				_finderPathCountBy${entityFinder.name};
+	FinderPath finderPath =
+		<#if !entityFinder.hasCustomComparator()>
+			_finderPathCountBy${entityFinder.name};
+		<#else>
+			_finderPathWithPaginationCountBy${entityFinder.name};
+		</#if>
+
+	Object[] finderArgs = new Object[] {
+		<#list entityColumns as entityColumn>
+			<#if stringUtil.equals(entityColumn.type, "Date")>
+				_getTime(${entityColumn.name})
 			<#else>
-				_finderPathWithPaginationCountBy${entityFinder.name};
+				${entityColumn.name}
 			</#if>
 
-		Object[] finderArgs = new Object[] {
-			<#list entityColumns as entityColumn>
-				<#if stringUtil.equals(entityColumn.type, "Date")>
-					_getTime(${entityColumn.name})
-				<#else>
-					${entityColumn.name}
-				</#if>
+			<#if entityColumn_has_next>
+				,
+			</#if>
+		</#list>
+	};
 
-				<#if entityColumn_has_next>
-					,
-				</#if>
-			</#list>
-		};
-
-		Long count = (Long)${finderCache}.getResult(finderPath, finderArgs, this);
+	Long count = (Long)${finderCache}.getResult(finderPath, finderArgs, this);
 	</#if>
 
 	if (count == null) {
