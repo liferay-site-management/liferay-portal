@@ -14,6 +14,26 @@ PublicationsConfigurationDisplayContext publicationsConfigurationDisplayContext 
 
 renderResponse.setTitle(LanguageUtil.get(request, "settings"));
 
+Portal portal = PortalUtil.getPortal();
+
+String languageOverridePortletLink = PortletURLBuilder.create(
+	portal.getControlPanelPortletURL(request, "com_liferay_portal_language_override_web_internal_portlet_PLOPortlet", PortletRequest.RENDER_PHASE)
+).setRedirect(
+	ParamUtil.getString(request, "backURL", portal.getCurrentCompleteURL(request))
+).buildString();
+
+String publicationsInstanceSettingsLink = PortletURLBuilder.create(
+	portal.getControlPanelPortletURL(request, "com_liferay_configuration_admin_web_portlet_InstanceSettingsPortlet", PortletRequest.RENDER_PHASE)
+).setMVCRenderCommandName(
+	"/configuration_admin/edit_configuration"
+).setRedirect(
+	ParamUtil.getString(request, "backURL", portal.getCurrentCompleteURL(request))
+).setParameter(
+	"factoryPid", CTConfiguration.class.getName()
+).setParameter(
+	"pid", CTConfiguration.class.getName()
+).buildString();
+
 if (publicationsConfigurationDisplayContext.isPublicationsEnabled()) {
 	portletDisplay.setURLBack(backURL);
 	portletDisplay.setShowBackIcon(true);

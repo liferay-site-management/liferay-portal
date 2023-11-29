@@ -45,7 +45,7 @@ public interface CTConfiguration {
 
 	@Meta.AD(
 		deflt = "production",
-		description = "replaces-usages-of-the-term-'production'-with-a-custom-name",
+		description = "replaces-usages-of-the-term-production-with-a-custom-name",
 		name = "custom-production-name", required = false
 	)
 	public String customProductionName();

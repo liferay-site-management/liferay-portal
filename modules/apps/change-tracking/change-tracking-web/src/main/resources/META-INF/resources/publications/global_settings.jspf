@@ -5,6 +5,8 @@
  */
 --%>
 
+<%@ include file="/init.jsp" %>
+
 <clay:sheet-header>
 	<h2 class="sheet-title"><liferay-ui:message key="settings" /></h2>
 </clay:sheet-header>
@@ -63,6 +65,24 @@
 	</clay:sheet-section>
 </div>
 
+<div id="<portlet:namespace />customProductionName">
+	<clay:sheet-section>
+		<h3 class="sheet-subtitle"><liferay-ui:message key="custom-production-name" /></h3>
+
+		<clay:alert
+			displayType="info"
+			message="using-a-custom-production-name-requires-you-to-set-your-chosen-replacement-term-in-the-publications-instance-settings-page-and-to-optionally-create-translations-for-the-replacement-term-in-the-language-override-portlet-these-configuration-pages-are-linked-below"
+		/>
+
+		<div class="sheet-text"><liferay-ui:message arguments='<%= new String[] {"<a href=" + publicationsInstanceSettingsLink + ">", "</a>"} %>' key="replaces-usages-of-the-term-production-with-a-custom-name" /></div>
+
+		<div class="form-group">
+			<aui:button href="<%= publicationsInstanceSettingsLink %>" icon="icon-new-window" name="publicationsInstanceSettingsLink" target="_blank" value='<%= LanguageUtil.get(request, "go-to-publications-instance-settings") %>' />
+			<aui:button href="<%= languageOverridePortletLink %>" icon="icon-new-window" name="languagePortletLink" target="_blank" value='<%= LanguageUtil.get(request, "go-to-language-override-portlet") %>' />
+		</div>
+	</clay:sheet-section>
+</div>
+
 <clay:sheet-footer>
 	<aui:button primary="<%= true %>" type="submit" value="save" />
 </clay:sheet-footer>
@@ -83,6 +103,12 @@
 	Liferay.Util.toggleBoxes(
 		'<portlet:namespace />enablePublications',
 		'<portlet:namespace />manageRemotely',
+		<%= publicationsConfigurationDisplayContext.isPublicationsEnabled() ? false : null %>
+	);
+
+	Liferay.Util.toggleBoxes(
+		'<portlet:namespace />enablePublications',
+		'<portlet:namespace />customProductionName',
 		<%= publicationsConfigurationDisplayContext.isPublicationsEnabled() ? false : null %>
 	);
 </aui:script>

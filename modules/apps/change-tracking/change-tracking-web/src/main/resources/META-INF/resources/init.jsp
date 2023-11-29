@@ -29,6 +29,7 @@ page import="com.liferay.change.tracking.model.CTCollectionTemplate" %><%@
 page import="com.liferay.change.tracking.model.CTRemote" %><%@
 page import="com.liferay.change.tracking.service.CTCollectionTemplateLocalServiceUtil" %><%@
 page import="com.liferay.change.tracking.spi.display.CTDisplayRendererRegistry" %><%@
+page import="com.liferay.change.tracking.web.internal.configuration.CTConfiguration" %><%@
 page import="com.liferay.change.tracking.web.internal.constants.CTWebKeys" %><%@
 page import="com.liferay.change.tracking.web.internal.constants.PublicationsFDSNames" %><%@
 page import="com.liferay.change.tracking.web.internal.display.context.PublicationsConfigurationDisplayContext" %><%@
@@ -58,13 +59,16 @@ page import="com.liferay.portal.kernel.util.GetterUtil" %><%@
 page import="com.liferay.portal.kernel.util.HashMapBuilder" %><%@
 page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
+page import="com.liferay.portal.kernel.util.Portal" %><%@
+page import="com.liferay.portal.kernel.util.PortalUtil" %><%@
 page import="com.liferay.portal.kernel.util.Validator" %><%@
 page import="com.liferay.portal.kernel.util.WebKeys" %>
 
 <%@ page import="java.util.Date" %><%@
 page import="java.util.Objects" %>
 
-<%@ page import="javax.portlet.RenderResponse" %>
+<%@ page import="javax.portlet.PortletRequest" %><%@
+page import="javax.portlet.RenderResponse" %>
 
 <liferay-frontend:defineObjects />
 
