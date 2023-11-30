@@ -74,11 +74,44 @@
 			message="using-a-custom-production-name-requires-you-to-set-your-chosen-replacement-term-in-the-publications-instance-settings-page-and-to-optionally-create-translations-for-the-replacement-term-in-the-language-override-portlet-these-configuration-pages-are-linked-below"
 		/>
 
-		<div class="sheet-text"><liferay-ui:message arguments='<%= new String[] {"<a href=" + publicationsInstanceSettingsLink + ">", "</a>"} %>' key="replaces-usages-of-the-term-production-with-a-custom-name" /></div>
+		<div class="sheet-text"><liferay-ui:message key="replaces-usages-of-the-term-production-with-a-custom-name" /></div>
 
 		<div class="form-group">
-			<aui:button href="<%= publicationsInstanceSettingsLink %>" icon="icon-new-window" name="publicationsInstanceSettingsLink" target="_blank" value='<%= LanguageUtil.get(request, "go-to-publications-instance-settings") %>' />
-			<aui:button href="<%= languageOverridePortletLink %>" icon="icon-new-window" name="languagePortletLink" target="_blank" value='<%= LanguageUtil.get(request, "go-to-language-override-portlet") %>' />
+			<aui:button
+				href='<%=
+					PortletURLBuilder.create(
+						PortalUtil.getControlPanelPortletURL(request, ConfigurationAdminPortletKeys.INSTANCE_SETTINGS, PortletRequest.RENDER_PHASE)
+					).setMVCRenderCommandName(
+						"/configuration_admin/edit_configuration"
+					).setRedirect(
+						ParamUtil.getString(request, "backURL", currentURL)
+					).setParameter(
+						"factoryPid", CTConfiguration.class.getName()
+					).setParameter(
+						"pid", CTConfiguration.class.getName()
+					).buildString()
+				%>'
+				icon="icon-new-window"
+				name="publicationsInstanceSettingsLink"
+				target="_blank"
+				value='<%= LanguageUtil.get(request, "go-to-publications-instance-settings") %>'
+			>
+			</aui:button>
+
+			<aui:button
+				href='<%=
+					PortletURLBuilder.create(
+						PortalUtil.getControlPanelPortletURL(request, "com_liferay_portal_language_override_web_internal_portlet_PLOPortlet", PortletRequest.RENDER_PHASE)
+					).setRedirect(
+						ParamUtil.getString(request, "backURL", currentURL)
+					).buildString()
+				%>'
+				icon="icon-new-window"
+				name="languagePortletLink"
+				target="_blank"
+				value='<%= LanguageUtil.get(request, "go-to-language-override-portlet") %>'
+			>
+			</aui:button>
 		</div>
 	</clay:sheet-section>
 </div>
