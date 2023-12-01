@@ -27,6 +27,7 @@ import com.liferay.change.tracking.web.internal.configuration.helper.CTSettingsC
 import com.liferay.change.tracking.web.internal.security.permission.resource.CTPermission;
 import com.liferay.change.tracking.web.internal.timeline.CTCollectionHistoryDataProvider;
 import com.liferay.change.tracking.web.internal.timeline.DefaultCTCollectionHistoryProvider;
+import com.liferay.change.tracking.web.internal.util.PublicationUtil;
 import com.liferay.frontend.js.loader.modules.extender.npm.NPMResolver;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
@@ -34,7 +35,6 @@ import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
-import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -205,9 +205,7 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 				writer.write(
 					_language.get(
 						themeDisplay.getLocale(),
-						_getCTConfiguration(
-							themeDisplay.getCompanyId()
-						).customProductionName()));
+						ctConfiguration.customProductionName()));
 			}
 			else {
 				writer.write(HtmlUtil.escape(ctCollection.getName()));
@@ -349,8 +347,7 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 
 	private CTConfiguration _getCTConfiguration(long companyId) {
 		try {
-			return _configurationProvider.getCompanyConfiguration(
-				CTConfiguration.class, companyId);
+			return PublicationUtil.getCTConfiguration(companyId);
 		}
 		catch (ConfigurationException configurationException) {
 			_log.error(configurationException);
@@ -426,6 +423,10 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 
 		long ctCollectionId = CTConstants.CT_COLLECTION_ID_PRODUCTION;
 
+		String customProductionName = _getCTConfiguration(
+			themeDisplay.getCompanyId()
+		).customProductionName();
+
 		if (ctCollection != null) {
 			ctCollectionId = ctCollection.getCtCollectionId();
 
@@ -482,11 +483,7 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 			data.put("iconName", "simple-circle");
 			data.put(
 				"title",
-				_language.get(
-					themeDisplay.getLocale(),
-					_getCTConfiguration(
-						themeDisplay.getCompanyId()
-					).customProductionName()));
+				_language.get(themeDisplay.getLocale(), customProductionName));
 		}
 
 		if (ctPreferences != null) {
@@ -537,20 +534,14 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 								themeDisplay.getLocale(),
 								"any-changes-made-in-x-will-immediately-be-" +
 									"live.-continue-to-x",
-								_getCTConfiguration(
-									themeDisplay.getCompanyId()
-								).customProductionName(),
-								true)
+								customProductionName, true)
 						).put(
 							"href", checkoutURL.toString()
 						).put(
 							"label",
 							_language.format(
 								themeDisplay.getLocale(), "work-on-x",
-								_getCTConfiguration(
-									themeDisplay.getCompanyId()
-								).customProductionName(),
-								true)
+								customProductionName, true)
 						).put(
 							"symbolLeft", "simple-circle"
 						));
@@ -792,9 +783,6 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 
 	@Reference
 	private ClassNameLocalService _classNameLocalService;
-
-	@Reference
-	private ConfigurationProvider _configurationProvider;
 
 	private ServiceTrackerMap<Long, CTCollectionHistoryProvider<?>>
 		_ctCollectionHistoryProviderServiceTrackerMap;

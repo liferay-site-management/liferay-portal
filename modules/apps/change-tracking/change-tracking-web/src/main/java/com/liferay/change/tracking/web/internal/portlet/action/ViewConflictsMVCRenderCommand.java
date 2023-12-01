@@ -14,11 +14,9 @@ import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.service.CTPreferencesLocalService;
 import com.liferay.change.tracking.spi.display.CTDisplayRendererRegistry;
-import com.liferay.change.tracking.web.internal.configuration.CTConfiguration;
 import com.liferay.change.tracking.web.internal.configuration.helper.CTSettingsConfigurationHelper;
 import com.liferay.change.tracking.web.internal.constants.CTWebKeys;
 import com.liferay.change.tracking.web.internal.display.context.ViewConflictsDisplayContext;
-import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.dao.orm.ORMException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
@@ -99,10 +97,6 @@ public class ViewConflictsMVCRenderCommand implements MVCRenderCommand {
 
 			Map<Long, List<ConflictInfo>> conflictInfoMap = null;
 
-			CTConfiguration ctConfiguration =
-				_configurationProvider.getCompanyConfiguration(
-					CTConfiguration.class, themeDisplay.getCompanyId());
-
 			boolean hasUnapprovedChanges =
 				_ctCollectionLocalService.hasUnapprovedChanges(ctCollectionId);
 
@@ -115,10 +109,9 @@ public class ViewConflictsMVCRenderCommand implements MVCRenderCommand {
 				CTWebKeys.VIEW_CONFLICTS_DISPLAY_CONTEXT,
 				new ViewConflictsDisplayContext(
 					activeCtCollectionId, conflictInfoMap, ctCollection,
-					ctConfiguration, _ctDisplayRendererRegistry,
-					_ctEntryLocalService, _ctSettingsConfigurationHelper,
-					hasUnapprovedChanges, _language, _portal, renderRequest,
-					renderResponse));
+					_ctDisplayRendererRegistry, _ctEntryLocalService,
+					_ctSettingsConfigurationHelper, hasUnapprovedChanges,
+					_language, _portal, renderRequest, renderResponse));
 
 			return "/publications/view_conflicts.jsp";
 		}
@@ -129,9 +122,6 @@ public class ViewConflictsMVCRenderCommand implements MVCRenderCommand {
 			throw new ORMException(sqlException);
 		}
 	}
-
-	@Reference
-	private ConfigurationProvider _configurationProvider;
 
 	@Reference
 	private CTCollectionLocalService _ctCollectionLocalService;

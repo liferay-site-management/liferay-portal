@@ -11,8 +11,8 @@ import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.spi.display.CTDisplayRendererRegistry;
-import com.liferay.change.tracking.web.internal.configuration.CTConfiguration;
 import com.liferay.change.tracking.web.internal.configuration.helper.CTSettingsConfigurationHelper;
+import com.liferay.change.tracking.web.internal.util.PublicationUtil;
 import com.liferay.change.tracking.web.internal.util.PublicationsPortletURLUtil;
 import com.liferay.layout.page.template.model.LayoutPageTemplateStructureRel;
 import com.liferay.learn.LearnMessage;
@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -57,7 +58,7 @@ public class ViewConflictsDisplayContext {
 	public ViewConflictsDisplayContext(
 		long activeCtCollectionId,
 		Map<Long, List<ConflictInfo>> conflictInfoMap,
-		CTCollection ctCollection, CTConfiguration ctConfiguration,
+		CTCollection ctCollection,
 		CTDisplayRendererRegistry ctDisplayRendererRegistry,
 		CTEntryLocalService ctEntryLocalService,
 		CTSettingsConfigurationHelper ctSettingsConfigurationHelper,
@@ -67,7 +68,6 @@ public class ViewConflictsDisplayContext {
 		_activeCtCollectionId = activeCtCollectionId;
 		_conflictInfoMap = conflictInfoMap;
 		_ctCollection = ctCollection;
-		_ctConfiguration = ctConfiguration;
 		_ctDisplayRendererRegistry = ctDisplayRendererRegistry;
 		_ctEntryLocalService = ctEntryLocalService;
 		_ctSettingsConfigurationHelper = ctSettingsConfigurationHelper;
@@ -86,7 +86,7 @@ public class ViewConflictsDisplayContext {
 		return _ctCollection;
 	}
 
-	public Map<String, Object> getReactData() {
+	public Map<String, Object> getReactData() throws ConfigurationException {
 		JSONArray resolvedConflictsJSONArray =
 			JSONFactoryUtil.createJSONArray();
 		JSONArray unresolvedConflictsJSONArray =
@@ -257,7 +257,8 @@ public class ViewConflictsDisplayContext {
 	}
 
 	private <T extends BaseModel<T>> JSONObject _getConflictJSONObject(
-		ConflictInfo conflictInfo, long modelClassNameId) {
+			ConflictInfo conflictInfo, long modelClassNameId)
+		throws ConfigurationException {
 
 		ResourceBundle resourceBundle = conflictInfo.getResourceBundle(
 			_themeDisplay.getLocale());
@@ -319,6 +320,10 @@ public class ViewConflictsDisplayContext {
 				String conflictDescription =
 					conflictInfo.getConflictDescription(resourceBundle);
 
+				String customProductionName =
+					PublicationUtil.getCustomProductionName(
+						_themeDisplay.getCompanyId());
+
 				if (!conflictDescription.equals(
 						LanguageUtil.get(
 							resourceBundle,
@@ -334,7 +339,7 @@ public class ViewConflictsDisplayContext {
 									_httpServletRequest,
 									"you-are-currently-working-on-x.-work-on-x",
 									new Object[] {
-										_ctConfiguration.customProductionName(),
+										customProductionName,
 										_ctCollection.getName()
 									},
 									false),
@@ -357,7 +362,7 @@ public class ViewConflictsDisplayContext {
 								"you-are-currently-working-on-x.-work-on-x",
 								new Object[] {
 									_ctCollection.getName(),
-									_ctConfiguration.customProductionName()
+									customProductionName
 								},
 								false),
 							CTConstants.CT_COLLECTION_ID_PRODUCTION,
@@ -368,7 +373,7 @@ public class ViewConflictsDisplayContext {
 								modelClassNameId),
 							_language.format(
 								_httpServletRequest, "edit-in-x",
-								_ctConfiguration.customProductionName())));
+								customProductionName)));
 				}
 
 				actionsJSONArray.put(
@@ -451,7 +456,6 @@ public class ViewConflictsDisplayContext {
 	private final long _activeCtCollectionId;
 	private final Map<Long, List<ConflictInfo>> _conflictInfoMap;
 	private final CTCollection _ctCollection;
-	private final CTConfiguration _ctConfiguration;
 	private final CTDisplayRendererRegistry _ctDisplayRendererRegistry;
 	private final CTEntryLocalService _ctEntryLocalService;
 	private final CTSettingsConfigurationHelper _ctSettingsConfigurationHelper;
