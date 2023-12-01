@@ -12,7 +12,7 @@ import ClayList from '@clayui/list';
 import ClayModal, {useModal} from '@clayui/modal';
 import {ClayPaginationBarWithBasicItems} from '@clayui/pagination-bar';
 import ClayPanel from '@clayui/panel';
-import {navigate, openConfirmModal} from 'frontend-js-web';
+import {navigate, openConfirmModal, sub} from 'frontend-js-web';
 import React, {useState} from 'react';
 
 import ChangeTrackingBaseScheduleView from './ChangeTrackingBaseScheduleView';
@@ -23,6 +23,7 @@ class ChangeTrackingConflictsView extends ChangeTrackingBaseScheduleView {
 		super(props);
 
 		const {
+			customProductionName,
 			hasUnapprovedChanges,
 			learnLink,
 			publishURL,
@@ -37,6 +38,7 @@ class ChangeTrackingConflictsView extends ChangeTrackingBaseScheduleView {
 			unresolvedConflicts,
 		} = props;
 
+		this.customProductionName = customProductionName;
 		this.hasUnapprovedChanges = hasUnapprovedChanges;
 		this.learnLink = learnLink;
 		this.publishURL = publishURL;
@@ -128,8 +130,11 @@ class ChangeTrackingConflictsView extends ChangeTrackingBaseScheduleView {
 						<ClayAlert
 							displayType="info"
 							spritemap={this.spritemap}
-							title={Liferay.Language.get(
-								"this-publication-contains-changes-to-a-content-page.-publishing-these-changes-will-fully-overwrite-the-page's-content-and-layout-in-production"
+							title={sub(
+								Liferay.Language.get(
+									"this-publication-contains-changes-to-a-content-page.-publishing-these-changes-will-fully-overwrite-the-page's-content-and-layout-in-x"
+								),
+								this.customProductionName
 							)}
 						/>
 					)}

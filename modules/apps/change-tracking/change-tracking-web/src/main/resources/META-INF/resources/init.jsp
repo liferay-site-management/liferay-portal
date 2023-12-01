@@ -44,6 +44,7 @@ page import="com.liferay.change.tracking.web.internal.display.context.ViewSchedu
 page import="com.liferay.change.tracking.web.internal.display.context.ViewTemplatesDisplayContext" %><%@
 page import="com.liferay.change.tracking.web.internal.display.context.ViewTemplatesManagementToolbarDisplayContext" %><%@
 page import="com.liferay.change.tracking.web.internal.security.permission.resource.CTCollectionPermission" %><%@
+page import="com.liferay.change.tracking.web.internal.util.PublicationUtil" %><%@
 page import="com.liferay.configuration.admin.constants.ConfigurationAdminPortletKeys" %><%@
 page import="com.liferay.petra.string.StringBundler" %><%@
 page import="com.liferay.petra.string.StringPool" %><%@

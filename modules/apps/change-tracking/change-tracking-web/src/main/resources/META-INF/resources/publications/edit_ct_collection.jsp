@@ -74,6 +74,8 @@ portletDisplay.setURLBack(redirect);
 			).put(
 				"ctRemoteId", (ctRemote != null) ? ctRemote.getCtRemoteId() : null
 			).put(
+				"customProductionName", LanguageUtil.get(request, PublicationUtil.getCustomProductionName(themeDisplay.getCompanyId()))
+			).put(
 				"defaultCTCollectionTemplateId", request.getAttribute(CTWebKeys.DEFAULT_CT_COLLECTION_TEMPLATE_ID)
 			).put(
 				"descriptionFieldMaxLength", ModelHintsUtil.getMaxLength(CTCollection.class.getName(), "description")

@@ -14,6 +14,7 @@ export default function ChangeTrackingChangeView({
 	changeURL,
 	changes,
 	contextView,
+	customProductionName,
 	dataURL,
 	defaultLocale,
 	discardURL,
@@ -382,6 +383,7 @@ export default function ChangeTrackingChangeView({
 							<ChangeTrackingRenderView
 								childEntries={initialNode.children}
 								ctEntry={!!initialNode.ctEntryId}
+								customProductionName={customProductionName}
 								defaultLocale={defaultLocale}
 								description={
 									initialNode.description

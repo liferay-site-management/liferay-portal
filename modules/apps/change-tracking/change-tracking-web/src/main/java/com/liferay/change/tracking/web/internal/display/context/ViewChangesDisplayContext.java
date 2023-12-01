@@ -28,6 +28,7 @@ import com.liferay.change.tracking.web.internal.scheduler.PublishScheduler;
 import com.liferay.change.tracking.web.internal.scheduler.ScheduledPublishInfo;
 import com.liferay.change.tracking.web.internal.security.permission.resource.CTCollectionPermission;
 import com.liferay.change.tracking.web.internal.security.permission.resource.CTPermission;
+import com.liferay.change.tracking.web.internal.util.PublicationUtil;
 import com.liferay.change.tracking.web.internal.util.PublicationsPortletURLUtil;
 import com.liferay.frontend.data.set.filter.FDSFilter;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
@@ -456,6 +457,12 @@ public class ViewChangesDisplayContext {
 			_getContextViewJSONObject(
 				ctClosure, modelInfoMap, contextViewJSONObject,
 				typeNameCacheMap)
+		).put(
+			"customProductionName",
+			_language.get(
+				_themeDisplay.getLocale(),
+				PublicationUtil.getCustomProductionName(
+					_themeDisplay.getCompanyId()))
 		).put(
 			"dataURL",
 			() -> {

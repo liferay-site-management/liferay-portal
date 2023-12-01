@@ -129,6 +129,7 @@ const LocalizationDropdown = ({
 
 export default function ChangeTrackingRenderView({
 	childEntries,
+	customProductionName,
 	defaultLocale,
 	description,
 	discardURL,
@@ -925,7 +926,7 @@ export default function ChangeTrackingRenderView({
 					<tr className="publications-render-view-divider table-divider">
 						{
 							<td className="publications-render-view-divider">
-								{Liferay.Language.get('production')}
+								{customProductionName}
 							</td>
 						}
 

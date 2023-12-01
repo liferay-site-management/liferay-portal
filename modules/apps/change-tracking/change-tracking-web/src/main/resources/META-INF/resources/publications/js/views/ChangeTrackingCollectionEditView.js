@@ -18,6 +18,7 @@ export default function ChangeTrackingCollectionEditView({
 	ctCollectionTemplates,
 	ctCollectionTemplatesData,
 	ctRemoteId,
+	customProductionName,
 	defaultCTCollectionTemplateId,
 	descriptionFieldMaxLength,
 	inviteUsersURL,
@@ -320,8 +321,11 @@ export default function ChangeTrackingCollectionEditView({
 												</div>
 
 												<div className="publications-radio-help">
-													{Liferay.Language.get(
-														'revert-your-changes-to-production-immediately'
+													{sub(
+														Liferay.Language.get(
+															'revert-your-changes-to-x-immediately'
+														),
+														customProductionName
 													)}
 												</div>
 											</label>
