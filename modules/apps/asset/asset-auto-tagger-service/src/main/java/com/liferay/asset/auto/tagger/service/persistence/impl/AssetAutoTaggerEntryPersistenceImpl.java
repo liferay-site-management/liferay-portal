@@ -13,8 +13,11 @@ import com.liferay.asset.auto.tagger.model.impl.AssetAutoTaggerEntryModelImpl;
 import com.liferay.asset.auto.tagger.service.persistence.AssetAutoTaggerEntryPersistence;
 import com.liferay.asset.auto.tagger.service.persistence.AssetAutoTaggerEntryUtil;
 import com.liferay.asset.auto.tagger.service.persistence.impl.constants.AssetAutoTaggerPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -45,9 +48,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -168,100 +169,103 @@ public class AssetAutoTaggerEntryPersistenceImpl
 		OrderByComparator<AssetAutoTaggerEntry> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetAutoTaggerEntry.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AssetAutoTaggerEntry.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindByAssetEntryId;
-				finderArgs = new Object[] {assetEntryId};
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindByAssetEntryId;
+					finderArgs = new Object[] {assetEntryId};
+				}
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindByAssetEntryId;
-			finderArgs = new Object[] {
-				assetEntryId, start, end, orderByComparator
-			};
-		}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindByAssetEntryId;
+				finderArgs = new Object[] {
+					assetEntryId, start, end, orderByComparator
+				};
+			}
 
-		List<AssetAutoTaggerEntry> list = null;
+			List<AssetAutoTaggerEntry> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<AssetAutoTaggerEntry>)finderCache.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list = (List<AssetAutoTaggerEntry>)finderCache.getResult(
+					finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (AssetAutoTaggerEntry assetAutoTaggerEntry : list) {
-					if (assetEntryId !=
-							assetAutoTaggerEntry.getAssetEntryId()) {
+				if ((list != null) && !list.isEmpty()) {
+					for (AssetAutoTaggerEntry assetAutoTaggerEntry : list) {
+						if (assetEntryId !=
+								assetAutoTaggerEntry.getAssetEntryId()) {
 
-						list = null;
+							list = null;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					3 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(3);
-			}
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						3 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(3);
+				}
 
-			sb.append(_SQL_SELECT_ASSETAUTOTAGGERENTRY_WHERE);
+				sb.append(_SQL_SELECT_ASSETAUTOTAGGERENTRY_WHERE);
 
-			sb.append(_FINDER_COLUMN_ASSETENTRYID_ASSETENTRYID_2);
+				sb.append(_FINDER_COLUMN_ASSETENTRYID_ASSETENTRYID_2);
 
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(AssetAutoTaggerEntryModelImpl.ORDER_BY_JPQL);
-			}
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(AssetAutoTaggerEntryModelImpl.ORDER_BY_JPQL);
+				}
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(assetEntryId);
+					queryPos.add(assetEntryId);
 
-				list = (List<AssetAutoTaggerEntry>)QueryUtil.list(
-					query, getDialect(), start, end);
+					list = (List<AssetAutoTaggerEntry>)QueryUtil.list(
+						query, getDialect(), start, end);
 
-				cacheResult(list);
+					cacheResult(list);
 
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -559,57 +563,52 @@ public class AssetAutoTaggerEntryPersistenceImpl
 	 */
 	@Override
 	public int countByAssetEntryId(long assetEntryId) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetAutoTaggerEntry.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AssetAutoTaggerEntry.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByAssetEntryId;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {assetEntryId};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByAssetEntryId;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {assetEntryId};
+			if (count == null) {
+				StringBundler sb = new StringBundler(2);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_ASSETAUTOTAGGERENTRY_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(2);
+				sb.append(_FINDER_COLUMN_ASSETENTRYID_ASSETENTRYID_2);
 
-			sb.append(_SQL_COUNT_ASSETAUTOTAGGERENTRY_WHERE);
+				String sql = sb.toString();
 
-			sb.append(_FINDER_COLUMN_ASSETENTRYID_ASSETENTRYID_2);
+				Session session = null;
 
-			String sql = sb.toString();
+				try {
+					session = openSession();
 
-			Session session = null;
+					Query query = session.createQuery(sql);
 
-			try {
-				session = openSession();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				Query query = session.createQuery(sql);
+					queryPos.add(assetEntryId);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					count = (Long)query.uniqueResult();
 
-				queryPos.add(assetEntryId);
-
-				count = (Long)query.uniqueResult();
-
-				if (productionMode) {
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_ASSETENTRYID_ASSETENTRYID_2 =
@@ -692,98 +691,103 @@ public class AssetAutoTaggerEntryPersistenceImpl
 		OrderByComparator<AssetAutoTaggerEntry> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetAutoTaggerEntry.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AssetAutoTaggerEntry.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindByAssetTagId;
-				finderArgs = new Object[] {assetTagId};
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindByAssetTagId;
+					finderArgs = new Object[] {assetTagId};
+				}
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindByAssetTagId;
-			finderArgs = new Object[] {
-				assetTagId, start, end, orderByComparator
-			};
-		}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindByAssetTagId;
+				finderArgs = new Object[] {
+					assetTagId, start, end, orderByComparator
+				};
+			}
 
-		List<AssetAutoTaggerEntry> list = null;
+			List<AssetAutoTaggerEntry> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<AssetAutoTaggerEntry>)finderCache.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list = (List<AssetAutoTaggerEntry>)finderCache.getResult(
+					finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (AssetAutoTaggerEntry assetAutoTaggerEntry : list) {
-					if (assetTagId != assetAutoTaggerEntry.getAssetTagId()) {
-						list = null;
+				if ((list != null) && !list.isEmpty()) {
+					for (AssetAutoTaggerEntry assetAutoTaggerEntry : list) {
+						if (assetTagId !=
+								assetAutoTaggerEntry.getAssetTagId()) {
 
-						break;
+							list = null;
+
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					3 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(3);
-			}
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						3 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(3);
+				}
 
-			sb.append(_SQL_SELECT_ASSETAUTOTAGGERENTRY_WHERE);
+				sb.append(_SQL_SELECT_ASSETAUTOTAGGERENTRY_WHERE);
 
-			sb.append(_FINDER_COLUMN_ASSETTAGID_ASSETTAGID_2);
+				sb.append(_FINDER_COLUMN_ASSETTAGID_ASSETTAGID_2);
 
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(AssetAutoTaggerEntryModelImpl.ORDER_BY_JPQL);
-			}
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(AssetAutoTaggerEntryModelImpl.ORDER_BY_JPQL);
+				}
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(assetTagId);
+					queryPos.add(assetTagId);
 
-				list = (List<AssetAutoTaggerEntry>)QueryUtil.list(
-					query, getDialect(), start, end);
+					list = (List<AssetAutoTaggerEntry>)QueryUtil.list(
+						query, getDialect(), start, end);
 
-				cacheResult(list);
+					cacheResult(list);
 
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -1081,57 +1085,52 @@ public class AssetAutoTaggerEntryPersistenceImpl
 	 */
 	@Override
 	public int countByAssetTagId(long assetTagId) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetAutoTaggerEntry.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AssetAutoTaggerEntry.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByAssetTagId;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {assetTagId};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByAssetTagId;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {assetTagId};
+			if (count == null) {
+				StringBundler sb = new StringBundler(2);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_ASSETAUTOTAGGERENTRY_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(2);
+				sb.append(_FINDER_COLUMN_ASSETTAGID_ASSETTAGID_2);
 
-			sb.append(_SQL_COUNT_ASSETAUTOTAGGERENTRY_WHERE);
+				String sql = sb.toString();
 
-			sb.append(_FINDER_COLUMN_ASSETTAGID_ASSETTAGID_2);
+				Session session = null;
 
-			String sql = sb.toString();
+				try {
+					session = openSession();
 
-			Session session = null;
+					Query query = session.createQuery(sql);
 
-			try {
-				session = openSession();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				Query query = session.createQuery(sql);
+					queryPos.add(assetTagId);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					count = (Long)query.uniqueResult();
 
-				queryPos.add(assetTagId);
-
-				count = (Long)query.uniqueResult();
-
-				if (productionMode) {
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_ASSETTAGID_ASSETTAGID_2 =
@@ -1202,95 +1201,89 @@ public class AssetAutoTaggerEntryPersistenceImpl
 	public AssetAutoTaggerEntry fetchByA_A(
 		long assetEntryId, long assetTagId, boolean useFinderCache) {
 
-		Object[] finderArgs = null;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AssetAutoTaggerEntry.class))) {
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {assetEntryId, assetTagId};
-		}
+			Object[] finderArgs = null;
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByA_A, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetAutoTaggerEntry.class);
-
-		if (result instanceof AssetAutoTaggerEntry) {
-			AssetAutoTaggerEntry assetAutoTaggerEntry =
-				(AssetAutoTaggerEntry)result;
-
-			if ((assetEntryId != assetAutoTaggerEntry.getAssetEntryId()) ||
-				(assetTagId != assetAutoTaggerEntry.getAssetTagId())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {assetEntryId, assetTagId};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						AssetAutoTaggerEntry.class,
-						assetAutoTaggerEntry.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByA_A, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
+			if (result instanceof AssetAutoTaggerEntry) {
+				AssetAutoTaggerEntry assetAutoTaggerEntry =
+					(AssetAutoTaggerEntry)result;
 
-			sb.append(_SQL_SELECT_ASSETAUTOTAGGERENTRY_WHERE);
+				if ((assetEntryId != assetAutoTaggerEntry.getAssetEntryId()) ||
+					(assetTagId != assetAutoTaggerEntry.getAssetTagId())) {
 
-			sb.append(_FINDER_COLUMN_A_A_ASSETENTRYID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_A_A_ASSETTAGID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-			String sql = sb.toString();
+				sb.append(_SQL_SELECT_ASSETAUTOTAGGERENTRY_WHERE);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_A_A_ASSETENTRYID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_A_A_ASSETTAGID_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(assetEntryId);
+				try {
+					session = openSession();
 
-				queryPos.add(assetTagId);
+					Query query = session.createQuery(sql);
 
-				List<AssetAutoTaggerEntry> list = query.list();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByA_A, finderArgs, list);
+					queryPos.add(assetEntryId);
+
+					queryPos.add(assetTagId);
+
+					List<AssetAutoTaggerEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByA_A, finderArgs, list);
+						}
+					}
+					else {
+						AssetAutoTaggerEntry assetAutoTaggerEntry = list.get(0);
+
+						result = assetAutoTaggerEntry;
+
+						cacheResult(assetAutoTaggerEntry);
 					}
 				}
-				else {
-					AssetAutoTaggerEntry assetAutoTaggerEntry = list.get(0);
-
-					result = assetAutoTaggerEntry;
-
-					cacheResult(assetAutoTaggerEntry);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (AssetAutoTaggerEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (AssetAutoTaggerEntry)result;
+			}
 		}
 	}
 
@@ -1320,61 +1313,56 @@ public class AssetAutoTaggerEntryPersistenceImpl
 	 */
 	@Override
 	public int countByA_A(long assetEntryId, long assetTagId) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetAutoTaggerEntry.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AssetAutoTaggerEntry.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByA_A;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {assetEntryId, assetTagId};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByA_A;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {assetEntryId, assetTagId};
+			if (count == null) {
+				StringBundler sb = new StringBundler(3);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_ASSETAUTOTAGGERENTRY_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(3);
+				sb.append(_FINDER_COLUMN_A_A_ASSETENTRYID_2);
 
-			sb.append(_SQL_COUNT_ASSETAUTOTAGGERENTRY_WHERE);
+				sb.append(_FINDER_COLUMN_A_A_ASSETTAGID_2);
 
-			sb.append(_FINDER_COLUMN_A_A_ASSETENTRYID_2);
+				String sql = sb.toString();
 
-			sb.append(_FINDER_COLUMN_A_A_ASSETTAGID_2);
+				Session session = null;
 
-			String sql = sb.toString();
+				try {
+					session = openSession();
 
-			Session session = null;
+					Query query = session.createQuery(sql);
 
-			try {
-				session = openSession();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				Query query = session.createQuery(sql);
+					queryPos.add(assetEntryId);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					queryPos.add(assetTagId);
 
-				queryPos.add(assetEntryId);
+					count = (Long)query.uniqueResult();
 
-				queryPos.add(assetTagId);
-
-				count = (Long)query.uniqueResult();
-
-				if (productionMode) {
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_A_A_ASSETENTRYID_2 =
@@ -1399,21 +1387,29 @@ public class AssetAutoTaggerEntryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(AssetAutoTaggerEntry assetAutoTaggerEntry) {
-		if (assetAutoTaggerEntry.getCtCollectionId() != 0) {
+		if ((assetAutoTaggerEntry.getCtCollectionId() != 0) &&
+			(assetAutoTaggerEntry.getCtCollectionId() !=
+				CTCollectionThreadLocal.getCTCollectionId())) {
+
 			return;
 		}
 
-		entityCache.putResult(
-			AssetAutoTaggerEntryImpl.class,
-			assetAutoTaggerEntry.getPrimaryKey(), assetAutoTaggerEntry);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					assetAutoTaggerEntry.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(
-			_finderPathFetchByA_A,
-			new Object[] {
-				assetAutoTaggerEntry.getAssetEntryId(),
-				assetAutoTaggerEntry.getAssetTagId()
-			},
-			assetAutoTaggerEntry);
+			entityCache.putResult(
+				AssetAutoTaggerEntryImpl.class,
+				assetAutoTaggerEntry.getPrimaryKey(), assetAutoTaggerEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByA_A,
+				new Object[] {
+					assetAutoTaggerEntry.getAssetEntryId(),
+					assetAutoTaggerEntry.getAssetTagId()
+				},
+				assetAutoTaggerEntry);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -1436,15 +1432,23 @@ public class AssetAutoTaggerEntryPersistenceImpl
 		for (AssetAutoTaggerEntry assetAutoTaggerEntry :
 				assetAutoTaggerEntries) {
 
-			if (assetAutoTaggerEntry.getCtCollectionId() != 0) {
+			if ((assetAutoTaggerEntry.getCtCollectionId() != 0) &&
+				(assetAutoTaggerEntry.getCtCollectionId() !=
+					CTCollectionThreadLocal.getCTCollectionId())) {
+
 				continue;
 			}
 
-			if (entityCache.getResult(
-					AssetAutoTaggerEntryImpl.class,
-					assetAutoTaggerEntry.getPrimaryKey()) == null) {
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						assetAutoTaggerEntry.getCtCollectionId() != 0)) {
 
-				cacheResult(assetAutoTaggerEntry);
+				if (entityCache.getResult(
+						AssetAutoTaggerEntryImpl.class,
+						assetAutoTaggerEntry.getPrimaryKey()) == null) {
+
+					cacheResult(assetAutoTaggerEntry);
+				}
 			}
 		}
 	}
@@ -1499,14 +1503,26 @@ public class AssetAutoTaggerEntryPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		AssetAutoTaggerEntryModelImpl assetAutoTaggerEntryModelImpl) {
 
-		Object[] args = new Object[] {
-			assetAutoTaggerEntryModelImpl.getAssetEntryId(),
-			assetAutoTaggerEntryModelImpl.getAssetTagId()
-		};
+		if ((assetAutoTaggerEntryModelImpl.getCtCollectionId() != 0) &&
+			(assetAutoTaggerEntryModelImpl.getCtCollectionId() !=
+				CTCollectionThreadLocal.getCTCollectionId())) {
 
-		finderCache.putResult(_finderPathCountByA_A, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByA_A, args, assetAutoTaggerEntryModelImpl);
+			return;
+		}
+
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					assetAutoTaggerEntryModelImpl.getCtCollectionId() != 0)) {
+
+			Object[] args = new Object[] {
+				assetAutoTaggerEntryModelImpl.getAssetEntryId(),
+				assetAutoTaggerEntryModelImpl.getAssetTagId()
+			};
+
+			finderCache.putResult(_finderPathCountByA_A, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByA_A, args, assetAutoTaggerEntryModelImpl);
+		}
 	}
 
 	/**
@@ -1623,80 +1639,91 @@ public class AssetAutoTaggerEntryPersistenceImpl
 	public AssetAutoTaggerEntry updateImpl(
 		AssetAutoTaggerEntry assetAutoTaggerEntry) {
 
-		boolean isNew = assetAutoTaggerEntry.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(assetAutoTaggerEntry instanceof AssetAutoTaggerEntryModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = assetAutoTaggerEntry.isNew();
 
-			if (ProxyUtil.isProxyClass(assetAutoTaggerEntry.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					assetAutoTaggerEntry);
+			if (!(assetAutoTaggerEntry instanceof
+					AssetAutoTaggerEntryModelImpl)) {
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in assetAutoTaggerEntry proxy " +
-						invocationHandler.getClass());
-			}
+				InvocationHandler invocationHandler = null;
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom AssetAutoTaggerEntry implementation " +
-					assetAutoTaggerEntry.getClass());
-		}
+				if (ProxyUtil.isProxyClass(assetAutoTaggerEntry.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						assetAutoTaggerEntry);
 
-		AssetAutoTaggerEntryModelImpl assetAutoTaggerEntryModelImpl =
-			(AssetAutoTaggerEntryModelImpl)assetAutoTaggerEntry;
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (assetAutoTaggerEntry.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				assetAutoTaggerEntry.setCreateDate(date);
-			}
-			else {
-				assetAutoTaggerEntry.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!assetAutoTaggerEntryModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				assetAutoTaggerEntry.setModifiedDate(date);
-			}
-			else {
-				assetAutoTaggerEntry.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(assetAutoTaggerEntry)) {
-				if (!isNew) {
-					session.evict(
-						AssetAutoTaggerEntryImpl.class,
-						assetAutoTaggerEntry.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in assetAutoTaggerEntry proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(assetAutoTaggerEntry);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom AssetAutoTaggerEntry implementation " +
+						assetAutoTaggerEntry.getClass());
 			}
-			else {
-				assetAutoTaggerEntry = (AssetAutoTaggerEntry)session.merge(
-					assetAutoTaggerEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (assetAutoTaggerEntry.getCtCollectionId() != 0) {
+			AssetAutoTaggerEntryModelImpl assetAutoTaggerEntryModelImpl =
+				(AssetAutoTaggerEntryModelImpl)assetAutoTaggerEntry;
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (assetAutoTaggerEntry.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					assetAutoTaggerEntry.setCreateDate(date);
+				}
+				else {
+					assetAutoTaggerEntry.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!assetAutoTaggerEntryModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					assetAutoTaggerEntry.setModifiedDate(date);
+				}
+				else {
+					assetAutoTaggerEntry.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(assetAutoTaggerEntry)) {
+					if (!isNew) {
+						session.evict(
+							AssetAutoTaggerEntryImpl.class,
+							assetAutoTaggerEntry.getPrimaryKeyObj());
+					}
+
+					session.save(assetAutoTaggerEntry);
+				}
+				else {
+					assetAutoTaggerEntry = (AssetAutoTaggerEntry)session.merge(
+						assetAutoTaggerEntry);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				AssetAutoTaggerEntryImpl.class, assetAutoTaggerEntryModelImpl,
+				false, true);
+
+			cacheUniqueFindersCache(assetAutoTaggerEntryModelImpl);
+
 			if (isNew) {
 				assetAutoTaggerEntry.setNew(false);
 			}
@@ -1705,20 +1732,6 @@ public class AssetAutoTaggerEntryPersistenceImpl
 
 			return assetAutoTaggerEntry;
 		}
-
-		entityCache.putResult(
-			AssetAutoTaggerEntryImpl.class, assetAutoTaggerEntryModelImpl,
-			false, true);
-
-		cacheUniqueFindersCache(assetAutoTaggerEntryModelImpl);
-
-		if (isNew) {
-			assetAutoTaggerEntry.setNew(false);
-		}
-
-		assetAutoTaggerEntry.resetOriginalValues();
-
-		return assetAutoTaggerEntry;
 	}
 
 	/**
@@ -1772,31 +1785,46 @@ public class AssetAutoTaggerEntryPersistenceImpl
 		if (ctPersistenceHelper.isProductionMode(
 				AssetAutoTaggerEntry.class, primaryKey)) {
 
-			return super.fetchByPrimaryKey(primaryKey);
-		}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						false)) {
 
-		AssetAutoTaggerEntry assetAutoTaggerEntry = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			assetAutoTaggerEntry = (AssetAutoTaggerEntry)session.get(
-				AssetAutoTaggerEntryImpl.class, primaryKey);
-
-			if (assetAutoTaggerEntry != null) {
-				cacheResult(assetAutoTaggerEntry);
+				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		return assetAutoTaggerEntry;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+
+			AssetAutoTaggerEntry assetAutoTaggerEntry =
+				(AssetAutoTaggerEntry)entityCache.getResult(
+					AssetAutoTaggerEntryImpl.class, primaryKey);
+
+			if (assetAutoTaggerEntry != null) {
+				return assetAutoTaggerEntry;
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				assetAutoTaggerEntry = (AssetAutoTaggerEntry)session.get(
+					AssetAutoTaggerEntryImpl.class, primaryKey);
+
+				if (assetAutoTaggerEntry != null) {
+					cacheResult(assetAutoTaggerEntry);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			return assetAutoTaggerEntry;
+		}
 	}
 
 	/**
@@ -1814,96 +1842,13 @@ public class AssetAutoTaggerEntryPersistenceImpl
 	public Map<Serializable, AssetAutoTaggerEntry> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(AssetAutoTaggerEntry.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AssetAutoTaggerEntry.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, AssetAutoTaggerEntry> map =
-			new HashMap<Serializable, AssetAutoTaggerEntry>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			AssetAutoTaggerEntry assetAutoTaggerEntry = fetchByPrimaryKey(
-				primaryKey);
-
-			if (assetAutoTaggerEntry != null) {
-				map.put(primaryKey, assetAutoTaggerEntry);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (AssetAutoTaggerEntry assetAutoTaggerEntry :
-					(List<AssetAutoTaggerEntry>)query.list()) {
-
-				map.put(
-					assetAutoTaggerEntry.getPrimaryKeyObj(),
-					assetAutoTaggerEntry);
-
-				cacheResult(assetAutoTaggerEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -1971,78 +1916,82 @@ public class AssetAutoTaggerEntryPersistenceImpl
 		OrderByComparator<AssetAutoTaggerEntry> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetAutoTaggerEntry.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AssetAutoTaggerEntry.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
-			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
-		}
-
-		List<AssetAutoTaggerEntry> list = null;
-
-		if (useFinderCache && productionMode) {
-			list = (List<AssetAutoTaggerEntry>)finderCache.getResult(
-				finderPath, finderArgs, this);
-		}
-
-		if (list == null) {
-			StringBundler sb = null;
-			String sql = null;
-
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					2 + (orderByComparator.getOrderByFields().length * 2));
-
-				sb.append(_SQL_SELECT_ASSETAUTOTAGGERENTRY);
-
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-
-				sql = sb.toString();
-			}
-			else {
-				sql = _SQL_SELECT_ASSETAUTOTAGGERENTRY;
-
-				sql = sql.concat(AssetAutoTaggerEntryModelImpl.ORDER_BY_JPQL);
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				list = (List<AssetAutoTaggerEntry>)QueryUtil.list(
-					query, getDialect(), start, end);
-
-				cacheResult(list);
-
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindAll;
+					finderArgs = FINDER_ARGS_EMPTY;
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindAll;
+				finderArgs = new Object[] {start, end, orderByComparator};
 			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			List<AssetAutoTaggerEntry> list = null;
+
+			if (useFinderCache) {
+				list = (List<AssetAutoTaggerEntry>)finderCache.getResult(
+					finderPath, finderArgs, this);
+			}
+
+			if (list == null) {
+				StringBundler sb = null;
+				String sql = null;
+
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						2 + (orderByComparator.getOrderByFields().length * 2));
+
+					sb.append(_SQL_SELECT_ASSETAUTOTAGGERENTRY);
+
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+
+					sql = sb.toString();
+				}
+				else {
+					sql = _SQL_SELECT_ASSETAUTOTAGGERENTRY;
+
+					sql = sql.concat(
+						AssetAutoTaggerEntryModelImpl.ORDER_BY_JPQL);
+				}
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					list = (List<AssetAutoTaggerEntry>)QueryUtil.list(
+						query, getDialect(), start, end);
+
+					cacheResult(list);
+
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
+			}
+
+			return list;
+		}
 	}
 
 	/**
@@ -2063,41 +2012,38 @@ public class AssetAutoTaggerEntryPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetAutoTaggerEntry.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AssetAutoTaggerEntry.class))) {
 
-		Long count = null;
-
-		if (productionMode) {
-			count = (Long)finderCache.getResult(
+			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
-		}
 
-		if (count == null) {
-			Session session = null;
+			if (count == null) {
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(
-					_SQL_COUNT_ASSETAUTOTAGGERENTRY);
+					Query query = session.createQuery(
+						_SQL_COUNT_ASSETAUTOTAGGERENTRY);
 
-				count = (Long)query.uniqueResult();
+					count = (Long)query.uniqueResult();
 
-				if (productionMode) {
 					finderCache.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	@Override
