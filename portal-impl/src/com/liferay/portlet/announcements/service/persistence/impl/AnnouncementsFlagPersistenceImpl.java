@@ -10,8 +10,11 @@ import com.liferay.announcements.kernel.model.AnnouncementsFlag;
 import com.liferay.announcements.kernel.model.AnnouncementsFlagTable;
 import com.liferay.announcements.kernel.service.persistence.AnnouncementsFlagPersistence;
 import com.liferay.announcements.kernel.service.persistence.AnnouncementsFlagUtil;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -45,9 +48,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -159,98 +160,101 @@ public class AnnouncementsFlagPersistenceImpl
 		OrderByComparator<AnnouncementsFlag> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AnnouncementsFlag.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AnnouncementsFlag.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindByCompanyId;
-				finderArgs = new Object[] {companyId};
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindByCompanyId;
+					finderArgs = new Object[] {companyId};
+				}
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindByCompanyId;
-			finderArgs = new Object[] {
-				companyId, start, end, orderByComparator
-			};
-		}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindByCompanyId;
+				finderArgs = new Object[] {
+					companyId, start, end, orderByComparator
+				};
+			}
 
-		List<AnnouncementsFlag> list = null;
+			List<AnnouncementsFlag> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<AnnouncementsFlag>)FinderCacheUtil.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list = (List<AnnouncementsFlag>)FinderCacheUtil.getResult(
+					finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (AnnouncementsFlag announcementsFlag : list) {
-					if (companyId != announcementsFlag.getCompanyId()) {
-						list = null;
+				if ((list != null) && !list.isEmpty()) {
+					for (AnnouncementsFlag announcementsFlag : list) {
+						if (companyId != announcementsFlag.getCompanyId()) {
+							list = null;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					3 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(3);
-			}
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						3 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(3);
+				}
 
-			sb.append(_SQL_SELECT_ANNOUNCEMENTSFLAG_WHERE);
+				sb.append(_SQL_SELECT_ANNOUNCEMENTSFLAG_WHERE);
 
-			sb.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
+				sb.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
 
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(AnnouncementsFlagModelImpl.ORDER_BY_JPQL);
-			}
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(AnnouncementsFlagModelImpl.ORDER_BY_JPQL);
+				}
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(companyId);
+					queryPos.add(companyId);
 
-				list = (List<AnnouncementsFlag>)QueryUtil.list(
-					query, getDialect(), start, end);
+					list = (List<AnnouncementsFlag>)QueryUtil.list(
+						query, getDialect(), start, end);
 
-				cacheResult(list);
+					cacheResult(list);
 
-				if (useFinderCache && productionMode) {
-					FinderCacheUtil.putResult(finderPath, finderArgs, list);
+					if (useFinderCache) {
+						FinderCacheUtil.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -545,58 +549,52 @@ public class AnnouncementsFlagPersistenceImpl
 	 */
 	@Override
 	public int countByCompanyId(long companyId) {
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AnnouncementsFlag.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AnnouncementsFlag.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByCompanyId;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {companyId};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByCompanyId;
-
-			finderArgs = new Object[] {companyId};
-
-			count = (Long)FinderCacheUtil.getResult(
+			Long count = (Long)FinderCacheUtil.getResult(
 				finderPath, finderArgs, this);
-		}
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(2);
+			if (count == null) {
+				StringBundler sb = new StringBundler(2);
 
-			sb.append(_SQL_COUNT_ANNOUNCEMENTSFLAG_WHERE);
+				sb.append(_SQL_COUNT_ANNOUNCEMENTSFLAG_WHERE);
 
-			sb.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
+				sb.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(companyId);
+					queryPos.add(companyId);
 
-				count = (Long)query.uniqueResult();
+					count = (Long)query.uniqueResult();
 
-				if (productionMode) {
 					FinderCacheUtil.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_COMPANYID_COMPANYID_2 =
@@ -678,96 +676,101 @@ public class AnnouncementsFlagPersistenceImpl
 		OrderByComparator<AnnouncementsFlag> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AnnouncementsFlag.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AnnouncementsFlag.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindByEntryId;
-				finderArgs = new Object[] {entryId};
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindByEntryId;
+					finderArgs = new Object[] {entryId};
+				}
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindByEntryId;
-			finderArgs = new Object[] {entryId, start, end, orderByComparator};
-		}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindByEntryId;
+				finderArgs = new Object[] {
+					entryId, start, end, orderByComparator
+				};
+			}
 
-		List<AnnouncementsFlag> list = null;
+			List<AnnouncementsFlag> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<AnnouncementsFlag>)FinderCacheUtil.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list = (List<AnnouncementsFlag>)FinderCacheUtil.getResult(
+					finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (AnnouncementsFlag announcementsFlag : list) {
-					if (entryId != announcementsFlag.getEntryId()) {
-						list = null;
+				if ((list != null) && !list.isEmpty()) {
+					for (AnnouncementsFlag announcementsFlag : list) {
+						if (entryId != announcementsFlag.getEntryId()) {
+							list = null;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					3 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(3);
-			}
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						3 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(3);
+				}
 
-			sb.append(_SQL_SELECT_ANNOUNCEMENTSFLAG_WHERE);
+				sb.append(_SQL_SELECT_ANNOUNCEMENTSFLAG_WHERE);
 
-			sb.append(_FINDER_COLUMN_ENTRYID_ENTRYID_2);
+				sb.append(_FINDER_COLUMN_ENTRYID_ENTRYID_2);
 
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(AnnouncementsFlagModelImpl.ORDER_BY_JPQL);
-			}
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(AnnouncementsFlagModelImpl.ORDER_BY_JPQL);
+				}
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(entryId);
+					queryPos.add(entryId);
 
-				list = (List<AnnouncementsFlag>)QueryUtil.list(
-					query, getDialect(), start, end);
+					list = (List<AnnouncementsFlag>)QueryUtil.list(
+						query, getDialect(), start, end);
 
-				cacheResult(list);
+					cacheResult(list);
 
-				if (useFinderCache && productionMode) {
-					FinderCacheUtil.putResult(finderPath, finderArgs, list);
+					if (useFinderCache) {
+						FinderCacheUtil.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -1059,58 +1062,52 @@ public class AnnouncementsFlagPersistenceImpl
 	 */
 	@Override
 	public int countByEntryId(long entryId) {
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AnnouncementsFlag.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AnnouncementsFlag.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByEntryId;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {entryId};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByEntryId;
-
-			finderArgs = new Object[] {entryId};
-
-			count = (Long)FinderCacheUtil.getResult(
+			Long count = (Long)FinderCacheUtil.getResult(
 				finderPath, finderArgs, this);
-		}
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(2);
+			if (count == null) {
+				StringBundler sb = new StringBundler(2);
 
-			sb.append(_SQL_COUNT_ANNOUNCEMENTSFLAG_WHERE);
+				sb.append(_SQL_COUNT_ANNOUNCEMENTSFLAG_WHERE);
 
-			sb.append(_FINDER_COLUMN_ENTRYID_ENTRYID_2);
+				sb.append(_FINDER_COLUMN_ENTRYID_ENTRYID_2);
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(entryId);
+					queryPos.add(entryId);
 
-				count = (Long)query.uniqueResult();
+					count = (Long)query.uniqueResult();
 
-				if (productionMode) {
 					FinderCacheUtil.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_ENTRYID_ENTRYID_2 =
@@ -1189,116 +1186,110 @@ public class AnnouncementsFlagPersistenceImpl
 	public AnnouncementsFlag fetchByU_E_V(
 		long userId, long entryId, int value, boolean useFinderCache) {
 
-		Object[] finderArgs = null;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AnnouncementsFlag.class))) {
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {userId, entryId, value};
-		}
+			Object[] finderArgs = null;
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByU_E_V, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AnnouncementsFlag.class);
-
-		if (result instanceof AnnouncementsFlag) {
-			AnnouncementsFlag announcementsFlag = (AnnouncementsFlag)result;
-
-			if ((userId != announcementsFlag.getUserId()) ||
-				(entryId != announcementsFlag.getEntryId()) ||
-				(value != announcementsFlag.getValue())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {userId, entryId, value};
 			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsFlag.class,
-						announcementsFlag.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByU_E_V, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
+			if (result instanceof AnnouncementsFlag) {
+				AnnouncementsFlag announcementsFlag = (AnnouncementsFlag)result;
 
-			sb.append(_SQL_SELECT_ANNOUNCEMENTSFLAG_WHERE);
+				if ((userId != announcementsFlag.getUserId()) ||
+					(entryId != announcementsFlag.getEntryId()) ||
+					(value != announcementsFlag.getValue())) {
 
-			sb.append(_FINDER_COLUMN_U_E_V_USERID_2);
-
-			sb.append(_FINDER_COLUMN_U_E_V_ENTRYID_2);
-
-			sb.append(_FINDER_COLUMN_U_E_V_VALUE_2);
-
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(userId);
-
-				queryPos.add(entryId);
-
-				queryPos.add(value);
-
-				List<AnnouncementsFlag> list = query.list();
-
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByU_E_V, finderArgs, list);
-					}
+					result = null;
 				}
-				else {
-					if (list.size() > 1) {
-						Collections.sort(list, Collections.reverseOrder());
+			}
 
-						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
-								finderArgs = new Object[] {
-									userId, entryId, value
-								};
-							}
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-							_log.warn(
-								"AnnouncementsFlagPersistenceImpl.fetchByU_E_V(long, long, int, boolean) with parameters (" +
-									StringUtil.merge(finderArgs) +
-										") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+				sb.append(_SQL_SELECT_ANNOUNCEMENTSFLAG_WHERE);
+
+				sb.append(_FINDER_COLUMN_U_E_V_USERID_2);
+
+				sb.append(_FINDER_COLUMN_U_E_V_ENTRYID_2);
+
+				sb.append(_FINDER_COLUMN_U_E_V_VALUE_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(userId);
+
+					queryPos.add(entryId);
+
+					queryPos.add(value);
+
+					List<AnnouncementsFlag> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByU_E_V, finderArgs, list);
 						}
 					}
+					else {
+						if (list.size() > 1) {
+							Collections.sort(list, Collections.reverseOrder());
 
-					AnnouncementsFlag announcementsFlag = list.get(0);
+							if (_log.isWarnEnabled()) {
+								if (!useFinderCache) {
+									finderArgs = new Object[] {
+										userId, entryId, value
+									};
+								}
 
-					result = announcementsFlag;
+								_log.warn(
+									"AnnouncementsFlagPersistenceImpl.fetchByU_E_V(long, long, int, boolean) with parameters (" +
+										StringUtil.merge(finderArgs) +
+											") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+							}
+						}
 
-					cacheResult(announcementsFlag);
+						AnnouncementsFlag announcementsFlag = list.get(0);
+
+						result = announcementsFlag;
+
+						cacheResult(announcementsFlag);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (AnnouncementsFlag)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (AnnouncementsFlag)result;
+			}
 		}
 	}
 
@@ -1330,66 +1321,60 @@ public class AnnouncementsFlagPersistenceImpl
 	 */
 	@Override
 	public int countByU_E_V(long userId, long entryId, int value) {
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AnnouncementsFlag.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AnnouncementsFlag.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByU_E_V;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {userId, entryId, value};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByU_E_V;
-
-			finderArgs = new Object[] {userId, entryId, value};
-
-			count = (Long)FinderCacheUtil.getResult(
+			Long count = (Long)FinderCacheUtil.getResult(
 				finderPath, finderArgs, this);
-		}
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(4);
+			if (count == null) {
+				StringBundler sb = new StringBundler(4);
 
-			sb.append(_SQL_COUNT_ANNOUNCEMENTSFLAG_WHERE);
+				sb.append(_SQL_COUNT_ANNOUNCEMENTSFLAG_WHERE);
 
-			sb.append(_FINDER_COLUMN_U_E_V_USERID_2);
+				sb.append(_FINDER_COLUMN_U_E_V_USERID_2);
 
-			sb.append(_FINDER_COLUMN_U_E_V_ENTRYID_2);
+				sb.append(_FINDER_COLUMN_U_E_V_ENTRYID_2);
 
-			sb.append(_FINDER_COLUMN_U_E_V_VALUE_2);
+				sb.append(_FINDER_COLUMN_U_E_V_VALUE_2);
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(userId);
+					queryPos.add(userId);
 
-				queryPos.add(entryId);
+					queryPos.add(entryId);
 
-				queryPos.add(value);
+					queryPos.add(value);
 
-				count = (Long)query.uniqueResult();
+					count = (Long)query.uniqueResult();
 
-				if (productionMode) {
 					FinderCacheUtil.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_U_E_V_USERID_2 =
@@ -1417,21 +1402,29 @@ public class AnnouncementsFlagPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(AnnouncementsFlag announcementsFlag) {
-		if (announcementsFlag.getCtCollectionId() != 0) {
+		if ((announcementsFlag.getCtCollectionId() != 0) &&
+			(announcementsFlag.getCtCollectionId() !=
+				CTCollectionThreadLocal.getCTCollectionId())) {
+
 			return;
 		}
 
-		EntityCacheUtil.putResult(
-			AnnouncementsFlagImpl.class, announcementsFlag.getPrimaryKey(),
-			announcementsFlag);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					announcementsFlag.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathFetchByU_E_V,
-			new Object[] {
-				announcementsFlag.getUserId(), announcementsFlag.getEntryId(),
-				announcementsFlag.getValue()
-			},
-			announcementsFlag);
+			EntityCacheUtil.putResult(
+				AnnouncementsFlagImpl.class, announcementsFlag.getPrimaryKey(),
+				announcementsFlag);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByU_E_V,
+				new Object[] {
+					announcementsFlag.getUserId(),
+					announcementsFlag.getEntryId(), announcementsFlag.getValue()
+				},
+				announcementsFlag);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -1452,15 +1445,23 @@ public class AnnouncementsFlagPersistenceImpl
 		}
 
 		for (AnnouncementsFlag announcementsFlag : announcementsFlags) {
-			if (announcementsFlag.getCtCollectionId() != 0) {
+			if ((announcementsFlag.getCtCollectionId() != 0) &&
+				(announcementsFlag.getCtCollectionId() !=
+					CTCollectionThreadLocal.getCTCollectionId())) {
+
 				continue;
 			}
 
-			if (EntityCacheUtil.getResult(
-					AnnouncementsFlagImpl.class,
-					announcementsFlag.getPrimaryKey()) == null) {
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						announcementsFlag.getCtCollectionId() != 0)) {
 
-				cacheResult(announcementsFlag);
+				if (EntityCacheUtil.getResult(
+						AnnouncementsFlagImpl.class,
+						announcementsFlag.getPrimaryKey()) == null) {
+
+					cacheResult(announcementsFlag);
+				}
 			}
 		}
 	}
@@ -1513,16 +1514,28 @@ public class AnnouncementsFlagPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		AnnouncementsFlagModelImpl announcementsFlagModelImpl) {
 
-		Object[] args = new Object[] {
-			announcementsFlagModelImpl.getUserId(),
-			announcementsFlagModelImpl.getEntryId(),
-			announcementsFlagModelImpl.getValue()
-		};
+		if ((announcementsFlagModelImpl.getCtCollectionId() != 0) &&
+			(announcementsFlagModelImpl.getCtCollectionId() !=
+				CTCollectionThreadLocal.getCTCollectionId())) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByU_E_V, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByU_E_V, args, announcementsFlagModelImpl);
+			return;
+		}
+
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					announcementsFlagModelImpl.getCtCollectionId() != 0)) {
+
+			Object[] args = new Object[] {
+				announcementsFlagModelImpl.getUserId(),
+				announcementsFlagModelImpl.getEntryId(),
+				announcementsFlagModelImpl.getValue()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByU_E_V, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByU_E_V, args, announcementsFlagModelImpl);
+		}
 	}
 
 	/**
@@ -1634,70 +1647,79 @@ public class AnnouncementsFlagPersistenceImpl
 
 	@Override
 	public AnnouncementsFlag updateImpl(AnnouncementsFlag announcementsFlag) {
-		boolean isNew = announcementsFlag.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(announcementsFlag instanceof AnnouncementsFlagModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = announcementsFlag.isNew();
 
-			if (ProxyUtil.isProxyClass(announcementsFlag.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					announcementsFlag);
+			if (!(announcementsFlag instanceof AnnouncementsFlagModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in announcementsFlag proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(announcementsFlag.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						announcementsFlag);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom AnnouncementsFlag implementation " +
-					announcementsFlag.getClass());
-		}
-
-		AnnouncementsFlagModelImpl announcementsFlagModelImpl =
-			(AnnouncementsFlagModelImpl)announcementsFlag;
-
-		if (isNew && (announcementsFlag.getCreateDate() == null)) {
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (serviceContext == null) {
-				announcementsFlag.setCreateDate(date);
-			}
-			else {
-				announcementsFlag.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(announcementsFlag)) {
-				if (!isNew) {
-					session.evict(
-						AnnouncementsFlagImpl.class,
-						announcementsFlag.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in announcementsFlag proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(announcementsFlag);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom AnnouncementsFlag implementation " +
+						announcementsFlag.getClass());
 			}
-			else {
-				announcementsFlag = (AnnouncementsFlag)session.merge(
-					announcementsFlag);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (announcementsFlag.getCtCollectionId() != 0) {
+			AnnouncementsFlagModelImpl announcementsFlagModelImpl =
+				(AnnouncementsFlagModelImpl)announcementsFlag;
+
+			if (isNew && (announcementsFlag.getCreateDate() == null)) {
+				ServiceContext serviceContext =
+					ServiceContextThreadLocal.getServiceContext();
+
+				Date date = new Date();
+
+				if (serviceContext == null) {
+					announcementsFlag.setCreateDate(date);
+				}
+				else {
+					announcementsFlag.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(announcementsFlag)) {
+					if (!isNew) {
+						session.evict(
+							AnnouncementsFlagImpl.class,
+							announcementsFlag.getPrimaryKeyObj());
+					}
+
+					session.save(announcementsFlag);
+				}
+				else {
+					announcementsFlag = (AnnouncementsFlag)session.merge(
+						announcementsFlag);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				AnnouncementsFlagImpl.class, announcementsFlagModelImpl, false,
+				true);
+
+			cacheUniqueFindersCache(announcementsFlagModelImpl);
+
 			if (isNew) {
 				announcementsFlag.setNew(false);
 			}
@@ -1706,20 +1728,6 @@ public class AnnouncementsFlagPersistenceImpl
 
 			return announcementsFlag;
 		}
-
-		EntityCacheUtil.putResult(
-			AnnouncementsFlagImpl.class, announcementsFlagModelImpl, false,
-			true);
-
-		cacheUniqueFindersCache(announcementsFlagModelImpl);
-
-		if (isNew) {
-			announcementsFlag.setNew(false);
-		}
-
-		announcementsFlag.resetOriginalValues();
-
-		return announcementsFlag;
 	}
 
 	/**
@@ -1772,31 +1780,46 @@ public class AnnouncementsFlagPersistenceImpl
 		if (CTPersistenceHelperUtil.isProductionMode(
 				AnnouncementsFlag.class, primaryKey)) {
 
-			return super.fetchByPrimaryKey(primaryKey);
-		}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						false)) {
 
-		AnnouncementsFlag announcementsFlag = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			announcementsFlag = (AnnouncementsFlag)session.get(
-				AnnouncementsFlagImpl.class, primaryKey);
-
-			if (announcementsFlag != null) {
-				cacheResult(announcementsFlag);
+				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		return announcementsFlag;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+
+			AnnouncementsFlag announcementsFlag =
+				(AnnouncementsFlag)EntityCacheUtil.getResult(
+					AnnouncementsFlagImpl.class, primaryKey);
+
+			if (announcementsFlag != null) {
+				return announcementsFlag;
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				announcementsFlag = (AnnouncementsFlag)session.get(
+					AnnouncementsFlagImpl.class, primaryKey);
+
+				if (announcementsFlag != null) {
+					cacheResult(announcementsFlag);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			return announcementsFlag;
+		}
 	}
 
 	/**
@@ -1814,94 +1837,13 @@ public class AnnouncementsFlagPersistenceImpl
 	public Map<Serializable, AnnouncementsFlag> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(AnnouncementsFlag.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AnnouncementsFlag.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, AnnouncementsFlag> map =
-			new HashMap<Serializable, AnnouncementsFlag>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			AnnouncementsFlag announcementsFlag = fetchByPrimaryKey(primaryKey);
-
-			if (announcementsFlag != null) {
-				map.put(primaryKey, announcementsFlag);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (AnnouncementsFlag announcementsFlag :
-					(List<AnnouncementsFlag>)query.list()) {
-
-				map.put(
-					announcementsFlag.getPrimaryKeyObj(), announcementsFlag);
-
-				cacheResult(announcementsFlag);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -1969,78 +1911,81 @@ public class AnnouncementsFlagPersistenceImpl
 		OrderByComparator<AnnouncementsFlag> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AnnouncementsFlag.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AnnouncementsFlag.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
-			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
-		}
-
-		List<AnnouncementsFlag> list = null;
-
-		if (useFinderCache && productionMode) {
-			list = (List<AnnouncementsFlag>)FinderCacheUtil.getResult(
-				finderPath, finderArgs, this);
-		}
-
-		if (list == null) {
-			StringBundler sb = null;
-			String sql = null;
-
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					2 + (orderByComparator.getOrderByFields().length * 2));
-
-				sb.append(_SQL_SELECT_ANNOUNCEMENTSFLAG);
-
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-
-				sql = sb.toString();
-			}
-			else {
-				sql = _SQL_SELECT_ANNOUNCEMENTSFLAG;
-
-				sql = sql.concat(AnnouncementsFlagModelImpl.ORDER_BY_JPQL);
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				list = (List<AnnouncementsFlag>)QueryUtil.list(
-					query, getDialect(), start, end);
-
-				cacheResult(list);
-
-				if (useFinderCache && productionMode) {
-					FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindAll;
+					finderArgs = FINDER_ARGS_EMPTY;
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindAll;
+				finderArgs = new Object[] {start, end, orderByComparator};
 			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			List<AnnouncementsFlag> list = null;
+
+			if (useFinderCache) {
+				list = (List<AnnouncementsFlag>)FinderCacheUtil.getResult(
+					finderPath, finderArgs, this);
+			}
+
+			if (list == null) {
+				StringBundler sb = null;
+				String sql = null;
+
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						2 + (orderByComparator.getOrderByFields().length * 2));
+
+					sb.append(_SQL_SELECT_ANNOUNCEMENTSFLAG);
+
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+
+					sql = sb.toString();
+				}
+				else {
+					sql = _SQL_SELECT_ANNOUNCEMENTSFLAG;
+
+					sql = sql.concat(AnnouncementsFlagModelImpl.ORDER_BY_JPQL);
+				}
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					list = (List<AnnouncementsFlag>)QueryUtil.list(
+						query, getDialect(), start, end);
+
+					cacheResult(list);
+
+					if (useFinderCache) {
+						FinderCacheUtil.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
+			}
+
+			return list;
+		}
 	}
 
 	/**
@@ -2061,40 +2006,38 @@ public class AnnouncementsFlagPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AnnouncementsFlag.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AnnouncementsFlag.class))) {
 
-		Long count = null;
-
-		if (productionMode) {
-			count = (Long)FinderCacheUtil.getResult(
+			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
-		}
 
-		if (count == null) {
-			Session session = null;
+			if (count == null) {
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(_SQL_COUNT_ANNOUNCEMENTSFLAG);
+					Query query = session.createQuery(
+						_SQL_COUNT_ANNOUNCEMENTSFLAG);
 
-				count = (Long)query.uniqueResult();
+					count = (Long)query.uniqueResult();
 
-				if (productionMode) {
 					FinderCacheUtil.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	@Override
