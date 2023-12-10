@@ -13,8 +13,11 @@ import com.liferay.analytics.message.storage.model.impl.AnalyticsDeleteMessageMo
 import com.liferay.analytics.message.storage.service.persistence.AnalyticsDeleteMessagePersistence;
 import com.liferay.analytics.message.storage.service.persistence.AnalyticsDeleteMessageUtil;
 import com.liferay.analytics.message.storage.service.persistence.impl.constants.AnalyticsPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -169,98 +172,103 @@ public class AnalyticsDeleteMessagePersistenceImpl
 		OrderByComparator<AnalyticsDeleteMessage> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AnalyticsDeleteMessage.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AnalyticsDeleteMessage.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindByCompanyId;
-				finderArgs = new Object[] {companyId};
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindByCompanyId;
+					finderArgs = new Object[] {companyId};
+				}
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindByCompanyId;
-			finderArgs = new Object[] {
-				companyId, start, end, orderByComparator
-			};
-		}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindByCompanyId;
+				finderArgs = new Object[] {
+					companyId, start, end, orderByComparator
+				};
+			}
 
-		List<AnalyticsDeleteMessage> list = null;
+			List<AnalyticsDeleteMessage> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<AnalyticsDeleteMessage>)finderCache.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list = (List<AnalyticsDeleteMessage>)finderCache.getResult(
+					finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (AnalyticsDeleteMessage analyticsDeleteMessage : list) {
-					if (companyId != analyticsDeleteMessage.getCompanyId()) {
-						list = null;
+				if ((list != null) && !list.isEmpty()) {
+					for (AnalyticsDeleteMessage analyticsDeleteMessage : list) {
+						if (companyId !=
+								analyticsDeleteMessage.getCompanyId()) {
 
-						break;
+							list = null;
+
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					3 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(3);
-			}
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						3 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(3);
+				}
 
-			sb.append(_SQL_SELECT_ANALYTICSDELETEMESSAGE_WHERE);
+				sb.append(_SQL_SELECT_ANALYTICSDELETEMESSAGE_WHERE);
 
-			sb.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
+				sb.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
 
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(AnalyticsDeleteMessageModelImpl.ORDER_BY_JPQL);
-			}
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(AnalyticsDeleteMessageModelImpl.ORDER_BY_JPQL);
+				}
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(companyId);
+					queryPos.add(companyId);
 
-				list = (List<AnalyticsDeleteMessage>)QueryUtil.list(
-					query, getDialect(), start, end);
+					list = (List<AnalyticsDeleteMessage>)QueryUtil.list(
+						query, getDialect(), start, end);
 
-				cacheResult(list);
+					cacheResult(list);
 
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -558,57 +566,52 @@ public class AnalyticsDeleteMessagePersistenceImpl
 	 */
 	@Override
 	public int countByCompanyId(long companyId) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AnalyticsDeleteMessage.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AnalyticsDeleteMessage.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByCompanyId;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {companyId};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByCompanyId;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {companyId};
+			if (count == null) {
+				StringBundler sb = new StringBundler(2);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_ANALYTICSDELETEMESSAGE_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(2);
+				sb.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
 
-			sb.append(_SQL_COUNT_ANALYTICSDELETEMESSAGE_WHERE);
+				String sql = sb.toString();
 
-			sb.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
+				Session session = null;
 
-			String sql = sb.toString();
+				try {
+					session = openSession();
 
-			Session session = null;
+					Query query = session.createQuery(sql);
 
-			try {
-				session = openSession();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				Query query = session.createQuery(sql);
+					queryPos.add(companyId);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					count = (Long)query.uniqueResult();
 
-				queryPos.add(companyId);
-
-				count = (Long)query.uniqueResult();
-
-				if (productionMode) {
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_COMPANYID_COMPANYID_2 =
@@ -697,107 +700,111 @@ public class AnalyticsDeleteMessagePersistenceImpl
 		OrderByComparator<AnalyticsDeleteMessage> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AnalyticsDeleteMessage.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AnalyticsDeleteMessage.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		finderPath = _finderPathWithPaginationFindByC_GtM;
-		finderArgs = new Object[] {
-			companyId, _getTime(modifiedDate), start, end, orderByComparator
-		};
+			finderPath = _finderPathWithPaginationFindByC_GtM;
+			finderArgs = new Object[] {
+				companyId, _getTime(modifiedDate), start, end, orderByComparator
+			};
 
-		List<AnalyticsDeleteMessage> list = null;
+			List<AnalyticsDeleteMessage> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<AnalyticsDeleteMessage>)finderCache.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list = (List<AnalyticsDeleteMessage>)finderCache.getResult(
+					finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (AnalyticsDeleteMessage analyticsDeleteMessage : list) {
-					if ((companyId != analyticsDeleteMessage.getCompanyId()) ||
-						(modifiedDate.getTime() >=
-							analyticsDeleteMessage.getModifiedDate(
-							).getTime())) {
+				if ((list != null) && !list.isEmpty()) {
+					for (AnalyticsDeleteMessage analyticsDeleteMessage : list) {
+						if ((companyId !=
+								analyticsDeleteMessage.getCompanyId()) ||
+							(modifiedDate.getTime() >=
+								analyticsDeleteMessage.getModifiedDate(
+								).getTime())) {
 
-						list = null;
+							list = null;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					4 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(4);
-			}
-
-			sb.append(_SQL_SELECT_ANALYTICSDELETEMESSAGE_WHERE);
-
-			sb.append(_FINDER_COLUMN_C_GTM_COMPANYID_2);
-
-			boolean bindModifiedDate = false;
-
-			if (modifiedDate == null) {
-				sb.append(_FINDER_COLUMN_C_GTM_MODIFIEDDATE_1);
-			}
-			else {
-				bindModifiedDate = true;
-
-				sb.append(_FINDER_COLUMN_C_GTM_MODIFIEDDATE_2);
-			}
-
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(AnalyticsDeleteMessageModelImpl.ORDER_BY_JPQL);
-			}
-
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				if (bindModifiedDate) {
-					queryPos.add(new Timestamp(modifiedDate.getTime()));
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						4 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(4);
 				}
 
-				list = (List<AnalyticsDeleteMessage>)QueryUtil.list(
-					query, getDialect(), start, end);
+				sb.append(_SQL_SELECT_ANALYTICSDELETEMESSAGE_WHERE);
 
-				cacheResult(list);
+				sb.append(_FINDER_COLUMN_C_GTM_COMPANYID_2);
 
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+				boolean bindModifiedDate = false;
+
+				if (modifiedDate == null) {
+					sb.append(_FINDER_COLUMN_C_GTM_MODIFIEDDATE_1);
+				}
+				else {
+					bindModifiedDate = true;
+
+					sb.append(_FINDER_COLUMN_C_GTM_MODIFIEDDATE_2);
+				}
+
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(AnalyticsDeleteMessageModelImpl.ORDER_BY_JPQL);
+				}
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					if (bindModifiedDate) {
+						queryPos.add(new Timestamp(modifiedDate.getTime()));
+					}
+
+					list = (List<AnalyticsDeleteMessage>)QueryUtil.list(
+						query, getDialect(), start, end);
+
+					cacheResult(list);
+
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -1124,72 +1131,69 @@ public class AnalyticsDeleteMessagePersistenceImpl
 	 */
 	@Override
 	public int countByC_GtM(long companyId, Date modifiedDate) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AnalyticsDeleteMessage.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AnalyticsDeleteMessage.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathWithPaginationCountByC_GtM;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {
+				companyId, _getTime(modifiedDate)
+			};
 
-		if (productionMode) {
-			finderPath = _finderPathWithPaginationCountByC_GtM;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {companyId, _getTime(modifiedDate)};
+			if (count == null) {
+				StringBundler sb = new StringBundler(3);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_ANALYTICSDELETEMESSAGE_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(3);
+				sb.append(_FINDER_COLUMN_C_GTM_COMPANYID_2);
 
-			sb.append(_SQL_COUNT_ANALYTICSDELETEMESSAGE_WHERE);
+				boolean bindModifiedDate = false;
 
-			sb.append(_FINDER_COLUMN_C_GTM_COMPANYID_2);
+				if (modifiedDate == null) {
+					sb.append(_FINDER_COLUMN_C_GTM_MODIFIEDDATE_1);
+				}
+				else {
+					bindModifiedDate = true;
 
-			boolean bindModifiedDate = false;
-
-			if (modifiedDate == null) {
-				sb.append(_FINDER_COLUMN_C_GTM_MODIFIEDDATE_1);
-			}
-			else {
-				bindModifiedDate = true;
-
-				sb.append(_FINDER_COLUMN_C_GTM_MODIFIEDDATE_2);
-			}
-
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				if (bindModifiedDate) {
-					queryPos.add(new Timestamp(modifiedDate.getTime()));
+					sb.append(_FINDER_COLUMN_C_GTM_MODIFIEDDATE_2);
 				}
 
-				count = (Long)query.uniqueResult();
+				String sql = sb.toString();
 
-				if (productionMode) {
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					if (bindModifiedDate) {
+						queryPos.add(new Timestamp(modifiedDate.getTime()));
+					}
+
+					count = (Long)query.uniqueResult();
+
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_C_GTM_COMPANYID_2 =
@@ -1217,13 +1221,21 @@ public class AnalyticsDeleteMessagePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(AnalyticsDeleteMessage analyticsDeleteMessage) {
-		if (analyticsDeleteMessage.getCtCollectionId() != 0) {
+		if ((analyticsDeleteMessage.getCtCollectionId() != 0) &&
+			(analyticsDeleteMessage.getCtCollectionId() !=
+				CTCollectionThreadLocal.getCTCollectionId())) {
+
 			return;
 		}
 
-		entityCache.putResult(
-			AnalyticsDeleteMessageImpl.class,
-			analyticsDeleteMessage.getPrimaryKey(), analyticsDeleteMessage);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					analyticsDeleteMessage.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				AnalyticsDeleteMessageImpl.class,
+				analyticsDeleteMessage.getPrimaryKey(), analyticsDeleteMessage);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -1248,15 +1260,23 @@ public class AnalyticsDeleteMessagePersistenceImpl
 		for (AnalyticsDeleteMessage analyticsDeleteMessage :
 				analyticsDeleteMessages) {
 
-			if (analyticsDeleteMessage.getCtCollectionId() != 0) {
+			if ((analyticsDeleteMessage.getCtCollectionId() != 0) &&
+				(analyticsDeleteMessage.getCtCollectionId() !=
+					CTCollectionThreadLocal.getCTCollectionId())) {
+
 				continue;
 			}
 
-			if (entityCache.getResult(
-					AnalyticsDeleteMessageImpl.class,
-					analyticsDeleteMessage.getPrimaryKey()) == null) {
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						analyticsDeleteMessage.getCtCollectionId() != 0)) {
 
-				cacheResult(analyticsDeleteMessage);
+				if (entityCache.getResult(
+						AnalyticsDeleteMessageImpl.class,
+						analyticsDeleteMessage.getPrimaryKey()) == null) {
+
+					cacheResult(analyticsDeleteMessage);
+				}
 			}
 		}
 	}
@@ -1424,82 +1444,90 @@ public class AnalyticsDeleteMessagePersistenceImpl
 	public AnalyticsDeleteMessage updateImpl(
 		AnalyticsDeleteMessage analyticsDeleteMessage) {
 
-		boolean isNew = analyticsDeleteMessage.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(analyticsDeleteMessage instanceof
-				AnalyticsDeleteMessageModelImpl)) {
+			boolean isNew = analyticsDeleteMessage.isNew();
 
-			InvocationHandler invocationHandler = null;
+			if (!(analyticsDeleteMessage instanceof
+					AnalyticsDeleteMessageModelImpl)) {
 
-			if (ProxyUtil.isProxyClass(analyticsDeleteMessage.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					analyticsDeleteMessage);
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in analyticsDeleteMessage proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(analyticsDeleteMessage.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						analyticsDeleteMessage);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom AnalyticsDeleteMessage implementation " +
-					analyticsDeleteMessage.getClass());
-		}
-
-		AnalyticsDeleteMessageModelImpl analyticsDeleteMessageModelImpl =
-			(AnalyticsDeleteMessageModelImpl)analyticsDeleteMessage;
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (analyticsDeleteMessage.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				analyticsDeleteMessage.setCreateDate(date);
-			}
-			else {
-				analyticsDeleteMessage.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!analyticsDeleteMessageModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				analyticsDeleteMessage.setModifiedDate(date);
-			}
-			else {
-				analyticsDeleteMessage.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(analyticsDeleteMessage)) {
-				if (!isNew) {
-					session.evict(
-						AnalyticsDeleteMessageImpl.class,
-						analyticsDeleteMessage.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in analyticsDeleteMessage proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(analyticsDeleteMessage);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom AnalyticsDeleteMessage implementation " +
+						analyticsDeleteMessage.getClass());
 			}
-			else {
-				analyticsDeleteMessage = (AnalyticsDeleteMessage)session.merge(
-					analyticsDeleteMessage);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (analyticsDeleteMessage.getCtCollectionId() != 0) {
+			AnalyticsDeleteMessageModelImpl analyticsDeleteMessageModelImpl =
+				(AnalyticsDeleteMessageModelImpl)analyticsDeleteMessage;
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (analyticsDeleteMessage.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					analyticsDeleteMessage.setCreateDate(date);
+				}
+				else {
+					analyticsDeleteMessage.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!analyticsDeleteMessageModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					analyticsDeleteMessage.setModifiedDate(date);
+				}
+				else {
+					analyticsDeleteMessage.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(analyticsDeleteMessage)) {
+					if (!isNew) {
+						session.evict(
+							AnalyticsDeleteMessageImpl.class,
+							analyticsDeleteMessage.getPrimaryKeyObj());
+					}
+
+					session.save(analyticsDeleteMessage);
+				}
+				else {
+					analyticsDeleteMessage =
+						(AnalyticsDeleteMessage)session.merge(
+							analyticsDeleteMessage);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				AnalyticsDeleteMessageImpl.class,
+				analyticsDeleteMessageModelImpl, false, true);
+
 			if (isNew) {
 				analyticsDeleteMessage.setNew(false);
 			}
@@ -1508,18 +1536,6 @@ public class AnalyticsDeleteMessagePersistenceImpl
 
 			return analyticsDeleteMessage;
 		}
-
-		entityCache.putResult(
-			AnalyticsDeleteMessageImpl.class, analyticsDeleteMessageModelImpl,
-			false, true);
-
-		if (isNew) {
-			analyticsDeleteMessage.setNew(false);
-		}
-
-		analyticsDeleteMessage.resetOriginalValues();
-
-		return analyticsDeleteMessage;
 	}
 
 	/**
@@ -1574,31 +1590,46 @@ public class AnalyticsDeleteMessagePersistenceImpl
 		if (ctPersistenceHelper.isProductionMode(
 				AnalyticsDeleteMessage.class, primaryKey)) {
 
-			return super.fetchByPrimaryKey(primaryKey);
-		}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						false)) {
 
-		AnalyticsDeleteMessage analyticsDeleteMessage = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			analyticsDeleteMessage = (AnalyticsDeleteMessage)session.get(
-				AnalyticsDeleteMessageImpl.class, primaryKey);
-
-			if (analyticsDeleteMessage != null) {
-				cacheResult(analyticsDeleteMessage);
+				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		return analyticsDeleteMessage;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+
+			AnalyticsDeleteMessage analyticsDeleteMessage =
+				(AnalyticsDeleteMessage)entityCache.getResult(
+					AnalyticsDeleteMessageImpl.class, primaryKey);
+
+			if (analyticsDeleteMessage != null) {
+				return analyticsDeleteMessage;
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				analyticsDeleteMessage = (AnalyticsDeleteMessage)session.get(
+					AnalyticsDeleteMessageImpl.class, primaryKey);
+
+				if (analyticsDeleteMessage != null) {
+					cacheResult(analyticsDeleteMessage);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			return analyticsDeleteMessage;
+		}
 	}
 
 	/**
@@ -1621,7 +1652,12 @@ public class AnalyticsDeleteMessagePersistenceImpl
 		if (ctPersistenceHelper.isProductionMode(
 				AnalyticsDeleteMessage.class)) {
 
-			return super.fetchByPrimaryKeys(primaryKeys);
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						false)) {
+
+				return super.fetchByPrimaryKeys(primaryKeys);
+			}
 		}
 
 		if (primaryKeys.isEmpty()) {
@@ -1643,6 +1679,37 @@ public class AnalyticsDeleteMessagePersistenceImpl
 				map.put(primaryKey, analyticsDeleteMessage);
 			}
 
+			return map;
+		}
+
+		Set<Serializable> uncachedPrimaryKeys = null;
+
+		EntityCache entityCache = getEntityCache();
+
+		for (Serializable primaryKey : primaryKeys) {
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						!ctPersistenceHelper.isProductionMode(
+							AnalyticsDeleteMessage.class, primaryKey))) {
+
+				AnalyticsDeleteMessage analyticsDeleteMessage =
+					(AnalyticsDeleteMessage)entityCache.getResult(
+						AnalyticsDeleteMessageImpl.class, primaryKey);
+
+				if (analyticsDeleteMessage == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<>();
+					}
+
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, analyticsDeleteMessage);
+				}
+			}
+		}
+
+		if (uncachedPrimaryKeys == null) {
 			return map;
 		}
 
@@ -1777,78 +1844,82 @@ public class AnalyticsDeleteMessagePersistenceImpl
 		OrderByComparator<AnalyticsDeleteMessage> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AnalyticsDeleteMessage.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AnalyticsDeleteMessage.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
-			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
-		}
-
-		List<AnalyticsDeleteMessage> list = null;
-
-		if (useFinderCache && productionMode) {
-			list = (List<AnalyticsDeleteMessage>)finderCache.getResult(
-				finderPath, finderArgs, this);
-		}
-
-		if (list == null) {
-			StringBundler sb = null;
-			String sql = null;
-
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					2 + (orderByComparator.getOrderByFields().length * 2));
-
-				sb.append(_SQL_SELECT_ANALYTICSDELETEMESSAGE);
-
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-
-				sql = sb.toString();
-			}
-			else {
-				sql = _SQL_SELECT_ANALYTICSDELETEMESSAGE;
-
-				sql = sql.concat(AnalyticsDeleteMessageModelImpl.ORDER_BY_JPQL);
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				list = (List<AnalyticsDeleteMessage>)QueryUtil.list(
-					query, getDialect(), start, end);
-
-				cacheResult(list);
-
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindAll;
+					finderArgs = FINDER_ARGS_EMPTY;
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindAll;
+				finderArgs = new Object[] {start, end, orderByComparator};
 			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			List<AnalyticsDeleteMessage> list = null;
+
+			if (useFinderCache) {
+				list = (List<AnalyticsDeleteMessage>)finderCache.getResult(
+					finderPath, finderArgs, this);
+			}
+
+			if (list == null) {
+				StringBundler sb = null;
+				String sql = null;
+
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						2 + (orderByComparator.getOrderByFields().length * 2));
+
+					sb.append(_SQL_SELECT_ANALYTICSDELETEMESSAGE);
+
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+
+					sql = sb.toString();
+				}
+				else {
+					sql = _SQL_SELECT_ANALYTICSDELETEMESSAGE;
+
+					sql = sql.concat(
+						AnalyticsDeleteMessageModelImpl.ORDER_BY_JPQL);
+				}
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					list = (List<AnalyticsDeleteMessage>)QueryUtil.list(
+						query, getDialect(), start, end);
+
+					cacheResult(list);
+
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
+			}
+
+			return list;
+		}
 	}
 
 	/**
@@ -1869,41 +1940,38 @@ public class AnalyticsDeleteMessagePersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AnalyticsDeleteMessage.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AnalyticsDeleteMessage.class))) {
 
-		Long count = null;
-
-		if (productionMode) {
-			count = (Long)finderCache.getResult(
+			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
-		}
 
-		if (count == null) {
-			Session session = null;
+			if (count == null) {
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(
-					_SQL_COUNT_ANALYTICSDELETEMESSAGE);
+					Query query = session.createQuery(
+						_SQL_COUNT_ANALYTICSDELETEMESSAGE);
 
-				count = (Long)query.uniqueResult();
+					count = (Long)query.uniqueResult();
 
-				if (productionMode) {
 					finderCache.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	@Override
