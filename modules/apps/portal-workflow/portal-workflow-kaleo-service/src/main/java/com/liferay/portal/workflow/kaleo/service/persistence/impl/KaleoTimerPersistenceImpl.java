@@ -5,8 +5,11 @@
 
 package com.liferay.portal.workflow.kaleo.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -175,118 +178,120 @@ public class KaleoTimerPersistenceImpl
 		OrderByComparator<KaleoTimer> orderByComparator,
 		boolean useFinderCache) {
 
-		kaleoClassName = Objects.toString(kaleoClassName, "");
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(KaleoTimer.class))) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			KaleoTimer.class);
+			kaleoClassName = Objects.toString(kaleoClassName, "");
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindByKCN_KCPK;
-				finderArgs = new Object[] {kaleoClassName, kaleoClassPK};
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindByKCN_KCPK;
+					finderArgs = new Object[] {kaleoClassName, kaleoClassPK};
+				}
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindByKCN_KCPK;
-			finderArgs = new Object[] {
-				kaleoClassName, kaleoClassPK, start, end, orderByComparator
-			};
-		}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindByKCN_KCPK;
+				finderArgs = new Object[] {
+					kaleoClassName, kaleoClassPK, start, end, orderByComparator
+				};
+			}
 
-		List<KaleoTimer> list = null;
+			List<KaleoTimer> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<KaleoTimer>)finderCache.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list = (List<KaleoTimer>)finderCache.getResult(
+					finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (KaleoTimer kaleoTimer : list) {
-					if (!kaleoClassName.equals(
-							kaleoTimer.getKaleoClassName()) ||
-						(kaleoClassPK != kaleoTimer.getKaleoClassPK())) {
+				if ((list != null) && !list.isEmpty()) {
+					for (KaleoTimer kaleoTimer : list) {
+						if (!kaleoClassName.equals(
+								kaleoTimer.getKaleoClassName()) ||
+							(kaleoClassPK != kaleoTimer.getKaleoClassPK())) {
 
-						list = null;
+							list = null;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					4 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(4);
-			}
-
-			sb.append(_SQL_SELECT_KALEOTIMER_WHERE);
-
-			boolean bindKaleoClassName = false;
-
-			if (kaleoClassName.isEmpty()) {
-				sb.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSNAME_3);
-			}
-			else {
-				bindKaleoClassName = true;
-
-				sb.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSNAME_2);
-			}
-
-			sb.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSPK_2);
-
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(KaleoTimerModelImpl.ORDER_BY_JPQL);
-			}
-
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindKaleoClassName) {
-					queryPos.add(kaleoClassName);
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						4 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(4);
 				}
 
-				queryPos.add(kaleoClassPK);
+				sb.append(_SQL_SELECT_KALEOTIMER_WHERE);
 
-				list = (List<KaleoTimer>)QueryUtil.list(
-					query, getDialect(), start, end);
+				boolean bindKaleoClassName = false;
 
-				cacheResult(list);
+				if (kaleoClassName.isEmpty()) {
+					sb.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSNAME_3);
+				}
+				else {
+					bindKaleoClassName = true;
 
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+					sb.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSNAME_2);
+				}
+
+				sb.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSPK_2);
+
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(KaleoTimerModelImpl.ORDER_BY_JPQL);
+				}
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindKaleoClassName) {
+						queryPos.add(kaleoClassName);
+					}
+
+					queryPos.add(kaleoClassPK);
+
+					list = (List<KaleoTimer>)QueryUtil.list(
+						query, getDialect(), start, end);
+
+					cacheResult(list);
+
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -612,74 +617,68 @@ public class KaleoTimerPersistenceImpl
 	 */
 	@Override
 	public int countByKCN_KCPK(String kaleoClassName, long kaleoClassPK) {
-		kaleoClassName = Objects.toString(kaleoClassName, "");
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(KaleoTimer.class))) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			KaleoTimer.class);
+			kaleoClassName = Objects.toString(kaleoClassName, "");
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByKCN_KCPK;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {kaleoClassName, kaleoClassPK};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByKCN_KCPK;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {kaleoClassName, kaleoClassPK};
+			if (count == null) {
+				StringBundler sb = new StringBundler(3);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_KALEOTIMER_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(3);
+				boolean bindKaleoClassName = false;
 
-			sb.append(_SQL_COUNT_KALEOTIMER_WHERE);
+				if (kaleoClassName.isEmpty()) {
+					sb.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSNAME_3);
+				}
+				else {
+					bindKaleoClassName = true;
 
-			boolean bindKaleoClassName = false;
-
-			if (kaleoClassName.isEmpty()) {
-				sb.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSNAME_3);
-			}
-			else {
-				bindKaleoClassName = true;
-
-				sb.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSNAME_2);
-			}
-
-			sb.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSPK_2);
-
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindKaleoClassName) {
-					queryPos.add(kaleoClassName);
+					sb.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSNAME_2);
 				}
 
-				queryPos.add(kaleoClassPK);
+				sb.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSPK_2);
 
-				count = (Long)query.uniqueResult();
+				String sql = sb.toString();
 
-				if (productionMode) {
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindKaleoClassName) {
+						queryPos.add(kaleoClassName);
+					}
+
+					queryPos.add(kaleoClassPK);
+
+					count = (Long)query.uniqueResult();
+
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_KCN_KCPK_KALEOCLASSNAME_2 =
@@ -782,127 +781,131 @@ public class KaleoTimerPersistenceImpl
 		int end, OrderByComparator<KaleoTimer> orderByComparator,
 		boolean useFinderCache) {
 
-		kaleoClassName = Objects.toString(kaleoClassName, "");
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(KaleoTimer.class))) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			KaleoTimer.class);
+			kaleoClassName = Objects.toString(kaleoClassName, "");
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath =
-					_finderPathWithoutPaginationFindByKCN_KCPK_Blocking;
+				if (useFinderCache) {
+					finderPath =
+						_finderPathWithoutPaginationFindByKCN_KCPK_Blocking;
+					finderArgs = new Object[] {
+						kaleoClassName, kaleoClassPK, blocking
+					};
+				}
+			}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindByKCN_KCPK_Blocking;
 				finderArgs = new Object[] {
-					kaleoClassName, kaleoClassPK, blocking
+					kaleoClassName, kaleoClassPK, blocking, start, end,
+					orderByComparator
 				};
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindByKCN_KCPK_Blocking;
-			finderArgs = new Object[] {
-				kaleoClassName, kaleoClassPK, blocking, start, end,
-				orderByComparator
-			};
-		}
 
-		List<KaleoTimer> list = null;
+			List<KaleoTimer> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<KaleoTimer>)finderCache.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list = (List<KaleoTimer>)finderCache.getResult(
+					finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (KaleoTimer kaleoTimer : list) {
-					if (!kaleoClassName.equals(
-							kaleoTimer.getKaleoClassName()) ||
-						(kaleoClassPK != kaleoTimer.getKaleoClassPK()) ||
-						(blocking != kaleoTimer.isBlocking())) {
+				if ((list != null) && !list.isEmpty()) {
+					for (KaleoTimer kaleoTimer : list) {
+						if (!kaleoClassName.equals(
+								kaleoTimer.getKaleoClassName()) ||
+							(kaleoClassPK != kaleoTimer.getKaleoClassPK()) ||
+							(blocking != kaleoTimer.isBlocking())) {
 
-						list = null;
+							list = null;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					5 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(5);
-			}
-
-			sb.append(_SQL_SELECT_KALEOTIMER_WHERE);
-
-			boolean bindKaleoClassName = false;
-
-			if (kaleoClassName.isEmpty()) {
-				sb.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSNAME_3);
-			}
-			else {
-				bindKaleoClassName = true;
-
-				sb.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSNAME_2);
-			}
-
-			sb.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSPK_2);
-
-			sb.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_BLOCKING_2);
-
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(KaleoTimerModelImpl.ORDER_BY_JPQL);
-			}
-
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindKaleoClassName) {
-					queryPos.add(kaleoClassName);
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						5 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(5);
 				}
 
-				queryPos.add(kaleoClassPK);
+				sb.append(_SQL_SELECT_KALEOTIMER_WHERE);
 
-				queryPos.add(blocking);
+				boolean bindKaleoClassName = false;
 
-				list = (List<KaleoTimer>)QueryUtil.list(
-					query, getDialect(), start, end);
+				if (kaleoClassName.isEmpty()) {
+					sb.append(
+						_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSNAME_3);
+				}
+				else {
+					bindKaleoClassName = true;
 
-				cacheResult(list);
+					sb.append(
+						_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSNAME_2);
+				}
 
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+				sb.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSPK_2);
+
+				sb.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_BLOCKING_2);
+
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(KaleoTimerModelImpl.ORDER_BY_JPQL);
+				}
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindKaleoClassName) {
+						queryPos.add(kaleoClassName);
+					}
+
+					queryPos.add(kaleoClassPK);
+
+					queryPos.add(blocking);
+
+					list = (List<KaleoTimer>)QueryUtil.list(
+						query, getDialect(), start, end);
+
+					cacheResult(list);
+
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -1251,78 +1254,76 @@ public class KaleoTimerPersistenceImpl
 	public int countByKCN_KCPK_Blocking(
 		String kaleoClassName, long kaleoClassPK, boolean blocking) {
 
-		kaleoClassName = Objects.toString(kaleoClassName, "");
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(KaleoTimer.class))) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			KaleoTimer.class);
+			kaleoClassName = Objects.toString(kaleoClassName, "");
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByKCN_KCPK_Blocking;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {
+				kaleoClassName, kaleoClassPK, blocking
+			};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByKCN_KCPK_Blocking;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {kaleoClassName, kaleoClassPK, blocking};
+			if (count == null) {
+				StringBundler sb = new StringBundler(4);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_KALEOTIMER_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(4);
+				boolean bindKaleoClassName = false;
 
-			sb.append(_SQL_COUNT_KALEOTIMER_WHERE);
+				if (kaleoClassName.isEmpty()) {
+					sb.append(
+						_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSNAME_3);
+				}
+				else {
+					bindKaleoClassName = true;
 
-			boolean bindKaleoClassName = false;
-
-			if (kaleoClassName.isEmpty()) {
-				sb.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSNAME_3);
-			}
-			else {
-				bindKaleoClassName = true;
-
-				sb.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSNAME_2);
-			}
-
-			sb.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSPK_2);
-
-			sb.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_BLOCKING_2);
-
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindKaleoClassName) {
-					queryPos.add(kaleoClassName);
+					sb.append(
+						_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSNAME_2);
 				}
 
-				queryPos.add(kaleoClassPK);
+				sb.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSPK_2);
 
-				queryPos.add(blocking);
+				sb.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_BLOCKING_2);
 
-				count = (Long)query.uniqueResult();
+				String sql = sb.toString();
 
-				if (productionMode) {
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindKaleoClassName) {
+						queryPos.add(kaleoClassName);
+					}
+
+					queryPos.add(kaleoClassPK);
+
+					queryPos.add(blocking);
+
+					count = (Long)query.uniqueResult();
+
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String
@@ -1356,12 +1357,20 @@ public class KaleoTimerPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(KaleoTimer kaleoTimer) {
-		if (kaleoTimer.getCtCollectionId() != 0) {
+		if ((kaleoTimer.getCtCollectionId() != 0) &&
+			(kaleoTimer.getCtCollectionId() !=
+				CTCollectionThreadLocal.getCTCollectionId())) {
+
 			return;
 		}
 
-		entityCache.putResult(
-			KaleoTimerImpl.class, kaleoTimer.getPrimaryKey(), kaleoTimer);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					kaleoTimer.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				KaleoTimerImpl.class, kaleoTimer.getPrimaryKey(), kaleoTimer);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -1381,14 +1390,23 @@ public class KaleoTimerPersistenceImpl
 		}
 
 		for (KaleoTimer kaleoTimer : kaleoTimers) {
-			if (kaleoTimer.getCtCollectionId() != 0) {
+			if ((kaleoTimer.getCtCollectionId() != 0) &&
+				(kaleoTimer.getCtCollectionId() !=
+					CTCollectionThreadLocal.getCTCollectionId())) {
+
 				continue;
 			}
 
-			if (entityCache.getResult(
-					KaleoTimerImpl.class, kaleoTimer.getPrimaryKey()) == null) {
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						kaleoTimer.getCtCollectionId() != 0)) {
 
-				cacheResult(kaleoTimer);
+				if (entityCache.getResult(
+						KaleoTimerImpl.class, kaleoTimer.getPrimaryKey()) ==
+							null) {
+
+					cacheResult(kaleoTimer);
+				}
 			}
 		}
 	}
@@ -1540,76 +1558,85 @@ public class KaleoTimerPersistenceImpl
 
 	@Override
 	public KaleoTimer updateImpl(KaleoTimer kaleoTimer) {
-		boolean isNew = kaleoTimer.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(kaleoTimer instanceof KaleoTimerModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = kaleoTimer.isNew();
 
-			if (ProxyUtil.isProxyClass(kaleoTimer.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(kaleoTimer);
+			if (!(kaleoTimer instanceof KaleoTimerModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in kaleoTimer proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(kaleoTimer.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						kaleoTimer);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom KaleoTimer implementation " +
-					kaleoTimer.getClass());
-		}
-
-		KaleoTimerModelImpl kaleoTimerModelImpl =
-			(KaleoTimerModelImpl)kaleoTimer;
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (kaleoTimer.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				kaleoTimer.setCreateDate(date);
-			}
-			else {
-				kaleoTimer.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!kaleoTimerModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				kaleoTimer.setModifiedDate(date);
-			}
-			else {
-				kaleoTimer.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(kaleoTimer)) {
-				if (!isNew) {
-					session.evict(
-						KaleoTimerImpl.class, kaleoTimer.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in kaleoTimer proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(kaleoTimer);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom KaleoTimer implementation " +
+						kaleoTimer.getClass());
 			}
-			else {
-				kaleoTimer = (KaleoTimer)session.merge(kaleoTimer);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (kaleoTimer.getCtCollectionId() != 0) {
+			KaleoTimerModelImpl kaleoTimerModelImpl =
+				(KaleoTimerModelImpl)kaleoTimer;
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (kaleoTimer.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					kaleoTimer.setCreateDate(date);
+				}
+				else {
+					kaleoTimer.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!kaleoTimerModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					kaleoTimer.setModifiedDate(date);
+				}
+				else {
+					kaleoTimer.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(kaleoTimer)) {
+					if (!isNew) {
+						session.evict(
+							KaleoTimerImpl.class,
+							kaleoTimer.getPrimaryKeyObj());
+					}
+
+					session.save(kaleoTimer);
+				}
+				else {
+					kaleoTimer = (KaleoTimer)session.merge(kaleoTimer);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				KaleoTimerImpl.class, kaleoTimerModelImpl, false, true);
+
 			if (isNew) {
 				kaleoTimer.setNew(false);
 			}
@@ -1618,17 +1645,6 @@ public class KaleoTimerPersistenceImpl
 
 			return kaleoTimer;
 		}
-
-		entityCache.putResult(
-			KaleoTimerImpl.class, kaleoTimerModelImpl, false, true);
-
-		if (isNew) {
-			kaleoTimer.setNew(false);
-		}
-
-		kaleoTimer.resetOriginalValues();
-
-		return kaleoTimer;
 	}
 
 	/**
@@ -1681,31 +1697,45 @@ public class KaleoTimerPersistenceImpl
 		if (ctPersistenceHelper.isProductionMode(
 				KaleoTimer.class, primaryKey)) {
 
-			return super.fetchByPrimaryKey(primaryKey);
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						false)) {
+
+				return super.fetchByPrimaryKey(primaryKey);
+			}
 		}
 
-		KaleoTimer kaleoTimer = null;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
 
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			kaleoTimer = (KaleoTimer)session.get(
+			KaleoTimer kaleoTimer = (KaleoTimer)entityCache.getResult(
 				KaleoTimerImpl.class, primaryKey);
 
 			if (kaleoTimer != null) {
-				cacheResult(kaleoTimer);
+				return kaleoTimer;
 			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		return kaleoTimer;
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				kaleoTimer = (KaleoTimer)session.get(
+					KaleoTimerImpl.class, primaryKey);
+
+				if (kaleoTimer != null) {
+					cacheResult(kaleoTimer);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			return kaleoTimer;
+		}
 	}
 
 	/**
@@ -1724,7 +1754,12 @@ public class KaleoTimerPersistenceImpl
 		Set<Serializable> primaryKeys) {
 
 		if (ctPersistenceHelper.isProductionMode(KaleoTimer.class)) {
-			return super.fetchByPrimaryKeys(primaryKeys);
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						false)) {
+
+				return super.fetchByPrimaryKeys(primaryKeys);
+			}
 		}
 
 		if (primaryKeys.isEmpty()) {
@@ -1745,6 +1780,36 @@ public class KaleoTimerPersistenceImpl
 				map.put(primaryKey, kaleoTimer);
 			}
 
+			return map;
+		}
+
+		Set<Serializable> uncachedPrimaryKeys = null;
+
+		EntityCache entityCache = getEntityCache();
+
+		for (Serializable primaryKey : primaryKeys) {
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						!ctPersistenceHelper.isProductionMode(
+							KaleoTimer.class, primaryKey))) {
+
+				KaleoTimer kaleoTimer = (KaleoTimer)entityCache.getResult(
+					KaleoTimerImpl.class, primaryKey);
+
+				if (kaleoTimer == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<>();
+					}
+
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, kaleoTimer);
+				}
+			}
+		}
+
+		if (uncachedPrimaryKeys == null) {
 			return map;
 		}
 
@@ -1873,78 +1938,80 @@ public class KaleoTimerPersistenceImpl
 		int start, int end, OrderByComparator<KaleoTimer> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			KaleoTimer.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(KaleoTimer.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
-			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
-		}
-
-		List<KaleoTimer> list = null;
-
-		if (useFinderCache && productionMode) {
-			list = (List<KaleoTimer>)finderCache.getResult(
-				finderPath, finderArgs, this);
-		}
-
-		if (list == null) {
-			StringBundler sb = null;
-			String sql = null;
-
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					2 + (orderByComparator.getOrderByFields().length * 2));
-
-				sb.append(_SQL_SELECT_KALEOTIMER);
-
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-
-				sql = sb.toString();
-			}
-			else {
-				sql = _SQL_SELECT_KALEOTIMER;
-
-				sql = sql.concat(KaleoTimerModelImpl.ORDER_BY_JPQL);
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				list = (List<KaleoTimer>)QueryUtil.list(
-					query, getDialect(), start, end);
-
-				cacheResult(list);
-
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindAll;
+					finderArgs = FINDER_ARGS_EMPTY;
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindAll;
+				finderArgs = new Object[] {start, end, orderByComparator};
 			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			List<KaleoTimer> list = null;
+
+			if (useFinderCache) {
+				list = (List<KaleoTimer>)finderCache.getResult(
+					finderPath, finderArgs, this);
+			}
+
+			if (list == null) {
+				StringBundler sb = null;
+				String sql = null;
+
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						2 + (orderByComparator.getOrderByFields().length * 2));
+
+					sb.append(_SQL_SELECT_KALEOTIMER);
+
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+
+					sql = sb.toString();
+				}
+				else {
+					sql = _SQL_SELECT_KALEOTIMER;
+
+					sql = sql.concat(KaleoTimerModelImpl.ORDER_BY_JPQL);
+				}
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					list = (List<KaleoTimer>)QueryUtil.list(
+						query, getDialect(), start, end);
+
+					cacheResult(list);
+
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
+			}
+
+			return list;
+		}
 	}
 
 	/**
@@ -1965,40 +2032,36 @@ public class KaleoTimerPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			KaleoTimer.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(KaleoTimer.class))) {
 
-		Long count = null;
-
-		if (productionMode) {
-			count = (Long)finderCache.getResult(
+			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
-		}
 
-		if (count == null) {
-			Session session = null;
+			if (count == null) {
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(_SQL_COUNT_KALEOTIMER);
+					Query query = session.createQuery(_SQL_COUNT_KALEOTIMER);
 
-				count = (Long)query.uniqueResult();
+					count = (Long)query.uniqueResult();
 
-				if (productionMode) {
 					finderCache.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	@Override
