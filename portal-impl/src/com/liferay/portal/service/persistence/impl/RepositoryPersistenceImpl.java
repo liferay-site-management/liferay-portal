@@ -5,8 +5,11 @@
 
 package com.liferay.portal.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -49,7 +52,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -698,102 +700,97 @@ public class RepositoryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						Repository.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Repository.class);
-
-		if (result instanceof Repository) {
-			Repository repository = (Repository)result;
-
-			if (!Objects.equals(uuid, repository.getUuid()) ||
-				(groupId != repository.getGroupId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Repository.class, repository.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_REPOSITORY_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof Repository) {
+				Repository repository = (Repository)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, repository.getUuid()) ||
+					(groupId != repository.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<Repository> list = query.list();
+				sb.append(_SQL_SELECT_REPOSITORY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					Repository repository = list.get(0);
+					bindUuid = true;
 
-					result = repository;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(repository);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<Repository> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						Repository repository = list.get(0);
+
+						result = repository;
+
+						cacheResult(repository);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Repository)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Repository)result;
+			}
 		}
 	}
 
@@ -2079,118 +2076,113 @@ public class RepositoryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, name, portletId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						Repository.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByG_N_P, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Repository.class);
-
-		if (result instanceof Repository) {
-			Repository repository = (Repository)result;
-
-			if ((groupId != repository.getGroupId()) ||
-				!Objects.equals(name, repository.getName()) ||
-				!Objects.equals(portletId, repository.getPortletId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Repository.class, repository.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_REPOSITORY_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_N_P_GROUPID_2);
-
-			boolean bindName = false;
-
-			if (name.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_N_P_NAME_3);
-			}
-			else {
-				bindName = true;
-
-				sb.append(_FINDER_COLUMN_G_N_P_NAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, name, portletId};
 			}
 
-			boolean bindPortletId = false;
+			Object result = null;
 
-			if (portletId.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_N_P_PORTLETID_3);
-			}
-			else {
-				bindPortletId = true;
-
-				sb.append(_FINDER_COLUMN_G_N_P_PORTLETID_2);
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByG_N_P, finderArgs, this);
 			}
 
-			String sql = sb.toString();
+			if (result instanceof Repository) {
+				Repository repository = (Repository)result;
 
-			Session session = null;
+				if ((groupId != repository.getGroupId()) ||
+					!Objects.equals(name, repository.getName()) ||
+					!Objects.equals(portletId, repository.getPortletId())) {
 
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				if (bindName) {
-					queryPos.add(name);
+					result = null;
 				}
+			}
 
-				if (bindPortletId) {
-					queryPos.add(portletId);
-				}
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				List<Repository> list = query.list();
+				sb.append(_SQL_SELECT_REPOSITORY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByG_N_P, finderArgs, list);
-					}
+				sb.append(_FINDER_COLUMN_G_N_P_GROUPID_2);
+
+				boolean bindName = false;
+
+				if (name.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_N_P_NAME_3);
 				}
 				else {
-					Repository repository = list.get(0);
+					bindName = true;
 
-					result = repository;
+					sb.append(_FINDER_COLUMN_G_N_P_NAME_2);
+				}
 
-					cacheResult(repository);
+				boolean bindPortletId = false;
+
+				if (portletId.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_N_P_PORTLETID_3);
+				}
+				else {
+					bindPortletId = true;
+
+					sb.append(_FINDER_COLUMN_G_N_P_PORTLETID_2);
+				}
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					if (bindName) {
+						queryPos.add(name);
+					}
+
+					if (bindPortletId) {
+						queryPos.add(portletId);
+					}
+
+					List<Repository> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByG_N_P, finderArgs, list);
+						}
+					}
+					else {
+						Repository repository = list.get(0);
+
+						result = repository;
+
+						cacheResult(repository);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Repository)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Repository)result;
+			}
 		}
 	}
 
@@ -2345,25 +2337,26 @@ public class RepositoryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(Repository repository) {
-		if (repository.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					repository.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				RepositoryImpl.class, repository.getPrimaryKey(), repository);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {repository.getUuid(), repository.getGroupId()},
+				repository);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_N_P,
+				new Object[] {
+					repository.getGroupId(), repository.getName(),
+					repository.getPortletId()
+				},
+				repository);
 		}
-
-		EntityCacheUtil.putResult(
-			RepositoryImpl.class, repository.getPrimaryKey(), repository);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {repository.getUuid(), repository.getGroupId()},
-			repository);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_N_P,
-			new Object[] {
-				repository.getGroupId(), repository.getName(),
-				repository.getPortletId()
-			},
-			repository);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2383,14 +2376,18 @@ public class RepositoryPersistenceImpl
 		}
 
 		for (Repository repository : repositories) {
-			if (repository.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(repository.getCtCollectionId() != 0) &&
+						(repository.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					RepositoryImpl.class, repository.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						RepositoryImpl.class, repository.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(repository);
+					cacheResult(repository);
+				}
 			}
 		}
 	}
@@ -2440,24 +2437,29 @@ public class RepositoryPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		RepositoryModelImpl repositoryModelImpl) {
 
-		Object[] args = new Object[] {
-			repositoryModelImpl.getUuid(), repositoryModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					repositoryModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByUUID_G, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G, args, repositoryModelImpl);
+			Object[] args = new Object[] {
+				repositoryModelImpl.getUuid(), repositoryModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			repositoryModelImpl.getGroupId(), repositoryModelImpl.getName(),
-			repositoryModelImpl.getPortletId()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G, args, repositoryModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByG_N_P, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_N_P, args, repositoryModelImpl);
+			args = new Object[] {
+				repositoryModelImpl.getGroupId(), repositoryModelImpl.getName(),
+				repositoryModelImpl.getPortletId()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByG_N_P, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_N_P, args, repositoryModelImpl);
+		}
 	}
 
 	/**
@@ -2571,82 +2573,93 @@ public class RepositoryPersistenceImpl
 
 	@Override
 	public Repository updateImpl(Repository repository) {
-		boolean isNew = repository.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(repository instanceof RepositoryModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = repository.isNew();
 
-			if (ProxyUtil.isProxyClass(repository.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(repository);
+			if (!(repository instanceof RepositoryModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in repository proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(repository.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						repository);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom Repository implementation " +
-					repository.getClass());
-		}
-
-		RepositoryModelImpl repositoryModelImpl =
-			(RepositoryModelImpl)repository;
-
-		if (Validator.isNull(repository.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			repository.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (repository.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				repository.setCreateDate(date);
-			}
-			else {
-				repository.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!repositoryModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				repository.setModifiedDate(date);
-			}
-			else {
-				repository.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(repository)) {
-				if (!isNew) {
-					session.evict(
-						RepositoryImpl.class, repository.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in repository proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(repository);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom Repository implementation " +
+						repository.getClass());
 			}
-			else {
-				repository = (Repository)session.merge(repository);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (repository.getCtCollectionId() != 0) {
+			RepositoryModelImpl repositoryModelImpl =
+				(RepositoryModelImpl)repository;
+
+			if (Validator.isNull(repository.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				repository.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (repository.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					repository.setCreateDate(date);
+				}
+				else {
+					repository.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!repositoryModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					repository.setModifiedDate(date);
+				}
+				else {
+					repository.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(repository)) {
+					if (!isNew) {
+						session.evict(
+							RepositoryImpl.class,
+							repository.getPrimaryKeyObj());
+					}
+
+					session.save(repository);
+				}
+				else {
+					repository = (Repository)session.merge(repository);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				RepositoryImpl.class, repositoryModelImpl, false, true);
+
+			cacheUniqueFindersCache(repositoryModelImpl);
+
 			if (isNew) {
 				repository.setNew(false);
 			}
@@ -2655,19 +2668,6 @@ public class RepositoryPersistenceImpl
 
 			return repository;
 		}
-
-		EntityCacheUtil.putResult(
-			RepositoryImpl.class, repositoryModelImpl, false, true);
-
-		cacheUniqueFindersCache(repositoryModelImpl);
-
-		if (isNew) {
-			repository.setNew(false);
-		}
-
-		repository.resetOriginalValues();
-
-		return repository;
 	}
 
 	/**
@@ -2717,34 +2717,13 @@ public class RepositoryPersistenceImpl
 	 */
 	@Override
 	public Repository fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				Repository.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						Repository.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		Repository repository = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			repository = (Repository)session.get(
-				RepositoryImpl.class, primaryKey);
-
-			if (repository != null) {
-				cacheResult(repository);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return repository;
 	}
 
 	/**
@@ -2762,91 +2741,13 @@ public class RepositoryPersistenceImpl
 	public Map<Serializable, Repository> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(Repository.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						Repository.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, Repository> map =
-			new HashMap<Serializable, Repository>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			Repository repository = fetchByPrimaryKey(primaryKey);
-
-			if (repository != null) {
-				map.put(primaryKey, repository);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (Repository repository : (List<Repository>)query.list()) {
-				map.put(repository.getPrimaryKeyObj(), repository);
-
-				cacheResult(repository);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

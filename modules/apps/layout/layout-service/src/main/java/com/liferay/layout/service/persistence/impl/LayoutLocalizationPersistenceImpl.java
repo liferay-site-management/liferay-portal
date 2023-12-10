@@ -13,8 +13,11 @@ import com.liferay.layout.model.impl.LayoutLocalizationModelImpl;
 import com.liferay.layout.service.persistence.LayoutLocalizationPersistence;
 import com.liferay.layout.service.persistence.LayoutLocalizationUtil;
 import com.liferay.layout.service.persistence.impl.constants.LayoutPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -50,7 +53,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -717,103 +719,98 @@ public class LayoutLocalizationPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						LayoutLocalization.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutLocalization.class);
-
-		if (result instanceof LayoutLocalization) {
-			LayoutLocalization layoutLocalization = (LayoutLocalization)result;
-
-			if (!Objects.equals(uuid, layoutLocalization.getUuid()) ||
-				(groupId != layoutLocalization.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						LayoutLocalization.class,
-						layoutLocalization.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_LAYOUTLOCALIZATION_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof LayoutLocalization) {
+				LayoutLocalization layoutLocalization =
+					(LayoutLocalization)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, layoutLocalization.getUuid()) ||
+					(groupId != layoutLocalization.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<LayoutLocalization> list = query.list();
+				sb.append(_SQL_SELECT_LAYOUTLOCALIZATION_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					LayoutLocalization layoutLocalization = list.get(0);
+					bindUuid = true;
 
-					result = layoutLocalization;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(layoutLocalization);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<LayoutLocalization> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						LayoutLocalization layoutLocalization = list.get(0);
+
+						result = layoutLocalization;
+
+						cacheResult(layoutLocalization);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (LayoutLocalization)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (LayoutLocalization)result;
+			}
 		}
 	}
 
@@ -2095,104 +2092,99 @@ public class LayoutLocalizationPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {languageId, plid};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						LayoutLocalization.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByL_P, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutLocalization.class);
-
-		if (result instanceof LayoutLocalization) {
-			LayoutLocalization layoutLocalization = (LayoutLocalization)result;
-
-			if (!Objects.equals(
-					languageId, layoutLocalization.getLanguageId()) ||
-				(plid != layoutLocalization.getPlid())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						LayoutLocalization.class,
-						layoutLocalization.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_LAYOUTLOCALIZATION_WHERE);
-
-			boolean bindLanguageId = false;
-
-			if (languageId.isEmpty()) {
-				sb.append(_FINDER_COLUMN_L_P_LANGUAGEID_3);
-			}
-			else {
-				bindLanguageId = true;
-
-				sb.append(_FINDER_COLUMN_L_P_LANGUAGEID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {languageId, plid};
 			}
 
-			sb.append(_FINDER_COLUMN_L_P_PLID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByL_P, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof LayoutLocalization) {
+				LayoutLocalization layoutLocalization =
+					(LayoutLocalization)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(
+						languageId, layoutLocalization.getLanguageId()) ||
+					(plid != layoutLocalization.getPlid())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindLanguageId) {
-					queryPos.add(languageId);
+					result = null;
 				}
+			}
 
-				queryPos.add(plid);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<LayoutLocalization> list = query.list();
+				sb.append(_SQL_SELECT_LAYOUTLOCALIZATION_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByL_P, finderArgs, list);
-					}
+				boolean bindLanguageId = false;
+
+				if (languageId.isEmpty()) {
+					sb.append(_FINDER_COLUMN_L_P_LANGUAGEID_3);
 				}
 				else {
-					LayoutLocalization layoutLocalization = list.get(0);
+					bindLanguageId = true;
 
-					result = layoutLocalization;
+					sb.append(_FINDER_COLUMN_L_P_LANGUAGEID_2);
+				}
 
-					cacheResult(layoutLocalization);
+				sb.append(_FINDER_COLUMN_L_P_PLID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindLanguageId) {
+						queryPos.add(languageId);
+					}
+
+					queryPos.add(plid);
+
+					List<LayoutLocalization> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByL_P, finderArgs, list);
+						}
+					}
+					else {
+						LayoutLocalization layoutLocalization = list.get(0);
+
+						result = layoutLocalization;
+
+						cacheResult(layoutLocalization);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (LayoutLocalization)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (LayoutLocalization)result;
+			}
 		}
 	}
 
@@ -2378,109 +2370,104 @@ public class LayoutLocalizationPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, languageId, plid};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						LayoutLocalization.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_L_P, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutLocalization.class);
-
-		if (result instanceof LayoutLocalization) {
-			LayoutLocalization layoutLocalization = (LayoutLocalization)result;
-
-			if ((groupId != layoutLocalization.getGroupId()) ||
-				!Objects.equals(
-					languageId, layoutLocalization.getLanguageId()) ||
-				(plid != layoutLocalization.getPlid())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						LayoutLocalization.class,
-						layoutLocalization.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_LAYOUTLOCALIZATION_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_L_P_GROUPID_2);
-
-			boolean bindLanguageId = false;
-
-			if (languageId.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_L_P_LANGUAGEID_3);
-			}
-			else {
-				bindLanguageId = true;
-
-				sb.append(_FINDER_COLUMN_G_L_P_LANGUAGEID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, languageId, plid};
 			}
 
-			sb.append(_FINDER_COLUMN_G_L_P_PLID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_L_P, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof LayoutLocalization) {
+				LayoutLocalization layoutLocalization =
+					(LayoutLocalization)result;
 
-			try {
-				session = openSession();
+				if ((groupId != layoutLocalization.getGroupId()) ||
+					!Objects.equals(
+						languageId, layoutLocalization.getLanguageId()) ||
+					(plid != layoutLocalization.getPlid())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				if (bindLanguageId) {
-					queryPos.add(languageId);
+					result = null;
 				}
+			}
 
-				queryPos.add(plid);
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				List<LayoutLocalization> list = query.list();
+				sb.append(_SQL_SELECT_LAYOUTLOCALIZATION_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_L_P, finderArgs, list);
-					}
+				sb.append(_FINDER_COLUMN_G_L_P_GROUPID_2);
+
+				boolean bindLanguageId = false;
+
+				if (languageId.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_L_P_LANGUAGEID_3);
 				}
 				else {
-					LayoutLocalization layoutLocalization = list.get(0);
+					bindLanguageId = true;
 
-					result = layoutLocalization;
+					sb.append(_FINDER_COLUMN_G_L_P_LANGUAGEID_2);
+				}
 
-					cacheResult(layoutLocalization);
+				sb.append(_FINDER_COLUMN_G_L_P_PLID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					if (bindLanguageId) {
+						queryPos.add(languageId);
+					}
+
+					queryPos.add(plid);
+
+					List<LayoutLocalization> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_L_P, finderArgs, list);
+						}
+					}
+					else {
+						LayoutLocalization layoutLocalization = list.get(0);
+
+						result = layoutLocalization;
+
+						cacheResult(layoutLocalization);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (LayoutLocalization)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (LayoutLocalization)result;
+			}
 		}
 	}
 
@@ -2621,35 +2608,39 @@ public class LayoutLocalizationPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(LayoutLocalization layoutLocalization) {
-		if (layoutLocalization.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					layoutLocalization.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				LayoutLocalizationImpl.class,
+				layoutLocalization.getPrimaryKey(), layoutLocalization);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					layoutLocalization.getUuid(),
+					layoutLocalization.getGroupId()
+				},
+				layoutLocalization);
+
+			finderCache.putResult(
+				_finderPathFetchByL_P,
+				new Object[] {
+					layoutLocalization.getLanguageId(),
+					layoutLocalization.getPlid()
+				},
+				layoutLocalization);
+
+			finderCache.putResult(
+				_finderPathFetchByG_L_P,
+				new Object[] {
+					layoutLocalization.getGroupId(),
+					layoutLocalization.getLanguageId(),
+					layoutLocalization.getPlid()
+				},
+				layoutLocalization);
 		}
-
-		entityCache.putResult(
-			LayoutLocalizationImpl.class, layoutLocalization.getPrimaryKey(),
-			layoutLocalization);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {
-				layoutLocalization.getUuid(), layoutLocalization.getGroupId()
-			},
-			layoutLocalization);
-
-		finderCache.putResult(
-			_finderPathFetchByL_P,
-			new Object[] {
-				layoutLocalization.getLanguageId(), layoutLocalization.getPlid()
-			},
-			layoutLocalization);
-
-		finderCache.putResult(
-			_finderPathFetchByG_L_P,
-			new Object[] {
-				layoutLocalization.getGroupId(),
-				layoutLocalization.getLanguageId(), layoutLocalization.getPlid()
-			},
-			layoutLocalization);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2670,15 +2661,18 @@ public class LayoutLocalizationPersistenceImpl
 		}
 
 		for (LayoutLocalization layoutLocalization : layoutLocalizations) {
-			if (layoutLocalization.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(layoutLocalization.getCtCollectionId() != 0) &&
+						(layoutLocalization.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					LayoutLocalizationImpl.class,
-					layoutLocalization.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						LayoutLocalizationImpl.class,
+						layoutLocalization.getPrimaryKey()) == null) {
 
-				cacheResult(layoutLocalization);
+					cacheResult(layoutLocalization);
+				}
 			}
 		}
 	}
@@ -2730,33 +2724,40 @@ public class LayoutLocalizationPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		LayoutLocalizationModelImpl layoutLocalizationModelImpl) {
 
-		Object[] args = new Object[] {
-			layoutLocalizationModelImpl.getUuid(),
-			layoutLocalizationModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					layoutLocalizationModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, layoutLocalizationModelImpl);
+			Object[] args = new Object[] {
+				layoutLocalizationModelImpl.getUuid(),
+				layoutLocalizationModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			layoutLocalizationModelImpl.getLanguageId(),
-			layoutLocalizationModelImpl.getPlid()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, layoutLocalizationModelImpl);
 
-		finderCache.putResult(_finderPathCountByL_P, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByL_P, args, layoutLocalizationModelImpl);
+			args = new Object[] {
+				layoutLocalizationModelImpl.getLanguageId(),
+				layoutLocalizationModelImpl.getPlid()
+			};
 
-		args = new Object[] {
-			layoutLocalizationModelImpl.getGroupId(),
-			layoutLocalizationModelImpl.getLanguageId(),
-			layoutLocalizationModelImpl.getPlid()
-		};
+			finderCache.putResult(_finderPathCountByL_P, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByL_P, args, layoutLocalizationModelImpl);
 
-		finderCache.putResult(_finderPathCountByG_L_P, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByG_L_P, args, layoutLocalizationModelImpl);
+			args = new Object[] {
+				layoutLocalizationModelImpl.getGroupId(),
+				layoutLocalizationModelImpl.getLanguageId(),
+				layoutLocalizationModelImpl.getPlid()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByG_L_P, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_L_P, args, layoutLocalizationModelImpl);
+		}
 	}
 
 	/**
@@ -2876,86 +2877,95 @@ public class LayoutLocalizationPersistenceImpl
 	public LayoutLocalization updateImpl(
 		LayoutLocalization layoutLocalization) {
 
-		boolean isNew = layoutLocalization.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(layoutLocalization instanceof LayoutLocalizationModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = layoutLocalization.isNew();
 
-			if (ProxyUtil.isProxyClass(layoutLocalization.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					layoutLocalization);
+			if (!(layoutLocalization instanceof LayoutLocalizationModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in layoutLocalization proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(layoutLocalization.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						layoutLocalization);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom LayoutLocalization implementation " +
-					layoutLocalization.getClass());
-		}
-
-		LayoutLocalizationModelImpl layoutLocalizationModelImpl =
-			(LayoutLocalizationModelImpl)layoutLocalization;
-
-		if (Validator.isNull(layoutLocalization.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			layoutLocalization.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (layoutLocalization.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				layoutLocalization.setCreateDate(date);
-			}
-			else {
-				layoutLocalization.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!layoutLocalizationModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				layoutLocalization.setModifiedDate(date);
-			}
-			else {
-				layoutLocalization.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(layoutLocalization)) {
-				if (!isNew) {
-					session.evict(
-						LayoutLocalizationImpl.class,
-						layoutLocalization.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in layoutLocalization proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(layoutLocalization);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom LayoutLocalization implementation " +
+						layoutLocalization.getClass());
 			}
-			else {
-				layoutLocalization = (LayoutLocalization)session.merge(
-					layoutLocalization);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (layoutLocalization.getCtCollectionId() != 0) {
+			LayoutLocalizationModelImpl layoutLocalizationModelImpl =
+				(LayoutLocalizationModelImpl)layoutLocalization;
+
+			if (Validator.isNull(layoutLocalization.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				layoutLocalization.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (layoutLocalization.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					layoutLocalization.setCreateDate(date);
+				}
+				else {
+					layoutLocalization.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!layoutLocalizationModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					layoutLocalization.setModifiedDate(date);
+				}
+				else {
+					layoutLocalization.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(layoutLocalization)) {
+					if (!isNew) {
+						session.evict(
+							LayoutLocalizationImpl.class,
+							layoutLocalization.getPrimaryKeyObj());
+					}
+
+					session.save(layoutLocalization);
+				}
+				else {
+					layoutLocalization = (LayoutLocalization)session.merge(
+						layoutLocalization);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				LayoutLocalizationImpl.class, layoutLocalizationModelImpl,
+				false, true);
+
+			cacheUniqueFindersCache(layoutLocalizationModelImpl);
+
 			if (isNew) {
 				layoutLocalization.setNew(false);
 			}
@@ -2964,20 +2974,6 @@ public class LayoutLocalizationPersistenceImpl
 
 			return layoutLocalization;
 		}
-
-		entityCache.putResult(
-			LayoutLocalizationImpl.class, layoutLocalizationModelImpl, false,
-			true);
-
-		cacheUniqueFindersCache(layoutLocalizationModelImpl);
-
-		if (isNew) {
-			layoutLocalization.setNew(false);
-		}
-
-		layoutLocalization.resetOriginalValues();
-
-		return layoutLocalization;
 	}
 
 	/**
@@ -3027,34 +3023,13 @@ public class LayoutLocalizationPersistenceImpl
 	 */
 	@Override
 	public LayoutLocalization fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				LayoutLocalization.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						LayoutLocalization.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		LayoutLocalization layoutLocalization = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			layoutLocalization = (LayoutLocalization)session.get(
-				LayoutLocalizationImpl.class, primaryKey);
-
-			if (layoutLocalization != null) {
-				cacheResult(layoutLocalization);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return layoutLocalization;
 	}
 
 	/**
@@ -3072,95 +3047,13 @@ public class LayoutLocalizationPersistenceImpl
 	public Map<Serializable, LayoutLocalization> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(LayoutLocalization.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						LayoutLocalization.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, LayoutLocalization> map =
-			new HashMap<Serializable, LayoutLocalization>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			LayoutLocalization layoutLocalization = fetchByPrimaryKey(
-				primaryKey);
-
-			if (layoutLocalization != null) {
-				map.put(primaryKey, layoutLocalization);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (LayoutLocalization layoutLocalization :
-					(List<LayoutLocalization>)query.list()) {
-
-				map.put(
-					layoutLocalization.getPrimaryKeyObj(), layoutLocalization);
-
-				cacheResult(layoutLocalization);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

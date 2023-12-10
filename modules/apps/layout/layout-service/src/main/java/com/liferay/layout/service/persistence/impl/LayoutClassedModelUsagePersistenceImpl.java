@@ -13,8 +13,11 @@ import com.liferay.layout.model.impl.LayoutClassedModelUsageModelImpl;
 import com.liferay.layout.service.persistence.LayoutClassedModelUsagePersistence;
 import com.liferay.layout.service.persistence.LayoutClassedModelUsageUtil;
 import com.liferay.layout.service.persistence.impl.constants.LayoutPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -50,7 +53,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -724,105 +726,99 @@ public class LayoutClassedModelUsagePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						LayoutClassedModelUsage.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutClassedModelUsage.class);
-
-		if (result instanceof LayoutClassedModelUsage) {
-			LayoutClassedModelUsage layoutClassedModelUsage =
-				(LayoutClassedModelUsage)result;
-
-			if (!Objects.equals(uuid, layoutClassedModelUsage.getUuid()) ||
-				(groupId != layoutClassedModelUsage.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class,
-						layoutClassedModelUsage.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_LAYOUTCLASSEDMODELUSAGE_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof LayoutClassedModelUsage) {
+				LayoutClassedModelUsage layoutClassedModelUsage =
+					(LayoutClassedModelUsage)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, layoutClassedModelUsage.getUuid()) ||
+					(groupId != layoutClassedModelUsage.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<LayoutClassedModelUsage> list = query.list();
+				sb.append(_SQL_SELECT_LAYOUTCLASSEDMODELUSAGE_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					LayoutClassedModelUsage layoutClassedModelUsage = list.get(
-						0);
+					bindUuid = true;
 
-					result = layoutClassedModelUsage;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(layoutClassedModelUsage);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<LayoutClassedModelUsage> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						LayoutClassedModelUsage layoutClassedModelUsage =
+							list.get(0);
+
+						result = layoutClassedModelUsage;
+
+						cacheResult(layoutClassedModelUsage);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (LayoutClassedModelUsage)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (LayoutClassedModelUsage)result;
+			}
 		}
 	}
 
@@ -5969,146 +5965,144 @@ public class LayoutClassedModelUsagePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {
-				classNameId, classPK, classedModelExternalReferenceCode,
-				containerKey, containerType, plid
-			};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						LayoutClassedModelUsage.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByCN_CPK_CMERC_CK_CT_P, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutClassedModelUsage.class);
-
-		if (result instanceof LayoutClassedModelUsage) {
-			LayoutClassedModelUsage layoutClassedModelUsage =
-				(LayoutClassedModelUsage)result;
-
-			if ((classNameId != layoutClassedModelUsage.getClassNameId()) ||
-				(classPK != layoutClassedModelUsage.getClassPK()) ||
-				!Objects.equals(
-					classedModelExternalReferenceCode,
-					layoutClassedModelUsage.
-						getClassedModelExternalReferenceCode()) ||
-				!Objects.equals(
-					containerKey, layoutClassedModelUsage.getContainerKey()) ||
-				(containerType != layoutClassedModelUsage.getContainerType()) ||
-				(plid != layoutClassedModelUsage.getPlid())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class,
-						layoutClassedModelUsage.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(8);
-
-			sb.append(_SQL_SELECT_LAYOUTCLASSEDMODELUSAGE_WHERE);
-
-			sb.append(_FINDER_COLUMN_CN_CPK_CMERC_CK_CT_P_CLASSNAMEID_2);
-
-			sb.append(_FINDER_COLUMN_CN_CPK_CMERC_CK_CT_P_CLASSPK_2);
-
-			boolean bindClassedModelExternalReferenceCode = false;
-
-			if (classedModelExternalReferenceCode.isEmpty()) {
-				sb.append(
-					_FINDER_COLUMN_CN_CPK_CMERC_CK_CT_P_CLASSEDMODELEXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindClassedModelExternalReferenceCode = true;
-
-				sb.append(
-					_FINDER_COLUMN_CN_CPK_CMERC_CK_CT_P_CLASSEDMODELEXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					classNameId, classPK, classedModelExternalReferenceCode,
+					containerKey, containerType, plid
+				};
 			}
 
-			boolean bindContainerKey = false;
+			Object result = null;
 
-			if (containerKey.isEmpty()) {
-				sb.append(_FINDER_COLUMN_CN_CPK_CMERC_CK_CT_P_CONTAINERKEY_3);
-			}
-			else {
-				bindContainerKey = true;
-
-				sb.append(_FINDER_COLUMN_CN_CPK_CMERC_CK_CT_P_CONTAINERKEY_2);
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByCN_CPK_CMERC_CK_CT_P, finderArgs, this);
 			}
 
-			sb.append(_FINDER_COLUMN_CN_CPK_CMERC_CK_CT_P_CONTAINERTYPE_2);
+			if (result instanceof LayoutClassedModelUsage) {
+				LayoutClassedModelUsage layoutClassedModelUsage =
+					(LayoutClassedModelUsage)result;
 
-			sb.append(_FINDER_COLUMN_CN_CPK_CMERC_CK_CT_P_PLID_2);
+				if ((classNameId != layoutClassedModelUsage.getClassNameId()) ||
+					(classPK != layoutClassedModelUsage.getClassPK()) ||
+					!Objects.equals(
+						classedModelExternalReferenceCode,
+						layoutClassedModelUsage.
+							getClassedModelExternalReferenceCode()) ||
+					!Objects.equals(
+						containerKey,
+						layoutClassedModelUsage.getContainerKey()) ||
+					(containerType !=
+						layoutClassedModelUsage.getContainerType()) ||
+					(plid != layoutClassedModelUsage.getPlid())) {
 
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(classNameId);
-
-				queryPos.add(classPK);
-
-				if (bindClassedModelExternalReferenceCode) {
-					queryPos.add(classedModelExternalReferenceCode);
+					result = null;
 				}
+			}
 
-				if (bindContainerKey) {
-					queryPos.add(containerKey);
-				}
+			if (result == null) {
+				StringBundler sb = new StringBundler(8);
 
-				queryPos.add(containerType);
+				sb.append(_SQL_SELECT_LAYOUTCLASSEDMODELUSAGE_WHERE);
 
-				queryPos.add(plid);
+				sb.append(_FINDER_COLUMN_CN_CPK_CMERC_CK_CT_P_CLASSNAMEID_2);
 
-				List<LayoutClassedModelUsage> list = query.list();
+				sb.append(_FINDER_COLUMN_CN_CPK_CMERC_CK_CT_P_CLASSPK_2);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByCN_CPK_CMERC_CK_CT_P, finderArgs,
-							list);
-					}
+				boolean bindClassedModelExternalReferenceCode = false;
+
+				if (classedModelExternalReferenceCode.isEmpty()) {
+					sb.append(
+						_FINDER_COLUMN_CN_CPK_CMERC_CK_CT_P_CLASSEDMODELEXTERNALREFERENCECODE_3);
 				}
 				else {
-					LayoutClassedModelUsage layoutClassedModelUsage = list.get(
-						0);
+					bindClassedModelExternalReferenceCode = true;
 
-					result = layoutClassedModelUsage;
+					sb.append(
+						_FINDER_COLUMN_CN_CPK_CMERC_CK_CT_P_CLASSEDMODELEXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(layoutClassedModelUsage);
+				boolean bindContainerKey = false;
+
+				if (containerKey.isEmpty()) {
+					sb.append(
+						_FINDER_COLUMN_CN_CPK_CMERC_CK_CT_P_CONTAINERKEY_3);
+				}
+				else {
+					bindContainerKey = true;
+
+					sb.append(
+						_FINDER_COLUMN_CN_CPK_CMERC_CK_CT_P_CONTAINERKEY_2);
+				}
+
+				sb.append(_FINDER_COLUMN_CN_CPK_CMERC_CK_CT_P_CONTAINERTYPE_2);
+
+				sb.append(_FINDER_COLUMN_CN_CPK_CMERC_CK_CT_P_PLID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(classNameId);
+
+					queryPos.add(classPK);
+
+					if (bindClassedModelExternalReferenceCode) {
+						queryPos.add(classedModelExternalReferenceCode);
+					}
+
+					if (bindContainerKey) {
+						queryPos.add(containerKey);
+					}
+
+					queryPos.add(containerType);
+
+					queryPos.add(plid);
+
+					List<LayoutClassedModelUsage> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByCN_CPK_CMERC_CK_CT_P,
+								finderArgs, list);
+						}
+					}
+					else {
+						LayoutClassedModelUsage layoutClassedModelUsage =
+							list.get(0);
+
+						result = layoutClassedModelUsage;
+
+						cacheResult(layoutClassedModelUsage);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (LayoutClassedModelUsage)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (LayoutClassedModelUsage)result;
+			}
 		}
 	}
 
@@ -6314,33 +6308,36 @@ public class LayoutClassedModelUsagePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(LayoutClassedModelUsage layoutClassedModelUsage) {
-		if (layoutClassedModelUsage.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					layoutClassedModelUsage.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				LayoutClassedModelUsageImpl.class,
+				layoutClassedModelUsage.getPrimaryKey(),
+				layoutClassedModelUsage);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					layoutClassedModelUsage.getUuid(),
+					layoutClassedModelUsage.getGroupId()
+				},
+				layoutClassedModelUsage);
+
+			finderCache.putResult(
+				_finderPathFetchByCN_CPK_CMERC_CK_CT_P,
+				new Object[] {
+					layoutClassedModelUsage.getClassNameId(),
+					layoutClassedModelUsage.getClassPK(),
+					layoutClassedModelUsage.
+						getClassedModelExternalReferenceCode(),
+					layoutClassedModelUsage.getContainerKey(),
+					layoutClassedModelUsage.getContainerType(),
+					layoutClassedModelUsage.getPlid()
+				},
+				layoutClassedModelUsage);
 		}
-
-		entityCache.putResult(
-			LayoutClassedModelUsageImpl.class,
-			layoutClassedModelUsage.getPrimaryKey(), layoutClassedModelUsage);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {
-				layoutClassedModelUsage.getUuid(),
-				layoutClassedModelUsage.getGroupId()
-			},
-			layoutClassedModelUsage);
-
-		finderCache.putResult(
-			_finderPathFetchByCN_CPK_CMERC_CK_CT_P,
-			new Object[] {
-				layoutClassedModelUsage.getClassNameId(),
-				layoutClassedModelUsage.getClassPK(),
-				layoutClassedModelUsage.getClassedModelExternalReferenceCode(),
-				layoutClassedModelUsage.getContainerKey(),
-				layoutClassedModelUsage.getContainerType(),
-				layoutClassedModelUsage.getPlid()
-			},
-			layoutClassedModelUsage);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -6365,15 +6362,18 @@ public class LayoutClassedModelUsagePersistenceImpl
 		for (LayoutClassedModelUsage layoutClassedModelUsage :
 				layoutClassedModelUsages) {
 
-			if (layoutClassedModelUsage.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(layoutClassedModelUsage.getCtCollectionId() != 0) &&
+						(layoutClassedModelUsage.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					LayoutClassedModelUsageImpl.class,
-					layoutClassedModelUsage.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						LayoutClassedModelUsageImpl.class,
+						layoutClassedModelUsage.getPrimaryKey()) == null) {
 
-				cacheResult(layoutClassedModelUsage);
+					cacheResult(layoutClassedModelUsage);
+				}
 			}
 		}
 	}
@@ -6430,30 +6430,38 @@ public class LayoutClassedModelUsagePersistenceImpl
 	protected void cacheUniqueFindersCache(
 		LayoutClassedModelUsageModelImpl layoutClassedModelUsageModelImpl) {
 
-		Object[] args = new Object[] {
-			layoutClassedModelUsageModelImpl.getUuid(),
-			layoutClassedModelUsageModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					layoutClassedModelUsageModelImpl.getCtCollectionId() !=
+						0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, layoutClassedModelUsageModelImpl);
+			Object[] args = new Object[] {
+				layoutClassedModelUsageModelImpl.getUuid(),
+				layoutClassedModelUsageModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			layoutClassedModelUsageModelImpl.getClassNameId(),
-			layoutClassedModelUsageModelImpl.getClassPK(),
-			layoutClassedModelUsageModelImpl.
-				getClassedModelExternalReferenceCode(),
-			layoutClassedModelUsageModelImpl.getContainerKey(),
-			layoutClassedModelUsageModelImpl.getContainerType(),
-			layoutClassedModelUsageModelImpl.getPlid()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args,
+				layoutClassedModelUsageModelImpl);
 
-		finderCache.putResult(
-			_finderPathCountByCN_CPK_CMERC_CK_CT_P, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByCN_CPK_CMERC_CK_CT_P, args,
-			layoutClassedModelUsageModelImpl);
+			args = new Object[] {
+				layoutClassedModelUsageModelImpl.getClassNameId(),
+				layoutClassedModelUsageModelImpl.getClassPK(),
+				layoutClassedModelUsageModelImpl.
+					getClassedModelExternalReferenceCode(),
+				layoutClassedModelUsageModelImpl.getContainerKey(),
+				layoutClassedModelUsageModelImpl.getContainerType(),
+				layoutClassedModelUsageModelImpl.getPlid()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByCN_CPK_CMERC_CK_CT_P, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByCN_CPK_CMERC_CK_CT_P, args,
+				layoutClassedModelUsageModelImpl);
+		}
 	}
 
 	/**
@@ -6574,89 +6582,100 @@ public class LayoutClassedModelUsagePersistenceImpl
 	public LayoutClassedModelUsage updateImpl(
 		LayoutClassedModelUsage layoutClassedModelUsage) {
 
-		boolean isNew = layoutClassedModelUsage.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(layoutClassedModelUsage instanceof
-				LayoutClassedModelUsageModelImpl)) {
+			boolean isNew = layoutClassedModelUsage.isNew();
 
-			InvocationHandler invocationHandler = null;
+			if (!(layoutClassedModelUsage instanceof
+					LayoutClassedModelUsageModelImpl)) {
 
-			if (ProxyUtil.isProxyClass(layoutClassedModelUsage.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					layoutClassedModelUsage);
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in layoutClassedModelUsage proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(
+						layoutClassedModelUsage.getClass())) {
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom LayoutClassedModelUsage implementation " +
-					layoutClassedModelUsage.getClass());
-		}
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						layoutClassedModelUsage);
 
-		LayoutClassedModelUsageModelImpl layoutClassedModelUsageModelImpl =
-			(LayoutClassedModelUsageModelImpl)layoutClassedModelUsage;
-
-		if (Validator.isNull(layoutClassedModelUsage.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			layoutClassedModelUsage.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (layoutClassedModelUsage.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				layoutClassedModelUsage.setCreateDate(date);
-			}
-			else {
-				layoutClassedModelUsage.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!layoutClassedModelUsageModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				layoutClassedModelUsage.setModifiedDate(date);
-			}
-			else {
-				layoutClassedModelUsage.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(layoutClassedModelUsage)) {
-				if (!isNew) {
-					session.evict(
-						LayoutClassedModelUsageImpl.class,
-						layoutClassedModelUsage.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in layoutClassedModelUsage proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(layoutClassedModelUsage);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom LayoutClassedModelUsage implementation " +
+						layoutClassedModelUsage.getClass());
 			}
-			else {
-				layoutClassedModelUsage =
-					(LayoutClassedModelUsage)session.merge(
-						layoutClassedModelUsage);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (layoutClassedModelUsage.getCtCollectionId() != 0) {
+			LayoutClassedModelUsageModelImpl layoutClassedModelUsageModelImpl =
+				(LayoutClassedModelUsageModelImpl)layoutClassedModelUsage;
+
+			if (Validator.isNull(layoutClassedModelUsage.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				layoutClassedModelUsage.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (layoutClassedModelUsage.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					layoutClassedModelUsage.setCreateDate(date);
+				}
+				else {
+					layoutClassedModelUsage.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!layoutClassedModelUsageModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					layoutClassedModelUsage.setModifiedDate(date);
+				}
+				else {
+					layoutClassedModelUsage.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(layoutClassedModelUsage)) {
+					if (!isNew) {
+						session.evict(
+							LayoutClassedModelUsageImpl.class,
+							layoutClassedModelUsage.getPrimaryKeyObj());
+					}
+
+					session.save(layoutClassedModelUsage);
+				}
+				else {
+					layoutClassedModelUsage =
+						(LayoutClassedModelUsage)session.merge(
+							layoutClassedModelUsage);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				LayoutClassedModelUsageImpl.class,
+				layoutClassedModelUsageModelImpl, false, true);
+
+			cacheUniqueFindersCache(layoutClassedModelUsageModelImpl);
+
 			if (isNew) {
 				layoutClassedModelUsage.setNew(false);
 			}
@@ -6665,20 +6684,6 @@ public class LayoutClassedModelUsagePersistenceImpl
 
 			return layoutClassedModelUsage;
 		}
-
-		entityCache.putResult(
-			LayoutClassedModelUsageImpl.class, layoutClassedModelUsageModelImpl,
-			false, true);
-
-		cacheUniqueFindersCache(layoutClassedModelUsageModelImpl);
-
-		if (isNew) {
-			layoutClassedModelUsage.setNew(false);
-		}
-
-		layoutClassedModelUsage.resetOriginalValues();
-
-		return layoutClassedModelUsage;
 	}
 
 	/**
@@ -6730,34 +6735,13 @@ public class LayoutClassedModelUsagePersistenceImpl
 	 */
 	@Override
 	public LayoutClassedModelUsage fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				LayoutClassedModelUsage.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						LayoutClassedModelUsage.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		LayoutClassedModelUsage layoutClassedModelUsage = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			layoutClassedModelUsage = (LayoutClassedModelUsage)session.get(
-				LayoutClassedModelUsageImpl.class, primaryKey);
-
-			if (layoutClassedModelUsage != null) {
-				cacheResult(layoutClassedModelUsage);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return layoutClassedModelUsage;
 	}
 
 	/**
@@ -6777,98 +6761,13 @@ public class LayoutClassedModelUsagePersistenceImpl
 	public Map<Serializable, LayoutClassedModelUsage> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(
-				LayoutClassedModelUsage.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						LayoutClassedModelUsage.class))) {
 
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, LayoutClassedModelUsage> map =
-			new HashMap<Serializable, LayoutClassedModelUsage>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			LayoutClassedModelUsage layoutClassedModelUsage = fetchByPrimaryKey(
-				primaryKey);
-
-			if (layoutClassedModelUsage != null) {
-				map.put(primaryKey, layoutClassedModelUsage);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (LayoutClassedModelUsage layoutClassedModelUsage :
-					(List<LayoutClassedModelUsage>)query.list()) {
-
-				map.put(
-					layoutClassedModelUsage.getPrimaryKeyObj(),
-					layoutClassedModelUsage);
-
-				cacheResult(layoutClassedModelUsage);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

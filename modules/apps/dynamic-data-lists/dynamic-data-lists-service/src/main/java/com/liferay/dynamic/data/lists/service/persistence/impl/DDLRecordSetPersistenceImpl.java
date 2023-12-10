@@ -13,8 +13,11 @@ import com.liferay.dynamic.data.lists.model.impl.DDLRecordSetModelImpl;
 import com.liferay.dynamic.data.lists.service.persistence.DDLRecordSetPersistence;
 import com.liferay.dynamic.data.lists.service.persistence.DDLRecordSetUtil;
 import com.liferay.dynamic.data.lists.service.persistence.impl.constants.DDLPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -54,7 +57,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -711,102 +713,97 @@ public class DDLRecordSetPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						DDLRecordSet.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDLRecordSet.class);
-
-		if (result instanceof DDLRecordSet) {
-			DDLRecordSet ddlRecordSet = (DDLRecordSet)result;
-
-			if (!Objects.equals(uuid, ddlRecordSet.getUuid()) ||
-				(groupId != ddlRecordSet.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						DDLRecordSet.class, ddlRecordSet.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_DDLRECORDSET_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof DDLRecordSet) {
+				DDLRecordSet ddlRecordSet = (DDLRecordSet)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, ddlRecordSet.getUuid()) ||
+					(groupId != ddlRecordSet.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<DDLRecordSet> list = query.list();
+				sb.append(_SQL_SELECT_DDLRECORDSET_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					DDLRecordSet ddlRecordSet = list.get(0);
+					bindUuid = true;
 
-					result = ddlRecordSet;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(ddlRecordSet);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<DDLRecordSet> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						DDLRecordSet ddlRecordSet = list.get(0);
+
+						result = ddlRecordSet;
+
+						cacheResult(ddlRecordSet);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (DDLRecordSet)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (DDLRecordSet)result;
+			}
 		}
 	}
 
@@ -3717,102 +3714,98 @@ public class DDLRecordSetPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, recordSetKey};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						DDLRecordSet.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_R, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDLRecordSet.class);
-
-		if (result instanceof DDLRecordSet) {
-			DDLRecordSet ddlRecordSet = (DDLRecordSet)result;
-
-			if ((groupId != ddlRecordSet.getGroupId()) ||
-				!Objects.equals(recordSetKey, ddlRecordSet.getRecordSetKey())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						DDLRecordSet.class, ddlRecordSet.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_DDLRECORDSET_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_R_GROUPID_2);
-
-			boolean bindRecordSetKey = false;
-
-			if (recordSetKey.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_R_RECORDSETKEY_3);
-			}
-			else {
-				bindRecordSetKey = true;
-
-				sb.append(_FINDER_COLUMN_G_R_RECORDSETKEY_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, recordSetKey};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_R, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof DDLRecordSet) {
+				DDLRecordSet ddlRecordSet = (DDLRecordSet)result;
 
-				Query query = session.createQuery(sql);
+				if ((groupId != ddlRecordSet.getGroupId()) ||
+					!Objects.equals(
+						recordSetKey, ddlRecordSet.getRecordSetKey())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				if (bindRecordSetKey) {
-					queryPos.add(recordSetKey);
+					result = null;
 				}
+			}
 
-				List<DDLRecordSet> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_R, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_DDLRECORDSET_WHERE);
+
+				sb.append(_FINDER_COLUMN_G_R_GROUPID_2);
+
+				boolean bindRecordSetKey = false;
+
+				if (recordSetKey.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_R_RECORDSETKEY_3);
 				}
 				else {
-					DDLRecordSet ddlRecordSet = list.get(0);
+					bindRecordSetKey = true;
 
-					result = ddlRecordSet;
+					sb.append(_FINDER_COLUMN_G_R_RECORDSETKEY_2);
+				}
 
-					cacheResult(ddlRecordSet);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					if (bindRecordSetKey) {
+						queryPos.add(recordSetKey);
+					}
+
+					List<DDLRecordSet> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_R, finderArgs, list);
+						}
+					}
+					else {
+						DDLRecordSet ddlRecordSet = list.get(0);
+
+						result = ddlRecordSet;
+
+						cacheResult(ddlRecordSet);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (DDLRecordSet)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (DDLRecordSet)result;
+			}
 		}
 	}
 
@@ -3943,24 +3936,28 @@ public class DDLRecordSetPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(DDLRecordSet ddlRecordSet) {
-		if (ddlRecordSet.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					ddlRecordSet.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				DDLRecordSetImpl.class, ddlRecordSet.getPrimaryKey(),
+				ddlRecordSet);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					ddlRecordSet.getUuid(), ddlRecordSet.getGroupId()
+				},
+				ddlRecordSet);
+
+			finderCache.putResult(
+				_finderPathFetchByG_R,
+				new Object[] {
+					ddlRecordSet.getGroupId(), ddlRecordSet.getRecordSetKey()
+				},
+				ddlRecordSet);
 		}
-
-		entityCache.putResult(
-			DDLRecordSetImpl.class, ddlRecordSet.getPrimaryKey(), ddlRecordSet);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {ddlRecordSet.getUuid(), ddlRecordSet.getGroupId()},
-			ddlRecordSet);
-
-		finderCache.putResult(
-			_finderPathFetchByG_R,
-			new Object[] {
-				ddlRecordSet.getGroupId(), ddlRecordSet.getRecordSetKey()
-			},
-			ddlRecordSet);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -3980,25 +3977,28 @@ public class DDLRecordSetPersistenceImpl
 		}
 
 		for (DDLRecordSet ddlRecordSet : ddlRecordSets) {
-			if (ddlRecordSet.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(ddlRecordSet.getCtCollectionId() != 0) &&
+						(ddlRecordSet.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			DDLRecordSet cachedDDLRecordSet =
-				(DDLRecordSet)entityCache.getResult(
-					DDLRecordSetImpl.class, ddlRecordSet.getPrimaryKey());
+				DDLRecordSet cachedDDLRecordSet =
+					(DDLRecordSet)entityCache.getResult(
+						DDLRecordSetImpl.class, ddlRecordSet.getPrimaryKey());
 
-			if (cachedDDLRecordSet == null) {
-				cacheResult(ddlRecordSet);
-			}
-			else {
-				DDLRecordSetModelImpl ddlRecordSetModelImpl =
-					(DDLRecordSetModelImpl)ddlRecordSet;
-				DDLRecordSetModelImpl cachedDDLRecordSetModelImpl =
-					(DDLRecordSetModelImpl)cachedDDLRecordSet;
+				if (cachedDDLRecordSet == null) {
+					cacheResult(ddlRecordSet);
+				}
+				else {
+					DDLRecordSetModelImpl ddlRecordSetModelImpl =
+						(DDLRecordSetModelImpl)ddlRecordSet;
+					DDLRecordSetModelImpl cachedDDLRecordSetModelImpl =
+						(DDLRecordSetModelImpl)cachedDDLRecordSet;
 
-				ddlRecordSetModelImpl.setDDMFormValues(
-					cachedDDLRecordSetModelImpl.getDDMFormValues());
+					ddlRecordSetModelImpl.setDDMFormValues(
+						cachedDDLRecordSetModelImpl.getDDMFormValues());
+				}
 			}
 		}
 	}
@@ -4048,22 +4048,29 @@ public class DDLRecordSetPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		DDLRecordSetModelImpl ddlRecordSetModelImpl) {
 
-		Object[] args = new Object[] {
-			ddlRecordSetModelImpl.getUuid(), ddlRecordSetModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					ddlRecordSetModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, ddlRecordSetModelImpl);
+			Object[] args = new Object[] {
+				ddlRecordSetModelImpl.getUuid(),
+				ddlRecordSetModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			ddlRecordSetModelImpl.getGroupId(),
-			ddlRecordSetModelImpl.getRecordSetKey()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, ddlRecordSetModelImpl);
 
-		finderCache.putResult(_finderPathCountByG_R, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByG_R, args, ddlRecordSetModelImpl);
+			args = new Object[] {
+				ddlRecordSetModelImpl.getGroupId(),
+				ddlRecordSetModelImpl.getRecordSetKey()
+			};
+
+			finderCache.putResult(_finderPathCountByG_R, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_R, args, ddlRecordSetModelImpl);
+		}
 	}
 
 	/**
@@ -4177,84 +4184,93 @@ public class DDLRecordSetPersistenceImpl
 
 	@Override
 	public DDLRecordSet updateImpl(DDLRecordSet ddlRecordSet) {
-		boolean isNew = ddlRecordSet.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(ddlRecordSet instanceof DDLRecordSetModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = ddlRecordSet.isNew();
 
-			if (ProxyUtil.isProxyClass(ddlRecordSet.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					ddlRecordSet);
+			if (!(ddlRecordSet instanceof DDLRecordSetModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in ddlRecordSet proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(ddlRecordSet.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						ddlRecordSet);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom DDLRecordSet implementation " +
-					ddlRecordSet.getClass());
-		}
-
-		DDLRecordSetModelImpl ddlRecordSetModelImpl =
-			(DDLRecordSetModelImpl)ddlRecordSet;
-
-		if (Validator.isNull(ddlRecordSet.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			ddlRecordSet.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (ddlRecordSet.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				ddlRecordSet.setCreateDate(date);
-			}
-			else {
-				ddlRecordSet.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!ddlRecordSetModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				ddlRecordSet.setModifiedDate(date);
-			}
-			else {
-				ddlRecordSet.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(ddlRecordSet)) {
-				if (!isNew) {
-					session.evict(
-						DDLRecordSetImpl.class,
-						ddlRecordSet.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in ddlRecordSet proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(ddlRecordSet);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom DDLRecordSet implementation " +
+						ddlRecordSet.getClass());
 			}
-			else {
-				ddlRecordSet = (DDLRecordSet)session.merge(ddlRecordSet);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (ddlRecordSet.getCtCollectionId() != 0) {
+			DDLRecordSetModelImpl ddlRecordSetModelImpl =
+				(DDLRecordSetModelImpl)ddlRecordSet;
+
+			if (Validator.isNull(ddlRecordSet.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				ddlRecordSet.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (ddlRecordSet.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					ddlRecordSet.setCreateDate(date);
+				}
+				else {
+					ddlRecordSet.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!ddlRecordSetModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					ddlRecordSet.setModifiedDate(date);
+				}
+				else {
+					ddlRecordSet.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(ddlRecordSet)) {
+					if (!isNew) {
+						session.evict(
+							DDLRecordSetImpl.class,
+							ddlRecordSet.getPrimaryKeyObj());
+					}
+
+					session.save(ddlRecordSet);
+				}
+				else {
+					ddlRecordSet = (DDLRecordSet)session.merge(ddlRecordSet);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				DDLRecordSetImpl.class, ddlRecordSetModelImpl, false, true);
+
+			cacheUniqueFindersCache(ddlRecordSetModelImpl);
+
 			if (isNew) {
 				ddlRecordSet.setNew(false);
 			}
@@ -4263,19 +4279,6 @@ public class DDLRecordSetPersistenceImpl
 
 			return ddlRecordSet;
 		}
-
-		entityCache.putResult(
-			DDLRecordSetImpl.class, ddlRecordSetModelImpl, false, true);
-
-		cacheUniqueFindersCache(ddlRecordSetModelImpl);
-
-		if (isNew) {
-			ddlRecordSet.setNew(false);
-		}
-
-		ddlRecordSet.resetOriginalValues();
-
-		return ddlRecordSet;
 	}
 
 	/**
@@ -4325,34 +4328,13 @@ public class DDLRecordSetPersistenceImpl
 	 */
 	@Override
 	public DDLRecordSet fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				DDLRecordSet.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						DDLRecordSet.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		DDLRecordSet ddlRecordSet = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			ddlRecordSet = (DDLRecordSet)session.get(
-				DDLRecordSetImpl.class, primaryKey);
-
-			if (ddlRecordSet != null) {
-				cacheResult(ddlRecordSet);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return ddlRecordSet;
 	}
 
 	/**
@@ -4370,91 +4352,13 @@ public class DDLRecordSetPersistenceImpl
 	public Map<Serializable, DDLRecordSet> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(DDLRecordSet.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						DDLRecordSet.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, DDLRecordSet> map =
-			new HashMap<Serializable, DDLRecordSet>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			DDLRecordSet ddlRecordSet = fetchByPrimaryKey(primaryKey);
-
-			if (ddlRecordSet != null) {
-				map.put(primaryKey, ddlRecordSet);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (DDLRecordSet ddlRecordSet : (List<DDLRecordSet>)query.list()) {
-				map.put(ddlRecordSet.getPrimaryKeyObj(), ddlRecordSet);
-
-				cacheResult(ddlRecordSet);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

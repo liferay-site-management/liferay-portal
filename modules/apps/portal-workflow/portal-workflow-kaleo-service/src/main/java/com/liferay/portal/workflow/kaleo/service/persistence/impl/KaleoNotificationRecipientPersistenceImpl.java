@@ -5,8 +5,11 @@
 
 package com.liferay.portal.workflow.kaleo.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -45,9 +48,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1718,14 +1719,15 @@ public class KaleoNotificationRecipientPersistenceImpl
 	public void cacheResult(
 		KaleoNotificationRecipient kaleoNotificationRecipient) {
 
-		if (kaleoNotificationRecipient.getCtCollectionId() != 0) {
-			return;
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					kaleoNotificationRecipient.getCtCollectionId() != 0)) {
 
-		entityCache.putResult(
-			KaleoNotificationRecipientImpl.class,
-			kaleoNotificationRecipient.getPrimaryKey(),
-			kaleoNotificationRecipient);
+			entityCache.putResult(
+				KaleoNotificationRecipientImpl.class,
+				kaleoNotificationRecipient.getPrimaryKey(),
+				kaleoNotificationRecipient);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -1750,15 +1752,18 @@ public class KaleoNotificationRecipientPersistenceImpl
 		for (KaleoNotificationRecipient kaleoNotificationRecipient :
 				kaleoNotificationRecipients) {
 
-			if (kaleoNotificationRecipient.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(kaleoNotificationRecipient.getCtCollectionId() != 0) &&
+						(kaleoNotificationRecipient.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					KaleoNotificationRecipientImpl.class,
-					kaleoNotificationRecipient.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						KaleoNotificationRecipientImpl.class,
+						kaleoNotificationRecipient.getPrimaryKey()) == null) {
 
-				cacheResult(kaleoNotificationRecipient);
+					cacheResult(kaleoNotificationRecipient);
+				}
 			}
 		}
 	}
@@ -1933,84 +1938,94 @@ public class KaleoNotificationRecipientPersistenceImpl
 	public KaleoNotificationRecipient updateImpl(
 		KaleoNotificationRecipient kaleoNotificationRecipient) {
 
-		boolean isNew = kaleoNotificationRecipient.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(kaleoNotificationRecipient instanceof
-				KaleoNotificationRecipientModelImpl)) {
+			boolean isNew = kaleoNotificationRecipient.isNew();
 
-			InvocationHandler invocationHandler = null;
+			if (!(kaleoNotificationRecipient instanceof
+					KaleoNotificationRecipientModelImpl)) {
 
-			if (ProxyUtil.isProxyClass(kaleoNotificationRecipient.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					kaleoNotificationRecipient);
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in kaleoNotificationRecipient proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(
+						kaleoNotificationRecipient.getClass())) {
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom KaleoNotificationRecipient implementation " +
-					kaleoNotificationRecipient.getClass());
-		}
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						kaleoNotificationRecipient);
 
-		KaleoNotificationRecipientModelImpl
-			kaleoNotificationRecipientModelImpl =
-				(KaleoNotificationRecipientModelImpl)kaleoNotificationRecipient;
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (kaleoNotificationRecipient.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				kaleoNotificationRecipient.setCreateDate(date);
-			}
-			else {
-				kaleoNotificationRecipient.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!kaleoNotificationRecipientModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				kaleoNotificationRecipient.setModifiedDate(date);
-			}
-			else {
-				kaleoNotificationRecipient.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(kaleoNotificationRecipient)) {
-				if (!isNew) {
-					session.evict(
-						KaleoNotificationRecipientImpl.class,
-						kaleoNotificationRecipient.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in kaleoNotificationRecipient proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(kaleoNotificationRecipient);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom KaleoNotificationRecipient implementation " +
+						kaleoNotificationRecipient.getClass());
 			}
-			else {
-				kaleoNotificationRecipient =
-					(KaleoNotificationRecipient)session.merge(
-						kaleoNotificationRecipient);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (kaleoNotificationRecipient.getCtCollectionId() != 0) {
+			KaleoNotificationRecipientModelImpl
+				kaleoNotificationRecipientModelImpl =
+					(KaleoNotificationRecipientModelImpl)
+						kaleoNotificationRecipient;
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (kaleoNotificationRecipient.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					kaleoNotificationRecipient.setCreateDate(date);
+				}
+				else {
+					kaleoNotificationRecipient.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!kaleoNotificationRecipientModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					kaleoNotificationRecipient.setModifiedDate(date);
+				}
+				else {
+					kaleoNotificationRecipient.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(kaleoNotificationRecipient)) {
+					if (!isNew) {
+						session.evict(
+							KaleoNotificationRecipientImpl.class,
+							kaleoNotificationRecipient.getPrimaryKeyObj());
+					}
+
+					session.save(kaleoNotificationRecipient);
+				}
+				else {
+					kaleoNotificationRecipient =
+						(KaleoNotificationRecipient)session.merge(
+							kaleoNotificationRecipient);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				KaleoNotificationRecipientImpl.class,
+				kaleoNotificationRecipientModelImpl, false, true);
+
 			if (isNew) {
 				kaleoNotificationRecipient.setNew(false);
 			}
@@ -2019,18 +2034,6 @@ public class KaleoNotificationRecipientPersistenceImpl
 
 			return kaleoNotificationRecipient;
 		}
-
-		entityCache.putResult(
-			KaleoNotificationRecipientImpl.class,
-			kaleoNotificationRecipientModelImpl, false, true);
-
-		if (isNew) {
-			kaleoNotificationRecipient.setNew(false);
-		}
-
-		kaleoNotificationRecipient.resetOriginalValues();
-
-		return kaleoNotificationRecipient;
 	}
 
 	/**
@@ -2084,35 +2087,13 @@ public class KaleoNotificationRecipientPersistenceImpl
 	public KaleoNotificationRecipient fetchByPrimaryKey(
 		Serializable primaryKey) {
 
-		if (ctPersistenceHelper.isProductionMode(
-				KaleoNotificationRecipient.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						KaleoNotificationRecipient.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		KaleoNotificationRecipient kaleoNotificationRecipient = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			kaleoNotificationRecipient =
-				(KaleoNotificationRecipient)session.get(
-					KaleoNotificationRecipientImpl.class, primaryKey);
-
-			if (kaleoNotificationRecipient != null) {
-				cacheResult(kaleoNotificationRecipient);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return kaleoNotificationRecipient;
 	}
 
 	/**
@@ -2132,98 +2113,13 @@ public class KaleoNotificationRecipientPersistenceImpl
 	public Map<Serializable, KaleoNotificationRecipient> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(
-				KaleoNotificationRecipient.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						KaleoNotificationRecipient.class))) {
 
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, KaleoNotificationRecipient> map =
-			new HashMap<Serializable, KaleoNotificationRecipient>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			KaleoNotificationRecipient kaleoNotificationRecipient =
-				fetchByPrimaryKey(primaryKey);
-
-			if (kaleoNotificationRecipient != null) {
-				map.put(primaryKey, kaleoNotificationRecipient);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (KaleoNotificationRecipient kaleoNotificationRecipient :
-					(List<KaleoNotificationRecipient>)query.list()) {
-
-				map.put(
-					kaleoNotificationRecipient.getPrimaryKeyObj(),
-					kaleoNotificationRecipient);
-
-				cacheResult(kaleoNotificationRecipient);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

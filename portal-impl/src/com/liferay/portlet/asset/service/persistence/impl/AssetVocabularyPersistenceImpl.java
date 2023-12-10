@@ -11,8 +11,11 @@ import com.liferay.asset.kernel.model.AssetVocabulary;
 import com.liferay.asset.kernel.model.AssetVocabularyTable;
 import com.liferay.asset.kernel.service.persistence.AssetVocabularyPersistence;
 import com.liferay.asset.kernel.service.persistence.AssetVocabularyUtil;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -54,7 +57,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -708,103 +710,97 @@ public class AssetVocabularyPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AssetVocabulary.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetVocabulary.class);
-
-		if (result instanceof AssetVocabulary) {
-			AssetVocabulary assetVocabulary = (AssetVocabulary)result;
-
-			if (!Objects.equals(uuid, assetVocabulary.getUuid()) ||
-				(groupId != assetVocabulary.getGroupId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class,
-						assetVocabulary.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_ASSETVOCABULARY_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof AssetVocabulary) {
+				AssetVocabulary assetVocabulary = (AssetVocabulary)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, assetVocabulary.getUuid()) ||
+					(groupId != assetVocabulary.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<AssetVocabulary> list = query.list();
+				sb.append(_SQL_SELECT_ASSETVOCABULARY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					AssetVocabulary assetVocabulary = list.get(0);
+					bindUuid = true;
 
-					result = assetVocabulary;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(assetVocabulary);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<AssetVocabulary> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						AssetVocabulary assetVocabulary = list.get(0);
+
+						result = assetVocabulary;
+
+						cacheResult(assetVocabulary);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (AssetVocabulary)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (AssetVocabulary)result;
+			}
 		}
 	}
 
@@ -3455,103 +3451,97 @@ public class AssetVocabularyPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, name};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AssetVocabulary.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByG_N, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetVocabulary.class);
-
-		if (result instanceof AssetVocabulary) {
-			AssetVocabulary assetVocabulary = (AssetVocabulary)result;
-
-			if ((groupId != assetVocabulary.getGroupId()) ||
-				!Objects.equals(name, assetVocabulary.getName())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class,
-						assetVocabulary.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_ASSETVOCABULARY_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_N_GROUPID_2);
-
-			boolean bindName = false;
-
-			if (name.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_N_NAME_3);
-			}
-			else {
-				bindName = true;
-
-				sb.append(_FINDER_COLUMN_G_N_NAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, name};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByG_N, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof AssetVocabulary) {
+				AssetVocabulary assetVocabulary = (AssetVocabulary)result;
 
-				Query query = session.createQuery(sql);
+				if ((groupId != assetVocabulary.getGroupId()) ||
+					!Objects.equals(name, assetVocabulary.getName())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				if (bindName) {
-					queryPos.add(StringUtil.toLowerCase(name));
+					result = null;
 				}
+			}
 
-				List<AssetVocabulary> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByG_N, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_ASSETVOCABULARY_WHERE);
+
+				sb.append(_FINDER_COLUMN_G_N_GROUPID_2);
+
+				boolean bindName = false;
+
+				if (name.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_N_NAME_3);
 				}
 				else {
-					AssetVocabulary assetVocabulary = list.get(0);
+					bindName = true;
 
-					result = assetVocabulary;
+					sb.append(_FINDER_COLUMN_G_N_NAME_2);
+				}
 
-					cacheResult(assetVocabulary);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					if (bindName) {
+						queryPos.add(StringUtil.toLowerCase(name));
+					}
+
+					List<AssetVocabulary> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByG_N, finderArgs, list);
+						}
+					}
+					else {
+						AssetVocabulary assetVocabulary = list.get(0);
+
+						result = assetVocabulary;
+
+						cacheResult(assetVocabulary);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (AssetVocabulary)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (AssetVocabulary)result;
+			}
 		}
 	}
 
@@ -6304,105 +6294,99 @@ public class AssetVocabularyPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {externalReferenceCode, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AssetVocabulary.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByERC_G, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetVocabulary.class);
-
-		if (result instanceof AssetVocabulary) {
-			AssetVocabulary assetVocabulary = (AssetVocabulary)result;
-
-			if (!Objects.equals(
-					externalReferenceCode,
-					assetVocabulary.getExternalReferenceCode()) ||
-				(groupId != assetVocabulary.getGroupId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class,
-						assetVocabulary.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_ASSETVOCABULARY_WHERE);
-
-			boolean bindExternalReferenceCode = false;
-
-			if (externalReferenceCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindExternalReferenceCode = true;
-
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {externalReferenceCode, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByERC_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof AssetVocabulary) {
+				AssetVocabulary assetVocabulary = (AssetVocabulary)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(
+						externalReferenceCode,
+						assetVocabulary.getExternalReferenceCode()) ||
+					(groupId != assetVocabulary.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindExternalReferenceCode) {
-					queryPos.add(externalReferenceCode);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<AssetVocabulary> list = query.list();
+				sb.append(_SQL_SELECT_ASSETVOCABULARY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByERC_G, finderArgs, list);
-					}
+				boolean bindExternalReferenceCode = false;
+
+				if (externalReferenceCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
 				}
 				else {
-					AssetVocabulary assetVocabulary = list.get(0);
+					bindExternalReferenceCode = true;
 
-					result = assetVocabulary;
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(assetVocabulary);
+				sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindExternalReferenceCode) {
+						queryPos.add(externalReferenceCode);
+					}
+
+					queryPos.add(groupId);
+
+					List<AssetVocabulary> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByERC_G, finderArgs, list);
+						}
+					}
+					else {
+						AssetVocabulary assetVocabulary = list.get(0);
+
+						result = assetVocabulary;
+
+						cacheResult(assetVocabulary);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (AssetVocabulary)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (AssetVocabulary)result;
+			}
 		}
 	}
 
@@ -6536,35 +6520,36 @@ public class AssetVocabularyPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(AssetVocabulary assetVocabulary) {
-		if (assetVocabulary.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					assetVocabulary.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				AssetVocabularyImpl.class, assetVocabulary.getPrimaryKey(),
+				assetVocabulary);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					assetVocabulary.getUuid(), assetVocabulary.getGroupId()
+				},
+				assetVocabulary);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_N,
+				new Object[] {
+					assetVocabulary.getGroupId(), assetVocabulary.getName()
+				},
+				assetVocabulary);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByERC_G,
+				new Object[] {
+					assetVocabulary.getExternalReferenceCode(),
+					assetVocabulary.getGroupId()
+				},
+				assetVocabulary);
 		}
-
-		EntityCacheUtil.putResult(
-			AssetVocabularyImpl.class, assetVocabulary.getPrimaryKey(),
-			assetVocabulary);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {
-				assetVocabulary.getUuid(), assetVocabulary.getGroupId()
-			},
-			assetVocabulary);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_N,
-			new Object[] {
-				assetVocabulary.getGroupId(), assetVocabulary.getName()
-			},
-			assetVocabulary);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByERC_G,
-			new Object[] {
-				assetVocabulary.getExternalReferenceCode(),
-				assetVocabulary.getGroupId()
-			},
-			assetVocabulary);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -6585,15 +6570,18 @@ public class AssetVocabularyPersistenceImpl
 		}
 
 		for (AssetVocabulary assetVocabulary : assetVocabularies) {
-			if (assetVocabulary.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(assetVocabulary.getCtCollectionId() != 0) &&
+						(assetVocabulary.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					AssetVocabularyImpl.class,
-					assetVocabulary.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						AssetVocabularyImpl.class,
+						assetVocabulary.getPrimaryKey()) == null) {
 
-				cacheResult(assetVocabulary);
+					cacheResult(assetVocabulary);
+				}
 			}
 		}
 	}
@@ -6645,34 +6633,40 @@ public class AssetVocabularyPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		AssetVocabularyModelImpl assetVocabularyModelImpl) {
 
-		Object[] args = new Object[] {
-			assetVocabularyModelImpl.getUuid(),
-			assetVocabularyModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					assetVocabularyModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByUUID_G, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G, args, assetVocabularyModelImpl);
+			Object[] args = new Object[] {
+				assetVocabularyModelImpl.getUuid(),
+				assetVocabularyModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			assetVocabularyModelImpl.getGroupId(),
-			assetVocabularyModelImpl.getName()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G, args, assetVocabularyModelImpl);
 
-		FinderCacheUtil.putResult(_finderPathCountByG_N, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_N, args, assetVocabularyModelImpl);
+			args = new Object[] {
+				assetVocabularyModelImpl.getGroupId(),
+				assetVocabularyModelImpl.getName()
+			};
 
-		args = new Object[] {
-			assetVocabularyModelImpl.getExternalReferenceCode(),
-			assetVocabularyModelImpl.getGroupId()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByG_N, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_N, args, assetVocabularyModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByERC_G, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByERC_G, args, assetVocabularyModelImpl);
+			args = new Object[] {
+				assetVocabularyModelImpl.getExternalReferenceCode(),
+				assetVocabularyModelImpl.getGroupId()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByERC_G, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByERC_G, args, assetVocabularyModelImpl);
+		}
 	}
 
 	/**
@@ -6787,115 +6781,127 @@ public class AssetVocabularyPersistenceImpl
 
 	@Override
 	public AssetVocabulary updateImpl(AssetVocabulary assetVocabulary) {
-		boolean isNew = assetVocabulary.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(assetVocabulary instanceof AssetVocabularyModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = assetVocabulary.isNew();
 
-			if (ProxyUtil.isProxyClass(assetVocabulary.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					assetVocabulary);
+			if (!(assetVocabulary instanceof AssetVocabularyModelImpl)) {
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(assetVocabulary.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						assetVocabulary);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in assetVocabulary proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in assetVocabulary proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom AssetVocabulary implementation " +
+						assetVocabulary.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom AssetVocabulary implementation " +
-					assetVocabulary.getClass());
-		}
+			AssetVocabularyModelImpl assetVocabularyModelImpl =
+				(AssetVocabularyModelImpl)assetVocabulary;
 
-		AssetVocabularyModelImpl assetVocabularyModelImpl =
-			(AssetVocabularyModelImpl)assetVocabulary;
+			if (Validator.isNull(assetVocabulary.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
 
-		if (Validator.isNull(assetVocabulary.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
+				assetVocabulary.setUuid(uuid);
+			}
 
-			assetVocabulary.setUuid(uuid);
-		}
+			if (Validator.isNull(assetVocabulary.getExternalReferenceCode())) {
+				assetVocabulary.setExternalReferenceCode(
+					assetVocabulary.getUuid());
+			}
+			else {
+				AssetVocabulary ercAssetVocabulary = fetchByERC_G(
+					assetVocabulary.getExternalReferenceCode(),
+					assetVocabulary.getGroupId());
 
-		if (Validator.isNull(assetVocabulary.getExternalReferenceCode())) {
-			assetVocabulary.setExternalReferenceCode(assetVocabulary.getUuid());
-		}
-		else {
-			AssetVocabulary ercAssetVocabulary = fetchByERC_G(
-				assetVocabulary.getExternalReferenceCode(),
-				assetVocabulary.getGroupId());
+				if (isNew) {
+					if (ercAssetVocabulary != null) {
+						throw new DuplicateAssetVocabularyExternalReferenceCodeException(
+							"Duplicate asset vocabulary with external reference code " +
+								assetVocabulary.getExternalReferenceCode() +
+									" and group " +
+										assetVocabulary.getGroupId());
+					}
+				}
+				else {
+					if ((ercAssetVocabulary != null) &&
+						(assetVocabulary.getVocabularyId() !=
+							ercAssetVocabulary.getVocabularyId())) {
 
-			if (isNew) {
-				if (ercAssetVocabulary != null) {
-					throw new DuplicateAssetVocabularyExternalReferenceCodeException(
-						"Duplicate asset vocabulary with external reference code " +
-							assetVocabulary.getExternalReferenceCode() +
-								" and group " + assetVocabulary.getGroupId());
+						throw new DuplicateAssetVocabularyExternalReferenceCodeException(
+							"Duplicate asset vocabulary with external reference code " +
+								assetVocabulary.getExternalReferenceCode() +
+									" and group " +
+										assetVocabulary.getGroupId());
+					}
 				}
 			}
-			else {
-				if ((ercAssetVocabulary != null) &&
-					(assetVocabulary.getVocabularyId() !=
-						ercAssetVocabulary.getVocabularyId())) {
 
-					throw new DuplicateAssetVocabularyExternalReferenceCodeException(
-						"Duplicate asset vocabulary with external reference code " +
-							assetVocabulary.getExternalReferenceCode() +
-								" and group " + assetVocabulary.getGroupId());
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (assetVocabulary.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					assetVocabulary.setCreateDate(date);
+				}
+				else {
+					assetVocabulary.setCreateDate(
+						serviceContext.getCreateDate(date));
 				}
 			}
-		}
 
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (assetVocabulary.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				assetVocabulary.setCreateDate(date);
-			}
-			else {
-				assetVocabulary.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!assetVocabularyModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				assetVocabulary.setModifiedDate(date);
-			}
-			else {
-				assetVocabulary.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(assetVocabulary)) {
-				if (!isNew) {
-					session.evict(
-						AssetVocabularyImpl.class,
-						assetVocabulary.getPrimaryKeyObj());
+			if (!assetVocabularyModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					assetVocabulary.setModifiedDate(date);
 				}
-
-				session.save(assetVocabulary);
+				else {
+					assetVocabulary.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
 			}
-			else {
-				assetVocabulary = (AssetVocabulary)session.merge(
-					assetVocabulary);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (assetVocabulary.getCtCollectionId() != 0) {
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(assetVocabulary)) {
+					if (!isNew) {
+						session.evict(
+							AssetVocabularyImpl.class,
+							assetVocabulary.getPrimaryKeyObj());
+					}
+
+					session.save(assetVocabulary);
+				}
+				else {
+					assetVocabulary = (AssetVocabulary)session.merge(
+						assetVocabulary);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				AssetVocabularyImpl.class, assetVocabularyModelImpl, false,
+				true);
+
+			cacheUniqueFindersCache(assetVocabularyModelImpl);
+
 			if (isNew) {
 				assetVocabulary.setNew(false);
 			}
@@ -6904,19 +6910,6 @@ public class AssetVocabularyPersistenceImpl
 
 			return assetVocabulary;
 		}
-
-		EntityCacheUtil.putResult(
-			AssetVocabularyImpl.class, assetVocabularyModelImpl, false, true);
-
-		cacheUniqueFindersCache(assetVocabularyModelImpl);
-
-		if (isNew) {
-			assetVocabulary.setNew(false);
-		}
-
-		assetVocabulary.resetOriginalValues();
-
-		return assetVocabulary;
 	}
 
 	/**
@@ -6966,34 +6959,13 @@ public class AssetVocabularyPersistenceImpl
 	 */
 	@Override
 	public AssetVocabulary fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				AssetVocabulary.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AssetVocabulary.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		AssetVocabulary assetVocabulary = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			assetVocabulary = (AssetVocabulary)session.get(
-				AssetVocabularyImpl.class, primaryKey);
-
-			if (assetVocabulary != null) {
-				cacheResult(assetVocabulary);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return assetVocabulary;
 	}
 
 	/**
@@ -7011,93 +6983,13 @@ public class AssetVocabularyPersistenceImpl
 	public Map<Serializable, AssetVocabulary> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(AssetVocabulary.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AssetVocabulary.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, AssetVocabulary> map =
-			new HashMap<Serializable, AssetVocabulary>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			AssetVocabulary assetVocabulary = fetchByPrimaryKey(primaryKey);
-
-			if (assetVocabulary != null) {
-				map.put(primaryKey, assetVocabulary);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (AssetVocabulary assetVocabulary :
-					(List<AssetVocabulary>)query.list()) {
-
-				map.put(assetVocabulary.getPrimaryKeyObj(), assetVocabulary);
-
-				cacheResult(assetVocabulary);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

@@ -13,8 +13,11 @@ import com.liferay.dynamic.data.mapping.model.impl.DDMStorageLinkModelImpl;
 import com.liferay.dynamic.data.mapping.service.persistence.DDMStorageLinkPersistence;
 import com.liferay.dynamic.data.mapping.service.persistence.DDMStorageLinkUtil;
 import com.liferay.dynamic.data.mapping.service.persistence.impl.constants.DDMPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -49,7 +52,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1296,85 +1298,80 @@ public class DDMStorageLinkPersistenceImpl
 	public DDMStorageLink fetchByClassPK(long classPK, boolean useFinderCache) {
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {classPK};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						DDMStorageLink.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByClassPK, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMStorageLink.class);
-
-		if (result instanceof DDMStorageLink) {
-			DDMStorageLink ddmStorageLink = (DDMStorageLink)result;
-
-			if (classPK != ddmStorageLink.getClassPK()) {
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {classPK};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						DDMStorageLink.class, ddmStorageLink.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByClassPK, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(3);
+			if (result instanceof DDMStorageLink) {
+				DDMStorageLink ddmStorageLink = (DDMStorageLink)result;
 
-			sb.append(_SQL_SELECT_DDMSTORAGELINK_WHERE);
+				if (classPK != ddmStorageLink.getClassPK()) {
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_CLASSPK_CLASSPK_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(3);
 
-			String sql = sb.toString();
+				sb.append(_SQL_SELECT_DDMSTORAGELINK_WHERE);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_CLASSPK_CLASSPK_2);
 
-			try {
-				session = openSession();
+				String sql = sb.toString();
 
-				Query query = session.createQuery(sql);
+				Session session = null;
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				try {
+					session = openSession();
 
-				queryPos.add(classPK);
+					Query query = session.createQuery(sql);
 
-				List<DDMStorageLink> list = query.list();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByClassPK, finderArgs, list);
+					queryPos.add(classPK);
+
+					List<DDMStorageLink> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByClassPK, finderArgs, list);
+						}
+					}
+					else {
+						DDMStorageLink ddmStorageLink = list.get(0);
+
+						result = ddmStorageLink;
+
+						cacheResult(ddmStorageLink);
 					}
 				}
-				else {
-					DDMStorageLink ddmStorageLink = list.get(0);
-
-					result = ddmStorageLink;
-
-					cacheResult(ddmStorageLink);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (DDMStorageLink)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (DDMStorageLink)result;
+			}
 		}
 	}
 
@@ -2871,17 +2868,18 @@ public class DDMStorageLinkPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(DDMStorageLink ddmStorageLink) {
-		if (ddmStorageLink.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					ddmStorageLink.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				DDMStorageLinkImpl.class, ddmStorageLink.getPrimaryKey(),
+				ddmStorageLink);
+
+			finderCache.putResult(
+				_finderPathFetchByClassPK,
+				new Object[] {ddmStorageLink.getClassPK()}, ddmStorageLink);
 		}
-
-		entityCache.putResult(
-			DDMStorageLinkImpl.class, ddmStorageLink.getPrimaryKey(),
-			ddmStorageLink);
-
-		finderCache.putResult(
-			_finderPathFetchByClassPK,
-			new Object[] {ddmStorageLink.getClassPK()}, ddmStorageLink);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2901,15 +2899,18 @@ public class DDMStorageLinkPersistenceImpl
 		}
 
 		for (DDMStorageLink ddmStorageLink : ddmStorageLinks) {
-			if (ddmStorageLink.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(ddmStorageLink.getCtCollectionId() != 0) &&
+						(ddmStorageLink.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					DDMStorageLinkImpl.class, ddmStorageLink.getPrimaryKey()) ==
-						null) {
+				if (entityCache.getResult(
+						DDMStorageLinkImpl.class,
+						ddmStorageLink.getPrimaryKey()) == null) {
 
-				cacheResult(ddmStorageLink);
+					cacheResult(ddmStorageLink);
+				}
 			}
 		}
 	}
@@ -2959,11 +2960,17 @@ public class DDMStorageLinkPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		DDMStorageLinkModelImpl ddmStorageLinkModelImpl) {
 
-		Object[] args = new Object[] {ddmStorageLinkModelImpl.getClassPK()};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					ddmStorageLinkModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByClassPK, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByClassPK, args, ddmStorageLinkModelImpl);
+			Object[] args = new Object[] {ddmStorageLinkModelImpl.getClassPK()};
+
+			finderCache.putResult(
+				_finderPathCountByClassPK, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByClassPK, args, ddmStorageLinkModelImpl);
+		}
 	}
 
 	/**
@@ -3078,60 +3085,69 @@ public class DDMStorageLinkPersistenceImpl
 
 	@Override
 	public DDMStorageLink updateImpl(DDMStorageLink ddmStorageLink) {
-		boolean isNew = ddmStorageLink.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(ddmStorageLink instanceof DDMStorageLinkModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = ddmStorageLink.isNew();
 
-			if (ProxyUtil.isProxyClass(ddmStorageLink.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					ddmStorageLink);
+			if (!(ddmStorageLink instanceof DDMStorageLinkModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in ddmStorageLink proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(ddmStorageLink.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						ddmStorageLink);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom DDMStorageLink implementation " +
-					ddmStorageLink.getClass());
-		}
-
-		DDMStorageLinkModelImpl ddmStorageLinkModelImpl =
-			(DDMStorageLinkModelImpl)ddmStorageLink;
-
-		if (Validator.isNull(ddmStorageLink.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			ddmStorageLink.setUuid(uuid);
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(ddmStorageLink)) {
-				if (!isNew) {
-					session.evict(
-						DDMStorageLinkImpl.class,
-						ddmStorageLink.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in ddmStorageLink proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(ddmStorageLink);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom DDMStorageLink implementation " +
+						ddmStorageLink.getClass());
 			}
-			else {
-				ddmStorageLink = (DDMStorageLink)session.merge(ddmStorageLink);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (ddmStorageLink.getCtCollectionId() != 0) {
+			DDMStorageLinkModelImpl ddmStorageLinkModelImpl =
+				(DDMStorageLinkModelImpl)ddmStorageLink;
+
+			if (Validator.isNull(ddmStorageLink.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				ddmStorageLink.setUuid(uuid);
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(ddmStorageLink)) {
+					if (!isNew) {
+						session.evict(
+							DDMStorageLinkImpl.class,
+							ddmStorageLink.getPrimaryKeyObj());
+					}
+
+					session.save(ddmStorageLink);
+				}
+				else {
+					ddmStorageLink = (DDMStorageLink)session.merge(
+						ddmStorageLink);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				DDMStorageLinkImpl.class, ddmStorageLinkModelImpl, false, true);
+
+			cacheUniqueFindersCache(ddmStorageLinkModelImpl);
+
 			if (isNew) {
 				ddmStorageLink.setNew(false);
 			}
@@ -3140,19 +3156,6 @@ public class DDMStorageLinkPersistenceImpl
 
 			return ddmStorageLink;
 		}
-
-		entityCache.putResult(
-			DDMStorageLinkImpl.class, ddmStorageLinkModelImpl, false, true);
-
-		cacheUniqueFindersCache(ddmStorageLinkModelImpl);
-
-		if (isNew) {
-			ddmStorageLink.setNew(false);
-		}
-
-		ddmStorageLink.resetOriginalValues();
-
-		return ddmStorageLink;
 	}
 
 	/**
@@ -3202,34 +3205,13 @@ public class DDMStorageLinkPersistenceImpl
 	 */
 	@Override
 	public DDMStorageLink fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				DDMStorageLink.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						DDMStorageLink.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		DDMStorageLink ddmStorageLink = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			ddmStorageLink = (DDMStorageLink)session.get(
-				DDMStorageLinkImpl.class, primaryKey);
-
-			if (ddmStorageLink != null) {
-				cacheResult(ddmStorageLink);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return ddmStorageLink;
 	}
 
 	/**
@@ -3247,93 +3229,13 @@ public class DDMStorageLinkPersistenceImpl
 	public Map<Serializable, DDMStorageLink> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(DDMStorageLink.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						DDMStorageLink.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, DDMStorageLink> map =
-			new HashMap<Serializable, DDMStorageLink>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			DDMStorageLink ddmStorageLink = fetchByPrimaryKey(primaryKey);
-
-			if (ddmStorageLink != null) {
-				map.put(primaryKey, ddmStorageLink);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (DDMStorageLink ddmStorageLink :
-					(List<DDMStorageLink>)query.list()) {
-
-				map.put(ddmStorageLink.getPrimaryKeyObj(), ddmStorageLink);
-
-				cacheResult(ddmStorageLink);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

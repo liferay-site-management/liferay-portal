@@ -13,8 +13,11 @@ import com.liferay.commerce.product.model.impl.CPSpecificationOptionModelImpl;
 import com.liferay.commerce.product.service.persistence.CPSpecificationOptionPersistence;
 import com.liferay.commerce.product.service.persistence.CPSpecificationOptionUtil;
 import com.liferay.commerce.product.service.persistence.impl.constants.CommercePersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -52,7 +55,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -4029,104 +4031,99 @@ public class CPSpecificationOptionPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, key};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPSpecificationOption.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByC_K, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPSpecificationOption.class);
-
-		if (result instanceof CPSpecificationOption) {
-			CPSpecificationOption cpSpecificationOption =
-				(CPSpecificationOption)result;
-
-			if ((companyId != cpSpecificationOption.getCompanyId()) ||
-				!Objects.equals(key, cpSpecificationOption.getKey())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						CPSpecificationOption.class,
-						cpSpecificationOption.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_CPSPECIFICATIONOPTION_WHERE);
-
-			sb.append(_FINDER_COLUMN_C_K_COMPANYID_2);
-
-			boolean bindKey = false;
-
-			if (key.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_K_KEY_3);
-			}
-			else {
-				bindKey = true;
-
-				sb.append(_FINDER_COLUMN_C_K_KEY_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {companyId, key};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByC_K, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof CPSpecificationOption) {
+				CPSpecificationOption cpSpecificationOption =
+					(CPSpecificationOption)result;
 
-				Query query = session.createQuery(sql);
+				if ((companyId != cpSpecificationOption.getCompanyId()) ||
+					!Objects.equals(key, cpSpecificationOption.getKey())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				if (bindKey) {
-					queryPos.add(key);
+					result = null;
 				}
+			}
 
-				List<CPSpecificationOption> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByC_K, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_CPSPECIFICATIONOPTION_WHERE);
+
+				sb.append(_FINDER_COLUMN_C_K_COMPANYID_2);
+
+				boolean bindKey = false;
+
+				if (key.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_K_KEY_3);
 				}
 				else {
-					CPSpecificationOption cpSpecificationOption = list.get(0);
+					bindKey = true;
 
-					result = cpSpecificationOption;
+					sb.append(_FINDER_COLUMN_C_K_KEY_2);
+				}
 
-					cacheResult(cpSpecificationOption);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					if (bindKey) {
+						queryPos.add(key);
+					}
+
+					List<CPSpecificationOption> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByC_K, finderArgs, list);
+						}
+					}
+					else {
+						CPSpecificationOption cpSpecificationOption = list.get(
+							0);
+
+						result = cpSpecificationOption;
+
+						cacheResult(cpSpecificationOption);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (CPSpecificationOption)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (CPSpecificationOption)result;
+			}
 		}
 	}
 
@@ -4257,21 +4254,22 @@ public class CPSpecificationOptionPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(CPSpecificationOption cpSpecificationOption) {
-		if (cpSpecificationOption.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					cpSpecificationOption.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				CPSpecificationOptionImpl.class,
+				cpSpecificationOption.getPrimaryKey(), cpSpecificationOption);
+
+			finderCache.putResult(
+				_finderPathFetchByC_K,
+				new Object[] {
+					cpSpecificationOption.getCompanyId(),
+					cpSpecificationOption.getKey()
+				},
+				cpSpecificationOption);
 		}
-
-		entityCache.putResult(
-			CPSpecificationOptionImpl.class,
-			cpSpecificationOption.getPrimaryKey(), cpSpecificationOption);
-
-		finderCache.putResult(
-			_finderPathFetchByC_K,
-			new Object[] {
-				cpSpecificationOption.getCompanyId(),
-				cpSpecificationOption.getKey()
-			},
-			cpSpecificationOption);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -4296,15 +4294,18 @@ public class CPSpecificationOptionPersistenceImpl
 		for (CPSpecificationOption cpSpecificationOption :
 				cpSpecificationOptions) {
 
-			if (cpSpecificationOption.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(cpSpecificationOption.getCtCollectionId() != 0) &&
+						(cpSpecificationOption.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					CPSpecificationOptionImpl.class,
-					cpSpecificationOption.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						CPSpecificationOptionImpl.class,
+						cpSpecificationOption.getPrimaryKey()) == null) {
 
-				cacheResult(cpSpecificationOption);
+					cacheResult(cpSpecificationOption);
+				}
 			}
 		}
 	}
@@ -4359,14 +4360,19 @@ public class CPSpecificationOptionPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		CPSpecificationOptionModelImpl cpSpecificationOptionModelImpl) {
 
-		Object[] args = new Object[] {
-			cpSpecificationOptionModelImpl.getCompanyId(),
-			cpSpecificationOptionModelImpl.getKey()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					cpSpecificationOptionModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByC_K, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByC_K, args, cpSpecificationOptionModelImpl);
+			Object[] args = new Object[] {
+				cpSpecificationOptionModelImpl.getCompanyId(),
+				cpSpecificationOptionModelImpl.getKey()
+			};
+
+			finderCache.putResult(_finderPathCountByC_K, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByC_K, args, cpSpecificationOptionModelImpl);
+		}
 	}
 
 	/**
@@ -4487,88 +4493,98 @@ public class CPSpecificationOptionPersistenceImpl
 	public CPSpecificationOption updateImpl(
 		CPSpecificationOption cpSpecificationOption) {
 
-		boolean isNew = cpSpecificationOption.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(cpSpecificationOption instanceof
-				CPSpecificationOptionModelImpl)) {
+			boolean isNew = cpSpecificationOption.isNew();
 
-			InvocationHandler invocationHandler = null;
+			if (!(cpSpecificationOption instanceof
+					CPSpecificationOptionModelImpl)) {
 
-			if (ProxyUtil.isProxyClass(cpSpecificationOption.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					cpSpecificationOption);
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in cpSpecificationOption proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(cpSpecificationOption.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						cpSpecificationOption);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom CPSpecificationOption implementation " +
-					cpSpecificationOption.getClass());
-		}
-
-		CPSpecificationOptionModelImpl cpSpecificationOptionModelImpl =
-			(CPSpecificationOptionModelImpl)cpSpecificationOption;
-
-		if (Validator.isNull(cpSpecificationOption.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			cpSpecificationOption.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (cpSpecificationOption.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				cpSpecificationOption.setCreateDate(date);
-			}
-			else {
-				cpSpecificationOption.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!cpSpecificationOptionModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				cpSpecificationOption.setModifiedDate(date);
-			}
-			else {
-				cpSpecificationOption.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(cpSpecificationOption)) {
-				if (!isNew) {
-					session.evict(
-						CPSpecificationOptionImpl.class,
-						cpSpecificationOption.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in cpSpecificationOption proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(cpSpecificationOption);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom CPSpecificationOption implementation " +
+						cpSpecificationOption.getClass());
 			}
-			else {
-				cpSpecificationOption = (CPSpecificationOption)session.merge(
-					cpSpecificationOption);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (cpSpecificationOption.getCtCollectionId() != 0) {
+			CPSpecificationOptionModelImpl cpSpecificationOptionModelImpl =
+				(CPSpecificationOptionModelImpl)cpSpecificationOption;
+
+			if (Validator.isNull(cpSpecificationOption.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				cpSpecificationOption.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (cpSpecificationOption.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					cpSpecificationOption.setCreateDate(date);
+				}
+				else {
+					cpSpecificationOption.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!cpSpecificationOptionModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					cpSpecificationOption.setModifiedDate(date);
+				}
+				else {
+					cpSpecificationOption.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(cpSpecificationOption)) {
+					if (!isNew) {
+						session.evict(
+							CPSpecificationOptionImpl.class,
+							cpSpecificationOption.getPrimaryKeyObj());
+					}
+
+					session.save(cpSpecificationOption);
+				}
+				else {
+					cpSpecificationOption =
+						(CPSpecificationOption)session.merge(
+							cpSpecificationOption);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				CPSpecificationOptionImpl.class, cpSpecificationOptionModelImpl,
+				false, true);
+
+			cacheUniqueFindersCache(cpSpecificationOptionModelImpl);
+
 			if (isNew) {
 				cpSpecificationOption.setNew(false);
 			}
@@ -4577,20 +4593,6 @@ public class CPSpecificationOptionPersistenceImpl
 
 			return cpSpecificationOption;
 		}
-
-		entityCache.putResult(
-			CPSpecificationOptionImpl.class, cpSpecificationOptionModelImpl,
-			false, true);
-
-		cacheUniqueFindersCache(cpSpecificationOptionModelImpl);
-
-		if (isNew) {
-			cpSpecificationOption.setNew(false);
-		}
-
-		cpSpecificationOption.resetOriginalValues();
-
-		return cpSpecificationOption;
 	}
 
 	/**
@@ -4641,34 +4643,13 @@ public class CPSpecificationOptionPersistenceImpl
 	 */
 	@Override
 	public CPSpecificationOption fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				CPSpecificationOption.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPSpecificationOption.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		CPSpecificationOption cpSpecificationOption = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			cpSpecificationOption = (CPSpecificationOption)session.get(
-				CPSpecificationOptionImpl.class, primaryKey);
-
-			if (cpSpecificationOption != null) {
-				cacheResult(cpSpecificationOption);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return cpSpecificationOption;
 	}
 
 	/**
@@ -4688,96 +4669,13 @@ public class CPSpecificationOptionPersistenceImpl
 	public Map<Serializable, CPSpecificationOption> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(CPSpecificationOption.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPSpecificationOption.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, CPSpecificationOption> map =
-			new HashMap<Serializable, CPSpecificationOption>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			CPSpecificationOption cpSpecificationOption = fetchByPrimaryKey(
-				primaryKey);
-
-			if (cpSpecificationOption != null) {
-				map.put(primaryKey, cpSpecificationOption);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (CPSpecificationOption cpSpecificationOption :
-					(List<CPSpecificationOption>)query.list()) {
-
-				map.put(
-					cpSpecificationOption.getPrimaryKeyObj(),
-					cpSpecificationOption);
-
-				cacheResult(cpSpecificationOption);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

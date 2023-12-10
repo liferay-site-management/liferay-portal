@@ -11,8 +11,11 @@ import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.model.AssetCategoryTable;
 import com.liferay.asset.kernel.service.persistence.AssetCategoryPersistence;
 import com.liferay.asset.kernel.service.persistence.AssetCategoryUtil;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -54,7 +57,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -706,102 +708,97 @@ public class AssetCategoryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AssetCategory.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetCategory.class);
-
-		if (result instanceof AssetCategory) {
-			AssetCategory assetCategory = (AssetCategory)result;
-
-			if (!Objects.equals(uuid, assetCategory.getUuid()) ||
-				(groupId != assetCategory.getGroupId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						AssetCategory.class, assetCategory.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_ASSETCATEGORY_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof AssetCategory) {
+				AssetCategory assetCategory = (AssetCategory)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, assetCategory.getUuid()) ||
+					(groupId != assetCategory.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<AssetCategory> list = query.list();
+				sb.append(_SQL_SELECT_ASSETCATEGORY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					AssetCategory assetCategory = list.get(0);
+					bindUuid = true;
 
-					result = assetCategory;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(assetCategory);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<AssetCategory> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						AssetCategory assetCategory = list.get(0);
+
+						result = assetCategory;
+
+						cacheResult(assetCategory);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (AssetCategory)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (AssetCategory)result;
+			}
 		}
 	}
 
@@ -11663,107 +11660,104 @@ public class AssetCategoryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {parentCategoryId, name, vocabularyId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AssetCategory.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByP_N_V, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetCategory.class);
-
-		if (result instanceof AssetCategory) {
-			AssetCategory assetCategory = (AssetCategory)result;
-
-			if ((parentCategoryId != assetCategory.getParentCategoryId()) ||
-				!Objects.equals(name, assetCategory.getName()) ||
-				(vocabularyId != assetCategory.getVocabularyId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						AssetCategory.class, assetCategory.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_ASSETCATEGORY_WHERE);
-
-			sb.append(_FINDER_COLUMN_P_N_V_PARENTCATEGORYID_2);
-
-			boolean bindName = false;
-
-			if (name.isEmpty()) {
-				sb.append(_FINDER_COLUMN_P_N_V_NAME_3);
-			}
-			else {
-				bindName = true;
-
-				sb.append(_FINDER_COLUMN_P_N_V_NAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					parentCategoryId, name, vocabularyId
+				};
 			}
 
-			sb.append(_FINDER_COLUMN_P_N_V_VOCABULARYID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByP_N_V, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof AssetCategory) {
+				AssetCategory assetCategory = (AssetCategory)result;
 
-			try {
-				session = openSession();
+				if ((parentCategoryId != assetCategory.getParentCategoryId()) ||
+					!Objects.equals(name, assetCategory.getName()) ||
+					(vocabularyId != assetCategory.getVocabularyId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(parentCategoryId);
-
-				if (bindName) {
-					queryPos.add(name);
+					result = null;
 				}
+			}
 
-				queryPos.add(vocabularyId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				List<AssetCategory> list = query.list();
+				sb.append(_SQL_SELECT_ASSETCATEGORY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByP_N_V, finderArgs, list);
-					}
+				sb.append(_FINDER_COLUMN_P_N_V_PARENTCATEGORYID_2);
+
+				boolean bindName = false;
+
+				if (name.isEmpty()) {
+					sb.append(_FINDER_COLUMN_P_N_V_NAME_3);
 				}
 				else {
-					AssetCategory assetCategory = list.get(0);
+					bindName = true;
 
-					result = assetCategory;
+					sb.append(_FINDER_COLUMN_P_N_V_NAME_2);
+				}
 
-					cacheResult(assetCategory);
+				sb.append(_FINDER_COLUMN_P_N_V_VOCABULARYID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(parentCategoryId);
+
+					if (bindName) {
+						queryPos.add(name);
+					}
+
+					queryPos.add(vocabularyId);
+
+					List<AssetCategory> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByP_N_V, finderArgs, list);
+						}
+					}
+					else {
+						AssetCategory assetCategory = list.get(0);
+
+						result = assetCategory;
+
+						cacheResult(assetCategory);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (AssetCategory)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (AssetCategory)result;
+			}
 		}
 	}
 
@@ -11956,104 +11950,99 @@ public class AssetCategoryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {externalReferenceCode, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AssetCategory.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByERC_G, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetCategory.class);
-
-		if (result instanceof AssetCategory) {
-			AssetCategory assetCategory = (AssetCategory)result;
-
-			if (!Objects.equals(
-					externalReferenceCode,
-					assetCategory.getExternalReferenceCode()) ||
-				(groupId != assetCategory.getGroupId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						AssetCategory.class, assetCategory.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_ASSETCATEGORY_WHERE);
-
-			boolean bindExternalReferenceCode = false;
-
-			if (externalReferenceCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindExternalReferenceCode = true;
-
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {externalReferenceCode, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByERC_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof AssetCategory) {
+				AssetCategory assetCategory = (AssetCategory)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(
+						externalReferenceCode,
+						assetCategory.getExternalReferenceCode()) ||
+					(groupId != assetCategory.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindExternalReferenceCode) {
-					queryPos.add(externalReferenceCode);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<AssetCategory> list = query.list();
+				sb.append(_SQL_SELECT_ASSETCATEGORY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByERC_G, finderArgs, list);
-					}
+				boolean bindExternalReferenceCode = false;
+
+				if (externalReferenceCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
 				}
 				else {
-					AssetCategory assetCategory = list.get(0);
+					bindExternalReferenceCode = true;
 
-					result = assetCategory;
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(assetCategory);
+				sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindExternalReferenceCode) {
+						queryPos.add(externalReferenceCode);
+					}
+
+					queryPos.add(groupId);
+
+					List<AssetCategory> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByERC_G, finderArgs, list);
+						}
+					}
+					else {
+						AssetCategory assetCategory = list.get(0);
+
+						result = assetCategory;
+
+						cacheResult(assetCategory);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (AssetCategory)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (AssetCategory)result;
+			}
 		}
 	}
 
@@ -12186,34 +12175,37 @@ public class AssetCategoryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(AssetCategory assetCategory) {
-		if (assetCategory.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					assetCategory.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				AssetCategoryImpl.class, assetCategory.getPrimaryKey(),
+				assetCategory);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					assetCategory.getUuid(), assetCategory.getGroupId()
+				},
+				assetCategory);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByP_N_V,
+				new Object[] {
+					assetCategory.getParentCategoryId(),
+					assetCategory.getName(), assetCategory.getVocabularyId()
+				},
+				assetCategory);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByERC_G,
+				new Object[] {
+					assetCategory.getExternalReferenceCode(),
+					assetCategory.getGroupId()
+				},
+				assetCategory);
 		}
-
-		EntityCacheUtil.putResult(
-			AssetCategoryImpl.class, assetCategory.getPrimaryKey(),
-			assetCategory);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {assetCategory.getUuid(), assetCategory.getGroupId()},
-			assetCategory);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByP_N_V,
-			new Object[] {
-				assetCategory.getParentCategoryId(), assetCategory.getName(),
-				assetCategory.getVocabularyId()
-			},
-			assetCategory);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByERC_G,
-			new Object[] {
-				assetCategory.getExternalReferenceCode(),
-				assetCategory.getGroupId()
-			},
-			assetCategory);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -12233,15 +12225,18 @@ public class AssetCategoryPersistenceImpl
 		}
 
 		for (AssetCategory assetCategory : assetCategories) {
-			if (assetCategory.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(assetCategory.getCtCollectionId() != 0) &&
+						(assetCategory.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					AssetCategoryImpl.class, assetCategory.getPrimaryKey()) ==
-						null) {
+				if (EntityCacheUtil.getResult(
+						AssetCategoryImpl.class,
+						assetCategory.getPrimaryKey()) == null) {
 
-				cacheResult(assetCategory);
+					cacheResult(assetCategory);
+				}
 			}
 		}
 	}
@@ -12292,36 +12287,41 @@ public class AssetCategoryPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		AssetCategoryModelImpl assetCategoryModelImpl) {
 
-		Object[] args = new Object[] {
-			assetCategoryModelImpl.getUuid(),
-			assetCategoryModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					assetCategoryModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByUUID_G, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G, args, assetCategoryModelImpl);
+			Object[] args = new Object[] {
+				assetCategoryModelImpl.getUuid(),
+				assetCategoryModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			assetCategoryModelImpl.getParentCategoryId(),
-			assetCategoryModelImpl.getName(),
-			assetCategoryModelImpl.getVocabularyId()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G, args, assetCategoryModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByP_N_V, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByP_N_V, args, assetCategoryModelImpl);
+			args = new Object[] {
+				assetCategoryModelImpl.getParentCategoryId(),
+				assetCategoryModelImpl.getName(),
+				assetCategoryModelImpl.getVocabularyId()
+			};
 
-		args = new Object[] {
-			assetCategoryModelImpl.getExternalReferenceCode(),
-			assetCategoryModelImpl.getGroupId()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByP_N_V, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByP_N_V, args, assetCategoryModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByERC_G, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByERC_G, args, assetCategoryModelImpl);
+			args = new Object[] {
+				assetCategoryModelImpl.getExternalReferenceCode(),
+				assetCategoryModelImpl.getGroupId()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByERC_G, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByERC_G, args, assetCategoryModelImpl);
+		}
 	}
 
 	/**
@@ -12435,113 +12435,122 @@ public class AssetCategoryPersistenceImpl
 
 	@Override
 	public AssetCategory updateImpl(AssetCategory assetCategory) {
-		boolean isNew = assetCategory.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(assetCategory instanceof AssetCategoryModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = assetCategory.isNew();
 
-			if (ProxyUtil.isProxyClass(assetCategory.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					assetCategory);
+			if (!(assetCategory instanceof AssetCategoryModelImpl)) {
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(assetCategory.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						assetCategory);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in assetCategory proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in assetCategory proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom AssetCategory implementation " +
+						assetCategory.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom AssetCategory implementation " +
-					assetCategory.getClass());
-		}
+			AssetCategoryModelImpl assetCategoryModelImpl =
+				(AssetCategoryModelImpl)assetCategory;
 
-		AssetCategoryModelImpl assetCategoryModelImpl =
-			(AssetCategoryModelImpl)assetCategory;
+			if (Validator.isNull(assetCategory.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
 
-		if (Validator.isNull(assetCategory.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
+				assetCategory.setUuid(uuid);
+			}
 
-			assetCategory.setUuid(uuid);
-		}
+			if (Validator.isNull(assetCategory.getExternalReferenceCode())) {
+				assetCategory.setExternalReferenceCode(assetCategory.getUuid());
+			}
+			else {
+				AssetCategory ercAssetCategory = fetchByERC_G(
+					assetCategory.getExternalReferenceCode(),
+					assetCategory.getGroupId());
 
-		if (Validator.isNull(assetCategory.getExternalReferenceCode())) {
-			assetCategory.setExternalReferenceCode(assetCategory.getUuid());
-		}
-		else {
-			AssetCategory ercAssetCategory = fetchByERC_G(
-				assetCategory.getExternalReferenceCode(),
-				assetCategory.getGroupId());
+				if (isNew) {
+					if (ercAssetCategory != null) {
+						throw new DuplicateAssetCategoryExternalReferenceCodeException(
+							"Duplicate asset category with external reference code " +
+								assetCategory.getExternalReferenceCode() +
+									" and group " + assetCategory.getGroupId());
+					}
+				}
+				else {
+					if ((ercAssetCategory != null) &&
+						(assetCategory.getCategoryId() !=
+							ercAssetCategory.getCategoryId())) {
 
-			if (isNew) {
-				if (ercAssetCategory != null) {
-					throw new DuplicateAssetCategoryExternalReferenceCodeException(
-						"Duplicate asset category with external reference code " +
-							assetCategory.getExternalReferenceCode() +
-								" and group " + assetCategory.getGroupId());
+						throw new DuplicateAssetCategoryExternalReferenceCodeException(
+							"Duplicate asset category with external reference code " +
+								assetCategory.getExternalReferenceCode() +
+									" and group " + assetCategory.getGroupId());
+					}
 				}
 			}
-			else {
-				if ((ercAssetCategory != null) &&
-					(assetCategory.getCategoryId() !=
-						ercAssetCategory.getCategoryId())) {
 
-					throw new DuplicateAssetCategoryExternalReferenceCodeException(
-						"Duplicate asset category with external reference code " +
-							assetCategory.getExternalReferenceCode() +
-								" and group " + assetCategory.getGroupId());
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (assetCategory.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					assetCategory.setCreateDate(date);
+				}
+				else {
+					assetCategory.setCreateDate(
+						serviceContext.getCreateDate(date));
 				}
 			}
-		}
 
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (assetCategory.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				assetCategory.setCreateDate(date);
-			}
-			else {
-				assetCategory.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!assetCategoryModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				assetCategory.setModifiedDate(date);
-			}
-			else {
-				assetCategory.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(assetCategory)) {
-				if (!isNew) {
-					session.evict(
-						AssetCategoryImpl.class,
-						assetCategory.getPrimaryKeyObj());
+			if (!assetCategoryModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					assetCategory.setModifiedDate(date);
 				}
-
-				session.save(assetCategory);
+				else {
+					assetCategory.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
 			}
-			else {
-				assetCategory = (AssetCategory)session.merge(assetCategory);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (assetCategory.getCtCollectionId() != 0) {
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(assetCategory)) {
+					if (!isNew) {
+						session.evict(
+							AssetCategoryImpl.class,
+							assetCategory.getPrimaryKeyObj());
+					}
+
+					session.save(assetCategory);
+				}
+				else {
+					assetCategory = (AssetCategory)session.merge(assetCategory);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				AssetCategoryImpl.class, assetCategoryModelImpl, false, true);
+
+			cacheUniqueFindersCache(assetCategoryModelImpl);
+
 			if (isNew) {
 				assetCategory.setNew(false);
 			}
@@ -12550,19 +12559,6 @@ public class AssetCategoryPersistenceImpl
 
 			return assetCategory;
 		}
-
-		EntityCacheUtil.putResult(
-			AssetCategoryImpl.class, assetCategoryModelImpl, false, true);
-
-		cacheUniqueFindersCache(assetCategoryModelImpl);
-
-		if (isNew) {
-			assetCategory.setNew(false);
-		}
-
-		assetCategory.resetOriginalValues();
-
-		return assetCategory;
 	}
 
 	/**
@@ -12612,34 +12608,13 @@ public class AssetCategoryPersistenceImpl
 	 */
 	@Override
 	public AssetCategory fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				AssetCategory.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AssetCategory.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		AssetCategory assetCategory = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			assetCategory = (AssetCategory)session.get(
-				AssetCategoryImpl.class, primaryKey);
-
-			if (assetCategory != null) {
-				cacheResult(assetCategory);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return assetCategory;
 	}
 
 	/**
@@ -12657,93 +12632,13 @@ public class AssetCategoryPersistenceImpl
 	public Map<Serializable, AssetCategory> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(AssetCategory.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AssetCategory.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, AssetCategory> map =
-			new HashMap<Serializable, AssetCategory>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			AssetCategory assetCategory = fetchByPrimaryKey(primaryKey);
-
-			if (assetCategory != null) {
-				map.put(primaryKey, assetCategory);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (AssetCategory assetCategory :
-					(List<AssetCategory>)query.list()) {
-
-				map.put(assetCategory.getPrimaryKeyObj(), assetCategory);
-
-				cacheResult(assetCategory);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

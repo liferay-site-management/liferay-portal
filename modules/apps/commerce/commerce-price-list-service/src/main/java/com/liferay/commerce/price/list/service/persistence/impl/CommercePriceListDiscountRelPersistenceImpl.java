@@ -13,8 +13,11 @@ import com.liferay.commerce.price.list.model.impl.CommercePriceListDiscountRelMo
 import com.liferay.commerce.price.list.service.persistence.CommercePriceListDiscountRelPersistence;
 import com.liferay.commerce.price.list.service.persistence.CommercePriceListDiscountRelUtil;
 import com.liferay.commerce.price.list.service.persistence.impl.constants.CommercePersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -50,7 +53,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1870,96 +1872,93 @@ public class CommercePriceListDiscountRelPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {commerceDiscountId, commercePriceListId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommercePriceListDiscountRel.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByCDI_CPI, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommercePriceListDiscountRel.class);
-
-		if (result instanceof CommercePriceListDiscountRel) {
-			CommercePriceListDiscountRel commercePriceListDiscountRel =
-				(CommercePriceListDiscountRel)result;
-
-			if ((commerceDiscountId !=
-					commercePriceListDiscountRel.getCommerceDiscountId()) ||
-				(commercePriceListId !=
-					commercePriceListDiscountRel.getCommercePriceListId())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					commerceDiscountId, commercePriceListId
+				};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						CommercePriceListDiscountRel.class,
-						commercePriceListDiscountRel.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByCDI_CPI, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
+			if (result instanceof CommercePriceListDiscountRel) {
+				CommercePriceListDiscountRel commercePriceListDiscountRel =
+					(CommercePriceListDiscountRel)result;
 
-			sb.append(_SQL_SELECT_COMMERCEPRICELISTDISCOUNTREL_WHERE);
+				if ((commerceDiscountId !=
+						commercePriceListDiscountRel.getCommerceDiscountId()) ||
+					(commercePriceListId !=
+						commercePriceListDiscountRel.
+							getCommercePriceListId())) {
 
-			sb.append(_FINDER_COLUMN_CDI_CPI_COMMERCEDISCOUNTID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_CDI_CPI_COMMERCEPRICELISTID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-			String sql = sb.toString();
+				sb.append(_SQL_SELECT_COMMERCEPRICELISTDISCOUNTREL_WHERE);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_CDI_CPI_COMMERCEDISCOUNTID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_CDI_CPI_COMMERCEPRICELISTID_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(commerceDiscountId);
+				try {
+					session = openSession();
 
-				queryPos.add(commercePriceListId);
+					Query query = session.createQuery(sql);
 
-				List<CommercePriceListDiscountRel> list = query.list();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByCDI_CPI, finderArgs, list);
+					queryPos.add(commerceDiscountId);
+
+					queryPos.add(commercePriceListId);
+
+					List<CommercePriceListDiscountRel> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByCDI_CPI, finderArgs, list);
+						}
+					}
+					else {
+						CommercePriceListDiscountRel
+							commercePriceListDiscountRel = list.get(0);
+
+						result = commercePriceListDiscountRel;
+
+						cacheResult(commercePriceListDiscountRel);
 					}
 				}
-				else {
-					CommercePriceListDiscountRel commercePriceListDiscountRel =
-						list.get(0);
-
-					result = commercePriceListDiscountRel;
-
-					cacheResult(commercePriceListDiscountRel);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (CommercePriceListDiscountRel)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (CommercePriceListDiscountRel)result;
+			}
 		}
 	}
 
@@ -2080,22 +2079,23 @@ public class CommercePriceListDiscountRelPersistenceImpl
 	public void cacheResult(
 		CommercePriceListDiscountRel commercePriceListDiscountRel) {
 
-		if (commercePriceListDiscountRel.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					commercePriceListDiscountRel.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				CommercePriceListDiscountRelImpl.class,
+				commercePriceListDiscountRel.getPrimaryKey(),
+				commercePriceListDiscountRel);
+
+			finderCache.putResult(
+				_finderPathFetchByCDI_CPI,
+				new Object[] {
+					commercePriceListDiscountRel.getCommerceDiscountId(),
+					commercePriceListDiscountRel.getCommercePriceListId()
+				},
+				commercePriceListDiscountRel);
 		}
-
-		entityCache.putResult(
-			CommercePriceListDiscountRelImpl.class,
-			commercePriceListDiscountRel.getPrimaryKey(),
-			commercePriceListDiscountRel);
-
-		finderCache.putResult(
-			_finderPathFetchByCDI_CPI,
-			new Object[] {
-				commercePriceListDiscountRel.getCommerceDiscountId(),
-				commercePriceListDiscountRel.getCommercePriceListId()
-			},
-			commercePriceListDiscountRel);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2120,15 +2120,19 @@ public class CommercePriceListDiscountRelPersistenceImpl
 		for (CommercePriceListDiscountRel commercePriceListDiscountRel :
 				commercePriceListDiscountRels) {
 
-			if (commercePriceListDiscountRel.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(commercePriceListDiscountRel.getCtCollectionId() !=
+							0) &&
+						(commercePriceListDiscountRel.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					CommercePriceListDiscountRelImpl.class,
-					commercePriceListDiscountRel.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						CommercePriceListDiscountRelImpl.class,
+						commercePriceListDiscountRel.getPrimaryKey()) == null) {
 
-				cacheResult(commercePriceListDiscountRel);
+					cacheResult(commercePriceListDiscountRel);
+				}
 			}
 		}
 	}
@@ -2190,15 +2194,22 @@ public class CommercePriceListDiscountRelPersistenceImpl
 		CommercePriceListDiscountRelModelImpl
 			commercePriceListDiscountRelModelImpl) {
 
-		Object[] args = new Object[] {
-			commercePriceListDiscountRelModelImpl.getCommerceDiscountId(),
-			commercePriceListDiscountRelModelImpl.getCommercePriceListId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					commercePriceListDiscountRelModelImpl.getCtCollectionId() !=
+						0)) {
 
-		finderCache.putResult(_finderPathCountByCDI_CPI, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByCDI_CPI, args,
-			commercePriceListDiscountRelModelImpl);
+			Object[] args = new Object[] {
+				commercePriceListDiscountRelModelImpl.getCommerceDiscountId(),
+				commercePriceListDiscountRelModelImpl.getCommercePriceListId()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByCDI_CPI, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByCDI_CPI, args,
+				commercePriceListDiscountRelModelImpl);
+		}
 	}
 
 	/**
@@ -2325,93 +2336,106 @@ public class CommercePriceListDiscountRelPersistenceImpl
 	public CommercePriceListDiscountRel updateImpl(
 		CommercePriceListDiscountRel commercePriceListDiscountRel) {
 
-		boolean isNew = commercePriceListDiscountRel.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(commercePriceListDiscountRel instanceof
-				CommercePriceListDiscountRelModelImpl)) {
+			boolean isNew = commercePriceListDiscountRel.isNew();
 
-			InvocationHandler invocationHandler = null;
+			if (!(commercePriceListDiscountRel instanceof
+					CommercePriceListDiscountRelModelImpl)) {
 
-			if (ProxyUtil.isProxyClass(
-					commercePriceListDiscountRel.getClass())) {
+				InvocationHandler invocationHandler = null;
 
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					commercePriceListDiscountRel);
+				if (ProxyUtil.isProxyClass(
+						commercePriceListDiscountRel.getClass())) {
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in commercePriceListDiscountRel proxy " +
-						invocationHandler.getClass());
-			}
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						commercePriceListDiscountRel);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom CommercePriceListDiscountRel implementation " +
-					commercePriceListDiscountRel.getClass());
-		}
-
-		CommercePriceListDiscountRelModelImpl
-			commercePriceListDiscountRelModelImpl =
-				(CommercePriceListDiscountRelModelImpl)
-					commercePriceListDiscountRel;
-
-		if (Validator.isNull(commercePriceListDiscountRel.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			commercePriceListDiscountRel.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (commercePriceListDiscountRel.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				commercePriceListDiscountRel.setCreateDate(date);
-			}
-			else {
-				commercePriceListDiscountRel.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!commercePriceListDiscountRelModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				commercePriceListDiscountRel.setModifiedDate(date);
-			}
-			else {
-				commercePriceListDiscountRel.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(commercePriceListDiscountRel)) {
-				if (!isNew) {
-					session.evict(
-						CommercePriceListDiscountRelImpl.class,
-						commercePriceListDiscountRel.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in commercePriceListDiscountRel proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(commercePriceListDiscountRel);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom CommercePriceListDiscountRel implementation " +
+						commercePriceListDiscountRel.getClass());
 			}
-			else {
-				commercePriceListDiscountRel =
-					(CommercePriceListDiscountRel)session.merge(
-						commercePriceListDiscountRel);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (commercePriceListDiscountRel.getCtCollectionId() != 0) {
+			CommercePriceListDiscountRelModelImpl
+				commercePriceListDiscountRelModelImpl =
+					(CommercePriceListDiscountRelModelImpl)
+						commercePriceListDiscountRel;
+
+			if (Validator.isNull(commercePriceListDiscountRel.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				commercePriceListDiscountRel.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew &&
+				(commercePriceListDiscountRel.getCreateDate() == null)) {
+
+				if (serviceContext == null) {
+					commercePriceListDiscountRel.setCreateDate(date);
+				}
+				else {
+					commercePriceListDiscountRel.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!commercePriceListDiscountRelModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					commercePriceListDiscountRel.setModifiedDate(date);
+				}
+				else {
+					commercePriceListDiscountRel.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(
+						commercePriceListDiscountRel)) {
+
+					if (!isNew) {
+						session.evict(
+							CommercePriceListDiscountRelImpl.class,
+							commercePriceListDiscountRel.getPrimaryKeyObj());
+					}
+
+					session.save(commercePriceListDiscountRel);
+				}
+				else {
+					commercePriceListDiscountRel =
+						(CommercePriceListDiscountRel)session.merge(
+							commercePriceListDiscountRel);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				CommercePriceListDiscountRelImpl.class,
+				commercePriceListDiscountRelModelImpl, false, true);
+
+			cacheUniqueFindersCache(commercePriceListDiscountRelModelImpl);
+
 			if (isNew) {
 				commercePriceListDiscountRel.setNew(false);
 			}
@@ -2420,20 +2444,6 @@ public class CommercePriceListDiscountRelPersistenceImpl
 
 			return commercePriceListDiscountRel;
 		}
-
-		entityCache.putResult(
-			CommercePriceListDiscountRelImpl.class,
-			commercePriceListDiscountRelModelImpl, false, true);
-
-		cacheUniqueFindersCache(commercePriceListDiscountRelModelImpl);
-
-		if (isNew) {
-			commercePriceListDiscountRel.setNew(false);
-		}
-
-		commercePriceListDiscountRel.resetOriginalValues();
-
-		return commercePriceListDiscountRel;
 	}
 
 	/**
@@ -2488,35 +2498,13 @@ public class CommercePriceListDiscountRelPersistenceImpl
 	public CommercePriceListDiscountRel fetchByPrimaryKey(
 		Serializable primaryKey) {
 
-		if (ctPersistenceHelper.isProductionMode(
-				CommercePriceListDiscountRel.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommercePriceListDiscountRel.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		CommercePriceListDiscountRel commercePriceListDiscountRel = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			commercePriceListDiscountRel =
-				(CommercePriceListDiscountRel)session.get(
-					CommercePriceListDiscountRelImpl.class, primaryKey);
-
-			if (commercePriceListDiscountRel != null) {
-				cacheResult(commercePriceListDiscountRel);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return commercePriceListDiscountRel;
 	}
 
 	/**
@@ -2536,98 +2524,13 @@ public class CommercePriceListDiscountRelPersistenceImpl
 	public Map<Serializable, CommercePriceListDiscountRel> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(
-				CommercePriceListDiscountRel.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommercePriceListDiscountRel.class))) {
 
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, CommercePriceListDiscountRel> map =
-			new HashMap<Serializable, CommercePriceListDiscountRel>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			CommercePriceListDiscountRel commercePriceListDiscountRel =
-				fetchByPrimaryKey(primaryKey);
-
-			if (commercePriceListDiscountRel != null) {
-				map.put(primaryKey, commercePriceListDiscountRel);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (CommercePriceListDiscountRel commercePriceListDiscountRel :
-					(List<CommercePriceListDiscountRel>)query.list()) {
-
-				map.put(
-					commercePriceListDiscountRel.getPrimaryKeyObj(),
-					commercePriceListDiscountRel);
-
-				cacheResult(commercePriceListDiscountRel);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

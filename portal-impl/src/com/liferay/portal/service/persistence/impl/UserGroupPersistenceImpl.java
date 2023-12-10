@@ -5,9 +5,12 @@
 
 package com.liferay.portal.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -61,7 +64,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -3987,102 +3989,97 @@ public class UserGroupPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, name};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						UserGroup.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_N, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			UserGroup.class);
-
-		if (result instanceof UserGroup) {
-			UserGroup userGroup = (UserGroup)result;
-
-			if ((companyId != userGroup.getCompanyId()) ||
-				!Objects.equals(name, userGroup.getName())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						UserGroup.class, userGroup.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_USERGROUP_WHERE);
-
-			sb.append(_FINDER_COLUMN_C_N_COMPANYID_2);
-
-			boolean bindName = false;
-
-			if (name.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_N_NAME_3);
-			}
-			else {
-				bindName = true;
-
-				sb.append(_FINDER_COLUMN_C_N_NAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {companyId, name};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_N, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof UserGroup) {
+				UserGroup userGroup = (UserGroup)result;
 
-				Query query = session.createQuery(sql);
+				if ((companyId != userGroup.getCompanyId()) ||
+					!Objects.equals(name, userGroup.getName())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				if (bindName) {
-					queryPos.add(StringUtil.toLowerCase(name));
+					result = null;
 				}
+			}
 
-				List<UserGroup> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_N, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_USERGROUP_WHERE);
+
+				sb.append(_FINDER_COLUMN_C_N_COMPANYID_2);
+
+				boolean bindName = false;
+
+				if (name.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_N_NAME_3);
 				}
 				else {
-					UserGroup userGroup = list.get(0);
+					bindName = true;
 
-					result = userGroup;
+					sb.append(_FINDER_COLUMN_C_N_NAME_2);
+				}
 
-					cacheResult(userGroup);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					if (bindName) {
+						queryPos.add(StringUtil.toLowerCase(name));
+					}
+
+					List<UserGroup> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_N, finderArgs, list);
+						}
+					}
+					else {
+						UserGroup userGroup = list.get(0);
+
+						result = userGroup;
+
+						cacheResult(userGroup);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (UserGroup)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (UserGroup)result;
+			}
 		}
 	}
 
@@ -5912,104 +5909,99 @@ public class UserGroupPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {externalReferenceCode, companyId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						UserGroup.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByERC_C, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			UserGroup.class);
-
-		if (result instanceof UserGroup) {
-			UserGroup userGroup = (UserGroup)result;
-
-			if (!Objects.equals(
-					externalReferenceCode,
-					userGroup.getExternalReferenceCode()) ||
-				(companyId != userGroup.getCompanyId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						UserGroup.class, userGroup.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_USERGROUP_WHERE);
-
-			boolean bindExternalReferenceCode = false;
-
-			if (externalReferenceCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindExternalReferenceCode = true;
-
-				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {externalReferenceCode, companyId};
 			}
 
-			sb.append(_FINDER_COLUMN_ERC_C_COMPANYID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByERC_C, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof UserGroup) {
+				UserGroup userGroup = (UserGroup)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(
+						externalReferenceCode,
+						userGroup.getExternalReferenceCode()) ||
+					(companyId != userGroup.getCompanyId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindExternalReferenceCode) {
-					queryPos.add(externalReferenceCode);
+					result = null;
 				}
+			}
 
-				queryPos.add(companyId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<UserGroup> list = query.list();
+				sb.append(_SQL_SELECT_USERGROUP_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByERC_C, finderArgs, list);
-					}
+				boolean bindExternalReferenceCode = false;
+
+				if (externalReferenceCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_3);
 				}
 				else {
-					UserGroup userGroup = list.get(0);
+					bindExternalReferenceCode = true;
 
-					result = userGroup;
+					sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(userGroup);
+				sb.append(_FINDER_COLUMN_ERC_C_COMPANYID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindExternalReferenceCode) {
+						queryPos.add(externalReferenceCode);
+					}
+
+					queryPos.add(companyId);
+
+					List<UserGroup> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByERC_C, finderArgs, list);
+						}
+					}
+					else {
+						UserGroup userGroup = list.get(0);
+
+						result = userGroup;
+
+						cacheResult(userGroup);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (UserGroup)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (UserGroup)result;
+			}
 		}
 	}
 
@@ -6141,24 +6133,26 @@ public class UserGroupPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(UserGroup userGroup) {
-		if (userGroup.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					userGroup.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				UserGroupImpl.class, userGroup.getPrimaryKey(), userGroup);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_N,
+				new Object[] {userGroup.getCompanyId(), userGroup.getName()},
+				userGroup);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByERC_C,
+				new Object[] {
+					userGroup.getExternalReferenceCode(),
+					userGroup.getCompanyId()
+				},
+				userGroup);
 		}
-
-		EntityCacheUtil.putResult(
-			UserGroupImpl.class, userGroup.getPrimaryKey(), userGroup);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_N,
-			new Object[] {userGroup.getCompanyId(), userGroup.getName()},
-			userGroup);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByERC_C,
-			new Object[] {
-				userGroup.getExternalReferenceCode(), userGroup.getCompanyId()
-			},
-			userGroup);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -6178,14 +6172,18 @@ public class UserGroupPersistenceImpl
 		}
 
 		for (UserGroup userGroup : userGroups) {
-			if (userGroup.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(userGroup.getCtCollectionId() != 0) &&
+						(userGroup.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					UserGroupImpl.class, userGroup.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						UserGroupImpl.class, userGroup.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(userGroup);
+					cacheResult(userGroup);
+				}
 			}
 		}
 	}
@@ -6235,23 +6233,29 @@ public class UserGroupPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		UserGroupModelImpl userGroupModelImpl) {
 
-		Object[] args = new Object[] {
-			userGroupModelImpl.getCompanyId(), userGroupModelImpl.getName()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					userGroupModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(_finderPathCountByC_N, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_N, args, userGroupModelImpl);
+			Object[] args = new Object[] {
+				userGroupModelImpl.getCompanyId(), userGroupModelImpl.getName()
+			};
 
-		args = new Object[] {
-			userGroupModelImpl.getExternalReferenceCode(),
-			userGroupModelImpl.getCompanyId()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_N, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_N, args, userGroupModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByERC_C, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByERC_C, args, userGroupModelImpl);
+			args = new Object[] {
+				userGroupModelImpl.getExternalReferenceCode(),
+				userGroupModelImpl.getCompanyId()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByERC_C, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByERC_C, args, userGroupModelImpl);
+		}
 	}
 
 	/**
@@ -6372,108 +6376,120 @@ public class UserGroupPersistenceImpl
 
 	@Override
 	public UserGroup updateImpl(UserGroup userGroup) {
-		boolean isNew = userGroup.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(userGroup instanceof UserGroupModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = userGroup.isNew();
 
-			if (ProxyUtil.isProxyClass(userGroup.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(userGroup);
+			if (!(userGroup instanceof UserGroupModelImpl)) {
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(userGroup.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						userGroup);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in userGroup proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in userGroup proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom UserGroup implementation " +
+						userGroup.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom UserGroup implementation " +
-					userGroup.getClass());
-		}
+			UserGroupModelImpl userGroupModelImpl =
+				(UserGroupModelImpl)userGroup;
 
-		UserGroupModelImpl userGroupModelImpl = (UserGroupModelImpl)userGroup;
+			if (Validator.isNull(userGroup.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
 
-		if (Validator.isNull(userGroup.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
+				userGroup.setUuid(uuid);
+			}
 
-			userGroup.setUuid(uuid);
-		}
+			if (Validator.isNull(userGroup.getExternalReferenceCode())) {
+				userGroup.setExternalReferenceCode(userGroup.getUuid());
+			}
+			else {
+				UserGroup ercUserGroup = fetchByERC_C(
+					userGroup.getExternalReferenceCode(),
+					userGroup.getCompanyId());
 
-		if (Validator.isNull(userGroup.getExternalReferenceCode())) {
-			userGroup.setExternalReferenceCode(userGroup.getUuid());
-		}
-		else {
-			UserGroup ercUserGroup = fetchByERC_C(
-				userGroup.getExternalReferenceCode(), userGroup.getCompanyId());
+				if (isNew) {
+					if (ercUserGroup != null) {
+						throw new DuplicateUserGroupExternalReferenceCodeException(
+							"Duplicate user group with external reference code " +
+								userGroup.getExternalReferenceCode() +
+									" and company " + userGroup.getCompanyId());
+					}
+				}
+				else {
+					if ((ercUserGroup != null) &&
+						(userGroup.getUserGroupId() !=
+							ercUserGroup.getUserGroupId())) {
 
-			if (isNew) {
-				if (ercUserGroup != null) {
-					throw new DuplicateUserGroupExternalReferenceCodeException(
-						"Duplicate user group with external reference code " +
-							userGroup.getExternalReferenceCode() +
-								" and company " + userGroup.getCompanyId());
+						throw new DuplicateUserGroupExternalReferenceCodeException(
+							"Duplicate user group with external reference code " +
+								userGroup.getExternalReferenceCode() +
+									" and company " + userGroup.getCompanyId());
+					}
 				}
 			}
-			else {
-				if ((ercUserGroup != null) &&
-					(userGroup.getUserGroupId() !=
-						ercUserGroup.getUserGroupId())) {
 
-					throw new DuplicateUserGroupExternalReferenceCodeException(
-						"Duplicate user group with external reference code " +
-							userGroup.getExternalReferenceCode() +
-								" and company " + userGroup.getCompanyId());
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (userGroup.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					userGroup.setCreateDate(date);
+				}
+				else {
+					userGroup.setCreateDate(serviceContext.getCreateDate(date));
 				}
 			}
-		}
 
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (userGroup.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				userGroup.setCreateDate(date);
-			}
-			else {
-				userGroup.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!userGroupModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				userGroup.setModifiedDate(date);
-			}
-			else {
-				userGroup.setModifiedDate(serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(userGroup)) {
-				if (!isNew) {
-					session.evict(
-						UserGroupImpl.class, userGroup.getPrimaryKeyObj());
+			if (!userGroupModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					userGroup.setModifiedDate(date);
 				}
-
-				session.save(userGroup);
+				else {
+					userGroup.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
 			}
-			else {
-				userGroup = (UserGroup)session.merge(userGroup);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (userGroup.getCtCollectionId() != 0) {
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(userGroup)) {
+					if (!isNew) {
+						session.evict(
+							UserGroupImpl.class, userGroup.getPrimaryKeyObj());
+					}
+
+					session.save(userGroup);
+				}
+				else {
+					userGroup = (UserGroup)session.merge(userGroup);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				UserGroupImpl.class, userGroupModelImpl, false, true);
+
+			cacheUniqueFindersCache(userGroupModelImpl);
+
 			if (isNew) {
 				userGroup.setNew(false);
 			}
@@ -6482,19 +6498,6 @@ public class UserGroupPersistenceImpl
 
 			return userGroup;
 		}
-
-		EntityCacheUtil.putResult(
-			UserGroupImpl.class, userGroupModelImpl, false, true);
-
-		cacheUniqueFindersCache(userGroupModelImpl);
-
-		if (isNew) {
-			userGroup.setNew(false);
-		}
-
-		userGroup.resetOriginalValues();
-
-		return userGroup;
 	}
 
 	/**
@@ -6544,33 +6547,13 @@ public class UserGroupPersistenceImpl
 	 */
 	@Override
 	public UserGroup fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				UserGroup.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						UserGroup.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		UserGroup userGroup = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			userGroup = (UserGroup)session.get(UserGroupImpl.class, primaryKey);
-
-			if (userGroup != null) {
-				cacheResult(userGroup);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return userGroup;
 	}
 
 	/**
@@ -6588,91 +6571,13 @@ public class UserGroupPersistenceImpl
 	public Map<Serializable, UserGroup> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(UserGroup.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						UserGroup.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, UserGroup> map =
-			new HashMap<Serializable, UserGroup>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			UserGroup userGroup = fetchByPrimaryKey(primaryKey);
-
-			if (userGroup != null) {
-				map.put(primaryKey, userGroup);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (UserGroup userGroup : (List<UserGroup>)query.list()) {
-				map.put(userGroup.getPrimaryKeyObj(), userGroup);
-
-				cacheResult(userGroup);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

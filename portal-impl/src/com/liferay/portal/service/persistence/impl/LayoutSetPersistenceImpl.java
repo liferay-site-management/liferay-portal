@@ -5,8 +5,11 @@
 
 package com.liferay.portal.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -48,7 +51,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1231,91 +1233,86 @@ public class LayoutSetPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, privateLayout};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						LayoutSet.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByG_P, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			LayoutSet.class);
-
-		if (result instanceof LayoutSet) {
-			LayoutSet layoutSet = (LayoutSet)result;
-
-			if ((groupId != layoutSet.getGroupId()) ||
-				(privateLayout != layoutSet.isPrivateLayout())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, privateLayout};
 			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						LayoutSet.class, layoutSet.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByG_P, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
+			if (result instanceof LayoutSet) {
+				LayoutSet layoutSet = (LayoutSet)result;
 
-			sb.append(_SQL_SELECT_LAYOUTSET_WHERE);
+				if ((groupId != layoutSet.getGroupId()) ||
+					(privateLayout != layoutSet.isPrivateLayout())) {
 
-			sb.append(_FINDER_COLUMN_G_P_GROUPID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_G_P_PRIVATELAYOUT_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-			String sql = sb.toString();
+				sb.append(_SQL_SELECT_LAYOUTSET_WHERE);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_G_P_GROUPID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_G_P_PRIVATELAYOUT_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(groupId);
+				try {
+					session = openSession();
 
-				queryPos.add(privateLayout);
+					Query query = session.createQuery(sql);
 
-				List<LayoutSet> list = query.list();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByG_P, finderArgs, list);
+					queryPos.add(groupId);
+
+					queryPos.add(privateLayout);
+
+					List<LayoutSet> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByG_P, finderArgs, list);
+						}
+					}
+					else {
+						LayoutSet layoutSet = list.get(0);
+
+						result = layoutSet;
+
+						cacheResult(layoutSet);
 					}
 				}
-				else {
-					LayoutSet layoutSet = list.get(0);
-
-					result = layoutSet;
-
-					cacheResult(layoutSet);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (LayoutSet)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (LayoutSet)result;
+			}
 		}
 	}
 
@@ -2077,108 +2074,103 @@ public class LayoutSetPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {privateLayout, logoId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						LayoutSet.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByP_L, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			LayoutSet.class);
-
-		if (result instanceof LayoutSet) {
-			LayoutSet layoutSet = (LayoutSet)result;
-
-			if ((privateLayout != layoutSet.isPrivateLayout()) ||
-				(logoId != layoutSet.getLogoId())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {privateLayout, logoId};
 			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						LayoutSet.class, layoutSet.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByP_L, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
+			if (result instanceof LayoutSet) {
+				LayoutSet layoutSet = (LayoutSet)result;
 
-			sb.append(_SQL_SELECT_LAYOUTSET_WHERE);
+				if ((privateLayout != layoutSet.isPrivateLayout()) ||
+					(logoId != layoutSet.getLogoId())) {
 
-			sb.append(_FINDER_COLUMN_P_L_PRIVATELAYOUT_2);
-
-			sb.append(_FINDER_COLUMN_P_L_LOGOID_2);
-
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(privateLayout);
-
-				queryPos.add(logoId);
-
-				List<LayoutSet> list = query.list();
-
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByP_L, finderArgs, list);
-					}
+					result = null;
 				}
-				else {
-					if (list.size() > 1) {
-						Collections.sort(list, Collections.reverseOrder());
+			}
 
-						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
-								finderArgs = new Object[] {
-									privateLayout, logoId
-								};
-							}
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-							_log.warn(
-								"LayoutSetPersistenceImpl.fetchByP_L(boolean, long, boolean) with parameters (" +
-									StringUtil.merge(finderArgs) +
-										") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+				sb.append(_SQL_SELECT_LAYOUTSET_WHERE);
+
+				sb.append(_FINDER_COLUMN_P_L_PRIVATELAYOUT_2);
+
+				sb.append(_FINDER_COLUMN_P_L_LOGOID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(privateLayout);
+
+					queryPos.add(logoId);
+
+					List<LayoutSet> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByP_L, finderArgs, list);
 						}
 					}
+					else {
+						if (list.size() > 1) {
+							Collections.sort(list, Collections.reverseOrder());
 
-					LayoutSet layoutSet = list.get(0);
+							if (_log.isWarnEnabled()) {
+								if (!useFinderCache) {
+									finderArgs = new Object[] {
+										privateLayout, logoId
+									};
+								}
 
-					result = layoutSet;
+								_log.warn(
+									"LayoutSetPersistenceImpl.fetchByP_L(boolean, long, boolean) with parameters (" +
+										StringUtil.merge(finderArgs) +
+											") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+							}
+						}
 
-					cacheResult(layoutSet);
+						LayoutSet layoutSet = list.get(0);
+
+						result = layoutSet;
+
+						cacheResult(layoutSet);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (LayoutSet)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (LayoutSet)result;
+			}
 		}
 	}
 
@@ -2293,22 +2285,27 @@ public class LayoutSetPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(LayoutSet layoutSet) {
-		if (layoutSet.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					layoutSet.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				LayoutSetImpl.class, layoutSet.getPrimaryKey(), layoutSet);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_P,
+				new Object[] {
+					layoutSet.getGroupId(), layoutSet.isPrivateLayout()
+				},
+				layoutSet);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByP_L,
+				new Object[] {
+					layoutSet.isPrivateLayout(), layoutSet.getLogoId()
+				},
+				layoutSet);
 		}
-
-		EntityCacheUtil.putResult(
-			LayoutSetImpl.class, layoutSet.getPrimaryKey(), layoutSet);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_P,
-			new Object[] {layoutSet.getGroupId(), layoutSet.isPrivateLayout()},
-			layoutSet);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByP_L,
-			new Object[] {layoutSet.isPrivateLayout(), layoutSet.getLogoId()},
-			layoutSet);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2328,28 +2325,32 @@ public class LayoutSetPersistenceImpl
 		}
 
 		for (LayoutSet layoutSet : layoutSets) {
-			if (layoutSet.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(layoutSet.getCtCollectionId() != 0) &&
+						(layoutSet.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			LayoutSet cachedLayoutSet = (LayoutSet)EntityCacheUtil.getResult(
-				LayoutSetImpl.class, layoutSet.getPrimaryKey());
+				LayoutSet cachedLayoutSet =
+					(LayoutSet)EntityCacheUtil.getResult(
+						LayoutSetImpl.class, layoutSet.getPrimaryKey());
 
-			if (cachedLayoutSet == null) {
-				cacheResult(layoutSet);
-			}
-			else {
-				LayoutSetModelImpl layoutSetModelImpl =
-					(LayoutSetModelImpl)layoutSet;
-				LayoutSetModelImpl cachedLayoutSetModelImpl =
-					(LayoutSetModelImpl)cachedLayoutSet;
+				if (cachedLayoutSet == null) {
+					cacheResult(layoutSet);
+				}
+				else {
+					LayoutSetModelImpl layoutSetModelImpl =
+						(LayoutSetModelImpl)layoutSet;
+					LayoutSetModelImpl cachedLayoutSetModelImpl =
+						(LayoutSetModelImpl)cachedLayoutSet;
 
-				layoutSetModelImpl.setCompanyFallbackVirtualHostname(
-					cachedLayoutSetModelImpl.
-						getCompanyFallbackVirtualHostname());
+					layoutSetModelImpl.setCompanyFallbackVirtualHostname(
+						cachedLayoutSetModelImpl.
+							getCompanyFallbackVirtualHostname());
 
-				layoutSetModelImpl.setVirtualHostnames(
-					cachedLayoutSetModelImpl.getVirtualHostnames());
+					layoutSetModelImpl.setVirtualHostnames(
+						cachedLayoutSetModelImpl.getVirtualHostnames());
+				}
 			}
 		}
 	}
@@ -2399,22 +2400,30 @@ public class LayoutSetPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		LayoutSetModelImpl layoutSetModelImpl) {
 
-		Object[] args = new Object[] {
-			layoutSetModelImpl.getGroupId(),
-			layoutSetModelImpl.isPrivateLayout()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					layoutSetModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(_finderPathCountByG_P, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_P, args, layoutSetModelImpl);
+			Object[] args = new Object[] {
+				layoutSetModelImpl.getGroupId(),
+				layoutSetModelImpl.isPrivateLayout()
+			};
 
-		args = new Object[] {
-			layoutSetModelImpl.isPrivateLayout(), layoutSetModelImpl.getLogoId()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByG_P, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_P, args, layoutSetModelImpl);
 
-		FinderCacheUtil.putResult(_finderPathCountByP_L, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByP_L, args, layoutSetModelImpl);
+			args = new Object[] {
+				layoutSetModelImpl.isPrivateLayout(),
+				layoutSetModelImpl.getLogoId()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByP_L, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByP_L, args, layoutSetModelImpl);
+		}
 	}
 
 	/**
@@ -2522,74 +2531,85 @@ public class LayoutSetPersistenceImpl
 
 	@Override
 	public LayoutSet updateImpl(LayoutSet layoutSet) {
-		boolean isNew = layoutSet.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(layoutSet instanceof LayoutSetModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = layoutSet.isNew();
 
-			if (ProxyUtil.isProxyClass(layoutSet.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(layoutSet);
+			if (!(layoutSet instanceof LayoutSetModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in layoutSet proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(layoutSet.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						layoutSet);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom LayoutSet implementation " +
-					layoutSet.getClass());
-		}
-
-		LayoutSetModelImpl layoutSetModelImpl = (LayoutSetModelImpl)layoutSet;
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (layoutSet.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				layoutSet.setCreateDate(date);
-			}
-			else {
-				layoutSet.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!layoutSetModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				layoutSet.setModifiedDate(date);
-			}
-			else {
-				layoutSet.setModifiedDate(serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(layoutSet)) {
-				if (!isNew) {
-					session.evict(
-						LayoutSetImpl.class, layoutSet.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in layoutSet proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(layoutSet);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom LayoutSet implementation " +
+						layoutSet.getClass());
 			}
-			else {
-				layoutSet = (LayoutSet)session.merge(layoutSet);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (layoutSet.getCtCollectionId() != 0) {
+			LayoutSetModelImpl layoutSetModelImpl =
+				(LayoutSetModelImpl)layoutSet;
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (layoutSet.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					layoutSet.setCreateDate(date);
+				}
+				else {
+					layoutSet.setCreateDate(serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!layoutSetModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					layoutSet.setModifiedDate(date);
+				}
+				else {
+					layoutSet.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(layoutSet)) {
+					if (!isNew) {
+						session.evict(
+							LayoutSetImpl.class, layoutSet.getPrimaryKeyObj());
+					}
+
+					session.save(layoutSet);
+				}
+				else {
+					layoutSet = (LayoutSet)session.merge(layoutSet);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				LayoutSetImpl.class, layoutSetModelImpl, false, true);
+
+			cacheUniqueFindersCache(layoutSetModelImpl);
+
 			if (isNew) {
 				layoutSet.setNew(false);
 			}
@@ -2598,19 +2618,6 @@ public class LayoutSetPersistenceImpl
 
 			return layoutSet;
 		}
-
-		EntityCacheUtil.putResult(
-			LayoutSetImpl.class, layoutSetModelImpl, false, true);
-
-		cacheUniqueFindersCache(layoutSetModelImpl);
-
-		if (isNew) {
-			layoutSet.setNew(false);
-		}
-
-		layoutSet.resetOriginalValues();
-
-		return layoutSet;
 	}
 
 	/**
@@ -2660,33 +2667,13 @@ public class LayoutSetPersistenceImpl
 	 */
 	@Override
 	public LayoutSet fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				LayoutSet.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						LayoutSet.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		LayoutSet layoutSet = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			layoutSet = (LayoutSet)session.get(LayoutSetImpl.class, primaryKey);
-
-			if (layoutSet != null) {
-				cacheResult(layoutSet);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return layoutSet;
 	}
 
 	/**
@@ -2704,91 +2691,13 @@ public class LayoutSetPersistenceImpl
 	public Map<Serializable, LayoutSet> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(LayoutSet.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						LayoutSet.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, LayoutSet> map =
-			new HashMap<Serializable, LayoutSet>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			LayoutSet layoutSet = fetchByPrimaryKey(primaryKey);
-
-			if (layoutSet != null) {
-				map.put(primaryKey, layoutSet);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (LayoutSet layoutSet : (List<LayoutSet>)query.list()) {
-				map.put(layoutSet.getPrimaryKeyObj(), layoutSet);
-
-				cacheResult(layoutSet);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

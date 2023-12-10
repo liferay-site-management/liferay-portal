@@ -5,8 +5,11 @@
 
 package com.liferay.portlet.social.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -44,7 +47,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -3582,13 +3584,14 @@ public class SocialActivitySetPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(SocialActivitySet socialActivitySet) {
-		if (socialActivitySet.getCtCollectionId() != 0) {
-			return;
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					socialActivitySet.getCtCollectionId() != 0)) {
 
-		EntityCacheUtil.putResult(
-			SocialActivitySetImpl.class, socialActivitySet.getPrimaryKey(),
-			socialActivitySet);
+			EntityCacheUtil.putResult(
+				SocialActivitySetImpl.class, socialActivitySet.getPrimaryKey(),
+				socialActivitySet);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -3609,15 +3612,18 @@ public class SocialActivitySetPersistenceImpl
 		}
 
 		for (SocialActivitySet socialActivitySet : socialActivitySets) {
-			if (socialActivitySet.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(socialActivitySet.getCtCollectionId() != 0) &&
+						(socialActivitySet.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					SocialActivitySetImpl.class,
-					socialActivitySet.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						SocialActivitySetImpl.class,
+						socialActivitySet.getPrimaryKey()) == null) {
 
-				cacheResult(socialActivitySet);
+					cacheResult(socialActivitySet);
+				}
 			}
 		}
 	}
@@ -3778,55 +3784,62 @@ public class SocialActivitySetPersistenceImpl
 
 	@Override
 	public SocialActivitySet updateImpl(SocialActivitySet socialActivitySet) {
-		boolean isNew = socialActivitySet.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(socialActivitySet instanceof SocialActivitySetModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = socialActivitySet.isNew();
 
-			if (ProxyUtil.isProxyClass(socialActivitySet.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					socialActivitySet);
+			if (!(socialActivitySet instanceof SocialActivitySetModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in socialActivitySet proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(socialActivitySet.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						socialActivitySet);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom SocialActivitySet implementation " +
-					socialActivitySet.getClass());
-		}
-
-		SocialActivitySetModelImpl socialActivitySetModelImpl =
-			(SocialActivitySetModelImpl)socialActivitySet;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(socialActivitySet)) {
-				if (!isNew) {
-					session.evict(
-						SocialActivitySetImpl.class,
-						socialActivitySet.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in socialActivitySet proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(socialActivitySet);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom SocialActivitySet implementation " +
+						socialActivitySet.getClass());
 			}
-			else {
-				socialActivitySet = (SocialActivitySet)session.merge(
-					socialActivitySet);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (socialActivitySet.getCtCollectionId() != 0) {
+			SocialActivitySetModelImpl socialActivitySetModelImpl =
+				(SocialActivitySetModelImpl)socialActivitySet;
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(socialActivitySet)) {
+					if (!isNew) {
+						session.evict(
+							SocialActivitySetImpl.class,
+							socialActivitySet.getPrimaryKeyObj());
+					}
+
+					session.save(socialActivitySet);
+				}
+				else {
+					socialActivitySet = (SocialActivitySet)session.merge(
+						socialActivitySet);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				SocialActivitySetImpl.class, socialActivitySetModelImpl, false,
+				true);
+
 			if (isNew) {
 				socialActivitySet.setNew(false);
 			}
@@ -3835,18 +3848,6 @@ public class SocialActivitySetPersistenceImpl
 
 			return socialActivitySet;
 		}
-
-		EntityCacheUtil.putResult(
-			SocialActivitySetImpl.class, socialActivitySetModelImpl, false,
-			true);
-
-		if (isNew) {
-			socialActivitySet.setNew(false);
-		}
-
-		socialActivitySet.resetOriginalValues();
-
-		return socialActivitySet;
 	}
 
 	/**
@@ -3896,34 +3897,13 @@ public class SocialActivitySetPersistenceImpl
 	 */
 	@Override
 	public SocialActivitySet fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				SocialActivitySet.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialActivitySet.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		SocialActivitySet socialActivitySet = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			socialActivitySet = (SocialActivitySet)session.get(
-				SocialActivitySetImpl.class, primaryKey);
-
-			if (socialActivitySet != null) {
-				cacheResult(socialActivitySet);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return socialActivitySet;
 	}
 
 	/**
@@ -3941,94 +3921,13 @@ public class SocialActivitySetPersistenceImpl
 	public Map<Serializable, SocialActivitySet> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(SocialActivitySet.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialActivitySet.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, SocialActivitySet> map =
-			new HashMap<Serializable, SocialActivitySet>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			SocialActivitySet socialActivitySet = fetchByPrimaryKey(primaryKey);
-
-			if (socialActivitySet != null) {
-				map.put(primaryKey, socialActivitySet);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (SocialActivitySet socialActivitySet :
-					(List<SocialActivitySet>)query.list()) {
-
-				map.put(
-					socialActivitySet.getPrimaryKeyObj(), socialActivitySet);
-
-				cacheResult(socialActivitySet);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

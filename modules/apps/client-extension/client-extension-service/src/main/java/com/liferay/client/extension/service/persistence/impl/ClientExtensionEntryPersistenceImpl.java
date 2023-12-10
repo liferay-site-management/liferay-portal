@@ -14,8 +14,11 @@ import com.liferay.client.extension.model.impl.ClientExtensionEntryModelImpl;
 import com.liferay.client.extension.service.persistence.ClientExtensionEntryPersistence;
 import com.liferay.client.extension.service.persistence.ClientExtensionEntryUtil;
 import com.liferay.client.extension.service.persistence.impl.constants.ClientExtensionPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -59,7 +62,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -4166,106 +4168,100 @@ public class ClientExtensionEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {externalReferenceCode, companyId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						ClientExtensionEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByERC_C, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			ClientExtensionEntry.class);
-
-		if (result instanceof ClientExtensionEntry) {
-			ClientExtensionEntry clientExtensionEntry =
-				(ClientExtensionEntry)result;
-
-			if (!Objects.equals(
-					externalReferenceCode,
-					clientExtensionEntry.getExternalReferenceCode()) ||
-				(companyId != clientExtensionEntry.getCompanyId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntry.class,
-						clientExtensionEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_CLIENTEXTENSIONENTRY_WHERE);
-
-			boolean bindExternalReferenceCode = false;
-
-			if (externalReferenceCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindExternalReferenceCode = true;
-
-				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {externalReferenceCode, companyId};
 			}
 
-			sb.append(_FINDER_COLUMN_ERC_C_COMPANYID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByERC_C, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof ClientExtensionEntry) {
+				ClientExtensionEntry clientExtensionEntry =
+					(ClientExtensionEntry)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(
+						externalReferenceCode,
+						clientExtensionEntry.getExternalReferenceCode()) ||
+					(companyId != clientExtensionEntry.getCompanyId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindExternalReferenceCode) {
-					queryPos.add(externalReferenceCode);
+					result = null;
 				}
+			}
 
-				queryPos.add(companyId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<ClientExtensionEntry> list = query.list();
+				sb.append(_SQL_SELECT_CLIENTEXTENSIONENTRY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByERC_C, finderArgs, list);
-					}
+				boolean bindExternalReferenceCode = false;
+
+				if (externalReferenceCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_3);
 				}
 				else {
-					ClientExtensionEntry clientExtensionEntry = list.get(0);
+					bindExternalReferenceCode = true;
 
-					result = clientExtensionEntry;
+					sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(clientExtensionEntry);
+				sb.append(_FINDER_COLUMN_ERC_C_COMPANYID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindExternalReferenceCode) {
+						queryPos.add(externalReferenceCode);
+					}
+
+					queryPos.add(companyId);
+
+					List<ClientExtensionEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByERC_C, finderArgs, list);
+						}
+					}
+					else {
+						ClientExtensionEntry clientExtensionEntry = list.get(0);
+
+						result = clientExtensionEntry;
+
+						cacheResult(clientExtensionEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (ClientExtensionEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (ClientExtensionEntry)result;
+			}
 		}
 	}
 
@@ -4398,21 +4394,22 @@ public class ClientExtensionEntryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(ClientExtensionEntry clientExtensionEntry) {
-		if (clientExtensionEntry.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					clientExtensionEntry.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				ClientExtensionEntryImpl.class,
+				clientExtensionEntry.getPrimaryKey(), clientExtensionEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByERC_C,
+				new Object[] {
+					clientExtensionEntry.getExternalReferenceCode(),
+					clientExtensionEntry.getCompanyId()
+				},
+				clientExtensionEntry);
 		}
-
-		entityCache.putResult(
-			ClientExtensionEntryImpl.class,
-			clientExtensionEntry.getPrimaryKey(), clientExtensionEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByERC_C,
-			new Object[] {
-				clientExtensionEntry.getExternalReferenceCode(),
-				clientExtensionEntry.getCompanyId()
-			},
-			clientExtensionEntry);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -4435,15 +4432,18 @@ public class ClientExtensionEntryPersistenceImpl
 		for (ClientExtensionEntry clientExtensionEntry :
 				clientExtensionEntries) {
 
-			if (clientExtensionEntry.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(clientExtensionEntry.getCtCollectionId() != 0) &&
+						(clientExtensionEntry.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					ClientExtensionEntryImpl.class,
-					clientExtensionEntry.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						ClientExtensionEntryImpl.class,
+						clientExtensionEntry.getPrimaryKey()) == null) {
 
-				cacheResult(clientExtensionEntry);
+					cacheResult(clientExtensionEntry);
+				}
 			}
 		}
 	}
@@ -4498,14 +4498,20 @@ public class ClientExtensionEntryPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		ClientExtensionEntryModelImpl clientExtensionEntryModelImpl) {
 
-		Object[] args = new Object[] {
-			clientExtensionEntryModelImpl.getExternalReferenceCode(),
-			clientExtensionEntryModelImpl.getCompanyId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					clientExtensionEntryModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByERC_C, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByERC_C, args, clientExtensionEntryModelImpl);
+			Object[] args = new Object[] {
+				clientExtensionEntryModelImpl.getExternalReferenceCode(),
+				clientExtensionEntryModelImpl.getCompanyId()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByERC_C, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByERC_C, args, clientExtensionEntryModelImpl);
+		}
 	}
 
 	/**
@@ -4626,145 +4632,164 @@ public class ClientExtensionEntryPersistenceImpl
 	public ClientExtensionEntry updateImpl(
 		ClientExtensionEntry clientExtensionEntry) {
 
-		boolean isNew = clientExtensionEntry.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(clientExtensionEntry instanceof ClientExtensionEntryModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = clientExtensionEntry.isNew();
 
-			if (ProxyUtil.isProxyClass(clientExtensionEntry.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					clientExtensionEntry);
+			if (!(clientExtensionEntry instanceof
+					ClientExtensionEntryModelImpl)) {
+
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(clientExtensionEntry.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						clientExtensionEntry);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in clientExtensionEntry proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in clientExtensionEntry proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom ClientExtensionEntry implementation " +
+						clientExtensionEntry.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom ClientExtensionEntry implementation " +
-					clientExtensionEntry.getClass());
-		}
+			ClientExtensionEntryModelImpl clientExtensionEntryModelImpl =
+				(ClientExtensionEntryModelImpl)clientExtensionEntry;
 
-		ClientExtensionEntryModelImpl clientExtensionEntryModelImpl =
-			(ClientExtensionEntryModelImpl)clientExtensionEntry;
+			if (Validator.isNull(clientExtensionEntry.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
 
-		if (Validator.isNull(clientExtensionEntry.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
+				clientExtensionEntry.setUuid(uuid);
+			}
 
-			clientExtensionEntry.setUuid(uuid);
-		}
+			if (Validator.isNull(
+					clientExtensionEntry.getExternalReferenceCode())) {
 
-		if (Validator.isNull(clientExtensionEntry.getExternalReferenceCode())) {
-			clientExtensionEntry.setExternalReferenceCode(
-				clientExtensionEntry.getUuid());
-		}
-		else {
-			ClientExtensionEntry ercClientExtensionEntry = fetchByERC_C(
-				clientExtensionEntry.getExternalReferenceCode(),
-				clientExtensionEntry.getCompanyId());
+				clientExtensionEntry.setExternalReferenceCode(
+					clientExtensionEntry.getUuid());
+			}
+			else {
+				ClientExtensionEntry ercClientExtensionEntry = fetchByERC_C(
+					clientExtensionEntry.getExternalReferenceCode(),
+					clientExtensionEntry.getCompanyId());
 
-			if (isNew) {
-				if (ercClientExtensionEntry != null) {
-					throw new DuplicateClientExtensionEntryExternalReferenceCodeException(
-						"Duplicate client extension entry with external reference code " +
-							clientExtensionEntry.getExternalReferenceCode() +
-								" and company " +
-									clientExtensionEntry.getCompanyId());
+				if (isNew) {
+					if (ercClientExtensionEntry != null) {
+						throw new DuplicateClientExtensionEntryExternalReferenceCodeException(
+							"Duplicate client extension entry with external reference code " +
+								clientExtensionEntry.
+									getExternalReferenceCode() +
+										" and company " +
+											clientExtensionEntry.
+												getCompanyId());
+					}
+				}
+				else {
+					if ((ercClientExtensionEntry != null) &&
+						(clientExtensionEntry.getClientExtensionEntryId() !=
+							ercClientExtensionEntry.
+								getClientExtensionEntryId())) {
+
+						throw new DuplicateClientExtensionEntryExternalReferenceCodeException(
+							"Duplicate client extension entry with external reference code " +
+								clientExtensionEntry.
+									getExternalReferenceCode() +
+										" and company " +
+											clientExtensionEntry.
+												getCompanyId());
+					}
 				}
 			}
-			else {
-				if ((ercClientExtensionEntry != null) &&
-					(clientExtensionEntry.getClientExtensionEntryId() !=
-						ercClientExtensionEntry.getClientExtensionEntryId())) {
 
-					throw new DuplicateClientExtensionEntryExternalReferenceCodeException(
-						"Duplicate client extension entry with external reference code " +
-							clientExtensionEntry.getExternalReferenceCode() +
-								" and company " +
-									clientExtensionEntry.getCompanyId());
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (clientExtensionEntry.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					clientExtensionEntry.setCreateDate(date);
+				}
+				else {
+					clientExtensionEntry.setCreateDate(
+						serviceContext.getCreateDate(date));
 				}
 			}
-		}
 
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (clientExtensionEntry.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				clientExtensionEntry.setCreateDate(date);
+			if (!clientExtensionEntryModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					clientExtensionEntry.setModifiedDate(date);
+				}
+				else {
+					clientExtensionEntry.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
 			}
-			else {
-				clientExtensionEntry.setCreateDate(
-					serviceContext.getCreateDate(date));
+
+			long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
+
+			if (userId > 0) {
+				long companyId = clientExtensionEntry.getCompanyId();
+
+				long groupId = 0;
+
+				long clientExtensionEntryId = 0;
+
+				if (!isNew) {
+					clientExtensionEntryId =
+						clientExtensionEntry.getPrimaryKey();
+				}
+
+				try {
+					clientExtensionEntry.setDescription(
+						SanitizerUtil.sanitize(
+							companyId, groupId, userId,
+							ClientExtensionEntry.class.getName(),
+							clientExtensionEntryId, ContentTypes.TEXT_HTML,
+							Sanitizer.MODE_ALL,
+							clientExtensionEntry.getDescription(), null));
+				}
+				catch (SanitizerException sanitizerException) {
+					throw new SystemException(sanitizerException);
+				}
 			}
-		}
 
-		if (!clientExtensionEntryModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				clientExtensionEntry.setModifiedDate(date);
-			}
-			else {
-				clientExtensionEntry.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
-
-		if (userId > 0) {
-			long companyId = clientExtensionEntry.getCompanyId();
-
-			long groupId = 0;
-
-			long clientExtensionEntryId = 0;
-
-			if (!isNew) {
-				clientExtensionEntryId = clientExtensionEntry.getPrimaryKey();
-			}
+			Session session = null;
 
 			try {
-				clientExtensionEntry.setDescription(
-					SanitizerUtil.sanitize(
-						companyId, groupId, userId,
-						ClientExtensionEntry.class.getName(),
-						clientExtensionEntryId, ContentTypes.TEXT_HTML,
-						Sanitizer.MODE_ALL,
-						clientExtensionEntry.getDescription(), null));
-			}
-			catch (SanitizerException sanitizerException) {
-				throw new SystemException(sanitizerException);
-			}
-		}
+				session = openSession();
 
-		Session session = null;
+				if (ctPersistenceHelper.isInsert(clientExtensionEntry)) {
+					if (!isNew) {
+						session.evict(
+							ClientExtensionEntryImpl.class,
+							clientExtensionEntry.getPrimaryKeyObj());
+					}
 
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(clientExtensionEntry)) {
-				if (!isNew) {
-					session.evict(
-						ClientExtensionEntryImpl.class,
-						clientExtensionEntry.getPrimaryKeyObj());
+					session.save(clientExtensionEntry);
 				}
-
-				session.save(clientExtensionEntry);
+				else {
+					clientExtensionEntry = (ClientExtensionEntry)session.merge(
+						clientExtensionEntry);
+				}
 			}
-			else {
-				clientExtensionEntry = (ClientExtensionEntry)session.merge(
-					clientExtensionEntry);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
+			finally {
+				closeSession(session);
+			}
 
-		if (clientExtensionEntry.getCtCollectionId() != 0) {
+			entityCache.putResult(
+				ClientExtensionEntryImpl.class, clientExtensionEntryModelImpl,
+				false, true);
+
+			cacheUniqueFindersCache(clientExtensionEntryModelImpl);
+
 			if (isNew) {
 				clientExtensionEntry.setNew(false);
 			}
@@ -4773,20 +4798,6 @@ public class ClientExtensionEntryPersistenceImpl
 
 			return clientExtensionEntry;
 		}
-
-		entityCache.putResult(
-			ClientExtensionEntryImpl.class, clientExtensionEntryModelImpl,
-			false, true);
-
-		cacheUniqueFindersCache(clientExtensionEntryModelImpl);
-
-		if (isNew) {
-			clientExtensionEntry.setNew(false);
-		}
-
-		clientExtensionEntry.resetOriginalValues();
-
-		return clientExtensionEntry;
 	}
 
 	/**
@@ -4837,34 +4848,13 @@ public class ClientExtensionEntryPersistenceImpl
 	 */
 	@Override
 	public ClientExtensionEntry fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				ClientExtensionEntry.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						ClientExtensionEntry.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		ClientExtensionEntry clientExtensionEntry = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			clientExtensionEntry = (ClientExtensionEntry)session.get(
-				ClientExtensionEntryImpl.class, primaryKey);
-
-			if (clientExtensionEntry != null) {
-				cacheResult(clientExtensionEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return clientExtensionEntry;
 	}
 
 	/**
@@ -4882,96 +4872,13 @@ public class ClientExtensionEntryPersistenceImpl
 	public Map<Serializable, ClientExtensionEntry> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(ClientExtensionEntry.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						ClientExtensionEntry.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, ClientExtensionEntry> map =
-			new HashMap<Serializable, ClientExtensionEntry>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			ClientExtensionEntry clientExtensionEntry = fetchByPrimaryKey(
-				primaryKey);
-
-			if (clientExtensionEntry != null) {
-				map.put(primaryKey, clientExtensionEntry);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (ClientExtensionEntry clientExtensionEntry :
-					(List<ClientExtensionEntry>)query.list()) {
-
-				map.put(
-					clientExtensionEntry.getPrimaryKeyObj(),
-					clientExtensionEntry);
-
-				cacheResult(clientExtensionEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

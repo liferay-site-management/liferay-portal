@@ -5,9 +5,12 @@
 
 package com.liferay.portal.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -51,7 +54,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -2847,102 +2849,96 @@ public class RegionPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {countryId, regionCode};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Region.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_R, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Region.class);
-
-		if (result instanceof Region) {
-			Region region = (Region)result;
-
-			if ((countryId != region.getCountryId()) ||
-				!Objects.equals(regionCode, region.getRegionCode())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Region.class, region.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_REGION_WHERE);
-
-			sb.append(_FINDER_COLUMN_C_R_COUNTRYID_2);
-
-			boolean bindRegionCode = false;
-
-			if (regionCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_R_REGIONCODE_3);
-			}
-			else {
-				bindRegionCode = true;
-
-				sb.append(_FINDER_COLUMN_C_R_REGIONCODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {countryId, regionCode};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_R, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof Region) {
+				Region region = (Region)result;
 
-				Query query = session.createQuery(sql);
+				if ((countryId != region.getCountryId()) ||
+					!Objects.equals(regionCode, region.getRegionCode())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(countryId);
-
-				if (bindRegionCode) {
-					queryPos.add(regionCode);
+					result = null;
 				}
+			}
 
-				List<Region> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_R, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_REGION_WHERE);
+
+				sb.append(_FINDER_COLUMN_C_R_COUNTRYID_2);
+
+				boolean bindRegionCode = false;
+
+				if (regionCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_R_REGIONCODE_3);
 				}
 				else {
-					Region region = list.get(0);
+					bindRegionCode = true;
 
-					result = region;
+					sb.append(_FINDER_COLUMN_C_R_REGIONCODE_2);
+				}
 
-					cacheResult(region);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(countryId);
+
+					if (bindRegionCode) {
+						queryPos.add(regionCode);
+					}
+
+					List<Region> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_R, finderArgs, list);
+						}
+					}
+					else {
+						Region region = list.get(0);
+
+						result = region;
+
+						cacheResult(region);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Region)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Region)result;
+			}
 		}
 	}
 
@@ -3074,17 +3070,18 @@ public class RegionPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(Region region) {
-		if (region.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					region.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				RegionImpl.class, region.getPrimaryKey(), region);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_R,
+				new Object[] {region.getCountryId(), region.getRegionCode()},
+				region);
 		}
-
-		EntityCacheUtil.putResult(
-			RegionImpl.class, region.getPrimaryKey(), region);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_R,
-			new Object[] {region.getCountryId(), region.getRegionCode()},
-			region);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -3104,14 +3101,17 @@ public class RegionPersistenceImpl
 		}
 
 		for (Region region : regions) {
-			if (region.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(region.getCtCollectionId() != 0) &&
+						(region.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					RegionImpl.class, region.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						RegionImpl.class, region.getPrimaryKey()) == null) {
 
-				cacheResult(region);
+					cacheResult(region);
+				}
 			}
 		}
 	}
@@ -3159,12 +3159,19 @@ public class RegionPersistenceImpl
 	}
 
 	protected void cacheUniqueFindersCache(RegionModelImpl regionModelImpl) {
-		Object[] args = new Object[] {
-			regionModelImpl.getCountryId(), regionModelImpl.getRegionCode()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					regionModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(_finderPathCountByC_R, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(_finderPathFetchByC_R, args, regionModelImpl);
+			Object[] args = new Object[] {
+				regionModelImpl.getCountryId(), regionModelImpl.getRegionCode()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_R, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_R, args, regionModelImpl);
+		}
 	}
 
 	/**
@@ -3273,79 +3280,89 @@ public class RegionPersistenceImpl
 
 	@Override
 	public Region updateImpl(Region region) {
-		boolean isNew = region.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(region instanceof RegionModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = region.isNew();
 
-			if (ProxyUtil.isProxyClass(region.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(region);
+			if (!(region instanceof RegionModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in region proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(region.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(region);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom Region implementation " +
-					region.getClass());
-		}
-
-		RegionModelImpl regionModelImpl = (RegionModelImpl)region;
-
-		if (Validator.isNull(region.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			region.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (region.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				region.setCreateDate(date);
-			}
-			else {
-				region.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!regionModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				region.setModifiedDate(date);
-			}
-			else {
-				region.setModifiedDate(serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(region)) {
-				if (!isNew) {
-					session.evict(RegionImpl.class, region.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in region proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(region);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom Region implementation " +
+						region.getClass());
 			}
-			else {
-				region = (Region)session.merge(region);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (region.getCtCollectionId() != 0) {
+			RegionModelImpl regionModelImpl = (RegionModelImpl)region;
+
+			if (Validator.isNull(region.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				region.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (region.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					region.setCreateDate(date);
+				}
+				else {
+					region.setCreateDate(serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!regionModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					region.setModifiedDate(date);
+				}
+				else {
+					region.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(region)) {
+					if (!isNew) {
+						session.evict(
+							RegionImpl.class, region.getPrimaryKeyObj());
+					}
+
+					session.save(region);
+				}
+				else {
+					region = (Region)session.merge(region);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				RegionImpl.class, regionModelImpl, false, true);
+
+			cacheUniqueFindersCache(regionModelImpl);
+
 			if (isNew) {
 				region.setNew(false);
 			}
@@ -3354,19 +3371,6 @@ public class RegionPersistenceImpl
 
 			return region;
 		}
-
-		EntityCacheUtil.putResult(
-			RegionImpl.class, regionModelImpl, false, true);
-
-		cacheUniqueFindersCache(regionModelImpl);
-
-		if (isNew) {
-			region.setNew(false);
-		}
-
-		region.resetOriginalValues();
-
-		return region;
 	}
 
 	/**
@@ -3414,33 +3418,13 @@ public class RegionPersistenceImpl
 	 */
 	@Override
 	public Region fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				Region.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						Region.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		Region region = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			region = (Region)session.get(RegionImpl.class, primaryKey);
-
-			if (region != null) {
-				cacheResult(region);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return region;
 	}
 
 	/**
@@ -3458,90 +3442,12 @@ public class RegionPersistenceImpl
 	public Map<Serializable, Region> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(Region.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Region.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, Region> map = new HashMap<Serializable, Region>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			Region region = fetchByPrimaryKey(primaryKey);
-
-			if (region != null) {
-				map.put(primaryKey, region);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (Region region : (List<Region>)query.list()) {
-				map.put(region.getPrimaryKeyObj(), region);
-
-				cacheResult(region);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

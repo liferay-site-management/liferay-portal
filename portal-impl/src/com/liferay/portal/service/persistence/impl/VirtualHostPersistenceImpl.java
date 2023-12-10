@@ -5,8 +5,11 @@
 
 package com.liferay.portal.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -42,9 +45,7 @@ import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -654,96 +655,91 @@ public class VirtualHostPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {hostname};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						VirtualHost.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByHostname, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			VirtualHost.class);
-
-		if (result instanceof VirtualHost) {
-			VirtualHost virtualHost = (VirtualHost)result;
-
-			if (!Objects.equals(hostname, virtualHost.getHostname())) {
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						VirtualHost.class, virtualHost.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(3);
-
-			sb.append(_SQL_SELECT_VIRTUALHOST_WHERE);
-
-			boolean bindHostname = false;
-
-			if (hostname.isEmpty()) {
-				sb.append(_FINDER_COLUMN_HOSTNAME_HOSTNAME_3);
-			}
-			else {
-				bindHostname = true;
-
-				sb.append(_FINDER_COLUMN_HOSTNAME_HOSTNAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {hostname};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByHostname, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof VirtualHost) {
+				VirtualHost virtualHost = (VirtualHost)result;
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindHostname) {
-					queryPos.add(hostname);
+				if (!Objects.equals(hostname, virtualHost.getHostname())) {
+					result = null;
 				}
+			}
 
-				List<VirtualHost> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(3);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByHostname, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_VIRTUALHOST_WHERE);
+
+				boolean bindHostname = false;
+
+				if (hostname.isEmpty()) {
+					sb.append(_FINDER_COLUMN_HOSTNAME_HOSTNAME_3);
 				}
 				else {
-					VirtualHost virtualHost = list.get(0);
+					bindHostname = true;
 
-					result = virtualHost;
+					sb.append(_FINDER_COLUMN_HOSTNAME_HOSTNAME_2);
+				}
 
-					cacheResult(virtualHost);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindHostname) {
+						queryPos.add(hostname);
+					}
+
+					List<VirtualHost> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByHostname, finderArgs, list);
+						}
+					}
+					else {
+						VirtualHost virtualHost = list.get(0);
+
+						result = virtualHost;
+
+						cacheResult(virtualHost);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (VirtualHost)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (VirtualHost)result;
+			}
 		}
 	}
 
@@ -2386,115 +2382,112 @@ public class VirtualHostPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {
-				companyId, layoutSetId, defaultVirtualHost
-			};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						VirtualHost.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_L_D, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			VirtualHost.class);
-
-		if (result instanceof VirtualHost) {
-			VirtualHost virtualHost = (VirtualHost)result;
-
-			if ((companyId != virtualHost.getCompanyId()) ||
-				(layoutSetId != virtualHost.getLayoutSetId()) ||
-				(defaultVirtualHost != virtualHost.isDefaultVirtualHost())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					companyId, layoutSetId, defaultVirtualHost
+				};
 			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						VirtualHost.class, virtualHost.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_L_D, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
+			if (result instanceof VirtualHost) {
+				VirtualHost virtualHost = (VirtualHost)result;
 
-			sb.append(_SQL_SELECT_VIRTUALHOST_WHERE);
+				if ((companyId != virtualHost.getCompanyId()) ||
+					(layoutSetId != virtualHost.getLayoutSetId()) ||
+					(defaultVirtualHost !=
+						virtualHost.isDefaultVirtualHost())) {
 
-			sb.append(_FINDER_COLUMN_C_L_D_COMPANYID_2);
-
-			sb.append(_FINDER_COLUMN_C_L_D_LAYOUTSETID_2);
-
-			sb.append(_FINDER_COLUMN_C_L_D_DEFAULTVIRTUALHOST_2);
-
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				queryPos.add(layoutSetId);
-
-				queryPos.add(defaultVirtualHost);
-
-				List<VirtualHost> list = query.list();
-
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_L_D, finderArgs, list);
-					}
+					result = null;
 				}
-				else {
-					if (list.size() > 1) {
-						Collections.sort(list, Collections.reverseOrder());
+			}
 
-						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
-								finderArgs = new Object[] {
-									companyId, layoutSetId, defaultVirtualHost
-								};
-							}
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-							_log.warn(
-								"VirtualHostPersistenceImpl.fetchByC_L_D(long, long, boolean, boolean) with parameters (" +
-									StringUtil.merge(finderArgs) +
-										") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+				sb.append(_SQL_SELECT_VIRTUALHOST_WHERE);
+
+				sb.append(_FINDER_COLUMN_C_L_D_COMPANYID_2);
+
+				sb.append(_FINDER_COLUMN_C_L_D_LAYOUTSETID_2);
+
+				sb.append(_FINDER_COLUMN_C_L_D_DEFAULTVIRTUALHOST_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					queryPos.add(layoutSetId);
+
+					queryPos.add(defaultVirtualHost);
+
+					List<VirtualHost> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_L_D, finderArgs, list);
 						}
 					}
+					else {
+						if (list.size() > 1) {
+							Collections.sort(list, Collections.reverseOrder());
 
-					VirtualHost virtualHost = list.get(0);
+							if (_log.isWarnEnabled()) {
+								if (!useFinderCache) {
+									finderArgs = new Object[] {
+										companyId, layoutSetId,
+										defaultVirtualHost
+									};
+								}
 
-					result = virtualHost;
+								_log.warn(
+									"VirtualHostPersistenceImpl.fetchByC_L_D(long, long, boolean, boolean) with parameters (" +
+										StringUtil.merge(finderArgs) +
+											") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+							}
+						}
 
-					cacheResult(virtualHost);
+						VirtualHost virtualHost = list.get(0);
+
+						result = virtualHost;
+
+						cacheResult(virtualHost);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (VirtualHost)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (VirtualHost)result;
+			}
 		}
 	}
 
@@ -2618,24 +2611,26 @@ public class VirtualHostPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(VirtualHost virtualHost) {
-		if (virtualHost.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					virtualHost.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				VirtualHostImpl.class, virtualHost.getPrimaryKey(),
+				virtualHost);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByHostname,
+				new Object[] {virtualHost.getHostname()}, virtualHost);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_L_D,
+				new Object[] {
+					virtualHost.getCompanyId(), virtualHost.getLayoutSetId(),
+					virtualHost.isDefaultVirtualHost()
+				},
+				virtualHost);
 		}
-
-		EntityCacheUtil.putResult(
-			VirtualHostImpl.class, virtualHost.getPrimaryKey(), virtualHost);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByHostname,
-			new Object[] {virtualHost.getHostname()}, virtualHost);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_L_D,
-			new Object[] {
-				virtualHost.getCompanyId(), virtualHost.getLayoutSetId(),
-				virtualHost.isDefaultVirtualHost()
-			},
-			virtualHost);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2655,15 +2650,18 @@ public class VirtualHostPersistenceImpl
 		}
 
 		for (VirtualHost virtualHost : virtualHosts) {
-			if (virtualHost.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(virtualHost.getCtCollectionId() != 0) &&
+						(virtualHost.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					VirtualHostImpl.class, virtualHost.getPrimaryKey()) ==
-						null) {
+				if (EntityCacheUtil.getResult(
+						VirtualHostImpl.class, virtualHost.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(virtualHost);
+					cacheResult(virtualHost);
+				}
 			}
 		}
 	}
@@ -2713,23 +2711,28 @@ public class VirtualHostPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		VirtualHostModelImpl virtualHostModelImpl) {
 
-		Object[] args = new Object[] {virtualHostModelImpl.getHostname()};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					virtualHostModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByHostname, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByHostname, args, virtualHostModelImpl);
+			Object[] args = new Object[] {virtualHostModelImpl.getHostname()};
 
-		args = new Object[] {
-			virtualHostModelImpl.getCompanyId(),
-			virtualHostModelImpl.getLayoutSetId(),
-			virtualHostModelImpl.isDefaultVirtualHost()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByHostname, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByHostname, args, virtualHostModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByC_L_D, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_L_D, args, virtualHostModelImpl);
+			args = new Object[] {
+				virtualHostModelImpl.getCompanyId(),
+				virtualHostModelImpl.getLayoutSetId(),
+				virtualHostModelImpl.isDefaultVirtualHost()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_L_D, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_L_D, args, virtualHostModelImpl);
+		}
 	}
 
 	/**
@@ -2837,52 +2840,62 @@ public class VirtualHostPersistenceImpl
 
 	@Override
 	public VirtualHost updateImpl(VirtualHost virtualHost) {
-		boolean isNew = virtualHost.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(virtualHost instanceof VirtualHostModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = virtualHost.isNew();
 
-			if (ProxyUtil.isProxyClass(virtualHost.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(virtualHost);
+			if (!(virtualHost instanceof VirtualHostModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in virtualHost proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(virtualHost.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						virtualHost);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom VirtualHost implementation " +
-					virtualHost.getClass());
-		}
-
-		VirtualHostModelImpl virtualHostModelImpl =
-			(VirtualHostModelImpl)virtualHost;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(virtualHost)) {
-				if (!isNew) {
-					session.evict(
-						VirtualHostImpl.class, virtualHost.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in virtualHost proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(virtualHost);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom VirtualHost implementation " +
+						virtualHost.getClass());
 			}
-			else {
-				virtualHost = (VirtualHost)session.merge(virtualHost);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (virtualHost.getCtCollectionId() != 0) {
+			VirtualHostModelImpl virtualHostModelImpl =
+				(VirtualHostModelImpl)virtualHost;
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(virtualHost)) {
+					if (!isNew) {
+						session.evict(
+							VirtualHostImpl.class,
+							virtualHost.getPrimaryKeyObj());
+					}
+
+					session.save(virtualHost);
+				}
+				else {
+					virtualHost = (VirtualHost)session.merge(virtualHost);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				VirtualHostImpl.class, virtualHostModelImpl, false, true);
+
+			cacheUniqueFindersCache(virtualHostModelImpl);
+
 			if (isNew) {
 				virtualHost.setNew(false);
 			}
@@ -2891,19 +2904,6 @@ public class VirtualHostPersistenceImpl
 
 			return virtualHost;
 		}
-
-		EntityCacheUtil.putResult(
-			VirtualHostImpl.class, virtualHostModelImpl, false, true);
-
-		cacheUniqueFindersCache(virtualHostModelImpl);
-
-		if (isNew) {
-			virtualHost.setNew(false);
-		}
-
-		virtualHost.resetOriginalValues();
-
-		return virtualHost;
 	}
 
 	/**
@@ -2953,34 +2953,13 @@ public class VirtualHostPersistenceImpl
 	 */
 	@Override
 	public VirtualHost fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				VirtualHost.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						VirtualHost.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		VirtualHost virtualHost = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			virtualHost = (VirtualHost)session.get(
-				VirtualHostImpl.class, primaryKey);
-
-			if (virtualHost != null) {
-				cacheResult(virtualHost);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return virtualHost;
 	}
 
 	/**
@@ -2998,91 +2977,13 @@ public class VirtualHostPersistenceImpl
 	public Map<Serializable, VirtualHost> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(VirtualHost.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						VirtualHost.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, VirtualHost> map =
-			new HashMap<Serializable, VirtualHost>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			VirtualHost virtualHost = fetchByPrimaryKey(primaryKey);
-
-			if (virtualHost != null) {
-				map.put(primaryKey, virtualHost);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (VirtualHost virtualHost : (List<VirtualHost>)query.list()) {
-				map.put(virtualHost.getPrimaryKeyObj(), virtualHost);
-
-				cacheResult(virtualHost);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

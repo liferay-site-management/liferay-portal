@@ -5,8 +5,11 @@
 
 package com.liferay.style.book.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -51,7 +54,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1909,107 +1911,103 @@ public class StyleBookEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId, head};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						StyleBookEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G_Head, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			StyleBookEntry.class);
-
-		if (result instanceof StyleBookEntry) {
-			StyleBookEntry styleBookEntry = (StyleBookEntry)result;
-
-			if (!Objects.equals(uuid, styleBookEntry.getUuid()) ||
-				(groupId != styleBookEntry.getGroupId()) ||
-				(head != styleBookEntry.isHead())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class, styleBookEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_STYLEBOOKENTRY_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_HEAD_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_HEAD_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId, head};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_HEAD_GROUPID_2);
+			Object result = null;
 
-			sb.append(_FINDER_COLUMN_UUID_G_HEAD_HEAD_2);
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G_Head, finderArgs, this);
+			}
 
-			String sql = sb.toString();
+			if (result instanceof StyleBookEntry) {
+				StyleBookEntry styleBookEntry = (StyleBookEntry)result;
 
-			Session session = null;
+				if (!Objects.equals(uuid, styleBookEntry.getUuid()) ||
+					(groupId != styleBookEntry.getGroupId()) ||
+					(head != styleBookEntry.isHead())) {
 
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				queryPos.add(head);
+				sb.append(_SQL_SELECT_STYLEBOOKENTRY_WHERE);
 
-				List<StyleBookEntry> list = query.list();
+				boolean bindUuid = false;
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G_Head, finderArgs, list);
-					}
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_HEAD_UUID_3);
 				}
 				else {
-					StyleBookEntry styleBookEntry = list.get(0);
+					bindUuid = true;
 
-					result = styleBookEntry;
+					sb.append(_FINDER_COLUMN_UUID_G_HEAD_UUID_2);
+				}
 
-					cacheResult(styleBookEntry);
+				sb.append(_FINDER_COLUMN_UUID_G_HEAD_GROUPID_2);
+
+				sb.append(_FINDER_COLUMN_UUID_G_HEAD_HEAD_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					queryPos.add(head);
+
+					List<StyleBookEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G_Head, finderArgs,
+								list);
+						}
+					}
+					else {
+						StyleBookEntry styleBookEntry = list.get(0);
+
+						result = styleBookEntry;
+
+						cacheResult(styleBookEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (StyleBookEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (StyleBookEntry)result;
+			}
 		}
 	}
 
@@ -7477,108 +7475,105 @@ public class StyleBookEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, styleBookEntryKey, head};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						StyleBookEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_SBEK_Head, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			StyleBookEntry.class);
-
-		if (result instanceof StyleBookEntry) {
-			StyleBookEntry styleBookEntry = (StyleBookEntry)result;
-
-			if ((groupId != styleBookEntry.getGroupId()) ||
-				!Objects.equals(
-					styleBookEntryKey, styleBookEntry.getStyleBookEntryKey()) ||
-				(head != styleBookEntry.isHead())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class, styleBookEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_STYLEBOOKENTRY_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_SBEK_HEAD_GROUPID_2);
-
-			boolean bindStyleBookEntryKey = false;
-
-			if (styleBookEntryKey.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_SBEK_HEAD_STYLEBOOKENTRYKEY_3);
-			}
-			else {
-				bindStyleBookEntryKey = true;
-
-				sb.append(_FINDER_COLUMN_G_SBEK_HEAD_STYLEBOOKENTRYKEY_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, styleBookEntryKey, head};
 			}
 
-			sb.append(_FINDER_COLUMN_G_SBEK_HEAD_HEAD_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_SBEK_Head, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof StyleBookEntry) {
+				StyleBookEntry styleBookEntry = (StyleBookEntry)result;
 
-			try {
-				session = openSession();
+				if ((groupId != styleBookEntry.getGroupId()) ||
+					!Objects.equals(
+						styleBookEntryKey,
+						styleBookEntry.getStyleBookEntryKey()) ||
+					(head != styleBookEntry.isHead())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				if (bindStyleBookEntryKey) {
-					queryPos.add(styleBookEntryKey);
+					result = null;
 				}
+			}
 
-				queryPos.add(head);
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				List<StyleBookEntry> list = query.list();
+				sb.append(_SQL_SELECT_STYLEBOOKENTRY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_SBEK_Head, finderArgs, list);
-					}
+				sb.append(_FINDER_COLUMN_G_SBEK_HEAD_GROUPID_2);
+
+				boolean bindStyleBookEntryKey = false;
+
+				if (styleBookEntryKey.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_SBEK_HEAD_STYLEBOOKENTRYKEY_3);
 				}
 				else {
-					StyleBookEntry styleBookEntry = list.get(0);
+					bindStyleBookEntryKey = true;
 
-					result = styleBookEntry;
+					sb.append(_FINDER_COLUMN_G_SBEK_HEAD_STYLEBOOKENTRYKEY_2);
+				}
 
-					cacheResult(styleBookEntry);
+				sb.append(_FINDER_COLUMN_G_SBEK_HEAD_HEAD_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					if (bindStyleBookEntryKey) {
+						queryPos.add(styleBookEntryKey);
+					}
+
+					queryPos.add(head);
+
+					List<StyleBookEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_SBEK_Head, finderArgs,
+								list);
+						}
+					}
+					else {
+						StyleBookEntry styleBookEntry = list.get(0);
+
+						result = styleBookEntry;
+
+						cacheResult(styleBookEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (StyleBookEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (StyleBookEntry)result;
+			}
 		}
 	}
 
@@ -7757,85 +7752,80 @@ public class StyleBookEntryPersistenceImpl
 	public StyleBookEntry fetchByHeadId(long headId, boolean useFinderCache) {
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {headId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						StyleBookEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByHeadId, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			StyleBookEntry.class);
-
-		if (result instanceof StyleBookEntry) {
-			StyleBookEntry styleBookEntry = (StyleBookEntry)result;
-
-			if (headId != styleBookEntry.getHeadId()) {
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {headId};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class, styleBookEntry.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByHeadId, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(3);
+			if (result instanceof StyleBookEntry) {
+				StyleBookEntry styleBookEntry = (StyleBookEntry)result;
 
-			sb.append(_SQL_SELECT_STYLEBOOKENTRY_WHERE);
+				if (headId != styleBookEntry.getHeadId()) {
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_HEADID_HEADID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(3);
 
-			String sql = sb.toString();
+				sb.append(_SQL_SELECT_STYLEBOOKENTRY_WHERE);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_HEADID_HEADID_2);
 
-			try {
-				session = openSession();
+				String sql = sb.toString();
 
-				Query query = session.createQuery(sql);
+				Session session = null;
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				try {
+					session = openSession();
 
-				queryPos.add(headId);
+					Query query = session.createQuery(sql);
 
-				List<StyleBookEntry> list = query.list();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByHeadId, finderArgs, list);
+					queryPos.add(headId);
+
+					List<StyleBookEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByHeadId, finderArgs, list);
+						}
+					}
+					else {
+						StyleBookEntry styleBookEntry = list.get(0);
+
+						result = styleBookEntry;
+
+						cacheResult(styleBookEntry);
 					}
 				}
-				else {
-					StyleBookEntry styleBookEntry = list.get(0);
-
-					result = styleBookEntry;
-
-					cacheResult(styleBookEntry);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (StyleBookEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (StyleBookEntry)result;
+			}
 		}
 	}
 
@@ -7940,33 +7930,35 @@ public class StyleBookEntryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(StyleBookEntry styleBookEntry) {
-		if (styleBookEntry.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					styleBookEntry.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				StyleBookEntryImpl.class, styleBookEntry.getPrimaryKey(),
+				styleBookEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G_Head,
+				new Object[] {
+					styleBookEntry.getUuid(), styleBookEntry.getGroupId(),
+					styleBookEntry.isHead()
+				},
+				styleBookEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByG_SBEK_Head,
+				new Object[] {
+					styleBookEntry.getGroupId(),
+					styleBookEntry.getStyleBookEntryKey(),
+					styleBookEntry.isHead()
+				},
+				styleBookEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByHeadId,
+				new Object[] {styleBookEntry.getHeadId()}, styleBookEntry);
 		}
-
-		entityCache.putResult(
-			StyleBookEntryImpl.class, styleBookEntry.getPrimaryKey(),
-			styleBookEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G_Head,
-			new Object[] {
-				styleBookEntry.getUuid(), styleBookEntry.getGroupId(),
-				styleBookEntry.isHead()
-			},
-			styleBookEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByG_SBEK_Head,
-			new Object[] {
-				styleBookEntry.getGroupId(),
-				styleBookEntry.getStyleBookEntryKey(), styleBookEntry.isHead()
-			},
-			styleBookEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByHeadId, new Object[] {styleBookEntry.getHeadId()},
-			styleBookEntry);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -7987,15 +7979,18 @@ public class StyleBookEntryPersistenceImpl
 		}
 
 		for (StyleBookEntry styleBookEntry : styleBookEntries) {
-			if (styleBookEntry.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(styleBookEntry.getCtCollectionId() != 0) &&
+						(styleBookEntry.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					StyleBookEntryImpl.class, styleBookEntry.getPrimaryKey()) ==
-						null) {
+				if (entityCache.getResult(
+						StyleBookEntryImpl.class,
+						styleBookEntry.getPrimaryKey()) == null) {
 
-				cacheResult(styleBookEntry);
+					cacheResult(styleBookEntry);
+				}
 			}
 		}
 	}
@@ -8045,33 +8040,39 @@ public class StyleBookEntryPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		StyleBookEntryModelImpl styleBookEntryModelImpl) {
 
-		Object[] args = new Object[] {
-			styleBookEntryModelImpl.getUuid(),
-			styleBookEntryModelImpl.getGroupId(),
-			styleBookEntryModelImpl.isHead()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					styleBookEntryModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(
-			_finderPathCountByUUID_G_Head, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G_Head, args, styleBookEntryModelImpl);
+			Object[] args = new Object[] {
+				styleBookEntryModelImpl.getUuid(),
+				styleBookEntryModelImpl.getGroupId(),
+				styleBookEntryModelImpl.isHead()
+			};
 
-		args = new Object[] {
-			styleBookEntryModelImpl.getGroupId(),
-			styleBookEntryModelImpl.getStyleBookEntryKey(),
-			styleBookEntryModelImpl.isHead()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G_Head, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G_Head, args, styleBookEntryModelImpl);
 
-		finderCache.putResult(
-			_finderPathCountByG_SBEK_Head, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByG_SBEK_Head, args, styleBookEntryModelImpl);
+			args = new Object[] {
+				styleBookEntryModelImpl.getGroupId(),
+				styleBookEntryModelImpl.getStyleBookEntryKey(),
+				styleBookEntryModelImpl.isHead()
+			};
 
-		args = new Object[] {styleBookEntryModelImpl.getHeadId()};
+			finderCache.putResult(
+				_finderPathCountByG_SBEK_Head, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_SBEK_Head, args, styleBookEntryModelImpl);
 
-		finderCache.putResult(_finderPathCountByHeadId, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByHeadId, args, styleBookEntryModelImpl);
+			args = new Object[] {styleBookEntryModelImpl.getHeadId()};
+
+			finderCache.putResult(
+				_finderPathCountByHeadId, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByHeadId, args, styleBookEntryModelImpl);
+		}
 	}
 
 	/**
@@ -8186,85 +8187,94 @@ public class StyleBookEntryPersistenceImpl
 
 	@Override
 	public StyleBookEntry updateImpl(StyleBookEntry styleBookEntry) {
-		boolean isNew = styleBookEntry.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(styleBookEntry instanceof StyleBookEntryModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = styleBookEntry.isNew();
 
-			if (ProxyUtil.isProxyClass(styleBookEntry.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					styleBookEntry);
+			if (!(styleBookEntry instanceof StyleBookEntryModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in styleBookEntry proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(styleBookEntry.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						styleBookEntry);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom StyleBookEntry implementation " +
-					styleBookEntry.getClass());
-		}
-
-		StyleBookEntryModelImpl styleBookEntryModelImpl =
-			(StyleBookEntryModelImpl)styleBookEntry;
-
-		if (Validator.isNull(styleBookEntry.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			styleBookEntry.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (styleBookEntry.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				styleBookEntry.setCreateDate(date);
-			}
-			else {
-				styleBookEntry.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!styleBookEntryModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				styleBookEntry.setModifiedDate(date);
-			}
-			else {
-				styleBookEntry.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(styleBookEntry)) {
-				if (!isNew) {
-					session.evict(
-						StyleBookEntryImpl.class,
-						styleBookEntry.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in styleBookEntry proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(styleBookEntry);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom StyleBookEntry implementation " +
+						styleBookEntry.getClass());
 			}
-			else {
-				styleBookEntry = (StyleBookEntry)session.merge(styleBookEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (styleBookEntry.getCtCollectionId() != 0) {
+			StyleBookEntryModelImpl styleBookEntryModelImpl =
+				(StyleBookEntryModelImpl)styleBookEntry;
+
+			if (Validator.isNull(styleBookEntry.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				styleBookEntry.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (styleBookEntry.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					styleBookEntry.setCreateDate(date);
+				}
+				else {
+					styleBookEntry.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!styleBookEntryModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					styleBookEntry.setModifiedDate(date);
+				}
+				else {
+					styleBookEntry.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(styleBookEntry)) {
+					if (!isNew) {
+						session.evict(
+							StyleBookEntryImpl.class,
+							styleBookEntry.getPrimaryKeyObj());
+					}
+
+					session.save(styleBookEntry);
+				}
+				else {
+					styleBookEntry = (StyleBookEntry)session.merge(
+						styleBookEntry);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				StyleBookEntryImpl.class, styleBookEntryModelImpl, false, true);
+
+			cacheUniqueFindersCache(styleBookEntryModelImpl);
+
 			if (isNew) {
 				styleBookEntry.setNew(false);
 			}
@@ -8273,19 +8283,6 @@ public class StyleBookEntryPersistenceImpl
 
 			return styleBookEntry;
 		}
-
-		entityCache.putResult(
-			StyleBookEntryImpl.class, styleBookEntryModelImpl, false, true);
-
-		cacheUniqueFindersCache(styleBookEntryModelImpl);
-
-		if (isNew) {
-			styleBookEntry.setNew(false);
-		}
-
-		styleBookEntry.resetOriginalValues();
-
-		return styleBookEntry;
 	}
 
 	/**
@@ -8335,34 +8332,13 @@ public class StyleBookEntryPersistenceImpl
 	 */
 	@Override
 	public StyleBookEntry fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				StyleBookEntry.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						StyleBookEntry.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		StyleBookEntry styleBookEntry = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			styleBookEntry = (StyleBookEntry)session.get(
-				StyleBookEntryImpl.class, primaryKey);
-
-			if (styleBookEntry != null) {
-				cacheResult(styleBookEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return styleBookEntry;
 	}
 
 	/**
@@ -8380,93 +8356,13 @@ public class StyleBookEntryPersistenceImpl
 	public Map<Serializable, StyleBookEntry> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(StyleBookEntry.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						StyleBookEntry.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, StyleBookEntry> map =
-			new HashMap<Serializable, StyleBookEntry>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			StyleBookEntry styleBookEntry = fetchByPrimaryKey(primaryKey);
-
-			if (styleBookEntry != null) {
-				map.put(primaryKey, styleBookEntry);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (StyleBookEntry styleBookEntry :
-					(List<StyleBookEntry>)query.list()) {
-
-				map.put(styleBookEntry.getPrimaryKeyObj(), styleBookEntry);
-
-				cacheResult(styleBookEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

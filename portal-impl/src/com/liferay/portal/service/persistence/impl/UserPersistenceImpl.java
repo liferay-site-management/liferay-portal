@@ -5,9 +5,12 @@
 
 package com.liferay.portal.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -63,7 +66,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1793,85 +1795,79 @@ public class UserPersistenceImpl
 	public User fetchByContactId(long contactId, boolean useFinderCache) {
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {contactId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(User.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByContactId, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			User.class);
-
-		if (result instanceof User) {
-			User user = (User)result;
-
-			if (contactId != user.getContactId()) {
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {contactId};
 			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						User.class, user.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByContactId, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(3);
+			if (result instanceof User) {
+				User user = (User)result;
 
-			sb.append(_SQL_SELECT_USER_WHERE);
+				if (contactId != user.getContactId()) {
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_CONTACTID_CONTACTID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(3);
 
-			String sql = sb.toString();
+				sb.append(_SQL_SELECT_USER_WHERE);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_CONTACTID_CONTACTID_2);
 
-			try {
-				session = openSession();
+				String sql = sb.toString();
 
-				Query query = session.createQuery(sql);
+				Session session = null;
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				try {
+					session = openSession();
 
-				queryPos.add(contactId);
+					Query query = session.createQuery(sql);
 
-				List<User> list = query.list();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByContactId, finderArgs, list);
+					queryPos.add(contactId);
+
+					List<User> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByContactId, finderArgs, list);
+						}
+					}
+					else {
+						User user = list.get(0);
+
+						result = user;
+
+						cacheResult(user);
 					}
 				}
-				else {
-					User user = list.get(0);
-
-					result = user;
-
-					cacheResult(user);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (User)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (User)result;
+			}
 		}
 	}
 
@@ -2561,100 +2557,94 @@ public class UserPersistenceImpl
 	public User fetchByPortraitId(long portraitId, boolean useFinderCache) {
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {portraitId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(User.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByPortraitId, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			User.class);
-
-		if (result instanceof User) {
-			User user = (User)result;
-
-			if (portraitId != user.getPortraitId()) {
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {portraitId};
 			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						User.class, user.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByPortraitId, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(3);
+			if (result instanceof User) {
+				User user = (User)result;
 
-			sb.append(_SQL_SELECT_USER_WHERE);
-
-			sb.append(_FINDER_COLUMN_PORTRAITID_PORTRAITID_2);
-
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(portraitId);
-
-				List<User> list = query.list();
-
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByPortraitId, finderArgs, list);
-					}
+				if (portraitId != user.getPortraitId()) {
+					result = null;
 				}
-				else {
-					if (list.size() > 1) {
-						Collections.sort(list, Collections.reverseOrder());
+			}
 
-						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
-								finderArgs = new Object[] {portraitId};
-							}
+			if (result == null) {
+				StringBundler sb = new StringBundler(3);
 
-							_log.warn(
-								"UserPersistenceImpl.fetchByPortraitId(long, boolean) with parameters (" +
-									StringUtil.merge(finderArgs) +
-										") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+				sb.append(_SQL_SELECT_USER_WHERE);
+
+				sb.append(_FINDER_COLUMN_PORTRAITID_PORTRAITID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(portraitId);
+
+					List<User> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByPortraitId, finderArgs, list);
 						}
 					}
+					else {
+						if (list.size() > 1) {
+							Collections.sort(list, Collections.reverseOrder());
 
-					User user = list.get(0);
+							if (_log.isWarnEnabled()) {
+								if (!useFinderCache) {
+									finderArgs = new Object[] {portraitId};
+								}
 
-					result = user;
+								_log.warn(
+									"UserPersistenceImpl.fetchByPortraitId(long, boolean) with parameters (" +
+										StringUtil.merge(finderArgs) +
+											") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+							}
+						}
 
-					cacheResult(user);
+						User user = list.get(0);
+
+						result = user;
+
+						cacheResult(user);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (User)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (User)result;
+			}
 		}
 	}
 
@@ -3185,91 +3175,85 @@ public class UserPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, userId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(User.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_U, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			User.class);
-
-		if (result instanceof User) {
-			User user = (User)result;
-
-			if ((companyId != user.getCompanyId()) ||
-				(userId != user.getUserId())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {companyId, userId};
 			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						User.class, user.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_U, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
+			if (result instanceof User) {
+				User user = (User)result;
 
-			sb.append(_SQL_SELECT_USER_WHERE);
+				if ((companyId != user.getCompanyId()) ||
+					(userId != user.getUserId())) {
 
-			sb.append(_FINDER_COLUMN_C_U_COMPANYID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_C_U_USERID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-			String sql = sb.toString();
+				sb.append(_SQL_SELECT_USER_WHERE);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_C_U_COMPANYID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_C_U_USERID_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(companyId);
+				try {
+					session = openSession();
 
-				queryPos.add(userId);
+					Query query = session.createQuery(sql);
 
-				List<User> list = query.list();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_U, finderArgs, list);
+					queryPos.add(companyId);
+
+					queryPos.add(userId);
+
+					List<User> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_U, finderArgs, list);
+						}
+					}
+					else {
+						User user = list.get(0);
+
+						result = user;
+
+						cacheResult(user);
 					}
 				}
-				else {
-					User user = list.get(0);
-
-					result = user;
-
-					cacheResult(user);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (User)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (User)result;
+			}
 		}
 	}
 
@@ -4604,102 +4588,96 @@ public class UserPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, screenName};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(User.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_SN, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			User.class);
-
-		if (result instanceof User) {
-			User user = (User)result;
-
-			if ((companyId != user.getCompanyId()) ||
-				!Objects.equals(screenName, user.getScreenName())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						User.class, user.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_USER_WHERE);
-
-			sb.append(_FINDER_COLUMN_C_SN_COMPANYID_2);
-
-			boolean bindScreenName = false;
-
-			if (screenName.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_SN_SCREENNAME_3);
-			}
-			else {
-				bindScreenName = true;
-
-				sb.append(_FINDER_COLUMN_C_SN_SCREENNAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {companyId, screenName};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_SN, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof User) {
+				User user = (User)result;
 
-				Query query = session.createQuery(sql);
+				if ((companyId != user.getCompanyId()) ||
+					!Objects.equals(screenName, user.getScreenName())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				if (bindScreenName) {
-					queryPos.add(screenName);
+					result = null;
 				}
+			}
 
-				List<User> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_SN, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_USER_WHERE);
+
+				sb.append(_FINDER_COLUMN_C_SN_COMPANYID_2);
+
+				boolean bindScreenName = false;
+
+				if (screenName.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_SN_SCREENNAME_3);
 				}
 				else {
-					User user = list.get(0);
+					bindScreenName = true;
 
-					result = user;
+					sb.append(_FINDER_COLUMN_C_SN_SCREENNAME_2);
+				}
 
-					cacheResult(user);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					if (bindScreenName) {
+						queryPos.add(screenName);
+					}
+
+					List<User> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_SN, finderArgs, list);
+						}
+					}
+					else {
+						User user = list.get(0);
+
+						result = user;
+
+						cacheResult(user);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (User)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (User)result;
+			}
 		}
 	}
 
@@ -4876,102 +4854,96 @@ public class UserPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, emailAddress};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(User.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_EA, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			User.class);
-
-		if (result instanceof User) {
-			User user = (User)result;
-
-			if ((companyId != user.getCompanyId()) ||
-				!Objects.equals(emailAddress, user.getEmailAddress())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						User.class, user.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_USER_WHERE);
-
-			sb.append(_FINDER_COLUMN_C_EA_COMPANYID_2);
-
-			boolean bindEmailAddress = false;
-
-			if (emailAddress.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_EA_EMAILADDRESS_3);
-			}
-			else {
-				bindEmailAddress = true;
-
-				sb.append(_FINDER_COLUMN_C_EA_EMAILADDRESS_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {companyId, emailAddress};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_EA, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof User) {
+				User user = (User)result;
 
-				Query query = session.createQuery(sql);
+				if ((companyId != user.getCompanyId()) ||
+					!Objects.equals(emailAddress, user.getEmailAddress())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				if (bindEmailAddress) {
-					queryPos.add(emailAddress);
+					result = null;
 				}
+			}
 
-				List<User> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_EA, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_USER_WHERE);
+
+				sb.append(_FINDER_COLUMN_C_EA_COMPANYID_2);
+
+				boolean bindEmailAddress = false;
+
+				if (emailAddress.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_EA_EMAILADDRESS_3);
 				}
 				else {
-					User user = list.get(0);
+					bindEmailAddress = true;
 
-					result = user;
+					sb.append(_FINDER_COLUMN_C_EA_EMAILADDRESS_2);
+				}
 
-					cacheResult(user);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					if (bindEmailAddress) {
+						queryPos.add(emailAddress);
+					}
+
+					List<User> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_EA, finderArgs, list);
+						}
+					}
+					else {
+						User user = list.get(0);
+
+						result = user;
+
+						cacheResult(user);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (User)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (User)result;
+			}
 		}
 	}
 
@@ -5146,108 +5118,102 @@ public class UserPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, facebookId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(User.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_FID, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			User.class);
-
-		if (result instanceof User) {
-			User user = (User)result;
-
-			if ((companyId != user.getCompanyId()) ||
-				(facebookId != user.getFacebookId())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {companyId, facebookId};
 			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						User.class, user.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_FID, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
+			if (result instanceof User) {
+				User user = (User)result;
 
-			sb.append(_SQL_SELECT_USER_WHERE);
+				if ((companyId != user.getCompanyId()) ||
+					(facebookId != user.getFacebookId())) {
 
-			sb.append(_FINDER_COLUMN_C_FID_COMPANYID_2);
-
-			sb.append(_FINDER_COLUMN_C_FID_FACEBOOKID_2);
-
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				queryPos.add(facebookId);
-
-				List<User> list = query.list();
-
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_FID, finderArgs, list);
-					}
+					result = null;
 				}
-				else {
-					if (list.size() > 1) {
-						Collections.sort(list, Collections.reverseOrder());
+			}
 
-						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
-								finderArgs = new Object[] {
-									companyId, facebookId
-								};
-							}
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-							_log.warn(
-								"UserPersistenceImpl.fetchByC_FID(long, long, boolean) with parameters (" +
-									StringUtil.merge(finderArgs) +
-										") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+				sb.append(_SQL_SELECT_USER_WHERE);
+
+				sb.append(_FINDER_COLUMN_C_FID_COMPANYID_2);
+
+				sb.append(_FINDER_COLUMN_C_FID_FACEBOOKID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					queryPos.add(facebookId);
+
+					List<User> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_FID, finderArgs, list);
 						}
 					}
+					else {
+						if (list.size() > 1) {
+							Collections.sort(list, Collections.reverseOrder());
 
-					User user = list.get(0);
+							if (_log.isWarnEnabled()) {
+								if (!useFinderCache) {
+									finderArgs = new Object[] {
+										companyId, facebookId
+									};
+								}
 
-					result = user;
+								_log.warn(
+									"UserPersistenceImpl.fetchByC_FID(long, long, boolean) with parameters (" +
+										StringUtil.merge(finderArgs) +
+											") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+							}
+						}
 
-					cacheResult(user);
+						User user = list.get(0);
+
+						result = user;
+
+						cacheResult(user);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (User)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (User)result;
+			}
 		}
 	}
 
@@ -5408,119 +5374,113 @@ public class UserPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, googleUserId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(User.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_GUID, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			User.class);
-
-		if (result instanceof User) {
-			User user = (User)result;
-
-			if ((companyId != user.getCompanyId()) ||
-				!Objects.equals(googleUserId, user.getGoogleUserId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						User.class, user.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_USER_WHERE);
-
-			sb.append(_FINDER_COLUMN_C_GUID_COMPANYID_2);
-
-			boolean bindGoogleUserId = false;
-
-			if (googleUserId.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_GUID_GOOGLEUSERID_3);
-			}
-			else {
-				bindGoogleUserId = true;
-
-				sb.append(_FINDER_COLUMN_C_GUID_GOOGLEUSERID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {companyId, googleUserId};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_GUID, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof User) {
+				User user = (User)result;
 
-				Query query = session.createQuery(sql);
+				if ((companyId != user.getCompanyId()) ||
+					!Objects.equals(googleUserId, user.getGoogleUserId())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				if (bindGoogleUserId) {
-					queryPos.add(googleUserId);
+					result = null;
 				}
+			}
 
-				List<User> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_GUID, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_USER_WHERE);
+
+				sb.append(_FINDER_COLUMN_C_GUID_COMPANYID_2);
+
+				boolean bindGoogleUserId = false;
+
+				if (googleUserId.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_GUID_GOOGLEUSERID_3);
 				}
 				else {
-					if (list.size() > 1) {
-						Collections.sort(list, Collections.reverseOrder());
+					bindGoogleUserId = true;
 
-						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
-								finderArgs = new Object[] {
-									companyId, googleUserId
-								};
-							}
+					sb.append(_FINDER_COLUMN_C_GUID_GOOGLEUSERID_2);
+				}
 
-							_log.warn(
-								"UserPersistenceImpl.fetchByC_GUID(long, String, boolean) with parameters (" +
-									StringUtil.merge(finderArgs) +
-										") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
-						}
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					if (bindGoogleUserId) {
+						queryPos.add(googleUserId);
 					}
 
-					User user = list.get(0);
+					List<User> list = query.list();
 
-					result = user;
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_GUID, finderArgs, list);
+						}
+					}
+					else {
+						if (list.size() > 1) {
+							Collections.sort(list, Collections.reverseOrder());
 
-					cacheResult(user);
+							if (_log.isWarnEnabled()) {
+								if (!useFinderCache) {
+									finderArgs = new Object[] {
+										companyId, googleUserId
+									};
+								}
+
+								_log.warn(
+									"UserPersistenceImpl.fetchByC_GUID(long, String, boolean) with parameters (" +
+										StringUtil.merge(finderArgs) +
+											") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+							}
+						}
+
+						User user = list.get(0);
+
+						result = user;
+
+						cacheResult(user);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (User)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (User)result;
+			}
 		}
 	}
 
@@ -5697,117 +5657,113 @@ public class UserPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, openId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(User.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_O, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			User.class);
-
-		if (result instanceof User) {
-			User user = (User)result;
-
-			if ((companyId != user.getCompanyId()) ||
-				!Objects.equals(openId, user.getOpenId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						User.class, user.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_USER_WHERE);
-
-			sb.append(_FINDER_COLUMN_C_O_COMPANYID_2);
-
-			boolean bindOpenId = false;
-
-			if (openId.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_O_OPENID_3);
-			}
-			else {
-				bindOpenId = true;
-
-				sb.append(_FINDER_COLUMN_C_O_OPENID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {companyId, openId};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_O, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof User) {
+				User user = (User)result;
 
-				Query query = session.createQuery(sql);
+				if ((companyId != user.getCompanyId()) ||
+					!Objects.equals(openId, user.getOpenId())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				if (bindOpenId) {
-					queryPos.add(openId);
+					result = null;
 				}
+			}
 
-				List<User> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_O, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_USER_WHERE);
+
+				sb.append(_FINDER_COLUMN_C_O_COMPANYID_2);
+
+				boolean bindOpenId = false;
+
+				if (openId.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_O_OPENID_3);
 				}
 				else {
-					if (list.size() > 1) {
-						Collections.sort(list, Collections.reverseOrder());
+					bindOpenId = true;
 
-						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
-								finderArgs = new Object[] {companyId, openId};
-							}
+					sb.append(_FINDER_COLUMN_C_O_OPENID_2);
+				}
 
-							_log.warn(
-								"UserPersistenceImpl.fetchByC_O(long, String, boolean) with parameters (" +
-									StringUtil.merge(finderArgs) +
-										") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
-						}
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					if (bindOpenId) {
+						queryPos.add(openId);
 					}
 
-					User user = list.get(0);
+					List<User> list = query.list();
 
-					result = user;
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_O, finderArgs, list);
+						}
+					}
+					else {
+						if (list.size() > 1) {
+							Collections.sort(list, Collections.reverseOrder());
 
-					cacheResult(user);
+							if (_log.isWarnEnabled()) {
+								if (!useFinderCache) {
+									finderArgs = new Object[] {
+										companyId, openId
+									};
+								}
+
+								_log.warn(
+									"UserPersistenceImpl.fetchByC_O(long, String, boolean) with parameters (" +
+										StringUtil.merge(finderArgs) +
+											") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+							}
+						}
+
+						User user = list.get(0);
+
+						result = user;
+
+						cacheResult(user);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (User)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (User)result;
+			}
 		}
 	}
 
@@ -8331,103 +8287,98 @@ public class UserPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {externalReferenceCode, companyId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(User.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByERC_C, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			User.class);
-
-		if (result instanceof User) {
-			User user = (User)result;
-
-			if (!Objects.equals(
-					externalReferenceCode, user.getExternalReferenceCode()) ||
-				(companyId != user.getCompanyId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						User.class, user.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_USER_WHERE);
-
-			boolean bindExternalReferenceCode = false;
-
-			if (externalReferenceCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindExternalReferenceCode = true;
-
-				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {externalReferenceCode, companyId};
 			}
 
-			sb.append(_FINDER_COLUMN_ERC_C_COMPANYID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByERC_C, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof User) {
+				User user = (User)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(
+						externalReferenceCode,
+						user.getExternalReferenceCode()) ||
+					(companyId != user.getCompanyId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindExternalReferenceCode) {
-					queryPos.add(externalReferenceCode);
+					result = null;
 				}
+			}
 
-				queryPos.add(companyId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<User> list = query.list();
+				sb.append(_SQL_SELECT_USER_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByERC_C, finderArgs, list);
-					}
+				boolean bindExternalReferenceCode = false;
+
+				if (externalReferenceCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_3);
 				}
 				else {
-					User user = list.get(0);
+					bindExternalReferenceCode = true;
 
-					result = user;
+					sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(user);
+				sb.append(_FINDER_COLUMN_ERC_C_COMPANYID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindExternalReferenceCode) {
+						queryPos.add(externalReferenceCode);
+					}
+
+					queryPos.add(companyId);
+
+					List<User> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByERC_C, finderArgs, list);
+						}
+					}
+					else {
+						User user = list.get(0);
+
+						result = user;
+
+						cacheResult(user);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (User)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (User)result;
+			}
 		}
 	}
 
@@ -8561,48 +8512,54 @@ public class UserPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(User user) {
-		if (user.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					user.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				UserImpl.class, user.getPrimaryKey(), user);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByContactId, new Object[] {user.getContactId()},
+				user);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByPortraitId,
+				new Object[] {user.getPortraitId()}, user);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_U,
+				new Object[] {user.getCompanyId(), user.getUserId()}, user);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_SN,
+				new Object[] {user.getCompanyId(), user.getScreenName()}, user);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_EA,
+				new Object[] {user.getCompanyId(), user.getEmailAddress()},
+				user);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_FID,
+				new Object[] {user.getCompanyId(), user.getFacebookId()}, user);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_GUID,
+				new Object[] {user.getCompanyId(), user.getGoogleUserId()},
+				user);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_O,
+				new Object[] {user.getCompanyId(), user.getOpenId()}, user);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByERC_C,
+				new Object[] {
+					user.getExternalReferenceCode(), user.getCompanyId()
+				},
+				user);
 		}
-
-		EntityCacheUtil.putResult(UserImpl.class, user.getPrimaryKey(), user);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByContactId, new Object[] {user.getContactId()},
-			user);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByPortraitId, new Object[] {user.getPortraitId()},
-			user);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_U,
-			new Object[] {user.getCompanyId(), user.getUserId()}, user);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_SN,
-			new Object[] {user.getCompanyId(), user.getScreenName()}, user);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_EA,
-			new Object[] {user.getCompanyId(), user.getEmailAddress()}, user);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_FID,
-			new Object[] {user.getCompanyId(), user.getFacebookId()}, user);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_GUID,
-			new Object[] {user.getCompanyId(), user.getGoogleUserId()}, user);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_O,
-			new Object[] {user.getCompanyId(), user.getOpenId()}, user);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByERC_C,
-			new Object[] {user.getExternalReferenceCode(), user.getCompanyId()},
-			user);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -8622,14 +8579,17 @@ public class UserPersistenceImpl
 		}
 
 		for (User user : users) {
-			if (user.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(user.getCtCollectionId() != 0) &&
+						(user.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					UserImpl.class, user.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						UserImpl.class, user.getPrimaryKey()) == null) {
 
-				cacheResult(user);
+					cacheResult(user);
+				}
 			}
 		}
 	}
@@ -8677,75 +8637,88 @@ public class UserPersistenceImpl
 	}
 
 	protected void cacheUniqueFindersCache(UserModelImpl userModelImpl) {
-		Object[] args = new Object[] {userModelImpl.getContactId()};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					userModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByContactId, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByContactId, args, userModelImpl);
+			Object[] args = new Object[] {userModelImpl.getContactId()};
 
-		args = new Object[] {userModelImpl.getPortraitId()};
+			FinderCacheUtil.putResult(
+				_finderPathCountByContactId, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByContactId, args, userModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByPortraitId, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByPortraitId, args, userModelImpl);
+			args = new Object[] {userModelImpl.getPortraitId()};
 
-		args = new Object[] {
-			userModelImpl.getCompanyId(), userModelImpl.getUserId()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByPortraitId, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByPortraitId, args, userModelImpl);
 
-		FinderCacheUtil.putResult(_finderPathCountByC_U, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(_finderPathFetchByC_U, args, userModelImpl);
+			args = new Object[] {
+				userModelImpl.getCompanyId(), userModelImpl.getUserId()
+			};
 
-		args = new Object[] {
-			userModelImpl.getCompanyId(), userModelImpl.getScreenName()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_U, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_U, args, userModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByC_SN, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(_finderPathFetchByC_SN, args, userModelImpl);
+			args = new Object[] {
+				userModelImpl.getCompanyId(), userModelImpl.getScreenName()
+			};
 
-		args = new Object[] {
-			userModelImpl.getCompanyId(), userModelImpl.getEmailAddress()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_SN, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_SN, args, userModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByC_EA, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(_finderPathFetchByC_EA, args, userModelImpl);
+			args = new Object[] {
+				userModelImpl.getCompanyId(), userModelImpl.getEmailAddress()
+			};
 
-		args = new Object[] {
-			userModelImpl.getCompanyId(), userModelImpl.getFacebookId()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_EA, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_EA, args, userModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByC_FID, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(_finderPathFetchByC_FID, args, userModelImpl);
+			args = new Object[] {
+				userModelImpl.getCompanyId(), userModelImpl.getFacebookId()
+			};
 
-		args = new Object[] {
-			userModelImpl.getCompanyId(), userModelImpl.getGoogleUserId()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_FID, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_FID, args, userModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByC_GUID, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_GUID, args, userModelImpl);
+			args = new Object[] {
+				userModelImpl.getCompanyId(), userModelImpl.getGoogleUserId()
+			};
 
-		args = new Object[] {
-			userModelImpl.getCompanyId(), userModelImpl.getOpenId()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_GUID, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_GUID, args, userModelImpl);
 
-		FinderCacheUtil.putResult(_finderPathCountByC_O, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(_finderPathFetchByC_O, args, userModelImpl);
+			args = new Object[] {
+				userModelImpl.getCompanyId(), userModelImpl.getOpenId()
+			};
 
-		args = new Object[] {
-			userModelImpl.getExternalReferenceCode(),
-			userModelImpl.getCompanyId()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_O, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_O, args, userModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByERC_C, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(_finderPathFetchByERC_C, args, userModelImpl);
+			args = new Object[] {
+				userModelImpl.getExternalReferenceCode(),
+				userModelImpl.getCompanyId()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByERC_C, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByERC_C, args, userModelImpl);
+		}
 	}
 
 	/**
@@ -8867,106 +8840,114 @@ public class UserPersistenceImpl
 
 	@Override
 	public User updateImpl(User user) {
-		boolean isNew = user.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(user instanceof UserModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = user.isNew();
 
-			if (ProxyUtil.isProxyClass(user.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(user);
+			if (!(user instanceof UserModelImpl)) {
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(user.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(user);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in user proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in user proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom User implementation " +
+						user.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom User implementation " +
-					user.getClass());
-		}
+			UserModelImpl userModelImpl = (UserModelImpl)user;
 
-		UserModelImpl userModelImpl = (UserModelImpl)user;
+			if (Validator.isNull(user.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
 
-		if (Validator.isNull(user.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
+				user.setUuid(uuid);
+			}
 
-			user.setUuid(uuid);
-		}
+			if (Validator.isNull(user.getExternalReferenceCode())) {
+				user.setExternalReferenceCode(user.getUuid());
+			}
+			else {
+				User ercUser = fetchByERC_C(
+					user.getExternalReferenceCode(), user.getCompanyId());
 
-		if (Validator.isNull(user.getExternalReferenceCode())) {
-			user.setExternalReferenceCode(user.getUuid());
-		}
-		else {
-			User ercUser = fetchByERC_C(
-				user.getExternalReferenceCode(), user.getCompanyId());
+				if (isNew) {
+					if (ercUser != null) {
+						throw new DuplicateUserExternalReferenceCodeException(
+							"Duplicate user with external reference code " +
+								user.getExternalReferenceCode() +
+									" and company " + user.getCompanyId());
+					}
+				}
+				else {
+					if ((ercUser != null) &&
+						(user.getUserId() != ercUser.getUserId())) {
 
-			if (isNew) {
-				if (ercUser != null) {
-					throw new DuplicateUserExternalReferenceCodeException(
-						"Duplicate user with external reference code " +
-							user.getExternalReferenceCode() + " and company " +
-								user.getCompanyId());
+						throw new DuplicateUserExternalReferenceCodeException(
+							"Duplicate user with external reference code " +
+								user.getExternalReferenceCode() +
+									" and company " + user.getCompanyId());
+					}
 				}
 			}
-			else {
-				if ((ercUser != null) &&
-					(user.getUserId() != ercUser.getUserId())) {
 
-					throw new DuplicateUserExternalReferenceCodeException(
-						"Duplicate user with external reference code " +
-							user.getExternalReferenceCode() + " and company " +
-								user.getCompanyId());
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (user.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					user.setCreateDate(date);
+				}
+				else {
+					user.setCreateDate(serviceContext.getCreateDate(date));
 				}
 			}
-		}
 
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (user.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				user.setCreateDate(date);
-			}
-			else {
-				user.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!userModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				user.setModifiedDate(date);
-			}
-			else {
-				user.setModifiedDate(serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(user)) {
-				if (!isNew) {
-					session.evict(UserImpl.class, user.getPrimaryKeyObj());
+			if (!userModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					user.setModifiedDate(date);
 				}
-
-				session.save(user);
+				else {
+					user.setModifiedDate(serviceContext.getModifiedDate(date));
+				}
 			}
-			else {
-				user = (User)session.merge(user);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (user.getCtCollectionId() != 0) {
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(user)) {
+					if (!isNew) {
+						session.evict(UserImpl.class, user.getPrimaryKeyObj());
+					}
+
+					session.save(user);
+				}
+				else {
+					user = (User)session.merge(user);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				UserImpl.class, userModelImpl, false, true);
+
+			cacheUniqueFindersCache(userModelImpl);
+
 			if (isNew) {
 				user.setNew(false);
 			}
@@ -8975,18 +8956,6 @@ public class UserPersistenceImpl
 
 			return user;
 		}
-
-		EntityCacheUtil.putResult(UserImpl.class, userModelImpl, false, true);
-
-		cacheUniqueFindersCache(userModelImpl);
-
-		if (isNew) {
-			user.setNew(false);
-		}
-
-		user.resetOriginalValues();
-
-		return user;
 	}
 
 	/**
@@ -9034,31 +9003,13 @@ public class UserPersistenceImpl
 	 */
 	@Override
 	public User fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(User.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						User.class, primaryKey))) {
+
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		User user = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			user = (User)session.get(UserImpl.class, primaryKey);
-
-			if (user != null) {
-				cacheResult(user);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return user;
 	}
 
 	/**
@@ -9076,90 +9027,12 @@ public class UserPersistenceImpl
 	public Map<Serializable, User> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(User.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(User.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, User> map = new HashMap<Serializable, User>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			User user = fetchByPrimaryKey(primaryKey);
-
-			if (user != null) {
-				map.put(primaryKey, user);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (User user : (List<User>)query.list()) {
-				map.put(user.getPrimaryKeyObj(), user);
-
-				cacheResult(user);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

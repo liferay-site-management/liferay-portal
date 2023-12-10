@@ -11,9 +11,12 @@ import com.liferay.asset.kernel.model.AssetTagTable;
 import com.liferay.asset.kernel.service.persistence.AssetEntryPersistence;
 import com.liferay.asset.kernel.service.persistence.AssetTagPersistence;
 import com.liferay.asset.kernel.service.persistence.AssetTagUtil;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -56,7 +59,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -704,102 +706,97 @@ public class AssetTagPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AssetTag.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			AssetTag.class);
-
-		if (result instanceof AssetTag) {
-			AssetTag assetTag = (AssetTag)result;
-
-			if (!Objects.equals(uuid, assetTag.getUuid()) ||
-				(groupId != assetTag.getGroupId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						AssetTag.class, assetTag.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_ASSETTAG_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof AssetTag) {
+				AssetTag assetTag = (AssetTag)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, assetTag.getUuid()) ||
+					(groupId != assetTag.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<AssetTag> list = query.list();
+				sb.append(_SQL_SELECT_ASSETTAG_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					AssetTag assetTag = list.get(0);
+					bindUuid = true;
 
-					result = assetTag;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(assetTag);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<AssetTag> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						AssetTag assetTag = list.get(0);
+
+						result = assetTag;
+
+						cacheResult(assetTag);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (AssetTag)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (AssetTag)result;
+			}
 		}
 	}
 
@@ -4021,16 +4018,18 @@ public class AssetTagPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(AssetTag assetTag) {
-		if (assetTag.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					assetTag.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				AssetTagImpl.class, assetTag.getPrimaryKey(), assetTag);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {assetTag.getUuid(), assetTag.getGroupId()},
+				assetTag);
 		}
-
-		EntityCacheUtil.putResult(
-			AssetTagImpl.class, assetTag.getPrimaryKey(), assetTag);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {assetTag.getUuid(), assetTag.getGroupId()}, assetTag);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -4050,14 +4049,17 @@ public class AssetTagPersistenceImpl
 		}
 
 		for (AssetTag assetTag : assetTags) {
-			if (assetTag.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(assetTag.getCtCollectionId() != 0) &&
+						(assetTag.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					AssetTagImpl.class, assetTag.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						AssetTagImpl.class, assetTag.getPrimaryKey()) == null) {
 
-				cacheResult(assetTag);
+					cacheResult(assetTag);
+				}
 			}
 		}
 	}
@@ -4107,14 +4109,19 @@ public class AssetTagPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		AssetTagModelImpl assetTagModelImpl) {
 
-		Object[] args = new Object[] {
-			assetTagModelImpl.getUuid(), assetTagModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					assetTagModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByUUID_G, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G, args, assetTagModelImpl);
+			Object[] args = new Object[] {
+				assetTagModelImpl.getUuid(), assetTagModelImpl.getGroupId()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G, args, assetTagModelImpl);
+		}
 	}
 
 	/**
@@ -4227,80 +4234,90 @@ public class AssetTagPersistenceImpl
 
 	@Override
 	public AssetTag updateImpl(AssetTag assetTag) {
-		boolean isNew = assetTag.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(assetTag instanceof AssetTagModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = assetTag.isNew();
 
-			if (ProxyUtil.isProxyClass(assetTag.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(assetTag);
+			if (!(assetTag instanceof AssetTagModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in assetTag proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(assetTag.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						assetTag);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom AssetTag implementation " +
-					assetTag.getClass());
-		}
-
-		AssetTagModelImpl assetTagModelImpl = (AssetTagModelImpl)assetTag;
-
-		if (Validator.isNull(assetTag.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			assetTag.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (assetTag.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				assetTag.setCreateDate(date);
-			}
-			else {
-				assetTag.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!assetTagModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				assetTag.setModifiedDate(date);
-			}
-			else {
-				assetTag.setModifiedDate(serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(assetTag)) {
-				if (!isNew) {
-					session.evict(
-						AssetTagImpl.class, assetTag.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in assetTag proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(assetTag);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom AssetTag implementation " +
+						assetTag.getClass());
 			}
-			else {
-				assetTag = (AssetTag)session.merge(assetTag);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (assetTag.getCtCollectionId() != 0) {
+			AssetTagModelImpl assetTagModelImpl = (AssetTagModelImpl)assetTag;
+
+			if (Validator.isNull(assetTag.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				assetTag.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (assetTag.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					assetTag.setCreateDate(date);
+				}
+				else {
+					assetTag.setCreateDate(serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!assetTagModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					assetTag.setModifiedDate(date);
+				}
+				else {
+					assetTag.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(assetTag)) {
+					if (!isNew) {
+						session.evict(
+							AssetTagImpl.class, assetTag.getPrimaryKeyObj());
+					}
+
+					session.save(assetTag);
+				}
+				else {
+					assetTag = (AssetTag)session.merge(assetTag);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				AssetTagImpl.class, assetTagModelImpl, false, true);
+
+			cacheUniqueFindersCache(assetTagModelImpl);
+
 			if (isNew) {
 				assetTag.setNew(false);
 			}
@@ -4309,19 +4326,6 @@ public class AssetTagPersistenceImpl
 
 			return assetTag;
 		}
-
-		EntityCacheUtil.putResult(
-			AssetTagImpl.class, assetTagModelImpl, false, true);
-
-		cacheUniqueFindersCache(assetTagModelImpl);
-
-		if (isNew) {
-			assetTag.setNew(false);
-		}
-
-		assetTag.resetOriginalValues();
-
-		return assetTag;
 	}
 
 	/**
@@ -4369,33 +4373,13 @@ public class AssetTagPersistenceImpl
 	 */
 	@Override
 	public AssetTag fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				AssetTag.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AssetTag.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		AssetTag assetTag = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			assetTag = (AssetTag)session.get(AssetTagImpl.class, primaryKey);
-
-			if (assetTag != null) {
-				cacheResult(assetTag);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return assetTag;
 	}
 
 	/**
@@ -4413,90 +4397,13 @@ public class AssetTagPersistenceImpl
 	public Map<Serializable, AssetTag> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(AssetTag.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AssetTag.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, AssetTag> map = new HashMap<Serializable, AssetTag>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			AssetTag assetTag = fetchByPrimaryKey(primaryKey);
-
-			if (assetTag != null) {
-				map.put(primaryKey, assetTag);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (AssetTag assetTag : (List<AssetTag>)query.list()) {
-				map.put(assetTag.getPrimaryKeyObj(), assetTag);
-
-				cacheResult(assetTag);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

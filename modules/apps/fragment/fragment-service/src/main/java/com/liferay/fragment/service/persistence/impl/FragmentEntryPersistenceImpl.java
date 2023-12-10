@@ -13,8 +13,11 @@ import com.liferay.fragment.model.impl.FragmentEntryModelImpl;
 import com.liferay.fragment.service.persistence.FragmentEntryPersistence;
 import com.liferay.fragment.service.persistence.FragmentEntryUtil;
 import com.liferay.fragment.service.persistence.impl.constants.FragmentPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -51,7 +54,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1905,107 +1907,103 @@ public class FragmentEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId, head};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						FragmentEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G_Head, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FragmentEntry.class);
-
-		if (result instanceof FragmentEntry) {
-			FragmentEntry fragmentEntry = (FragmentEntry)result;
-
-			if (!Objects.equals(uuid, fragmentEntry.getUuid()) ||
-				(groupId != fragmentEntry.getGroupId()) ||
-				(head != fragmentEntry.isHead())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						FragmentEntry.class, fragmentEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_FRAGMENTENTRY_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_HEAD_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_HEAD_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId, head};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_HEAD_GROUPID_2);
+			Object result = null;
 
-			sb.append(_FINDER_COLUMN_UUID_G_HEAD_HEAD_2);
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G_Head, finderArgs, this);
+			}
 
-			String sql = sb.toString();
+			if (result instanceof FragmentEntry) {
+				FragmentEntry fragmentEntry = (FragmentEntry)result;
 
-			Session session = null;
+				if (!Objects.equals(uuid, fragmentEntry.getUuid()) ||
+					(groupId != fragmentEntry.getGroupId()) ||
+					(head != fragmentEntry.isHead())) {
 
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				queryPos.add(head);
+				sb.append(_SQL_SELECT_FRAGMENTENTRY_WHERE);
 
-				List<FragmentEntry> list = query.list();
+				boolean bindUuid = false;
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G_Head, finderArgs, list);
-					}
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_HEAD_UUID_3);
 				}
 				else {
-					FragmentEntry fragmentEntry = list.get(0);
+					bindUuid = true;
 
-					result = fragmentEntry;
+					sb.append(_FINDER_COLUMN_UUID_G_HEAD_UUID_2);
+				}
 
-					cacheResult(fragmentEntry);
+				sb.append(_FINDER_COLUMN_UUID_G_HEAD_GROUPID_2);
+
+				sb.append(_FINDER_COLUMN_UUID_G_HEAD_HEAD_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					queryPos.add(head);
+
+					List<FragmentEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G_Head, finderArgs,
+								list);
+						}
+					}
+					else {
+						FragmentEntry fragmentEntry = list.get(0);
+
+						result = fragmentEntry;
+
+						cacheResult(fragmentEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (FragmentEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (FragmentEntry)result;
+			}
 		}
 	}
 
@@ -8411,108 +8409,104 @@ public class FragmentEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, fragmentEntryKey, head};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						FragmentEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_FEK_Head, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FragmentEntry.class);
-
-		if (result instanceof FragmentEntry) {
-			FragmentEntry fragmentEntry = (FragmentEntry)result;
-
-			if ((groupId != fragmentEntry.getGroupId()) ||
-				!Objects.equals(
-					fragmentEntryKey, fragmentEntry.getFragmentEntryKey()) ||
-				(head != fragmentEntry.isHead())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						FragmentEntry.class, fragmentEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_FRAGMENTENTRY_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_FEK_HEAD_GROUPID_2);
-
-			boolean bindFragmentEntryKey = false;
-
-			if (fragmentEntryKey.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_FEK_HEAD_FRAGMENTENTRYKEY_3);
-			}
-			else {
-				bindFragmentEntryKey = true;
-
-				sb.append(_FINDER_COLUMN_G_FEK_HEAD_FRAGMENTENTRYKEY_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, fragmentEntryKey, head};
 			}
 
-			sb.append(_FINDER_COLUMN_G_FEK_HEAD_HEAD_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_FEK_Head, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof FragmentEntry) {
+				FragmentEntry fragmentEntry = (FragmentEntry)result;
 
-			try {
-				session = openSession();
+				if ((groupId != fragmentEntry.getGroupId()) ||
+					!Objects.equals(
+						fragmentEntryKey,
+						fragmentEntry.getFragmentEntryKey()) ||
+					(head != fragmentEntry.isHead())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				if (bindFragmentEntryKey) {
-					queryPos.add(fragmentEntryKey);
+					result = null;
 				}
+			}
 
-				queryPos.add(head);
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				List<FragmentEntry> list = query.list();
+				sb.append(_SQL_SELECT_FRAGMENTENTRY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_FEK_Head, finderArgs, list);
-					}
+				sb.append(_FINDER_COLUMN_G_FEK_HEAD_GROUPID_2);
+
+				boolean bindFragmentEntryKey = false;
+
+				if (fragmentEntryKey.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_FEK_HEAD_FRAGMENTENTRYKEY_3);
 				}
 				else {
-					FragmentEntry fragmentEntry = list.get(0);
+					bindFragmentEntryKey = true;
 
-					result = fragmentEntry;
+					sb.append(_FINDER_COLUMN_G_FEK_HEAD_FRAGMENTENTRYKEY_2);
+				}
 
-					cacheResult(fragmentEntry);
+				sb.append(_FINDER_COLUMN_G_FEK_HEAD_HEAD_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					if (bindFragmentEntryKey) {
+						queryPos.add(fragmentEntryKey);
+					}
+
+					queryPos.add(head);
+
+					List<FragmentEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_FEK_Head, finderArgs, list);
+						}
+					}
+					else {
+						FragmentEntry fragmentEntry = list.get(0);
+
+						result = fragmentEntry;
+
+						cacheResult(fragmentEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (FragmentEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (FragmentEntry)result;
+			}
 		}
 	}
 
@@ -15198,85 +15192,80 @@ public class FragmentEntryPersistenceImpl
 	public FragmentEntry fetchByHeadId(long headId, boolean useFinderCache) {
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {headId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						FragmentEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByHeadId, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FragmentEntry.class);
-
-		if (result instanceof FragmentEntry) {
-			FragmentEntry fragmentEntry = (FragmentEntry)result;
-
-			if (headId != fragmentEntry.getHeadId()) {
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {headId};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						FragmentEntry.class, fragmentEntry.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByHeadId, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(3);
+			if (result instanceof FragmentEntry) {
+				FragmentEntry fragmentEntry = (FragmentEntry)result;
 
-			sb.append(_SQL_SELECT_FRAGMENTENTRY_WHERE);
+				if (headId != fragmentEntry.getHeadId()) {
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_HEADID_HEADID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(3);
 
-			String sql = sb.toString();
+				sb.append(_SQL_SELECT_FRAGMENTENTRY_WHERE);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_HEADID_HEADID_2);
 
-			try {
-				session = openSession();
+				String sql = sb.toString();
 
-				Query query = session.createQuery(sql);
+				Session session = null;
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				try {
+					session = openSession();
 
-				queryPos.add(headId);
+					Query query = session.createQuery(sql);
 
-				List<FragmentEntry> list = query.list();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByHeadId, finderArgs, list);
+					queryPos.add(headId);
+
+					List<FragmentEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByHeadId, finderArgs, list);
+						}
+					}
+					else {
+						FragmentEntry fragmentEntry = list.get(0);
+
+						result = fragmentEntry;
+
+						cacheResult(fragmentEntry);
 					}
 				}
-				else {
-					FragmentEntry fragmentEntry = list.get(0);
-
-					result = fragmentEntry;
-
-					cacheResult(fragmentEntry);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (FragmentEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (FragmentEntry)result;
+			}
 		}
 	}
 
@@ -15382,33 +15371,34 @@ public class FragmentEntryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(FragmentEntry fragmentEntry) {
-		if (fragmentEntry.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					fragmentEntry.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				FragmentEntryImpl.class, fragmentEntry.getPrimaryKey(),
+				fragmentEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G_Head,
+				new Object[] {
+					fragmentEntry.getUuid(), fragmentEntry.getGroupId(),
+					fragmentEntry.isHead()
+				},
+				fragmentEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByG_FEK_Head,
+				new Object[] {
+					fragmentEntry.getGroupId(),
+					fragmentEntry.getFragmentEntryKey(), fragmentEntry.isHead()
+				},
+				fragmentEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByHeadId,
+				new Object[] {fragmentEntry.getHeadId()}, fragmentEntry);
 		}
-
-		entityCache.putResult(
-			FragmentEntryImpl.class, fragmentEntry.getPrimaryKey(),
-			fragmentEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G_Head,
-			new Object[] {
-				fragmentEntry.getUuid(), fragmentEntry.getGroupId(),
-				fragmentEntry.isHead()
-			},
-			fragmentEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByG_FEK_Head,
-			new Object[] {
-				fragmentEntry.getGroupId(), fragmentEntry.getFragmentEntryKey(),
-				fragmentEntry.isHead()
-			},
-			fragmentEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByHeadId, new Object[] {fragmentEntry.getHeadId()},
-			fragmentEntry);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -15428,15 +15418,18 @@ public class FragmentEntryPersistenceImpl
 		}
 
 		for (FragmentEntry fragmentEntry : fragmentEntries) {
-			if (fragmentEntry.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(fragmentEntry.getCtCollectionId() != 0) &&
+						(fragmentEntry.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					FragmentEntryImpl.class, fragmentEntry.getPrimaryKey()) ==
-						null) {
+				if (entityCache.getResult(
+						FragmentEntryImpl.class,
+						fragmentEntry.getPrimaryKey()) == null) {
 
-				cacheResult(fragmentEntry);
+					cacheResult(fragmentEntry);
+				}
 			}
 		}
 	}
@@ -15486,32 +15479,39 @@ public class FragmentEntryPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		FragmentEntryModelImpl fragmentEntryModelImpl) {
 
-		Object[] args = new Object[] {
-			fragmentEntryModelImpl.getUuid(),
-			fragmentEntryModelImpl.getGroupId(), fragmentEntryModelImpl.isHead()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					fragmentEntryModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(
-			_finderPathCountByUUID_G_Head, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G_Head, args, fragmentEntryModelImpl);
+			Object[] args = new Object[] {
+				fragmentEntryModelImpl.getUuid(),
+				fragmentEntryModelImpl.getGroupId(),
+				fragmentEntryModelImpl.isHead()
+			};
 
-		args = new Object[] {
-			fragmentEntryModelImpl.getGroupId(),
-			fragmentEntryModelImpl.getFragmentEntryKey(),
-			fragmentEntryModelImpl.isHead()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G_Head, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G_Head, args, fragmentEntryModelImpl);
 
-		finderCache.putResult(
-			_finderPathCountByG_FEK_Head, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByG_FEK_Head, args, fragmentEntryModelImpl);
+			args = new Object[] {
+				fragmentEntryModelImpl.getGroupId(),
+				fragmentEntryModelImpl.getFragmentEntryKey(),
+				fragmentEntryModelImpl.isHead()
+			};
 
-		args = new Object[] {fragmentEntryModelImpl.getHeadId()};
+			finderCache.putResult(
+				_finderPathCountByG_FEK_Head, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_FEK_Head, args, fragmentEntryModelImpl);
 
-		finderCache.putResult(_finderPathCountByHeadId, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByHeadId, args, fragmentEntryModelImpl);
+			args = new Object[] {fragmentEntryModelImpl.getHeadId()};
+
+			finderCache.putResult(
+				_finderPathCountByHeadId, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByHeadId, args, fragmentEntryModelImpl);
+		}
 	}
 
 	/**
@@ -15625,84 +15625,93 @@ public class FragmentEntryPersistenceImpl
 
 	@Override
 	public FragmentEntry updateImpl(FragmentEntry fragmentEntry) {
-		boolean isNew = fragmentEntry.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(fragmentEntry instanceof FragmentEntryModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = fragmentEntry.isNew();
 
-			if (ProxyUtil.isProxyClass(fragmentEntry.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					fragmentEntry);
+			if (!(fragmentEntry instanceof FragmentEntryModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in fragmentEntry proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(fragmentEntry.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						fragmentEntry);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom FragmentEntry implementation " +
-					fragmentEntry.getClass());
-		}
-
-		FragmentEntryModelImpl fragmentEntryModelImpl =
-			(FragmentEntryModelImpl)fragmentEntry;
-
-		if (Validator.isNull(fragmentEntry.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			fragmentEntry.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (fragmentEntry.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				fragmentEntry.setCreateDate(date);
-			}
-			else {
-				fragmentEntry.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!fragmentEntryModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				fragmentEntry.setModifiedDate(date);
-			}
-			else {
-				fragmentEntry.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(fragmentEntry)) {
-				if (!isNew) {
-					session.evict(
-						FragmentEntryImpl.class,
-						fragmentEntry.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in fragmentEntry proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(fragmentEntry);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom FragmentEntry implementation " +
+						fragmentEntry.getClass());
 			}
-			else {
-				fragmentEntry = (FragmentEntry)session.merge(fragmentEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (fragmentEntry.getCtCollectionId() != 0) {
+			FragmentEntryModelImpl fragmentEntryModelImpl =
+				(FragmentEntryModelImpl)fragmentEntry;
+
+			if (Validator.isNull(fragmentEntry.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				fragmentEntry.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (fragmentEntry.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					fragmentEntry.setCreateDate(date);
+				}
+				else {
+					fragmentEntry.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!fragmentEntryModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					fragmentEntry.setModifiedDate(date);
+				}
+				else {
+					fragmentEntry.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(fragmentEntry)) {
+					if (!isNew) {
+						session.evict(
+							FragmentEntryImpl.class,
+							fragmentEntry.getPrimaryKeyObj());
+					}
+
+					session.save(fragmentEntry);
+				}
+				else {
+					fragmentEntry = (FragmentEntry)session.merge(fragmentEntry);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				FragmentEntryImpl.class, fragmentEntryModelImpl, false, true);
+
+			cacheUniqueFindersCache(fragmentEntryModelImpl);
+
 			if (isNew) {
 				fragmentEntry.setNew(false);
 			}
@@ -15711,19 +15720,6 @@ public class FragmentEntryPersistenceImpl
 
 			return fragmentEntry;
 		}
-
-		entityCache.putResult(
-			FragmentEntryImpl.class, fragmentEntryModelImpl, false, true);
-
-		cacheUniqueFindersCache(fragmentEntryModelImpl);
-
-		if (isNew) {
-			fragmentEntry.setNew(false);
-		}
-
-		fragmentEntry.resetOriginalValues();
-
-		return fragmentEntry;
 	}
 
 	/**
@@ -15773,34 +15769,13 @@ public class FragmentEntryPersistenceImpl
 	 */
 	@Override
 	public FragmentEntry fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				FragmentEntry.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						FragmentEntry.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		FragmentEntry fragmentEntry = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			fragmentEntry = (FragmentEntry)session.get(
-				FragmentEntryImpl.class, primaryKey);
-
-			if (fragmentEntry != null) {
-				cacheResult(fragmentEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return fragmentEntry;
 	}
 
 	/**
@@ -15818,93 +15793,13 @@ public class FragmentEntryPersistenceImpl
 	public Map<Serializable, FragmentEntry> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(FragmentEntry.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						FragmentEntry.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, FragmentEntry> map =
-			new HashMap<Serializable, FragmentEntry>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			FragmentEntry fragmentEntry = fetchByPrimaryKey(primaryKey);
-
-			if (fragmentEntry != null) {
-				map.put(primaryKey, fragmentEntry);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (FragmentEntry fragmentEntry :
-					(List<FragmentEntry>)query.list()) {
-
-				map.put(fragmentEntry.getPrimaryKeyObj(), fragmentEntry);
-
-				cacheResult(fragmentEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

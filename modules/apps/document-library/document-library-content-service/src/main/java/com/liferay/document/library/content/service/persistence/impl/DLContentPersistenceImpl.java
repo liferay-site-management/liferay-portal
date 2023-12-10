@@ -13,8 +13,11 @@ import com.liferay.document.library.content.model.impl.DLContentModelImpl;
 import com.liferay.document.library.content.service.persistence.DLContentPersistence;
 import com.liferay.document.library.content.service.persistence.DLContentUtil;
 import com.liferay.document.library.content.service.persistence.impl.constants.DLPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -46,7 +49,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1988,123 +1990,119 @@ public class DLContentPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, repositoryId, path, version};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(DLContent.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByC_R_P_V, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DLContent.class);
-
-		if (result instanceof DLContent) {
-			DLContent dlContent = (DLContent)result;
-
-			if ((companyId != dlContent.getCompanyId()) ||
-				(repositoryId != dlContent.getRepositoryId()) ||
-				!Objects.equals(path, dlContent.getPath()) ||
-				!Objects.equals(version, dlContent.getVersion())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						DLContent.class, dlContent.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(6);
-
-			sb.append(_SQL_SELECT_DLCONTENT_WHERE);
-
-			sb.append(_FINDER_COLUMN_C_R_P_V_COMPANYID_2);
-
-			sb.append(_FINDER_COLUMN_C_R_P_V_REPOSITORYID_2);
-
-			boolean bindPath = false;
-
-			if (path.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_R_P_V_PATH_3);
-			}
-			else {
-				bindPath = true;
-
-				sb.append(_FINDER_COLUMN_C_R_P_V_PATH_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					companyId, repositoryId, path, version
+				};
 			}
 
-			boolean bindVersion = false;
+			Object result = null;
 
-			if (version.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_R_P_V_VERSION_3);
-			}
-			else {
-				bindVersion = true;
-
-				sb.append(_FINDER_COLUMN_C_R_P_V_VERSION_2);
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByC_R_P_V, finderArgs, this);
 			}
 
-			String sql = sb.toString();
+			if (result instanceof DLContent) {
+				DLContent dlContent = (DLContent)result;
 
-			Session session = null;
+				if ((companyId != dlContent.getCompanyId()) ||
+					(repositoryId != dlContent.getRepositoryId()) ||
+					!Objects.equals(path, dlContent.getPath()) ||
+					!Objects.equals(version, dlContent.getVersion())) {
 
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				queryPos.add(repositoryId);
-
-				if (bindPath) {
-					queryPos.add(path);
+					result = null;
 				}
+			}
 
-				if (bindVersion) {
-					queryPos.add(version);
-				}
+			if (result == null) {
+				StringBundler sb = new StringBundler(6);
 
-				List<DLContent> list = query.list();
+				sb.append(_SQL_SELECT_DLCONTENT_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByC_R_P_V, finderArgs, list);
-					}
+				sb.append(_FINDER_COLUMN_C_R_P_V_COMPANYID_2);
+
+				sb.append(_FINDER_COLUMN_C_R_P_V_REPOSITORYID_2);
+
+				boolean bindPath = false;
+
+				if (path.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_R_P_V_PATH_3);
 				}
 				else {
-					DLContent dlContent = list.get(0);
+					bindPath = true;
 
-					result = dlContent;
+					sb.append(_FINDER_COLUMN_C_R_P_V_PATH_2);
+				}
 
-					cacheResult(dlContent);
+				boolean bindVersion = false;
+
+				if (version.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_R_P_V_VERSION_3);
+				}
+				else {
+					bindVersion = true;
+
+					sb.append(_FINDER_COLUMN_C_R_P_V_VERSION_2);
+				}
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					queryPos.add(repositoryId);
+
+					if (bindPath) {
+						queryPos.add(path);
+					}
+
+					if (bindVersion) {
+						queryPos.add(version);
+					}
+
+					List<DLContent> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByC_R_P_V, finderArgs, list);
+						}
+					}
+					else {
+						DLContent dlContent = list.get(0);
+
+						result = dlContent;
+
+						cacheResult(dlContent);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (DLContent)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (DLContent)result;
+			}
 		}
 	}
 
@@ -2273,20 +2271,21 @@ public class DLContentPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(DLContent dlContent) {
-		if (dlContent.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					dlContent.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				DLContentImpl.class, dlContent.getPrimaryKey(), dlContent);
+
+			finderCache.putResult(
+				_finderPathFetchByC_R_P_V,
+				new Object[] {
+					dlContent.getCompanyId(), dlContent.getRepositoryId(),
+					dlContent.getPath(), dlContent.getVersion()
+				},
+				dlContent);
 		}
-
-		entityCache.putResult(
-			DLContentImpl.class, dlContent.getPrimaryKey(), dlContent);
-
-		finderCache.putResult(
-			_finderPathFetchByC_R_P_V,
-			new Object[] {
-				dlContent.getCompanyId(), dlContent.getRepositoryId(),
-				dlContent.getPath(), dlContent.getVersion()
-			},
-			dlContent);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2306,14 +2305,18 @@ public class DLContentPersistenceImpl
 		}
 
 		for (DLContent dlContent : dlContents) {
-			if (dlContent.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(dlContent.getCtCollectionId() != 0) &&
+						(dlContent.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					DLContentImpl.class, dlContent.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						DLContentImpl.class, dlContent.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(dlContent);
+					cacheResult(dlContent);
+				}
 			}
 		}
 	}
@@ -2363,15 +2366,21 @@ public class DLContentPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		DLContentModelImpl dlContentModelImpl) {
 
-		Object[] args = new Object[] {
-			dlContentModelImpl.getCompanyId(),
-			dlContentModelImpl.getRepositoryId(), dlContentModelImpl.getPath(),
-			dlContentModelImpl.getVersion()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					dlContentModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByC_R_P_V, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByC_R_P_V, args, dlContentModelImpl);
+			Object[] args = new Object[] {
+				dlContentModelImpl.getCompanyId(),
+				dlContentModelImpl.getRepositoryId(),
+				dlContentModelImpl.getPath(), dlContentModelImpl.getVersion()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByC_R_P_V, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByC_R_P_V, args, dlContentModelImpl);
+		}
 	}
 
 	/**
@@ -2479,57 +2488,67 @@ public class DLContentPersistenceImpl
 
 	@Override
 	public DLContent updateImpl(DLContent dlContent) {
-		boolean isNew = dlContent.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(dlContent instanceof DLContentModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = dlContent.isNew();
 
-			if (ProxyUtil.isProxyClass(dlContent.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(dlContent);
+			if (!(dlContent instanceof DLContentModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in dlContent proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(dlContent.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						dlContent);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom DLContent implementation " +
-					dlContent.getClass());
-		}
-
-		DLContentModelImpl dlContentModelImpl = (DLContentModelImpl)dlContent;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(dlContent)) {
-				if (!isNew) {
-					session.evict(
-						DLContentImpl.class, dlContent.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in dlContent proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(dlContent);
-			}
-			else {
-				session.evict(
-					DLContentImpl.class, dlContent.getPrimaryKeyObj());
-
-				session.saveOrUpdate(dlContent);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom DLContent implementation " +
+						dlContent.getClass());
 			}
 
-			session.flush();
-			session.clear();
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
+			DLContentModelImpl dlContentModelImpl =
+				(DLContentModelImpl)dlContent;
 
-		if (dlContent.getCtCollectionId() != 0) {
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(dlContent)) {
+					if (!isNew) {
+						session.evict(
+							DLContentImpl.class, dlContent.getPrimaryKeyObj());
+					}
+
+					session.save(dlContent);
+				}
+				else {
+					session.evict(
+						DLContentImpl.class, dlContent.getPrimaryKeyObj());
+
+					session.saveOrUpdate(dlContent);
+				}
+
+				session.flush();
+				session.clear();
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				DLContentImpl.class, dlContentModelImpl, false, true);
+
+			cacheUniqueFindersCache(dlContentModelImpl);
+
 			if (isNew) {
 				dlContent.setNew(false);
 			}
@@ -2538,19 +2557,6 @@ public class DLContentPersistenceImpl
 
 			return dlContent;
 		}
-
-		entityCache.putResult(
-			DLContentImpl.class, dlContentModelImpl, false, true);
-
-		cacheUniqueFindersCache(dlContentModelImpl);
-
-		if (isNew) {
-			dlContent.setNew(false);
-		}
-
-		dlContent.resetOriginalValues();
-
-		return dlContent;
 	}
 
 	/**
@@ -2600,31 +2606,13 @@ public class DLContentPersistenceImpl
 	 */
 	@Override
 	public DLContent fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(DLContent.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						DLContent.class, primaryKey))) {
+
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		DLContent dlContent = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			dlContent = (DLContent)session.get(DLContentImpl.class, primaryKey);
-
-			if (dlContent != null) {
-				cacheResult(dlContent);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return dlContent;
 	}
 
 	/**
@@ -2642,91 +2630,12 @@ public class DLContentPersistenceImpl
 	public Map<Serializable, DLContent> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(DLContent.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(DLContent.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, DLContent> map =
-			new HashMap<Serializable, DLContent>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			DLContent dlContent = fetchByPrimaryKey(primaryKey);
-
-			if (dlContent != null) {
-				map.put(primaryKey, dlContent);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (DLContent dlContent : (List<DLContent>)query.list()) {
-				map.put(dlContent.getPrimaryKeyObj(), dlContent);
-
-				cacheResult(dlContent);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

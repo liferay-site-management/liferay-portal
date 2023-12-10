@@ -13,8 +13,11 @@ import com.liferay.asset.list.model.impl.AssetListEntryUsageModelImpl;
 import com.liferay.asset.list.service.persistence.AssetListEntryUsagePersistence;
 import com.liferay.asset.list.service.persistence.AssetListEntryUsageUtil;
 import com.liferay.asset.list.service.persistence.impl.constants.AssetListPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -50,7 +53,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -717,104 +719,98 @@ public class AssetListEntryUsagePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AssetListEntryUsage.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetListEntryUsage.class);
-
-		if (result instanceof AssetListEntryUsage) {
-			AssetListEntryUsage assetListEntryUsage =
-				(AssetListEntryUsage)result;
-
-			if (!Objects.equals(uuid, assetListEntryUsage.getUuid()) ||
-				(groupId != assetListEntryUsage.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						AssetListEntryUsage.class,
-						assetListEntryUsage.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_ASSETLISTENTRYUSAGE_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof AssetListEntryUsage) {
+				AssetListEntryUsage assetListEntryUsage =
+					(AssetListEntryUsage)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, assetListEntryUsage.getUuid()) ||
+					(groupId != assetListEntryUsage.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<AssetListEntryUsage> list = query.list();
+				sb.append(_SQL_SELECT_ASSETLISTENTRYUSAGE_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					AssetListEntryUsage assetListEntryUsage = list.get(0);
+					bindUuid = true;
 
-					result = assetListEntryUsage;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(assetListEntryUsage);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<AssetListEntryUsage> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						AssetListEntryUsage assetListEntryUsage = list.get(0);
+
+						result = assetListEntryUsage;
+
+						cacheResult(assetListEntryUsage);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (AssetListEntryUsage)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (AssetListEntryUsage)result;
+			}
 		}
 	}
 
@@ -5281,138 +5277,133 @@ public class AssetListEntryUsagePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {
-				groupId, classNameId, containerKey, containerType, key, plid
-			};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AssetListEntryUsage.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_C_CK_CT_K_P, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AssetListEntryUsage.class);
-
-		if (result instanceof AssetListEntryUsage) {
-			AssetListEntryUsage assetListEntryUsage =
-				(AssetListEntryUsage)result;
-
-			if ((groupId != assetListEntryUsage.getGroupId()) ||
-				(classNameId != assetListEntryUsage.getClassNameId()) ||
-				!Objects.equals(
-					containerKey, assetListEntryUsage.getContainerKey()) ||
-				(containerType != assetListEntryUsage.getContainerType()) ||
-				!Objects.equals(key, assetListEntryUsage.getKey()) ||
-				(plid != assetListEntryUsage.getPlid())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						AssetListEntryUsage.class,
-						assetListEntryUsage.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(8);
-
-			sb.append(_SQL_SELECT_ASSETLISTENTRYUSAGE_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_C_CK_CT_K_P_GROUPID_2);
-
-			sb.append(_FINDER_COLUMN_G_C_CK_CT_K_P_CLASSNAMEID_2);
-
-			boolean bindContainerKey = false;
-
-			if (containerKey.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_C_CK_CT_K_P_CONTAINERKEY_3);
-			}
-			else {
-				bindContainerKey = true;
-
-				sb.append(_FINDER_COLUMN_G_C_CK_CT_K_P_CONTAINERKEY_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					groupId, classNameId, containerKey, containerType, key, plid
+				};
 			}
 
-			sb.append(_FINDER_COLUMN_G_C_CK_CT_K_P_CONTAINERTYPE_2);
+			Object result = null;
 
-			boolean bindKey = false;
-
-			if (key.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_C_CK_CT_K_P_KEY_3);
-			}
-			else {
-				bindKey = true;
-
-				sb.append(_FINDER_COLUMN_G_C_CK_CT_K_P_KEY_2);
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_C_CK_CT_K_P, finderArgs, this);
 			}
 
-			sb.append(_FINDER_COLUMN_G_C_CK_CT_K_P_PLID_2);
+			if (result instanceof AssetListEntryUsage) {
+				AssetListEntryUsage assetListEntryUsage =
+					(AssetListEntryUsage)result;
 
-			String sql = sb.toString();
+				if ((groupId != assetListEntryUsage.getGroupId()) ||
+					(classNameId != assetListEntryUsage.getClassNameId()) ||
+					!Objects.equals(
+						containerKey, assetListEntryUsage.getContainerKey()) ||
+					(containerType != assetListEntryUsage.getContainerType()) ||
+					!Objects.equals(key, assetListEntryUsage.getKey()) ||
+					(plid != assetListEntryUsage.getPlid())) {
 
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				queryPos.add(classNameId);
-
-				if (bindContainerKey) {
-					queryPos.add(containerKey);
+					result = null;
 				}
+			}
 
-				queryPos.add(containerType);
+			if (result == null) {
+				StringBundler sb = new StringBundler(8);
 
-				if (bindKey) {
-					queryPos.add(key);
-				}
+				sb.append(_SQL_SELECT_ASSETLISTENTRYUSAGE_WHERE);
 
-				queryPos.add(plid);
+				sb.append(_FINDER_COLUMN_G_C_CK_CT_K_P_GROUPID_2);
 
-				List<AssetListEntryUsage> list = query.list();
+				sb.append(_FINDER_COLUMN_G_C_CK_CT_K_P_CLASSNAMEID_2);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_C_CK_CT_K_P, finderArgs, list);
-					}
+				boolean bindContainerKey = false;
+
+				if (containerKey.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_C_CK_CT_K_P_CONTAINERKEY_3);
 				}
 				else {
-					AssetListEntryUsage assetListEntryUsage = list.get(0);
+					bindContainerKey = true;
 
-					result = assetListEntryUsage;
+					sb.append(_FINDER_COLUMN_G_C_CK_CT_K_P_CONTAINERKEY_2);
+				}
 
-					cacheResult(assetListEntryUsage);
+				sb.append(_FINDER_COLUMN_G_C_CK_CT_K_P_CONTAINERTYPE_2);
+
+				boolean bindKey = false;
+
+				if (key.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_C_CK_CT_K_P_KEY_3);
+				}
+				else {
+					bindKey = true;
+
+					sb.append(_FINDER_COLUMN_G_C_CK_CT_K_P_KEY_2);
+				}
+
+				sb.append(_FINDER_COLUMN_G_C_CK_CT_K_P_PLID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					queryPos.add(classNameId);
+
+					if (bindContainerKey) {
+						queryPos.add(containerKey);
+					}
+
+					queryPos.add(containerType);
+
+					if (bindKey) {
+						queryPos.add(key);
+					}
+
+					queryPos.add(plid);
+
+					List<AssetListEntryUsage> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_C_CK_CT_K_P, finderArgs,
+								list);
+						}
+					}
+					else {
+						AssetListEntryUsage assetListEntryUsage = list.get(0);
+
+						result = assetListEntryUsage;
+
+						cacheResult(assetListEntryUsage);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (AssetListEntryUsage)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (AssetListEntryUsage)result;
+			}
 		}
 	}
 
@@ -5603,31 +5594,33 @@ public class AssetListEntryUsagePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(AssetListEntryUsage assetListEntryUsage) {
-		if (assetListEntryUsage.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					assetListEntryUsage.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				AssetListEntryUsageImpl.class,
+				assetListEntryUsage.getPrimaryKey(), assetListEntryUsage);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					assetListEntryUsage.getUuid(),
+					assetListEntryUsage.getGroupId()
+				},
+				assetListEntryUsage);
+
+			finderCache.putResult(
+				_finderPathFetchByG_C_CK_CT_K_P,
+				new Object[] {
+					assetListEntryUsage.getGroupId(),
+					assetListEntryUsage.getClassNameId(),
+					assetListEntryUsage.getContainerKey(),
+					assetListEntryUsage.getContainerType(),
+					assetListEntryUsage.getKey(), assetListEntryUsage.getPlid()
+				},
+				assetListEntryUsage);
 		}
-
-		entityCache.putResult(
-			AssetListEntryUsageImpl.class, assetListEntryUsage.getPrimaryKey(),
-			assetListEntryUsage);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {
-				assetListEntryUsage.getUuid(), assetListEntryUsage.getGroupId()
-			},
-			assetListEntryUsage);
-
-		finderCache.putResult(
-			_finderPathFetchByG_C_CK_CT_K_P,
-			new Object[] {
-				assetListEntryUsage.getGroupId(),
-				assetListEntryUsage.getClassNameId(),
-				assetListEntryUsage.getContainerKey(),
-				assetListEntryUsage.getContainerType(),
-				assetListEntryUsage.getKey(), assetListEntryUsage.getPlid()
-			},
-			assetListEntryUsage);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -5648,15 +5641,18 @@ public class AssetListEntryUsagePersistenceImpl
 		}
 
 		for (AssetListEntryUsage assetListEntryUsage : assetListEntryUsages) {
-			if (assetListEntryUsage.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(assetListEntryUsage.getCtCollectionId() != 0) &&
+						(assetListEntryUsage.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					AssetListEntryUsageImpl.class,
-					assetListEntryUsage.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						AssetListEntryUsageImpl.class,
+						assetListEntryUsage.getPrimaryKey()) == null) {
 
-				cacheResult(assetListEntryUsage);
+					cacheResult(assetListEntryUsage);
+				}
 			}
 		}
 	}
@@ -5708,29 +5704,35 @@ public class AssetListEntryUsagePersistenceImpl
 	protected void cacheUniqueFindersCache(
 		AssetListEntryUsageModelImpl assetListEntryUsageModelImpl) {
 
-		Object[] args = new Object[] {
-			assetListEntryUsageModelImpl.getUuid(),
-			assetListEntryUsageModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					assetListEntryUsageModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, assetListEntryUsageModelImpl);
+			Object[] args = new Object[] {
+				assetListEntryUsageModelImpl.getUuid(),
+				assetListEntryUsageModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			assetListEntryUsageModelImpl.getGroupId(),
-			assetListEntryUsageModelImpl.getClassNameId(),
-			assetListEntryUsageModelImpl.getContainerKey(),
-			assetListEntryUsageModelImpl.getContainerType(),
-			assetListEntryUsageModelImpl.getKey(),
-			assetListEntryUsageModelImpl.getPlid()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, assetListEntryUsageModelImpl);
 
-		finderCache.putResult(
-			_finderPathCountByG_C_CK_CT_K_P, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByG_C_CK_CT_K_P, args,
-			assetListEntryUsageModelImpl);
+			args = new Object[] {
+				assetListEntryUsageModelImpl.getGroupId(),
+				assetListEntryUsageModelImpl.getClassNameId(),
+				assetListEntryUsageModelImpl.getContainerKey(),
+				assetListEntryUsageModelImpl.getContainerType(),
+				assetListEntryUsageModelImpl.getKey(),
+				assetListEntryUsageModelImpl.getPlid()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByG_C_CK_CT_K_P, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_C_CK_CT_K_P, args,
+				assetListEntryUsageModelImpl);
+		}
 	}
 
 	/**
@@ -5850,86 +5852,97 @@ public class AssetListEntryUsagePersistenceImpl
 	public AssetListEntryUsage updateImpl(
 		AssetListEntryUsage assetListEntryUsage) {
 
-		boolean isNew = assetListEntryUsage.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(assetListEntryUsage instanceof AssetListEntryUsageModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = assetListEntryUsage.isNew();
 
-			if (ProxyUtil.isProxyClass(assetListEntryUsage.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					assetListEntryUsage);
+			if (!(assetListEntryUsage instanceof
+					AssetListEntryUsageModelImpl)) {
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in assetListEntryUsage proxy " +
-						invocationHandler.getClass());
-			}
+				InvocationHandler invocationHandler = null;
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom AssetListEntryUsage implementation " +
-					assetListEntryUsage.getClass());
-		}
+				if (ProxyUtil.isProxyClass(assetListEntryUsage.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						assetListEntryUsage);
 
-		AssetListEntryUsageModelImpl assetListEntryUsageModelImpl =
-			(AssetListEntryUsageModelImpl)assetListEntryUsage;
-
-		if (Validator.isNull(assetListEntryUsage.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			assetListEntryUsage.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (assetListEntryUsage.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				assetListEntryUsage.setCreateDate(date);
-			}
-			else {
-				assetListEntryUsage.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!assetListEntryUsageModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				assetListEntryUsage.setModifiedDate(date);
-			}
-			else {
-				assetListEntryUsage.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(assetListEntryUsage)) {
-				if (!isNew) {
-					session.evict(
-						AssetListEntryUsageImpl.class,
-						assetListEntryUsage.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in assetListEntryUsage proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(assetListEntryUsage);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom AssetListEntryUsage implementation " +
+						assetListEntryUsage.getClass());
 			}
-			else {
-				assetListEntryUsage = (AssetListEntryUsage)session.merge(
-					assetListEntryUsage);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (assetListEntryUsage.getCtCollectionId() != 0) {
+			AssetListEntryUsageModelImpl assetListEntryUsageModelImpl =
+				(AssetListEntryUsageModelImpl)assetListEntryUsage;
+
+			if (Validator.isNull(assetListEntryUsage.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				assetListEntryUsage.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (assetListEntryUsage.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					assetListEntryUsage.setCreateDate(date);
+				}
+				else {
+					assetListEntryUsage.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!assetListEntryUsageModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					assetListEntryUsage.setModifiedDate(date);
+				}
+				else {
+					assetListEntryUsage.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(assetListEntryUsage)) {
+					if (!isNew) {
+						session.evict(
+							AssetListEntryUsageImpl.class,
+							assetListEntryUsage.getPrimaryKeyObj());
+					}
+
+					session.save(assetListEntryUsage);
+				}
+				else {
+					assetListEntryUsage = (AssetListEntryUsage)session.merge(
+						assetListEntryUsage);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				AssetListEntryUsageImpl.class, assetListEntryUsageModelImpl,
+				false, true);
+
+			cacheUniqueFindersCache(assetListEntryUsageModelImpl);
+
 			if (isNew) {
 				assetListEntryUsage.setNew(false);
 			}
@@ -5938,20 +5951,6 @@ public class AssetListEntryUsagePersistenceImpl
 
 			return assetListEntryUsage;
 		}
-
-		entityCache.putResult(
-			AssetListEntryUsageImpl.class, assetListEntryUsageModelImpl, false,
-			true);
-
-		cacheUniqueFindersCache(assetListEntryUsageModelImpl);
-
-		if (isNew) {
-			assetListEntryUsage.setNew(false);
-		}
-
-		assetListEntryUsage.resetOriginalValues();
-
-		return assetListEntryUsage;
 	}
 
 	/**
@@ -6001,34 +6000,13 @@ public class AssetListEntryUsagePersistenceImpl
 	 */
 	@Override
 	public AssetListEntryUsage fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				AssetListEntryUsage.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AssetListEntryUsage.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		AssetListEntryUsage assetListEntryUsage = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			assetListEntryUsage = (AssetListEntryUsage)session.get(
-				AssetListEntryUsageImpl.class, primaryKey);
-
-			if (assetListEntryUsage != null) {
-				cacheResult(assetListEntryUsage);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return assetListEntryUsage;
 	}
 
 	/**
@@ -6046,96 +6024,13 @@ public class AssetListEntryUsagePersistenceImpl
 	public Map<Serializable, AssetListEntryUsage> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(AssetListEntryUsage.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AssetListEntryUsage.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, AssetListEntryUsage> map =
-			new HashMap<Serializable, AssetListEntryUsage>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			AssetListEntryUsage assetListEntryUsage = fetchByPrimaryKey(
-				primaryKey);
-
-			if (assetListEntryUsage != null) {
-				map.put(primaryKey, assetListEntryUsage);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (AssetListEntryUsage assetListEntryUsage :
-					(List<AssetListEntryUsage>)query.list()) {
-
-				map.put(
-					assetListEntryUsage.getPrimaryKeyObj(),
-					assetListEntryUsage);
-
-				cacheResult(assetListEntryUsage);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

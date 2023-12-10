@@ -10,8 +10,11 @@ import com.liferay.document.library.kernel.model.DLFileEntryMetadata;
 import com.liferay.document.library.kernel.model.DLFileEntryMetadataTable;
 import com.liferay.document.library.kernel.service.persistence.DLFileEntryMetadataPersistence;
 import com.liferay.document.library.kernel.service.persistence.DLFileEntryMetadataUtil;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -46,7 +49,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -2357,93 +2359,88 @@ public class DLFileEntryMetadataPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {DDMStructureId, fileVersionId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						DLFileEntryMetadata.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByD_F, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileEntryMetadata.class);
-
-		if (result instanceof DLFileEntryMetadata) {
-			DLFileEntryMetadata dlFileEntryMetadata =
-				(DLFileEntryMetadata)result;
-
-			if ((DDMStructureId != dlFileEntryMetadata.getDDMStructureId()) ||
-				(fileVersionId != dlFileEntryMetadata.getFileVersionId())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {DDMStructureId, fileVersionId};
 			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntryMetadata.class,
-						dlFileEntryMetadata.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByD_F, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
+			if (result instanceof DLFileEntryMetadata) {
+				DLFileEntryMetadata dlFileEntryMetadata =
+					(DLFileEntryMetadata)result;
 
-			sb.append(_SQL_SELECT_DLFILEENTRYMETADATA_WHERE);
+				if ((DDMStructureId !=
+						dlFileEntryMetadata.getDDMStructureId()) ||
+					(fileVersionId != dlFileEntryMetadata.getFileVersionId())) {
 
-			sb.append(_FINDER_COLUMN_D_F_DDMSTRUCTUREID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_D_F_FILEVERSIONID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-			String sql = sb.toString();
+				sb.append(_SQL_SELECT_DLFILEENTRYMETADATA_WHERE);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_D_F_DDMSTRUCTUREID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_D_F_FILEVERSIONID_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(DDMStructureId);
+				try {
+					session = openSession();
 
-				queryPos.add(fileVersionId);
+					Query query = session.createQuery(sql);
 
-				List<DLFileEntryMetadata> list = query.list();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByD_F, finderArgs, list);
+					queryPos.add(DDMStructureId);
+
+					queryPos.add(fileVersionId);
+
+					List<DLFileEntryMetadata> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByD_F, finderArgs, list);
+						}
+					}
+					else {
+						DLFileEntryMetadata dlFileEntryMetadata = list.get(0);
+
+						result = dlFileEntryMetadata;
+
+						cacheResult(dlFileEntryMetadata);
 					}
 				}
-				else {
-					DLFileEntryMetadata dlFileEntryMetadata = list.get(0);
-
-					result = dlFileEntryMetadata;
-
-					cacheResult(dlFileEntryMetadata);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (DLFileEntryMetadata)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (DLFileEntryMetadata)result;
+			}
 		}
 	}
 
@@ -2560,21 +2557,22 @@ public class DLFileEntryMetadataPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(DLFileEntryMetadata dlFileEntryMetadata) {
-		if (dlFileEntryMetadata.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					dlFileEntryMetadata.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				DLFileEntryMetadataImpl.class,
+				dlFileEntryMetadata.getPrimaryKey(), dlFileEntryMetadata);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByD_F,
+				new Object[] {
+					dlFileEntryMetadata.getDDMStructureId(),
+					dlFileEntryMetadata.getFileVersionId()
+				},
+				dlFileEntryMetadata);
 		}
-
-		EntityCacheUtil.putResult(
-			DLFileEntryMetadataImpl.class, dlFileEntryMetadata.getPrimaryKey(),
-			dlFileEntryMetadata);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByD_F,
-			new Object[] {
-				dlFileEntryMetadata.getDDMStructureId(),
-				dlFileEntryMetadata.getFileVersionId()
-			},
-			dlFileEntryMetadata);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2595,15 +2593,18 @@ public class DLFileEntryMetadataPersistenceImpl
 		}
 
 		for (DLFileEntryMetadata dlFileEntryMetadata : dlFileEntryMetadatas) {
-			if (dlFileEntryMetadata.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(dlFileEntryMetadata.getCtCollectionId() != 0) &&
+						(dlFileEntryMetadata.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					DLFileEntryMetadataImpl.class,
-					dlFileEntryMetadata.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						DLFileEntryMetadataImpl.class,
+						dlFileEntryMetadata.getPrimaryKey()) == null) {
 
-				cacheResult(dlFileEntryMetadata);
+					cacheResult(dlFileEntryMetadata);
+				}
 			}
 		}
 	}
@@ -2656,14 +2657,20 @@ public class DLFileEntryMetadataPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		DLFileEntryMetadataModelImpl dlFileEntryMetadataModelImpl) {
 
-		Object[] args = new Object[] {
-			dlFileEntryMetadataModelImpl.getDDMStructureId(),
-			dlFileEntryMetadataModelImpl.getFileVersionId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					dlFileEntryMetadataModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(_finderPathCountByD_F, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByD_F, args, dlFileEntryMetadataModelImpl);
+			Object[] args = new Object[] {
+				dlFileEntryMetadataModelImpl.getDDMStructureId(),
+				dlFileEntryMetadataModelImpl.getFileVersionId()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByD_F, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByD_F, args, dlFileEntryMetadataModelImpl);
+		}
 	}
 
 	/**
@@ -2783,61 +2790,72 @@ public class DLFileEntryMetadataPersistenceImpl
 	public DLFileEntryMetadata updateImpl(
 		DLFileEntryMetadata dlFileEntryMetadata) {
 
-		boolean isNew = dlFileEntryMetadata.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(dlFileEntryMetadata instanceof DLFileEntryMetadataModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = dlFileEntryMetadata.isNew();
 
-			if (ProxyUtil.isProxyClass(dlFileEntryMetadata.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					dlFileEntryMetadata);
+			if (!(dlFileEntryMetadata instanceof
+					DLFileEntryMetadataModelImpl)) {
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in dlFileEntryMetadata proxy " +
-						invocationHandler.getClass());
-			}
+				InvocationHandler invocationHandler = null;
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom DLFileEntryMetadata implementation " +
-					dlFileEntryMetadata.getClass());
-		}
+				if (ProxyUtil.isProxyClass(dlFileEntryMetadata.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						dlFileEntryMetadata);
 
-		DLFileEntryMetadataModelImpl dlFileEntryMetadataModelImpl =
-			(DLFileEntryMetadataModelImpl)dlFileEntryMetadata;
-
-		if (Validator.isNull(dlFileEntryMetadata.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			dlFileEntryMetadata.setUuid(uuid);
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(dlFileEntryMetadata)) {
-				if (!isNew) {
-					session.evict(
-						DLFileEntryMetadataImpl.class,
-						dlFileEntryMetadata.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in dlFileEntryMetadata proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(dlFileEntryMetadata);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom DLFileEntryMetadata implementation " +
+						dlFileEntryMetadata.getClass());
 			}
-			else {
-				dlFileEntryMetadata = (DLFileEntryMetadata)session.merge(
-					dlFileEntryMetadata);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (dlFileEntryMetadata.getCtCollectionId() != 0) {
+			DLFileEntryMetadataModelImpl dlFileEntryMetadataModelImpl =
+				(DLFileEntryMetadataModelImpl)dlFileEntryMetadata;
+
+			if (Validator.isNull(dlFileEntryMetadata.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				dlFileEntryMetadata.setUuid(uuid);
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(dlFileEntryMetadata)) {
+					if (!isNew) {
+						session.evict(
+							DLFileEntryMetadataImpl.class,
+							dlFileEntryMetadata.getPrimaryKeyObj());
+					}
+
+					session.save(dlFileEntryMetadata);
+				}
+				else {
+					dlFileEntryMetadata = (DLFileEntryMetadata)session.merge(
+						dlFileEntryMetadata);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				DLFileEntryMetadataImpl.class, dlFileEntryMetadataModelImpl,
+				false, true);
+
+			cacheUniqueFindersCache(dlFileEntryMetadataModelImpl);
+
 			if (isNew) {
 				dlFileEntryMetadata.setNew(false);
 			}
@@ -2846,20 +2864,6 @@ public class DLFileEntryMetadataPersistenceImpl
 
 			return dlFileEntryMetadata;
 		}
-
-		EntityCacheUtil.putResult(
-			DLFileEntryMetadataImpl.class, dlFileEntryMetadataModelImpl, false,
-			true);
-
-		cacheUniqueFindersCache(dlFileEntryMetadataModelImpl);
-
-		if (isNew) {
-			dlFileEntryMetadata.setNew(false);
-		}
-
-		dlFileEntryMetadata.resetOriginalValues();
-
-		return dlFileEntryMetadata;
 	}
 
 	/**
@@ -2909,34 +2913,13 @@ public class DLFileEntryMetadataPersistenceImpl
 	 */
 	@Override
 	public DLFileEntryMetadata fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				DLFileEntryMetadata.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						DLFileEntryMetadata.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		DLFileEntryMetadata dlFileEntryMetadata = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			dlFileEntryMetadata = (DLFileEntryMetadata)session.get(
-				DLFileEntryMetadataImpl.class, primaryKey);
-
-			if (dlFileEntryMetadata != null) {
-				cacheResult(dlFileEntryMetadata);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return dlFileEntryMetadata;
 	}
 
 	/**
@@ -2954,98 +2937,13 @@ public class DLFileEntryMetadataPersistenceImpl
 	public Map<Serializable, DLFileEntryMetadata> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(
-				DLFileEntryMetadata.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						DLFileEntryMetadata.class))) {
 
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, DLFileEntryMetadata> map =
-			new HashMap<Serializable, DLFileEntryMetadata>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			DLFileEntryMetadata dlFileEntryMetadata = fetchByPrimaryKey(
-				primaryKey);
-
-			if (dlFileEntryMetadata != null) {
-				map.put(primaryKey, dlFileEntryMetadata);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (DLFileEntryMetadata dlFileEntryMetadata :
-					(List<DLFileEntryMetadata>)query.list()) {
-
-				map.put(
-					dlFileEntryMetadata.getPrimaryKeyObj(),
-					dlFileEntryMetadata);
-
-				cacheResult(dlFileEntryMetadata);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

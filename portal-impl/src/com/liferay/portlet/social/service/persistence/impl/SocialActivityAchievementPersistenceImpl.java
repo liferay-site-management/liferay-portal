@@ -5,8 +5,11 @@
 
 package com.liferay.portlet.social.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -41,9 +44,7 @@ import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -2411,110 +2412,105 @@ public class SocialActivityAchievementPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, userId, name};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialActivityAchievement.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByG_U_N, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialActivityAchievement.class);
-
-		if (result instanceof SocialActivityAchievement) {
-			SocialActivityAchievement socialActivityAchievement =
-				(SocialActivityAchievement)result;
-
-			if ((groupId != socialActivityAchievement.getGroupId()) ||
-				(userId != socialActivityAchievement.getUserId()) ||
-				!Objects.equals(name, socialActivityAchievement.getName())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivityAchievement.class,
-						socialActivityAchievement.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_SOCIALACTIVITYACHIEVEMENT_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_U_N_GROUPID_2);
-
-			sb.append(_FINDER_COLUMN_G_U_N_USERID_2);
-
-			boolean bindName = false;
-
-			if (name.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_U_N_NAME_3);
-			}
-			else {
-				bindName = true;
-
-				sb.append(_FINDER_COLUMN_G_U_N_NAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, userId, name};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByG_U_N, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof SocialActivityAchievement) {
+				SocialActivityAchievement socialActivityAchievement =
+					(SocialActivityAchievement)result;
 
-				Query query = session.createQuery(sql);
+				if ((groupId != socialActivityAchievement.getGroupId()) ||
+					(userId != socialActivityAchievement.getUserId()) ||
+					!Objects.equals(
+						name, socialActivityAchievement.getName())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				queryPos.add(userId);
-
-				if (bindName) {
-					queryPos.add(name);
+					result = null;
 				}
+			}
 
-				List<SocialActivityAchievement> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByG_U_N, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_SOCIALACTIVITYACHIEVEMENT_WHERE);
+
+				sb.append(_FINDER_COLUMN_G_U_N_GROUPID_2);
+
+				sb.append(_FINDER_COLUMN_G_U_N_USERID_2);
+
+				boolean bindName = false;
+
+				if (name.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_U_N_NAME_3);
 				}
 				else {
-					SocialActivityAchievement socialActivityAchievement =
-						list.get(0);
+					bindName = true;
 
-					result = socialActivityAchievement;
+					sb.append(_FINDER_COLUMN_G_U_N_NAME_2);
+				}
 
-					cacheResult(socialActivityAchievement);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					queryPos.add(userId);
+
+					if (bindName) {
+						queryPos.add(name);
+					}
+
+					List<SocialActivityAchievement> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByG_U_N, finderArgs, list);
+						}
+					}
+					else {
+						SocialActivityAchievement socialActivityAchievement =
+							list.get(0);
+
+						result = socialActivityAchievement;
+
+						cacheResult(socialActivityAchievement);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (SocialActivityAchievement)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (SocialActivityAchievement)result;
+			}
 		}
 	}
 
@@ -3252,23 +3248,24 @@ public class SocialActivityAchievementPersistenceImpl
 	public void cacheResult(
 		SocialActivityAchievement socialActivityAchievement) {
 
-		if (socialActivityAchievement.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					socialActivityAchievement.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				SocialActivityAchievementImpl.class,
+				socialActivityAchievement.getPrimaryKey(),
+				socialActivityAchievement);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_U_N,
+				new Object[] {
+					socialActivityAchievement.getGroupId(),
+					socialActivityAchievement.getUserId(),
+					socialActivityAchievement.getName()
+				},
+				socialActivityAchievement);
 		}
-
-		EntityCacheUtil.putResult(
-			SocialActivityAchievementImpl.class,
-			socialActivityAchievement.getPrimaryKey(),
-			socialActivityAchievement);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_U_N,
-			new Object[] {
-				socialActivityAchievement.getGroupId(),
-				socialActivityAchievement.getUserId(),
-				socialActivityAchievement.getName()
-			},
-			socialActivityAchievement);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -3293,15 +3290,18 @@ public class SocialActivityAchievementPersistenceImpl
 		for (SocialActivityAchievement socialActivityAchievement :
 				socialActivityAchievements) {
 
-			if (socialActivityAchievement.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(socialActivityAchievement.getCtCollectionId() != 0) &&
+						(socialActivityAchievement.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					SocialActivityAchievementImpl.class,
-					socialActivityAchievement.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						SocialActivityAchievementImpl.class,
+						socialActivityAchievement.getPrimaryKey()) == null) {
 
-				cacheResult(socialActivityAchievement);
+					cacheResult(socialActivityAchievement);
+				}
 			}
 		}
 	}
@@ -3360,16 +3360,23 @@ public class SocialActivityAchievementPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		SocialActivityAchievementModelImpl socialActivityAchievementModelImpl) {
 
-		Object[] args = new Object[] {
-			socialActivityAchievementModelImpl.getGroupId(),
-			socialActivityAchievementModelImpl.getUserId(),
-			socialActivityAchievementModelImpl.getName()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					socialActivityAchievementModelImpl.getCtCollectionId() !=
+						0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByG_U_N, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_U_N, args, socialActivityAchievementModelImpl);
+			Object[] args = new Object[] {
+				socialActivityAchievementModelImpl.getGroupId(),
+				socialActivityAchievementModelImpl.getUserId(),
+				socialActivityAchievementModelImpl.getName()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByG_U_N, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_U_N, args,
+				socialActivityAchievementModelImpl);
+		}
 	}
 
 	/**
@@ -3488,58 +3495,73 @@ public class SocialActivityAchievementPersistenceImpl
 	public SocialActivityAchievement updateImpl(
 		SocialActivityAchievement socialActivityAchievement) {
 
-		boolean isNew = socialActivityAchievement.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(socialActivityAchievement instanceof
-				SocialActivityAchievementModelImpl)) {
+			boolean isNew = socialActivityAchievement.isNew();
 
-			InvocationHandler invocationHandler = null;
+			if (!(socialActivityAchievement instanceof
+					SocialActivityAchievementModelImpl)) {
 
-			if (ProxyUtil.isProxyClass(socialActivityAchievement.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					socialActivityAchievement);
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in socialActivityAchievement proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(
+						socialActivityAchievement.getClass())) {
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom SocialActivityAchievement implementation " +
-					socialActivityAchievement.getClass());
-		}
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						socialActivityAchievement);
 
-		SocialActivityAchievementModelImpl socialActivityAchievementModelImpl =
-			(SocialActivityAchievementModelImpl)socialActivityAchievement;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(socialActivityAchievement)) {
-				if (!isNew) {
-					session.evict(
-						SocialActivityAchievementImpl.class,
-						socialActivityAchievement.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in socialActivityAchievement proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(socialActivityAchievement);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom SocialActivityAchievement implementation " +
+						socialActivityAchievement.getClass());
 			}
-			else {
-				socialActivityAchievement =
-					(SocialActivityAchievement)session.merge(
-						socialActivityAchievement);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (socialActivityAchievement.getCtCollectionId() != 0) {
+			SocialActivityAchievementModelImpl
+				socialActivityAchievementModelImpl =
+					(SocialActivityAchievementModelImpl)
+						socialActivityAchievement;
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(
+						socialActivityAchievement)) {
+
+					if (!isNew) {
+						session.evict(
+							SocialActivityAchievementImpl.class,
+							socialActivityAchievement.getPrimaryKeyObj());
+					}
+
+					session.save(socialActivityAchievement);
+				}
+				else {
+					socialActivityAchievement =
+						(SocialActivityAchievement)session.merge(
+							socialActivityAchievement);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				SocialActivityAchievementImpl.class,
+				socialActivityAchievementModelImpl, false, true);
+
+			cacheUniqueFindersCache(socialActivityAchievementModelImpl);
+
 			if (isNew) {
 				socialActivityAchievement.setNew(false);
 			}
@@ -3548,20 +3570,6 @@ public class SocialActivityAchievementPersistenceImpl
 
 			return socialActivityAchievement;
 		}
-
-		EntityCacheUtil.putResult(
-			SocialActivityAchievementImpl.class,
-			socialActivityAchievementModelImpl, false, true);
-
-		cacheUniqueFindersCache(socialActivityAchievementModelImpl);
-
-		if (isNew) {
-			socialActivityAchievement.setNew(false);
-		}
-
-		socialActivityAchievement.resetOriginalValues();
-
-		return socialActivityAchievement;
 	}
 
 	/**
@@ -3615,34 +3623,13 @@ public class SocialActivityAchievementPersistenceImpl
 	public SocialActivityAchievement fetchByPrimaryKey(
 		Serializable primaryKey) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(
-				SocialActivityAchievement.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialActivityAchievement.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		SocialActivityAchievement socialActivityAchievement = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			socialActivityAchievement = (SocialActivityAchievement)session.get(
-				SocialActivityAchievementImpl.class, primaryKey);
-
-			if (socialActivityAchievement != null) {
-				cacheResult(socialActivityAchievement);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return socialActivityAchievement;
 	}
 
 	/**
@@ -3662,98 +3649,13 @@ public class SocialActivityAchievementPersistenceImpl
 	public Map<Serializable, SocialActivityAchievement> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(
-				SocialActivityAchievement.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialActivityAchievement.class))) {
 
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, SocialActivityAchievement> map =
-			new HashMap<Serializable, SocialActivityAchievement>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			SocialActivityAchievement socialActivityAchievement =
-				fetchByPrimaryKey(primaryKey);
-
-			if (socialActivityAchievement != null) {
-				map.put(primaryKey, socialActivityAchievement);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (SocialActivityAchievement socialActivityAchievement :
-					(List<SocialActivityAchievement>)query.list()) {
-
-				map.put(
-					socialActivityAchievement.getPrimaryKeyObj(),
-					socialActivityAchievement);
-
-				cacheResult(socialActivityAchievement);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

@@ -5,8 +5,11 @@
 
 package com.liferay.portlet.social.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -46,7 +49,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -698,102 +700,97 @@ public class SocialRequestPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialRequest.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialRequest.class);
-
-		if (result instanceof SocialRequest) {
-			SocialRequest socialRequest = (SocialRequest)result;
-
-			if (!Objects.equals(uuid, socialRequest.getUuid()) ||
-				(groupId != socialRequest.getGroupId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						SocialRequest.class, socialRequest.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_SOCIALREQUEST_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof SocialRequest) {
+				SocialRequest socialRequest = (SocialRequest)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, socialRequest.getUuid()) ||
+					(groupId != socialRequest.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<SocialRequest> list = query.list();
+				sb.append(_SQL_SELECT_SOCIALREQUEST_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					SocialRequest socialRequest = list.get(0);
+					bindUuid = true;
 
-					result = socialRequest;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(socialRequest);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<SocialRequest> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						SocialRequest socialRequest = list.get(0);
+
+						result = socialRequest;
+
+						cacheResult(socialRequest);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (SocialRequest)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (SocialRequest)result;
+			}
 		}
 	}
 
@@ -4800,108 +4797,103 @@ public class SocialRequestPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {
-				userId, classNameId, classPK, type, receiverUserId
-			};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialRequest.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByU_C_C_T_R, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialRequest.class);
-
-		if (result instanceof SocialRequest) {
-			SocialRequest socialRequest = (SocialRequest)result;
-
-			if ((userId != socialRequest.getUserId()) ||
-				(classNameId != socialRequest.getClassNameId()) ||
-				(classPK != socialRequest.getClassPK()) ||
-				(type != socialRequest.getType()) ||
-				(receiverUserId != socialRequest.getReceiverUserId())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					userId, classNameId, classPK, type, receiverUserId
+				};
 			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						SocialRequest.class, socialRequest.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByU_C_C_T_R, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(7);
+			if (result instanceof SocialRequest) {
+				SocialRequest socialRequest = (SocialRequest)result;
 
-			sb.append(_SQL_SELECT_SOCIALREQUEST_WHERE);
+				if ((userId != socialRequest.getUserId()) ||
+					(classNameId != socialRequest.getClassNameId()) ||
+					(classPK != socialRequest.getClassPK()) ||
+					(type != socialRequest.getType()) ||
+					(receiverUserId != socialRequest.getReceiverUserId())) {
 
-			sb.append(_FINDER_COLUMN_U_C_C_T_R_USERID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_U_C_C_T_R_CLASSNAMEID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(7);
 
-			sb.append(_FINDER_COLUMN_U_C_C_T_R_CLASSPK_2);
+				sb.append(_SQL_SELECT_SOCIALREQUEST_WHERE);
 
-			sb.append(_FINDER_COLUMN_U_C_C_T_R_TYPE_2);
+				sb.append(_FINDER_COLUMN_U_C_C_T_R_USERID_2);
 
-			sb.append(_FINDER_COLUMN_U_C_C_T_R_RECEIVERUSERID_2);
+				sb.append(_FINDER_COLUMN_U_C_C_T_R_CLASSNAMEID_2);
 
-			String sql = sb.toString();
+				sb.append(_FINDER_COLUMN_U_C_C_T_R_CLASSPK_2);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_U_C_C_T_R_TYPE_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_U_C_C_T_R_RECEIVERUSERID_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(userId);
+				try {
+					session = openSession();
 
-				queryPos.add(classNameId);
+					Query query = session.createQuery(sql);
 
-				queryPos.add(classPK);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(type);
+					queryPos.add(userId);
 
-				queryPos.add(receiverUserId);
+					queryPos.add(classNameId);
 
-				List<SocialRequest> list = query.list();
+					queryPos.add(classPK);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByU_C_C_T_R, finderArgs, list);
+					queryPos.add(type);
+
+					queryPos.add(receiverUserId);
+
+					List<SocialRequest> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByU_C_C_T_R, finderArgs, list);
+						}
+					}
+					else {
+						SocialRequest socialRequest = list.get(0);
+
+						result = socialRequest;
+
+						cacheResult(socialRequest);
 					}
 				}
-				else {
-					SocialRequest socialRequest = list.get(0);
-
-					result = socialRequest;
-
-					cacheResult(socialRequest);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (SocialRequest)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (SocialRequest)result;
+			}
 		}
 	}
 
@@ -6409,27 +6401,30 @@ public class SocialRequestPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(SocialRequest socialRequest) {
-		if (socialRequest.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					socialRequest.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				SocialRequestImpl.class, socialRequest.getPrimaryKey(),
+				socialRequest);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					socialRequest.getUuid(), socialRequest.getGroupId()
+				},
+				socialRequest);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByU_C_C_T_R,
+				new Object[] {
+					socialRequest.getUserId(), socialRequest.getClassNameId(),
+					socialRequest.getClassPK(), socialRequest.getType(),
+					socialRequest.getReceiverUserId()
+				},
+				socialRequest);
 		}
-
-		EntityCacheUtil.putResult(
-			SocialRequestImpl.class, socialRequest.getPrimaryKey(),
-			socialRequest);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {socialRequest.getUuid(), socialRequest.getGroupId()},
-			socialRequest);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByU_C_C_T_R,
-			new Object[] {
-				socialRequest.getUserId(), socialRequest.getClassNameId(),
-				socialRequest.getClassPK(), socialRequest.getType(),
-				socialRequest.getReceiverUserId()
-			},
-			socialRequest);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -6449,15 +6444,18 @@ public class SocialRequestPersistenceImpl
 		}
 
 		for (SocialRequest socialRequest : socialRequests) {
-			if (socialRequest.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(socialRequest.getCtCollectionId() != 0) &&
+						(socialRequest.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					SocialRequestImpl.class, socialRequest.getPrimaryKey()) ==
-						null) {
+				if (EntityCacheUtil.getResult(
+						SocialRequestImpl.class,
+						socialRequest.getPrimaryKey()) == null) {
 
-				cacheResult(socialRequest);
+					cacheResult(socialRequest);
+				}
 			}
 		}
 	}
@@ -6508,28 +6506,33 @@ public class SocialRequestPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		SocialRequestModelImpl socialRequestModelImpl) {
 
-		Object[] args = new Object[] {
-			socialRequestModelImpl.getUuid(),
-			socialRequestModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					socialRequestModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByUUID_G, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G, args, socialRequestModelImpl);
+			Object[] args = new Object[] {
+				socialRequestModelImpl.getUuid(),
+				socialRequestModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			socialRequestModelImpl.getUserId(),
-			socialRequestModelImpl.getClassNameId(),
-			socialRequestModelImpl.getClassPK(),
-			socialRequestModelImpl.getType(),
-			socialRequestModelImpl.getReceiverUserId()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G, args, socialRequestModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByU_C_C_T_R, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByU_C_C_T_R, args, socialRequestModelImpl);
+			args = new Object[] {
+				socialRequestModelImpl.getUserId(),
+				socialRequestModelImpl.getClassNameId(),
+				socialRequestModelImpl.getClassPK(),
+				socialRequestModelImpl.getType(),
+				socialRequestModelImpl.getReceiverUserId()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByU_C_C_T_R, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByU_C_C_T_R, args, socialRequestModelImpl);
+		}
 	}
 
 	/**
@@ -6641,60 +6644,68 @@ public class SocialRequestPersistenceImpl
 
 	@Override
 	public SocialRequest updateImpl(SocialRequest socialRequest) {
-		boolean isNew = socialRequest.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(socialRequest instanceof SocialRequestModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = socialRequest.isNew();
 
-			if (ProxyUtil.isProxyClass(socialRequest.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					socialRequest);
+			if (!(socialRequest instanceof SocialRequestModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in socialRequest proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(socialRequest.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						socialRequest);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom SocialRequest implementation " +
-					socialRequest.getClass());
-		}
-
-		SocialRequestModelImpl socialRequestModelImpl =
-			(SocialRequestModelImpl)socialRequest;
-
-		if (Validator.isNull(socialRequest.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			socialRequest.setUuid(uuid);
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(socialRequest)) {
-				if (!isNew) {
-					session.evict(
-						SocialRequestImpl.class,
-						socialRequest.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in socialRequest proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(socialRequest);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom SocialRequest implementation " +
+						socialRequest.getClass());
 			}
-			else {
-				socialRequest = (SocialRequest)session.merge(socialRequest);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (socialRequest.getCtCollectionId() != 0) {
+			SocialRequestModelImpl socialRequestModelImpl =
+				(SocialRequestModelImpl)socialRequest;
+
+			if (Validator.isNull(socialRequest.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				socialRequest.setUuid(uuid);
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(socialRequest)) {
+					if (!isNew) {
+						session.evict(
+							SocialRequestImpl.class,
+							socialRequest.getPrimaryKeyObj());
+					}
+
+					session.save(socialRequest);
+				}
+				else {
+					socialRequest = (SocialRequest)session.merge(socialRequest);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				SocialRequestImpl.class, socialRequestModelImpl, false, true);
+
+			cacheUniqueFindersCache(socialRequestModelImpl);
+
 			if (isNew) {
 				socialRequest.setNew(false);
 			}
@@ -6703,19 +6714,6 @@ public class SocialRequestPersistenceImpl
 
 			return socialRequest;
 		}
-
-		EntityCacheUtil.putResult(
-			SocialRequestImpl.class, socialRequestModelImpl, false, true);
-
-		cacheUniqueFindersCache(socialRequestModelImpl);
-
-		if (isNew) {
-			socialRequest.setNew(false);
-		}
-
-		socialRequest.resetOriginalValues();
-
-		return socialRequest;
 	}
 
 	/**
@@ -6765,34 +6763,13 @@ public class SocialRequestPersistenceImpl
 	 */
 	@Override
 	public SocialRequest fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				SocialRequest.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialRequest.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		SocialRequest socialRequest = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			socialRequest = (SocialRequest)session.get(
-				SocialRequestImpl.class, primaryKey);
-
-			if (socialRequest != null) {
-				cacheResult(socialRequest);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return socialRequest;
 	}
 
 	/**
@@ -6810,93 +6787,13 @@ public class SocialRequestPersistenceImpl
 	public Map<Serializable, SocialRequest> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(SocialRequest.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialRequest.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, SocialRequest> map =
-			new HashMap<Serializable, SocialRequest>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			SocialRequest socialRequest = fetchByPrimaryKey(primaryKey);
-
-			if (socialRequest != null) {
-				map.put(primaryKey, socialRequest);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (SocialRequest socialRequest :
-					(List<SocialRequest>)query.list()) {
-
-				map.put(socialRequest.getPrimaryKeyObj(), socialRequest);
-
-				cacheResult(socialRequest);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

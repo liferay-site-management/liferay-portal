@@ -10,8 +10,11 @@ import com.liferay.announcements.kernel.model.AnnouncementsEntry;
 import com.liferay.announcements.kernel.model.AnnouncementsEntryTable;
 import com.liferay.announcements.kernel.service.persistence.AnnouncementsEntryPersistence;
 import com.liferay.announcements.kernel.service.persistence.AnnouncementsEntryUtil;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -57,7 +60,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -8030,13 +8032,14 @@ public class AnnouncementsEntryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(AnnouncementsEntry announcementsEntry) {
-		if (announcementsEntry.getCtCollectionId() != 0) {
-			return;
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					announcementsEntry.getCtCollectionId() != 0)) {
 
-		EntityCacheUtil.putResult(
-			AnnouncementsEntryImpl.class, announcementsEntry.getPrimaryKey(),
-			announcementsEntry);
+			EntityCacheUtil.putResult(
+				AnnouncementsEntryImpl.class,
+				announcementsEntry.getPrimaryKey(), announcementsEntry);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -8057,15 +8060,18 @@ public class AnnouncementsEntryPersistenceImpl
 		}
 
 		for (AnnouncementsEntry announcementsEntry : announcementsEntries) {
-			if (announcementsEntry.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(announcementsEntry.getCtCollectionId() != 0) &&
+						(announcementsEntry.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					AnnouncementsEntryImpl.class,
-					announcementsEntry.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						AnnouncementsEntryImpl.class,
+						announcementsEntry.getPrimaryKey()) == null) {
 
-				cacheResult(announcementsEntry);
+					cacheResult(announcementsEntry);
+				}
 			}
 		}
 	}
@@ -8230,112 +8236,119 @@ public class AnnouncementsEntryPersistenceImpl
 	public AnnouncementsEntry updateImpl(
 		AnnouncementsEntry announcementsEntry) {
 
-		boolean isNew = announcementsEntry.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(announcementsEntry instanceof AnnouncementsEntryModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = announcementsEntry.isNew();
 
-			if (ProxyUtil.isProxyClass(announcementsEntry.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					announcementsEntry);
+			if (!(announcementsEntry instanceof AnnouncementsEntryModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in announcementsEntry proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(announcementsEntry.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						announcementsEntry);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom AnnouncementsEntry implementation " +
-					announcementsEntry.getClass());
-		}
-
-		AnnouncementsEntryModelImpl announcementsEntryModelImpl =
-			(AnnouncementsEntryModelImpl)announcementsEntry;
-
-		if (Validator.isNull(announcementsEntry.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			announcementsEntry.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (announcementsEntry.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				announcementsEntry.setCreateDate(date);
-			}
-			else {
-				announcementsEntry.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!announcementsEntryModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				announcementsEntry.setModifiedDate(date);
-			}
-			else {
-				announcementsEntry.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
-
-		if (userId > 0) {
-			long companyId = announcementsEntry.getCompanyId();
-
-			long groupId = 0;
-
-			long entryId = 0;
-
-			if (!isNew) {
-				entryId = announcementsEntry.getPrimaryKey();
-			}
-
-			try {
-				announcementsEntry.setContent(
-					SanitizerUtil.sanitize(
-						companyId, groupId, userId,
-						AnnouncementsEntry.class.getName(), entryId,
-						ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-						announcementsEntry.getContent(), null));
-			}
-			catch (SanitizerException sanitizerException) {
-				throw new SystemException(sanitizerException);
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(announcementsEntry)) {
-				if (!isNew) {
-					session.evict(
-						AnnouncementsEntryImpl.class,
-						announcementsEntry.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in announcementsEntry proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(announcementsEntry);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom AnnouncementsEntry implementation " +
+						announcementsEntry.getClass());
 			}
-			else {
-				announcementsEntry = (AnnouncementsEntry)session.merge(
-					announcementsEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (announcementsEntry.getCtCollectionId() != 0) {
+			AnnouncementsEntryModelImpl announcementsEntryModelImpl =
+				(AnnouncementsEntryModelImpl)announcementsEntry;
+
+			if (Validator.isNull(announcementsEntry.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				announcementsEntry.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (announcementsEntry.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					announcementsEntry.setCreateDate(date);
+				}
+				else {
+					announcementsEntry.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!announcementsEntryModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					announcementsEntry.setModifiedDate(date);
+				}
+				else {
+					announcementsEntry.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
+
+			if (userId > 0) {
+				long companyId = announcementsEntry.getCompanyId();
+
+				long groupId = 0;
+
+				long entryId = 0;
+
+				if (!isNew) {
+					entryId = announcementsEntry.getPrimaryKey();
+				}
+
+				try {
+					announcementsEntry.setContent(
+						SanitizerUtil.sanitize(
+							companyId, groupId, userId,
+							AnnouncementsEntry.class.getName(), entryId,
+							ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+							announcementsEntry.getContent(), null));
+				}
+				catch (SanitizerException sanitizerException) {
+					throw new SystemException(sanitizerException);
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(announcementsEntry)) {
+					if (!isNew) {
+						session.evict(
+							AnnouncementsEntryImpl.class,
+							announcementsEntry.getPrimaryKeyObj());
+					}
+
+					session.save(announcementsEntry);
+				}
+				else {
+					announcementsEntry = (AnnouncementsEntry)session.merge(
+						announcementsEntry);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				AnnouncementsEntryImpl.class, announcementsEntryModelImpl,
+				false, true);
+
 			if (isNew) {
 				announcementsEntry.setNew(false);
 			}
@@ -8344,18 +8357,6 @@ public class AnnouncementsEntryPersistenceImpl
 
 			return announcementsEntry;
 		}
-
-		EntityCacheUtil.putResult(
-			AnnouncementsEntryImpl.class, announcementsEntryModelImpl, false,
-			true);
-
-		if (isNew) {
-			announcementsEntry.setNew(false);
-		}
-
-		announcementsEntry.resetOriginalValues();
-
-		return announcementsEntry;
 	}
 
 	/**
@@ -8405,34 +8406,13 @@ public class AnnouncementsEntryPersistenceImpl
 	 */
 	@Override
 	public AnnouncementsEntry fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				AnnouncementsEntry.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AnnouncementsEntry.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		AnnouncementsEntry announcementsEntry = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			announcementsEntry = (AnnouncementsEntry)session.get(
-				AnnouncementsEntryImpl.class, primaryKey);
-
-			if (announcementsEntry != null) {
-				cacheResult(announcementsEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return announcementsEntry;
 	}
 
 	/**
@@ -8450,97 +8430,13 @@ public class AnnouncementsEntryPersistenceImpl
 	public Map<Serializable, AnnouncementsEntry> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(
-				AnnouncementsEntry.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						AnnouncementsEntry.class))) {
 
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, AnnouncementsEntry> map =
-			new HashMap<Serializable, AnnouncementsEntry>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			AnnouncementsEntry announcementsEntry = fetchByPrimaryKey(
-				primaryKey);
-
-			if (announcementsEntry != null) {
-				map.put(primaryKey, announcementsEntry);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (AnnouncementsEntry announcementsEntry :
-					(List<AnnouncementsEntry>)query.list()) {
-
-				map.put(
-					announcementsEntry.getPrimaryKeyObj(), announcementsEntry);
-
-				cacheResult(announcementsEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

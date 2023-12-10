@@ -13,8 +13,11 @@ import com.liferay.message.boards.model.impl.MBBanModelImpl;
 import com.liferay.message.boards.service.persistence.MBBanPersistence;
 import com.liferay.message.boards.service.persistence.MBBanUtil;
 import com.liferay.message.boards.service.persistence.impl.constants.MBPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -50,7 +53,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -703,102 +705,96 @@ public class MBBanPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBBan.class);
-
-		if (result instanceof MBBan) {
-			MBBan mbBan = (MBBan)result;
-
-			if (!Objects.equals(uuid, mbBan.getUuid()) ||
-				(groupId != mbBan.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						MBBan.class, mbBan.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_MBBAN_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof MBBan) {
+				MBBan mbBan = (MBBan)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, mbBan.getUuid()) ||
+					(groupId != mbBan.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<MBBan> list = query.list();
+				sb.append(_SQL_SELECT_MBBAN_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					MBBan mbBan = list.get(0);
+					bindUuid = true;
 
-					result = mbBan;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(mbBan);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<MBBan> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						MBBan mbBan = list.get(0);
+
+						result = mbBan;
+
+						cacheResult(mbBan);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (MBBan)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (MBBan)result;
+			}
 		}
 	}
 
@@ -3071,91 +3067,85 @@ public class MBBanPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, banUserId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_B, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBBan.class);
-
-		if (result instanceof MBBan) {
-			MBBan mbBan = (MBBan)result;
-
-			if ((groupId != mbBan.getGroupId()) ||
-				(banUserId != mbBan.getBanUserId())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, banUserId};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						MBBan.class, mbBan.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_B, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
+			if (result instanceof MBBan) {
+				MBBan mbBan = (MBBan)result;
 
-			sb.append(_SQL_SELECT_MBBAN_WHERE);
+				if ((groupId != mbBan.getGroupId()) ||
+					(banUserId != mbBan.getBanUserId())) {
 
-			sb.append(_FINDER_COLUMN_G_B_GROUPID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_G_B_BANUSERID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-			String sql = sb.toString();
+				sb.append(_SQL_SELECT_MBBAN_WHERE);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_G_B_GROUPID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_G_B_BANUSERID_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(groupId);
+				try {
+					session = openSession();
 
-				queryPos.add(banUserId);
+					Query query = session.createQuery(sql);
 
-				List<MBBan> list = query.list();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_B, finderArgs, list);
+					queryPos.add(groupId);
+
+					queryPos.add(banUserId);
+
+					List<MBBan> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_B, finderArgs, list);
+						}
+					}
+					else {
+						MBBan mbBan = list.get(0);
+
+						result = mbBan;
+
+						cacheResult(mbBan);
 					}
 				}
-				else {
-					MBBan mbBan = list.get(0);
-
-					result = mbBan;
-
-					cacheResult(mbBan);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (MBBan)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (MBBan)result;
+			}
 		}
 	}
 
@@ -3269,19 +3259,21 @@ public class MBBanPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(MBBan mbBan) {
-		if (mbBan.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					mbBan.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				MBBanImpl.class, mbBan.getPrimaryKey(), mbBan);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {mbBan.getUuid(), mbBan.getGroupId()}, mbBan);
+
+			finderCache.putResult(
+				_finderPathFetchByG_B,
+				new Object[] {mbBan.getGroupId(), mbBan.getBanUserId()}, mbBan);
 		}
-
-		entityCache.putResult(MBBanImpl.class, mbBan.getPrimaryKey(), mbBan);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {mbBan.getUuid(), mbBan.getGroupId()}, mbBan);
-
-		finderCache.putResult(
-			_finderPathFetchByG_B,
-			new Object[] {mbBan.getGroupId(), mbBan.getBanUserId()}, mbBan);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -3301,14 +3293,17 @@ public class MBBanPersistenceImpl
 		}
 
 		for (MBBan mbBan : mbBans) {
-			if (mbBan.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(mbBan.getCtCollectionId() != 0) &&
+						(mbBan.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(MBBanImpl.class, mbBan.getPrimaryKey()) ==
-					null) {
+				if (entityCache.getResult(
+						MBBanImpl.class, mbBan.getPrimaryKey()) == null) {
 
-				cacheResult(mbBan);
+					cacheResult(mbBan);
+				}
 			}
 		}
 	}
@@ -3356,19 +3351,26 @@ public class MBBanPersistenceImpl
 	}
 
 	protected void cacheUniqueFindersCache(MBBanModelImpl mbBanModelImpl) {
-		Object[] args = new Object[] {
-			mbBanModelImpl.getUuid(), mbBanModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					mbBanModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(_finderPathFetchByUUID_G, args, mbBanModelImpl);
+			Object[] args = new Object[] {
+				mbBanModelImpl.getUuid(), mbBanModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			mbBanModelImpl.getGroupId(), mbBanModelImpl.getBanUserId()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, mbBanModelImpl);
 
-		finderCache.putResult(_finderPathCountByG_B, args, Long.valueOf(1));
-		finderCache.putResult(_finderPathFetchByG_B, args, mbBanModelImpl);
+			args = new Object[] {
+				mbBanModelImpl.getGroupId(), mbBanModelImpl.getBanUserId()
+			};
+
+			finderCache.putResult(_finderPathCountByG_B, args, Long.valueOf(1));
+			finderCache.putResult(_finderPathFetchByG_B, args, mbBanModelImpl);
+		}
 	}
 
 	/**
@@ -3475,79 +3477,87 @@ public class MBBanPersistenceImpl
 
 	@Override
 	public MBBan updateImpl(MBBan mbBan) {
-		boolean isNew = mbBan.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(mbBan instanceof MBBanModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = mbBan.isNew();
 
-			if (ProxyUtil.isProxyClass(mbBan.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(mbBan);
+			if (!(mbBan instanceof MBBanModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in mbBan proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(mbBan.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(mbBan);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom MBBan implementation " +
-					mbBan.getClass());
-		}
-
-		MBBanModelImpl mbBanModelImpl = (MBBanModelImpl)mbBan;
-
-		if (Validator.isNull(mbBan.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			mbBan.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (mbBan.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				mbBan.setCreateDate(date);
-			}
-			else {
-				mbBan.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!mbBanModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				mbBan.setModifiedDate(date);
-			}
-			else {
-				mbBan.setModifiedDate(serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(mbBan)) {
-				if (!isNew) {
-					session.evict(MBBanImpl.class, mbBan.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in mbBan proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(mbBan);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom MBBan implementation " +
+						mbBan.getClass());
 			}
-			else {
-				mbBan = (MBBan)session.merge(mbBan);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (mbBan.getCtCollectionId() != 0) {
+			MBBanModelImpl mbBanModelImpl = (MBBanModelImpl)mbBan;
+
+			if (Validator.isNull(mbBan.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				mbBan.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (mbBan.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					mbBan.setCreateDate(date);
+				}
+				else {
+					mbBan.setCreateDate(serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!mbBanModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					mbBan.setModifiedDate(date);
+				}
+				else {
+					mbBan.setModifiedDate(serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(mbBan)) {
+					if (!isNew) {
+						session.evict(
+							MBBanImpl.class, mbBan.getPrimaryKeyObj());
+					}
+
+					session.save(mbBan);
+				}
+				else {
+					mbBan = (MBBan)session.merge(mbBan);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(MBBanImpl.class, mbBanModelImpl, false, true);
+
+			cacheUniqueFindersCache(mbBanModelImpl);
+
 			if (isNew) {
 				mbBan.setNew(false);
 			}
@@ -3556,18 +3566,6 @@ public class MBBanPersistenceImpl
 
 			return mbBan;
 		}
-
-		entityCache.putResult(MBBanImpl.class, mbBanModelImpl, false, true);
-
-		cacheUniqueFindersCache(mbBanModelImpl);
-
-		if (isNew) {
-			mbBan.setNew(false);
-		}
-
-		mbBan.resetOriginalValues();
-
-		return mbBan;
 	}
 
 	/**
@@ -3615,31 +3613,13 @@ public class MBBanPersistenceImpl
 	 */
 	@Override
 	public MBBan fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(MBBan.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						MBBan.class, primaryKey))) {
+
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		MBBan mbBan = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			mbBan = (MBBan)session.get(MBBanImpl.class, primaryKey);
-
-			if (mbBan != null) {
-				cacheResult(mbBan);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return mbBan;
 	}
 
 	/**
@@ -3657,90 +3637,12 @@ public class MBBanPersistenceImpl
 	public Map<Serializable, MBBan> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(MBBan.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, MBBan> map = new HashMap<Serializable, MBBan>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			MBBan mbBan = fetchByPrimaryKey(primaryKey);
-
-			if (mbBan != null) {
-				map.put(primaryKey, mbBan);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (MBBan mbBan : (List<MBBan>)query.list()) {
-				map.put(mbBan.getPrimaryKeyObj(), mbBan);
-
-				cacheResult(mbBan);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

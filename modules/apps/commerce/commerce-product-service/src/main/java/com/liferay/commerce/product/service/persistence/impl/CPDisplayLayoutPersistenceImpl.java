@@ -13,8 +13,11 @@ import com.liferay.commerce.product.model.impl.CPDisplayLayoutModelImpl;
 import com.liferay.commerce.product.service.persistence.CPDisplayLayoutPersistence;
 import com.liferay.commerce.product.service.persistence.CPDisplayLayoutUtil;
 import com.liferay.commerce.product.service.persistence.impl.constants.CommercePersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -50,7 +53,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -711,103 +713,97 @@ public class CPDisplayLayoutPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPDisplayLayout.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDisplayLayout.class);
-
-		if (result instanceof CPDisplayLayout) {
-			CPDisplayLayout cpDisplayLayout = (CPDisplayLayout)result;
-
-			if (!Objects.equals(uuid, cpDisplayLayout.getUuid()) ||
-				(groupId != cpDisplayLayout.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class,
-						cpDisplayLayout.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_CPDISPLAYLAYOUT_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof CPDisplayLayout) {
+				CPDisplayLayout cpDisplayLayout = (CPDisplayLayout)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, cpDisplayLayout.getUuid()) ||
+					(groupId != cpDisplayLayout.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<CPDisplayLayout> list = query.list();
+				sb.append(_SQL_SELECT_CPDISPLAYLAYOUT_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					CPDisplayLayout cpDisplayLayout = list.get(0);
+					bindUuid = true;
 
-					result = cpDisplayLayout;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(cpDisplayLayout);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<CPDisplayLayout> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						CPDisplayLayout cpDisplayLayout = list.get(0);
+
+						result = cpDisplayLayout;
+
+						cacheResult(cpDisplayLayout);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (CPDisplayLayout)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (CPDisplayLayout)result;
+			}
 		}
 	}
 
@@ -5536,97 +5532,91 @@ public class CPDisplayLayoutPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, classNameId, classPK};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPDisplayLayout.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_C_C, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDisplayLayout.class);
-
-		if (result instanceof CPDisplayLayout) {
-			CPDisplayLayout cpDisplayLayout = (CPDisplayLayout)result;
-
-			if ((groupId != cpDisplayLayout.getGroupId()) ||
-				(classNameId != cpDisplayLayout.getClassNameId()) ||
-				(classPK != cpDisplayLayout.getClassPK())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, classNameId, classPK};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class,
-						cpDisplayLayout.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_C_C, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
+			if (result instanceof CPDisplayLayout) {
+				CPDisplayLayout cpDisplayLayout = (CPDisplayLayout)result;
 
-			sb.append(_SQL_SELECT_CPDISPLAYLAYOUT_WHERE);
+				if ((groupId != cpDisplayLayout.getGroupId()) ||
+					(classNameId != cpDisplayLayout.getClassNameId()) ||
+					(classPK != cpDisplayLayout.getClassPK())) {
 
-			sb.append(_FINDER_COLUMN_G_C_C_GROUPID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_G_C_C_CLASSNAMEID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-			sb.append(_FINDER_COLUMN_G_C_C_CLASSPK_2);
+				sb.append(_SQL_SELECT_CPDISPLAYLAYOUT_WHERE);
 
-			String sql = sb.toString();
+				sb.append(_FINDER_COLUMN_G_C_C_GROUPID_2);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_G_C_C_CLASSNAMEID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_G_C_C_CLASSPK_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(groupId);
+				try {
+					session = openSession();
 
-				queryPos.add(classNameId);
+					Query query = session.createQuery(sql);
 
-				queryPos.add(classPK);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				List<CPDisplayLayout> list = query.list();
+					queryPos.add(groupId);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_C_C, finderArgs, list);
+					queryPos.add(classNameId);
+
+					queryPos.add(classPK);
+
+					List<CPDisplayLayout> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_C_C, finderArgs, list);
+						}
+					}
+					else {
+						CPDisplayLayout cpDisplayLayout = list.get(0);
+
+						result = cpDisplayLayout;
+
+						cacheResult(cpDisplayLayout);
 					}
 				}
-				else {
-					CPDisplayLayout cpDisplayLayout = list.get(0);
-
-					result = cpDisplayLayout;
-
-					cacheResult(cpDisplayLayout);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (CPDisplayLayout)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (CPDisplayLayout)result;
+			}
 		}
 	}
 
@@ -5751,28 +5741,30 @@ public class CPDisplayLayoutPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(CPDisplayLayout cpDisplayLayout) {
-		if (cpDisplayLayout.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					cpDisplayLayout.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				CPDisplayLayoutImpl.class, cpDisplayLayout.getPrimaryKey(),
+				cpDisplayLayout);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					cpDisplayLayout.getUuid(), cpDisplayLayout.getGroupId()
+				},
+				cpDisplayLayout);
+
+			finderCache.putResult(
+				_finderPathFetchByG_C_C,
+				new Object[] {
+					cpDisplayLayout.getGroupId(),
+					cpDisplayLayout.getClassNameId(),
+					cpDisplayLayout.getClassPK()
+				},
+				cpDisplayLayout);
 		}
-
-		entityCache.putResult(
-			CPDisplayLayoutImpl.class, cpDisplayLayout.getPrimaryKey(),
-			cpDisplayLayout);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {
-				cpDisplayLayout.getUuid(), cpDisplayLayout.getGroupId()
-			},
-			cpDisplayLayout);
-
-		finderCache.putResult(
-			_finderPathFetchByG_C_C,
-			new Object[] {
-				cpDisplayLayout.getGroupId(), cpDisplayLayout.getClassNameId(),
-				cpDisplayLayout.getClassPK()
-			},
-			cpDisplayLayout);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -5793,15 +5785,18 @@ public class CPDisplayLayoutPersistenceImpl
 		}
 
 		for (CPDisplayLayout cpDisplayLayout : cpDisplayLayouts) {
-			if (cpDisplayLayout.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(cpDisplayLayout.getCtCollectionId() != 0) &&
+						(cpDisplayLayout.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					CPDisplayLayoutImpl.class,
-					cpDisplayLayout.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						CPDisplayLayoutImpl.class,
+						cpDisplayLayout.getPrimaryKey()) == null) {
 
-				cacheResult(cpDisplayLayout);
+					cacheResult(cpDisplayLayout);
+				}
 			}
 		}
 	}
@@ -5852,24 +5847,31 @@ public class CPDisplayLayoutPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		CPDisplayLayoutModelImpl cpDisplayLayoutModelImpl) {
 
-		Object[] args = new Object[] {
-			cpDisplayLayoutModelImpl.getUuid(),
-			cpDisplayLayoutModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					cpDisplayLayoutModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, cpDisplayLayoutModelImpl);
+			Object[] args = new Object[] {
+				cpDisplayLayoutModelImpl.getUuid(),
+				cpDisplayLayoutModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			cpDisplayLayoutModelImpl.getGroupId(),
-			cpDisplayLayoutModelImpl.getClassNameId(),
-			cpDisplayLayoutModelImpl.getClassPK()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, cpDisplayLayoutModelImpl);
 
-		finderCache.putResult(_finderPathCountByG_C_C, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByG_C_C, args, cpDisplayLayoutModelImpl);
+			args = new Object[] {
+				cpDisplayLayoutModelImpl.getGroupId(),
+				cpDisplayLayoutModelImpl.getClassNameId(),
+				cpDisplayLayoutModelImpl.getClassPK()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByG_C_C, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_C_C, args, cpDisplayLayoutModelImpl);
+		}
 	}
 
 	/**
@@ -5984,86 +5986,95 @@ public class CPDisplayLayoutPersistenceImpl
 
 	@Override
 	public CPDisplayLayout updateImpl(CPDisplayLayout cpDisplayLayout) {
-		boolean isNew = cpDisplayLayout.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(cpDisplayLayout instanceof CPDisplayLayoutModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = cpDisplayLayout.isNew();
 
-			if (ProxyUtil.isProxyClass(cpDisplayLayout.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					cpDisplayLayout);
+			if (!(cpDisplayLayout instanceof CPDisplayLayoutModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in cpDisplayLayout proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(cpDisplayLayout.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						cpDisplayLayout);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom CPDisplayLayout implementation " +
-					cpDisplayLayout.getClass());
-		}
-
-		CPDisplayLayoutModelImpl cpDisplayLayoutModelImpl =
-			(CPDisplayLayoutModelImpl)cpDisplayLayout;
-
-		if (Validator.isNull(cpDisplayLayout.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			cpDisplayLayout.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (cpDisplayLayout.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				cpDisplayLayout.setCreateDate(date);
-			}
-			else {
-				cpDisplayLayout.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!cpDisplayLayoutModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				cpDisplayLayout.setModifiedDate(date);
-			}
-			else {
-				cpDisplayLayout.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(cpDisplayLayout)) {
-				if (!isNew) {
-					session.evict(
-						CPDisplayLayoutImpl.class,
-						cpDisplayLayout.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in cpDisplayLayout proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(cpDisplayLayout);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom CPDisplayLayout implementation " +
+						cpDisplayLayout.getClass());
 			}
-			else {
-				cpDisplayLayout = (CPDisplayLayout)session.merge(
-					cpDisplayLayout);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (cpDisplayLayout.getCtCollectionId() != 0) {
+			CPDisplayLayoutModelImpl cpDisplayLayoutModelImpl =
+				(CPDisplayLayoutModelImpl)cpDisplayLayout;
+
+			if (Validator.isNull(cpDisplayLayout.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				cpDisplayLayout.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (cpDisplayLayout.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					cpDisplayLayout.setCreateDate(date);
+				}
+				else {
+					cpDisplayLayout.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!cpDisplayLayoutModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					cpDisplayLayout.setModifiedDate(date);
+				}
+				else {
+					cpDisplayLayout.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(cpDisplayLayout)) {
+					if (!isNew) {
+						session.evict(
+							CPDisplayLayoutImpl.class,
+							cpDisplayLayout.getPrimaryKeyObj());
+					}
+
+					session.save(cpDisplayLayout);
+				}
+				else {
+					cpDisplayLayout = (CPDisplayLayout)session.merge(
+						cpDisplayLayout);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				CPDisplayLayoutImpl.class, cpDisplayLayoutModelImpl, false,
+				true);
+
+			cacheUniqueFindersCache(cpDisplayLayoutModelImpl);
+
 			if (isNew) {
 				cpDisplayLayout.setNew(false);
 			}
@@ -6072,19 +6083,6 @@ public class CPDisplayLayoutPersistenceImpl
 
 			return cpDisplayLayout;
 		}
-
-		entityCache.putResult(
-			CPDisplayLayoutImpl.class, cpDisplayLayoutModelImpl, false, true);
-
-		cacheUniqueFindersCache(cpDisplayLayoutModelImpl);
-
-		if (isNew) {
-			cpDisplayLayout.setNew(false);
-		}
-
-		cpDisplayLayout.resetOriginalValues();
-
-		return cpDisplayLayout;
 	}
 
 	/**
@@ -6134,34 +6132,13 @@ public class CPDisplayLayoutPersistenceImpl
 	 */
 	@Override
 	public CPDisplayLayout fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				CPDisplayLayout.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPDisplayLayout.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		CPDisplayLayout cpDisplayLayout = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			cpDisplayLayout = (CPDisplayLayout)session.get(
-				CPDisplayLayoutImpl.class, primaryKey);
-
-			if (cpDisplayLayout != null) {
-				cacheResult(cpDisplayLayout);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return cpDisplayLayout;
 	}
 
 	/**
@@ -6179,93 +6156,13 @@ public class CPDisplayLayoutPersistenceImpl
 	public Map<Serializable, CPDisplayLayout> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(CPDisplayLayout.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPDisplayLayout.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, CPDisplayLayout> map =
-			new HashMap<Serializable, CPDisplayLayout>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			CPDisplayLayout cpDisplayLayout = fetchByPrimaryKey(primaryKey);
-
-			if (cpDisplayLayout != null) {
-				map.put(primaryKey, cpDisplayLayout);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (CPDisplayLayout cpDisplayLayout :
-					(List<CPDisplayLayout>)query.list()) {
-
-				map.put(cpDisplayLayout.getPrimaryKeyObj(), cpDisplayLayout);
-
-				cacheResult(cpDisplayLayout);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

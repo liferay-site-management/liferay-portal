@@ -5,8 +5,11 @@
 
 package com.liferay.wiki.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -59,7 +62,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1227,102 +1229,96 @@ public class WikiPagePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			WikiPage.class);
-
-		if (result instanceof WikiPage) {
-			WikiPage wikiPage = (WikiPage)result;
-
-			if (!Objects.equals(uuid, wikiPage.getUuid()) ||
-				(groupId != wikiPage.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						WikiPage.class, wikiPage.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_WIKIPAGE_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof WikiPage) {
+				WikiPage wikiPage = (WikiPage)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, wikiPage.getUuid()) ||
+					(groupId != wikiPage.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<WikiPage> list = query.list();
+				sb.append(_SQL_SELECT_WIKIPAGE_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					WikiPage wikiPage = list.get(0);
+					bindUuid = true;
 
-					result = wikiPage;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(wikiPage);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<WikiPage> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						WikiPage wikiPage = list.get(0);
+
+						result = wikiPage;
+
+						cacheResult(wikiPage);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (WikiPage)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (WikiPage)result;
+			}
 		}
 	}
 
@@ -8661,96 +8657,90 @@ public class WikiPagePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {resourcePrimKey, nodeId, version};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByR_N_V, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			WikiPage.class);
-
-		if (result instanceof WikiPage) {
-			WikiPage wikiPage = (WikiPage)result;
-
-			if ((resourcePrimKey != wikiPage.getResourcePrimKey()) ||
-				(nodeId != wikiPage.getNodeId()) ||
-				(version != wikiPage.getVersion())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {resourcePrimKey, nodeId, version};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						WikiPage.class, wikiPage.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByR_N_V, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
+			if (result instanceof WikiPage) {
+				WikiPage wikiPage = (WikiPage)result;
 
-			sb.append(_SQL_SELECT_WIKIPAGE_WHERE);
+				if ((resourcePrimKey != wikiPage.getResourcePrimKey()) ||
+					(nodeId != wikiPage.getNodeId()) ||
+					(version != wikiPage.getVersion())) {
 
-			sb.append(_FINDER_COLUMN_R_N_V_RESOURCEPRIMKEY_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_R_N_V_NODEID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-			sb.append(_FINDER_COLUMN_R_N_V_VERSION_2);
+				sb.append(_SQL_SELECT_WIKIPAGE_WHERE);
 
-			String sql = sb.toString();
+				sb.append(_FINDER_COLUMN_R_N_V_RESOURCEPRIMKEY_2);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_R_N_V_NODEID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_R_N_V_VERSION_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(resourcePrimKey);
+				try {
+					session = openSession();
 
-				queryPos.add(nodeId);
+					Query query = session.createQuery(sql);
 
-				queryPos.add(version);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				List<WikiPage> list = query.list();
+					queryPos.add(resourcePrimKey);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByR_N_V, finderArgs, list);
+					queryPos.add(nodeId);
+
+					queryPos.add(version);
+
+					List<WikiPage> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByR_N_V, finderArgs, list);
+						}
+					}
+					else {
+						WikiPage wikiPage = list.get(0);
+
+						result = wikiPage;
+
+						cacheResult(wikiPage);
 					}
 				}
-				else {
-					WikiPage wikiPage = list.get(0);
-
-					result = wikiPage;
-
-					cacheResult(wikiPage);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (WikiPage)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (WikiPage)result;
+			}
 		}
 	}
 
@@ -10111,109 +10101,105 @@ public class WikiPagePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, externalReferenceCode, version};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_ERC_V, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			WikiPage.class);
-
-		if (result instanceof WikiPage) {
-			WikiPage wikiPage = (WikiPage)result;
-
-			if ((groupId != wikiPage.getGroupId()) ||
-				!Objects.equals(
-					externalReferenceCode,
-					wikiPage.getExternalReferenceCode()) ||
-				(version != wikiPage.getVersion())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						WikiPage.class, wikiPage.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_WIKIPAGE_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_ERC_V_GROUPID_2);
-
-			boolean bindExternalReferenceCode = false;
-
-			if (externalReferenceCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_ERC_V_EXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindExternalReferenceCode = true;
-
-				sb.append(_FINDER_COLUMN_G_ERC_V_EXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					groupId, externalReferenceCode, version
+				};
 			}
 
-			sb.append(_FINDER_COLUMN_G_ERC_V_VERSION_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_ERC_V, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof WikiPage) {
+				WikiPage wikiPage = (WikiPage)result;
 
-			try {
-				session = openSession();
+				if ((groupId != wikiPage.getGroupId()) ||
+					!Objects.equals(
+						externalReferenceCode,
+						wikiPage.getExternalReferenceCode()) ||
+					(version != wikiPage.getVersion())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				if (bindExternalReferenceCode) {
-					queryPos.add(externalReferenceCode);
+					result = null;
 				}
+			}
 
-				queryPos.add(version);
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				List<WikiPage> list = query.list();
+				sb.append(_SQL_SELECT_WIKIPAGE_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_ERC_V, finderArgs, list);
-					}
+				sb.append(_FINDER_COLUMN_G_ERC_V_GROUPID_2);
+
+				boolean bindExternalReferenceCode = false;
+
+				if (externalReferenceCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_ERC_V_EXTERNALREFERENCECODE_3);
 				}
 				else {
-					WikiPage wikiPage = list.get(0);
+					bindExternalReferenceCode = true;
 
-					result = wikiPage;
+					sb.append(_FINDER_COLUMN_G_ERC_V_EXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(wikiPage);
+				sb.append(_FINDER_COLUMN_G_ERC_V_VERSION_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					if (bindExternalReferenceCode) {
+						queryPos.add(externalReferenceCode);
+					}
+
+					queryPos.add(version);
+
+					List<WikiPage> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_ERC_V, finderArgs, list);
+						}
+					}
+					else {
+						WikiPage wikiPage = list.get(0);
+
+						result = wikiPage;
+
+						cacheResult(wikiPage);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (WikiPage)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (WikiPage)result;
+			}
 		}
 	}
 
@@ -12992,107 +12978,101 @@ public class WikiPagePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {nodeId, title, version};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByN_T_V, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			WikiPage.class);
-
-		if (result instanceof WikiPage) {
-			WikiPage wikiPage = (WikiPage)result;
-
-			if ((nodeId != wikiPage.getNodeId()) ||
-				!Objects.equals(title, wikiPage.getTitle()) ||
-				(version != wikiPage.getVersion())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						WikiPage.class, wikiPage.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_WIKIPAGE_WHERE);
-
-			sb.append(_FINDER_COLUMN_N_T_V_NODEID_2);
-
-			boolean bindTitle = false;
-
-			if (title.isEmpty()) {
-				sb.append(_FINDER_COLUMN_N_T_V_TITLE_3);
-			}
-			else {
-				bindTitle = true;
-
-				sb.append(_FINDER_COLUMN_N_T_V_TITLE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {nodeId, title, version};
 			}
 
-			sb.append(_FINDER_COLUMN_N_T_V_VERSION_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByN_T_V, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof WikiPage) {
+				WikiPage wikiPage = (WikiPage)result;
 
-			try {
-				session = openSession();
+				if ((nodeId != wikiPage.getNodeId()) ||
+					!Objects.equals(title, wikiPage.getTitle()) ||
+					(version != wikiPage.getVersion())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(nodeId);
-
-				if (bindTitle) {
-					queryPos.add(StringUtil.toLowerCase(title));
+					result = null;
 				}
+			}
 
-				queryPos.add(version);
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				List<WikiPage> list = query.list();
+				sb.append(_SQL_SELECT_WIKIPAGE_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByN_T_V, finderArgs, list);
-					}
+				sb.append(_FINDER_COLUMN_N_T_V_NODEID_2);
+
+				boolean bindTitle = false;
+
+				if (title.isEmpty()) {
+					sb.append(_FINDER_COLUMN_N_T_V_TITLE_3);
 				}
 				else {
-					WikiPage wikiPage = list.get(0);
+					bindTitle = true;
 
-					result = wikiPage;
+					sb.append(_FINDER_COLUMN_N_T_V_TITLE_2);
+				}
 
-					cacheResult(wikiPage);
+				sb.append(_FINDER_COLUMN_N_T_V_VERSION_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(nodeId);
+
+					if (bindTitle) {
+						queryPos.add(StringUtil.toLowerCase(title));
+					}
+
+					queryPos.add(version);
+
+					List<WikiPage> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByN_T_V, finderArgs, list);
+						}
+					}
+					else {
+						WikiPage wikiPage = list.get(0);
+
+						result = wikiPage;
+
+						cacheResult(wikiPage);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (WikiPage)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (WikiPage)result;
+			}
 		}
 	}
 
@@ -24062,39 +24042,42 @@ public class WikiPagePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(WikiPage wikiPage) {
-		if (wikiPage.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					wikiPage.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				WikiPageImpl.class, wikiPage.getPrimaryKey(), wikiPage);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {wikiPage.getUuid(), wikiPage.getGroupId()},
+				wikiPage);
+
+			finderCache.putResult(
+				_finderPathFetchByR_N_V,
+				new Object[] {
+					wikiPage.getResourcePrimKey(), wikiPage.getNodeId(),
+					wikiPage.getVersion()
+				},
+				wikiPage);
+
+			finderCache.putResult(
+				_finderPathFetchByG_ERC_V,
+				new Object[] {
+					wikiPage.getGroupId(), wikiPage.getExternalReferenceCode(),
+					wikiPage.getVersion()
+				},
+				wikiPage);
+
+			finderCache.putResult(
+				_finderPathFetchByN_T_V,
+				new Object[] {
+					wikiPage.getNodeId(), wikiPage.getTitle(),
+					wikiPage.getVersion()
+				},
+				wikiPage);
 		}
-
-		entityCache.putResult(
-			WikiPageImpl.class, wikiPage.getPrimaryKey(), wikiPage);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {wikiPage.getUuid(), wikiPage.getGroupId()}, wikiPage);
-
-		finderCache.putResult(
-			_finderPathFetchByR_N_V,
-			new Object[] {
-				wikiPage.getResourcePrimKey(), wikiPage.getNodeId(),
-				wikiPage.getVersion()
-			},
-			wikiPage);
-
-		finderCache.putResult(
-			_finderPathFetchByG_ERC_V,
-			new Object[] {
-				wikiPage.getGroupId(), wikiPage.getExternalReferenceCode(),
-				wikiPage.getVersion()
-			},
-			wikiPage);
-
-		finderCache.putResult(
-			_finderPathFetchByN_T_V,
-			new Object[] {
-				wikiPage.getNodeId(), wikiPage.getTitle(), wikiPage.getVersion()
-			},
-			wikiPage);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -24114,14 +24097,17 @@ public class WikiPagePersistenceImpl
 		}
 
 		for (WikiPage wikiPage : wikiPages) {
-			if (wikiPage.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(wikiPage.getCtCollectionId() != 0) &&
+						(wikiPage.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					WikiPageImpl.class, wikiPage.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						WikiPageImpl.class, wikiPage.getPrimaryKey()) == null) {
 
-				cacheResult(wikiPage);
+					cacheResult(wikiPage);
+				}
 			}
 		}
 	}
@@ -24171,39 +24157,50 @@ public class WikiPagePersistenceImpl
 	protected void cacheUniqueFindersCache(
 		WikiPageModelImpl wikiPageModelImpl) {
 
-		Object[] args = new Object[] {
-			wikiPageModelImpl.getUuid(), wikiPageModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					wikiPageModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, wikiPageModelImpl);
+			Object[] args = new Object[] {
+				wikiPageModelImpl.getUuid(), wikiPageModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			wikiPageModelImpl.getResourcePrimKey(),
-			wikiPageModelImpl.getNodeId(), wikiPageModelImpl.getVersion()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, wikiPageModelImpl);
 
-		finderCache.putResult(_finderPathCountByR_N_V, args, Long.valueOf(1));
-		finderCache.putResult(_finderPathFetchByR_N_V, args, wikiPageModelImpl);
+			args = new Object[] {
+				wikiPageModelImpl.getResourcePrimKey(),
+				wikiPageModelImpl.getNodeId(), wikiPageModelImpl.getVersion()
+			};
 
-		args = new Object[] {
-			wikiPageModelImpl.getGroupId(),
-			wikiPageModelImpl.getExternalReferenceCode(),
-			wikiPageModelImpl.getVersion()
-		};
+			finderCache.putResult(
+				_finderPathCountByR_N_V, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByR_N_V, args, wikiPageModelImpl);
 
-		finderCache.putResult(_finderPathCountByG_ERC_V, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByG_ERC_V, args, wikiPageModelImpl);
+			args = new Object[] {
+				wikiPageModelImpl.getGroupId(),
+				wikiPageModelImpl.getExternalReferenceCode(),
+				wikiPageModelImpl.getVersion()
+			};
 
-		args = new Object[] {
-			wikiPageModelImpl.getNodeId(), wikiPageModelImpl.getTitle(),
-			wikiPageModelImpl.getVersion()
-		};
+			finderCache.putResult(
+				_finderPathCountByG_ERC_V, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_ERC_V, args, wikiPageModelImpl);
 
-		finderCache.putResult(_finderPathCountByN_T_V, args, Long.valueOf(1));
-		finderCache.putResult(_finderPathFetchByN_T_V, args, wikiPageModelImpl);
+			args = new Object[] {
+				wikiPageModelImpl.getNodeId(), wikiPageModelImpl.getTitle(),
+				wikiPageModelImpl.getVersion()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByN_T_V, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByN_T_V, args, wikiPageModelImpl);
+		}
 	}
 
 	/**
@@ -24311,109 +24308,120 @@ public class WikiPagePersistenceImpl
 
 	@Override
 	public WikiPage updateImpl(WikiPage wikiPage) {
-		boolean isNew = wikiPage.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(wikiPage instanceof WikiPageModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = wikiPage.isNew();
 
-			if (ProxyUtil.isProxyClass(wikiPage.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(wikiPage);
+			if (!(wikiPage instanceof WikiPageModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in wikiPage proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(wikiPage.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						wikiPage);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom WikiPage implementation " +
-					wikiPage.getClass());
-		}
-
-		WikiPageModelImpl wikiPageModelImpl = (WikiPageModelImpl)wikiPage;
-
-		if (Validator.isNull(wikiPage.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			wikiPage.setUuid(uuid);
-		}
-
-		if (Validator.isNull(wikiPage.getExternalReferenceCode())) {
-			wikiPage.setExternalReferenceCode(wikiPage.getUuid());
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (wikiPage.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				wikiPage.setCreateDate(date);
-			}
-			else {
-				wikiPage.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!wikiPageModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				wikiPage.setModifiedDate(date);
-			}
-			else {
-				wikiPage.setModifiedDate(serviceContext.getModifiedDate(date));
-			}
-		}
-
-		long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
-
-		if (userId > 0) {
-			long companyId = wikiPage.getCompanyId();
-
-			long groupId = wikiPage.getGroupId();
-
-			long pageId = 0;
-
-			if (!isNew) {
-				pageId = wikiPage.getPrimaryKey();
-			}
-
-			try {
-				wikiPage.setTitle(
-					SanitizerUtil.sanitize(
-						companyId, groupId, userId, WikiPage.class.getName(),
-						pageId, ContentTypes.TEXT_PLAIN, Sanitizer.MODE_ALL,
-						wikiPage.getTitle(), null));
-			}
-			catch (SanitizerException sanitizerException) {
-				throw new SystemException(sanitizerException);
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(wikiPage)) {
-				if (!isNew) {
-					session.evict(
-						WikiPageImpl.class, wikiPage.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in wikiPage proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(wikiPage);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom WikiPage implementation " +
+						wikiPage.getClass());
 			}
-			else {
-				wikiPage = (WikiPage)session.merge(wikiPage);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (wikiPage.getCtCollectionId() != 0) {
+			WikiPageModelImpl wikiPageModelImpl = (WikiPageModelImpl)wikiPage;
+
+			if (Validator.isNull(wikiPage.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				wikiPage.setUuid(uuid);
+			}
+
+			if (Validator.isNull(wikiPage.getExternalReferenceCode())) {
+				wikiPage.setExternalReferenceCode(wikiPage.getUuid());
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (wikiPage.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					wikiPage.setCreateDate(date);
+				}
+				else {
+					wikiPage.setCreateDate(serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!wikiPageModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					wikiPage.setModifiedDate(date);
+				}
+				else {
+					wikiPage.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
+
+			if (userId > 0) {
+				long companyId = wikiPage.getCompanyId();
+
+				long groupId = wikiPage.getGroupId();
+
+				long pageId = 0;
+
+				if (!isNew) {
+					pageId = wikiPage.getPrimaryKey();
+				}
+
+				try {
+					wikiPage.setTitle(
+						SanitizerUtil.sanitize(
+							companyId, groupId, userId,
+							WikiPage.class.getName(), pageId,
+							ContentTypes.TEXT_PLAIN, Sanitizer.MODE_ALL,
+							wikiPage.getTitle(), null));
+				}
+				catch (SanitizerException sanitizerException) {
+					throw new SystemException(sanitizerException);
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(wikiPage)) {
+					if (!isNew) {
+						session.evict(
+							WikiPageImpl.class, wikiPage.getPrimaryKeyObj());
+					}
+
+					session.save(wikiPage);
+				}
+				else {
+					wikiPage = (WikiPage)session.merge(wikiPage);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				WikiPageImpl.class, wikiPageModelImpl, false, true);
+
+			cacheUniqueFindersCache(wikiPageModelImpl);
+
 			if (isNew) {
 				wikiPage.setNew(false);
 			}
@@ -24422,19 +24430,6 @@ public class WikiPagePersistenceImpl
 
 			return wikiPage;
 		}
-
-		entityCache.putResult(
-			WikiPageImpl.class, wikiPageModelImpl, false, true);
-
-		cacheUniqueFindersCache(wikiPageModelImpl);
-
-		if (isNew) {
-			wikiPage.setNew(false);
-		}
-
-		wikiPage.resetOriginalValues();
-
-		return wikiPage;
 	}
 
 	/**
@@ -24482,31 +24477,13 @@ public class WikiPagePersistenceImpl
 	 */
 	@Override
 	public WikiPage fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(WikiPage.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						WikiPage.class, primaryKey))) {
+
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		WikiPage wikiPage = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			wikiPage = (WikiPage)session.get(WikiPageImpl.class, primaryKey);
-
-			if (wikiPage != null) {
-				cacheResult(wikiPage);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return wikiPage;
 	}
 
 	/**
@@ -24524,90 +24501,12 @@ public class WikiPagePersistenceImpl
 	public Map<Serializable, WikiPage> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(WikiPage.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, WikiPage> map = new HashMap<Serializable, WikiPage>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			WikiPage wikiPage = fetchByPrimaryKey(primaryKey);
-
-			if (wikiPage != null) {
-				map.put(primaryKey, wikiPage);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (WikiPage wikiPage : (List<WikiPage>)query.list()) {
-				map.put(wikiPage.getPrimaryKeyObj(), wikiPage);
-
-				cacheResult(wikiPage);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

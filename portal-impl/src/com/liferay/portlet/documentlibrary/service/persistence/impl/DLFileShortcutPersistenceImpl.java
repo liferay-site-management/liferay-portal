@@ -10,8 +10,11 @@ import com.liferay.document.library.kernel.model.DLFileShortcut;
 import com.liferay.document.library.kernel.model.DLFileShortcutTable;
 import com.liferay.document.library.kernel.service.persistence.DLFileShortcutPersistence;
 import com.liferay.document.library.kernel.service.persistence.DLFileShortcutUtil;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -51,7 +54,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -704,102 +706,97 @@ public class DLFileShortcutPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						DLFileShortcut.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileShortcut.class);
-
-		if (result instanceof DLFileShortcut) {
-			DLFileShortcut dlFileShortcut = (DLFileShortcut)result;
-
-			if (!Objects.equals(uuid, dlFileShortcut.getUuid()) ||
-				(groupId != dlFileShortcut.getGroupId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class, dlFileShortcut.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_DLFILESHORTCUT_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof DLFileShortcut) {
+				DLFileShortcut dlFileShortcut = (DLFileShortcut)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, dlFileShortcut.getUuid()) ||
+					(groupId != dlFileShortcut.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<DLFileShortcut> list = query.list();
+				sb.append(_SQL_SELECT_DLFILESHORTCUT_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					DLFileShortcut dlFileShortcut = list.get(0);
+					bindUuid = true;
 
-					result = dlFileShortcut;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(dlFileShortcut);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<DLFileShortcut> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						DLFileShortcut dlFileShortcut = list.get(0);
+
+						result = dlFileShortcut;
+
+						cacheResult(dlFileShortcut);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (DLFileShortcut)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (DLFileShortcut)result;
+			}
 		}
 	}
 
@@ -6157,20 +6154,21 @@ public class DLFileShortcutPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(DLFileShortcut dlFileShortcut) {
-		if (dlFileShortcut.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					dlFileShortcut.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				DLFileShortcutImpl.class, dlFileShortcut.getPrimaryKey(),
+				dlFileShortcut);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					dlFileShortcut.getUuid(), dlFileShortcut.getGroupId()
+				},
+				dlFileShortcut);
 		}
-
-		EntityCacheUtil.putResult(
-			DLFileShortcutImpl.class, dlFileShortcut.getPrimaryKey(),
-			dlFileShortcut);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {
-				dlFileShortcut.getUuid(), dlFileShortcut.getGroupId()
-			},
-			dlFileShortcut);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -6190,15 +6188,18 @@ public class DLFileShortcutPersistenceImpl
 		}
 
 		for (DLFileShortcut dlFileShortcut : dlFileShortcuts) {
-			if (dlFileShortcut.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(dlFileShortcut.getCtCollectionId() != 0) &&
+						(dlFileShortcut.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					DLFileShortcutImpl.class, dlFileShortcut.getPrimaryKey()) ==
-						null) {
+				if (EntityCacheUtil.getResult(
+						DLFileShortcutImpl.class,
+						dlFileShortcut.getPrimaryKey()) == null) {
 
-				cacheResult(dlFileShortcut);
+					cacheResult(dlFileShortcut);
+				}
 			}
 		}
 	}
@@ -6249,15 +6250,20 @@ public class DLFileShortcutPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		DLFileShortcutModelImpl dlFileShortcutModelImpl) {
 
-		Object[] args = new Object[] {
-			dlFileShortcutModelImpl.getUuid(),
-			dlFileShortcutModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					dlFileShortcutModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByUUID_G, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G, args, dlFileShortcutModelImpl);
+			Object[] args = new Object[] {
+				dlFileShortcutModelImpl.getUuid(),
+				dlFileShortcutModelImpl.getGroupId()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G, args, dlFileShortcutModelImpl);
+		}
 	}
 
 	/**
@@ -6372,85 +6378,94 @@ public class DLFileShortcutPersistenceImpl
 
 	@Override
 	public DLFileShortcut updateImpl(DLFileShortcut dlFileShortcut) {
-		boolean isNew = dlFileShortcut.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(dlFileShortcut instanceof DLFileShortcutModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = dlFileShortcut.isNew();
 
-			if (ProxyUtil.isProxyClass(dlFileShortcut.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					dlFileShortcut);
+			if (!(dlFileShortcut instanceof DLFileShortcutModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in dlFileShortcut proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(dlFileShortcut.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						dlFileShortcut);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom DLFileShortcut implementation " +
-					dlFileShortcut.getClass());
-		}
-
-		DLFileShortcutModelImpl dlFileShortcutModelImpl =
-			(DLFileShortcutModelImpl)dlFileShortcut;
-
-		if (Validator.isNull(dlFileShortcut.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			dlFileShortcut.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (dlFileShortcut.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				dlFileShortcut.setCreateDate(date);
-			}
-			else {
-				dlFileShortcut.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!dlFileShortcutModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				dlFileShortcut.setModifiedDate(date);
-			}
-			else {
-				dlFileShortcut.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(dlFileShortcut)) {
-				if (!isNew) {
-					session.evict(
-						DLFileShortcutImpl.class,
-						dlFileShortcut.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in dlFileShortcut proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(dlFileShortcut);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom DLFileShortcut implementation " +
+						dlFileShortcut.getClass());
 			}
-			else {
-				dlFileShortcut = (DLFileShortcut)session.merge(dlFileShortcut);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (dlFileShortcut.getCtCollectionId() != 0) {
+			DLFileShortcutModelImpl dlFileShortcutModelImpl =
+				(DLFileShortcutModelImpl)dlFileShortcut;
+
+			if (Validator.isNull(dlFileShortcut.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				dlFileShortcut.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (dlFileShortcut.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					dlFileShortcut.setCreateDate(date);
+				}
+				else {
+					dlFileShortcut.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!dlFileShortcutModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					dlFileShortcut.setModifiedDate(date);
+				}
+				else {
+					dlFileShortcut.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(dlFileShortcut)) {
+					if (!isNew) {
+						session.evict(
+							DLFileShortcutImpl.class,
+							dlFileShortcut.getPrimaryKeyObj());
+					}
+
+					session.save(dlFileShortcut);
+				}
+				else {
+					dlFileShortcut = (DLFileShortcut)session.merge(
+						dlFileShortcut);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				DLFileShortcutImpl.class, dlFileShortcutModelImpl, false, true);
+
+			cacheUniqueFindersCache(dlFileShortcutModelImpl);
+
 			if (isNew) {
 				dlFileShortcut.setNew(false);
 			}
@@ -6459,19 +6474,6 @@ public class DLFileShortcutPersistenceImpl
 
 			return dlFileShortcut;
 		}
-
-		EntityCacheUtil.putResult(
-			DLFileShortcutImpl.class, dlFileShortcutModelImpl, false, true);
-
-		cacheUniqueFindersCache(dlFileShortcutModelImpl);
-
-		if (isNew) {
-			dlFileShortcut.setNew(false);
-		}
-
-		dlFileShortcut.resetOriginalValues();
-
-		return dlFileShortcut;
 	}
 
 	/**
@@ -6521,34 +6523,13 @@ public class DLFileShortcutPersistenceImpl
 	 */
 	@Override
 	public DLFileShortcut fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				DLFileShortcut.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						DLFileShortcut.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		DLFileShortcut dlFileShortcut = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			dlFileShortcut = (DLFileShortcut)session.get(
-				DLFileShortcutImpl.class, primaryKey);
-
-			if (dlFileShortcut != null) {
-				cacheResult(dlFileShortcut);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return dlFileShortcut;
 	}
 
 	/**
@@ -6566,93 +6547,13 @@ public class DLFileShortcutPersistenceImpl
 	public Map<Serializable, DLFileShortcut> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(DLFileShortcut.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						DLFileShortcut.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, DLFileShortcut> map =
-			new HashMap<Serializable, DLFileShortcut>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			DLFileShortcut dlFileShortcut = fetchByPrimaryKey(primaryKey);
-
-			if (dlFileShortcut != null) {
-				map.put(primaryKey, dlFileShortcut);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (DLFileShortcut dlFileShortcut :
-					(List<DLFileShortcut>)query.list()) {
-
-				map.put(dlFileShortcut.getPrimaryKeyObj(), dlFileShortcut);
-
-				cacheResult(dlFileShortcut);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

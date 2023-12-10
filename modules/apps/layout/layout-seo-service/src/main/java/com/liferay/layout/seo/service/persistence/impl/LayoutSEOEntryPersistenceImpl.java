@@ -13,8 +13,11 @@ import com.liferay.layout.seo.model.impl.LayoutSEOEntryModelImpl;
 import com.liferay.layout.seo.service.persistence.LayoutSEOEntryPersistence;
 import com.liferay.layout.seo.service.persistence.LayoutSEOEntryUtil;
 import com.liferay.layout.seo.service.persistence.impl.constants.LayoutSEOPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -50,7 +53,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -710,102 +712,97 @@ public class LayoutSEOEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						LayoutSEOEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutSEOEntry.class);
-
-		if (result instanceof LayoutSEOEntry) {
-			LayoutSEOEntry layoutSEOEntry = (LayoutSEOEntry)result;
-
-			if (!Objects.equals(uuid, layoutSEOEntry.getUuid()) ||
-				(groupId != layoutSEOEntry.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						LayoutSEOEntry.class, layoutSEOEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_LAYOUTSEOENTRY_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof LayoutSEOEntry) {
+				LayoutSEOEntry layoutSEOEntry = (LayoutSEOEntry)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, layoutSEOEntry.getUuid()) ||
+					(groupId != layoutSEOEntry.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<LayoutSEOEntry> list = query.list();
+				sb.append(_SQL_SELECT_LAYOUTSEOENTRY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					LayoutSEOEntry layoutSEOEntry = list.get(0);
+					bindUuid = true;
 
-					result = layoutSEOEntry;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(layoutSEOEntry);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<LayoutSEOEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						LayoutSEOEntry layoutSEOEntry = list.get(0);
+
+						result = layoutSEOEntry;
+
+						cacheResult(layoutSEOEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (LayoutSEOEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (LayoutSEOEntry)result;
+			}
 		}
 	}
 
@@ -1587,96 +1584,91 @@ public class LayoutSEOEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, privateLayout, layoutId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						LayoutSEOEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_P_L, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			LayoutSEOEntry.class);
-
-		if (result instanceof LayoutSEOEntry) {
-			LayoutSEOEntry layoutSEOEntry = (LayoutSEOEntry)result;
-
-			if ((groupId != layoutSEOEntry.getGroupId()) ||
-				(privateLayout != layoutSEOEntry.isPrivateLayout()) ||
-				(layoutId != layoutSEOEntry.getLayoutId())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, privateLayout, layoutId};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						LayoutSEOEntry.class, layoutSEOEntry.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_P_L, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
+			if (result instanceof LayoutSEOEntry) {
+				LayoutSEOEntry layoutSEOEntry = (LayoutSEOEntry)result;
 
-			sb.append(_SQL_SELECT_LAYOUTSEOENTRY_WHERE);
+				if ((groupId != layoutSEOEntry.getGroupId()) ||
+					(privateLayout != layoutSEOEntry.isPrivateLayout()) ||
+					(layoutId != layoutSEOEntry.getLayoutId())) {
 
-			sb.append(_FINDER_COLUMN_G_P_L_GROUPID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_G_P_L_PRIVATELAYOUT_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-			sb.append(_FINDER_COLUMN_G_P_L_LAYOUTID_2);
+				sb.append(_SQL_SELECT_LAYOUTSEOENTRY_WHERE);
 
-			String sql = sb.toString();
+				sb.append(_FINDER_COLUMN_G_P_L_GROUPID_2);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_G_P_L_PRIVATELAYOUT_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_G_P_L_LAYOUTID_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(groupId);
+				try {
+					session = openSession();
 
-				queryPos.add(privateLayout);
+					Query query = session.createQuery(sql);
 
-				queryPos.add(layoutId);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				List<LayoutSEOEntry> list = query.list();
+					queryPos.add(groupId);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_P_L, finderArgs, list);
+					queryPos.add(privateLayout);
+
+					queryPos.add(layoutId);
+
+					List<LayoutSEOEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_P_L, finderArgs, list);
+						}
+					}
+					else {
+						LayoutSEOEntry layoutSEOEntry = list.get(0);
+
+						result = layoutSEOEntry;
+
+						cacheResult(layoutSEOEntry);
 					}
 				}
-				else {
-					LayoutSEOEntry layoutSEOEntry = list.get(0);
-
-					result = layoutSEOEntry;
-
-					cacheResult(layoutSEOEntry);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (LayoutSEOEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (LayoutSEOEntry)result;
+			}
 		}
 	}
 
@@ -1803,28 +1795,30 @@ public class LayoutSEOEntryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(LayoutSEOEntry layoutSEOEntry) {
-		if (layoutSEOEntry.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					layoutSEOEntry.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				LayoutSEOEntryImpl.class, layoutSEOEntry.getPrimaryKey(),
+				layoutSEOEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					layoutSEOEntry.getUuid(), layoutSEOEntry.getGroupId()
+				},
+				layoutSEOEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByG_P_L,
+				new Object[] {
+					layoutSEOEntry.getGroupId(),
+					layoutSEOEntry.isPrivateLayout(),
+					layoutSEOEntry.getLayoutId()
+				},
+				layoutSEOEntry);
 		}
-
-		entityCache.putResult(
-			LayoutSEOEntryImpl.class, layoutSEOEntry.getPrimaryKey(),
-			layoutSEOEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {
-				layoutSEOEntry.getUuid(), layoutSEOEntry.getGroupId()
-			},
-			layoutSEOEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByG_P_L,
-			new Object[] {
-				layoutSEOEntry.getGroupId(), layoutSEOEntry.isPrivateLayout(),
-				layoutSEOEntry.getLayoutId()
-			},
-			layoutSEOEntry);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -1845,15 +1839,18 @@ public class LayoutSEOEntryPersistenceImpl
 		}
 
 		for (LayoutSEOEntry layoutSEOEntry : layoutSEOEntries) {
-			if (layoutSEOEntry.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(layoutSEOEntry.getCtCollectionId() != 0) &&
+						(layoutSEOEntry.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					LayoutSEOEntryImpl.class, layoutSEOEntry.getPrimaryKey()) ==
-						null) {
+				if (entityCache.getResult(
+						LayoutSEOEntryImpl.class,
+						layoutSEOEntry.getPrimaryKey()) == null) {
 
-				cacheResult(layoutSEOEntry);
+					cacheResult(layoutSEOEntry);
+				}
 			}
 		}
 	}
@@ -1903,24 +1900,31 @@ public class LayoutSEOEntryPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		LayoutSEOEntryModelImpl layoutSEOEntryModelImpl) {
 
-		Object[] args = new Object[] {
-			layoutSEOEntryModelImpl.getUuid(),
-			layoutSEOEntryModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					layoutSEOEntryModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, layoutSEOEntryModelImpl);
+			Object[] args = new Object[] {
+				layoutSEOEntryModelImpl.getUuid(),
+				layoutSEOEntryModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			layoutSEOEntryModelImpl.getGroupId(),
-			layoutSEOEntryModelImpl.isPrivateLayout(),
-			layoutSEOEntryModelImpl.getLayoutId()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, layoutSEOEntryModelImpl);
 
-		finderCache.putResult(_finderPathCountByG_P_L, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByG_P_L, args, layoutSEOEntryModelImpl);
+			args = new Object[] {
+				layoutSEOEntryModelImpl.getGroupId(),
+				layoutSEOEntryModelImpl.isPrivateLayout(),
+				layoutSEOEntryModelImpl.getLayoutId()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByG_P_L, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_P_L, args, layoutSEOEntryModelImpl);
+		}
 	}
 
 	/**
@@ -2035,85 +2039,94 @@ public class LayoutSEOEntryPersistenceImpl
 
 	@Override
 	public LayoutSEOEntry updateImpl(LayoutSEOEntry layoutSEOEntry) {
-		boolean isNew = layoutSEOEntry.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(layoutSEOEntry instanceof LayoutSEOEntryModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = layoutSEOEntry.isNew();
 
-			if (ProxyUtil.isProxyClass(layoutSEOEntry.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					layoutSEOEntry);
+			if (!(layoutSEOEntry instanceof LayoutSEOEntryModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in layoutSEOEntry proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(layoutSEOEntry.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						layoutSEOEntry);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom LayoutSEOEntry implementation " +
-					layoutSEOEntry.getClass());
-		}
-
-		LayoutSEOEntryModelImpl layoutSEOEntryModelImpl =
-			(LayoutSEOEntryModelImpl)layoutSEOEntry;
-
-		if (Validator.isNull(layoutSEOEntry.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			layoutSEOEntry.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (layoutSEOEntry.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				layoutSEOEntry.setCreateDate(date);
-			}
-			else {
-				layoutSEOEntry.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!layoutSEOEntryModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				layoutSEOEntry.setModifiedDate(date);
-			}
-			else {
-				layoutSEOEntry.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(layoutSEOEntry)) {
-				if (!isNew) {
-					session.evict(
-						LayoutSEOEntryImpl.class,
-						layoutSEOEntry.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in layoutSEOEntry proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(layoutSEOEntry);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom LayoutSEOEntry implementation " +
+						layoutSEOEntry.getClass());
 			}
-			else {
-				layoutSEOEntry = (LayoutSEOEntry)session.merge(layoutSEOEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (layoutSEOEntry.getCtCollectionId() != 0) {
+			LayoutSEOEntryModelImpl layoutSEOEntryModelImpl =
+				(LayoutSEOEntryModelImpl)layoutSEOEntry;
+
+			if (Validator.isNull(layoutSEOEntry.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				layoutSEOEntry.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (layoutSEOEntry.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					layoutSEOEntry.setCreateDate(date);
+				}
+				else {
+					layoutSEOEntry.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!layoutSEOEntryModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					layoutSEOEntry.setModifiedDate(date);
+				}
+				else {
+					layoutSEOEntry.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(layoutSEOEntry)) {
+					if (!isNew) {
+						session.evict(
+							LayoutSEOEntryImpl.class,
+							layoutSEOEntry.getPrimaryKeyObj());
+					}
+
+					session.save(layoutSEOEntry);
+				}
+				else {
+					layoutSEOEntry = (LayoutSEOEntry)session.merge(
+						layoutSEOEntry);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				LayoutSEOEntryImpl.class, layoutSEOEntryModelImpl, false, true);
+
+			cacheUniqueFindersCache(layoutSEOEntryModelImpl);
+
 			if (isNew) {
 				layoutSEOEntry.setNew(false);
 			}
@@ -2122,19 +2135,6 @@ public class LayoutSEOEntryPersistenceImpl
 
 			return layoutSEOEntry;
 		}
-
-		entityCache.putResult(
-			LayoutSEOEntryImpl.class, layoutSEOEntryModelImpl, false, true);
-
-		cacheUniqueFindersCache(layoutSEOEntryModelImpl);
-
-		if (isNew) {
-			layoutSEOEntry.setNew(false);
-		}
-
-		layoutSEOEntry.resetOriginalValues();
-
-		return layoutSEOEntry;
 	}
 
 	/**
@@ -2184,34 +2184,13 @@ public class LayoutSEOEntryPersistenceImpl
 	 */
 	@Override
 	public LayoutSEOEntry fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				LayoutSEOEntry.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						LayoutSEOEntry.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		LayoutSEOEntry layoutSEOEntry = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			layoutSEOEntry = (LayoutSEOEntry)session.get(
-				LayoutSEOEntryImpl.class, primaryKey);
-
-			if (layoutSEOEntry != null) {
-				cacheResult(layoutSEOEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return layoutSEOEntry;
 	}
 
 	/**
@@ -2229,93 +2208,13 @@ public class LayoutSEOEntryPersistenceImpl
 	public Map<Serializable, LayoutSEOEntry> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(LayoutSEOEntry.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						LayoutSEOEntry.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, LayoutSEOEntry> map =
-			new HashMap<Serializable, LayoutSEOEntry>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			LayoutSEOEntry layoutSEOEntry = fetchByPrimaryKey(primaryKey);
-
-			if (layoutSEOEntry != null) {
-				map.put(primaryKey, layoutSEOEntry);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (LayoutSEOEntry layoutSEOEntry :
-					(List<LayoutSEOEntry>)query.list()) {
-
-				map.put(layoutSEOEntry.getPrimaryKeyObj(), layoutSEOEntry);
-
-				cacheResult(layoutSEOEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

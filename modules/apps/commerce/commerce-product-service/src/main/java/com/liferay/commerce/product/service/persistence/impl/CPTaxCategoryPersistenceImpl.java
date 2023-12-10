@@ -14,8 +14,11 @@ import com.liferay.commerce.product.model.impl.CPTaxCategoryModelImpl;
 import com.liferay.commerce.product.service.persistence.CPTaxCategoryPersistence;
 import com.liferay.commerce.product.service.persistence.CPTaxCategoryUtil;
 import com.liferay.commerce.product.service.persistence.impl.constants.CommercePersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -51,7 +54,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1823,104 +1825,99 @@ public class CPTaxCategoryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {externalReferenceCode, companyId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPTaxCategory.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByERC_C, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPTaxCategory.class);
-
-		if (result instanceof CPTaxCategory) {
-			CPTaxCategory cpTaxCategory = (CPTaxCategory)result;
-
-			if (!Objects.equals(
-					externalReferenceCode,
-					cpTaxCategory.getExternalReferenceCode()) ||
-				(companyId != cpTaxCategory.getCompanyId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						CPTaxCategory.class, cpTaxCategory.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_CPTAXCATEGORY_WHERE);
-
-			boolean bindExternalReferenceCode = false;
-
-			if (externalReferenceCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindExternalReferenceCode = true;
-
-				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {externalReferenceCode, companyId};
 			}
 
-			sb.append(_FINDER_COLUMN_ERC_C_COMPANYID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByERC_C, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof CPTaxCategory) {
+				CPTaxCategory cpTaxCategory = (CPTaxCategory)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(
+						externalReferenceCode,
+						cpTaxCategory.getExternalReferenceCode()) ||
+					(companyId != cpTaxCategory.getCompanyId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindExternalReferenceCode) {
-					queryPos.add(externalReferenceCode);
+					result = null;
 				}
+			}
 
-				queryPos.add(companyId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<CPTaxCategory> list = query.list();
+				sb.append(_SQL_SELECT_CPTAXCATEGORY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByERC_C, finderArgs, list);
-					}
+				boolean bindExternalReferenceCode = false;
+
+				if (externalReferenceCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_3);
 				}
 				else {
-					CPTaxCategory cpTaxCategory = list.get(0);
+					bindExternalReferenceCode = true;
 
-					result = cpTaxCategory;
+					sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(cpTaxCategory);
+				sb.append(_FINDER_COLUMN_ERC_C_COMPANYID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindExternalReferenceCode) {
+						queryPos.add(externalReferenceCode);
+					}
+
+					queryPos.add(companyId);
+
+					List<CPTaxCategory> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByERC_C, finderArgs, list);
+						}
+					}
+					else {
+						CPTaxCategory cpTaxCategory = list.get(0);
+
+						result = cpTaxCategory;
+
+						cacheResult(cpTaxCategory);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (CPTaxCategory)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (CPTaxCategory)result;
+			}
 		}
 	}
 
@@ -2052,21 +2049,22 @@ public class CPTaxCategoryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(CPTaxCategory cpTaxCategory) {
-		if (cpTaxCategory.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					cpTaxCategory.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				CPTaxCategoryImpl.class, cpTaxCategory.getPrimaryKey(),
+				cpTaxCategory);
+
+			finderCache.putResult(
+				_finderPathFetchByERC_C,
+				new Object[] {
+					cpTaxCategory.getExternalReferenceCode(),
+					cpTaxCategory.getCompanyId()
+				},
+				cpTaxCategory);
 		}
-
-		entityCache.putResult(
-			CPTaxCategoryImpl.class, cpTaxCategory.getPrimaryKey(),
-			cpTaxCategory);
-
-		finderCache.putResult(
-			_finderPathFetchByERC_C,
-			new Object[] {
-				cpTaxCategory.getExternalReferenceCode(),
-				cpTaxCategory.getCompanyId()
-			},
-			cpTaxCategory);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2086,15 +2084,18 @@ public class CPTaxCategoryPersistenceImpl
 		}
 
 		for (CPTaxCategory cpTaxCategory : cpTaxCategories) {
-			if (cpTaxCategory.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(cpTaxCategory.getCtCollectionId() != 0) &&
+						(cpTaxCategory.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					CPTaxCategoryImpl.class, cpTaxCategory.getPrimaryKey()) ==
-						null) {
+				if (entityCache.getResult(
+						CPTaxCategoryImpl.class,
+						cpTaxCategory.getPrimaryKey()) == null) {
 
-				cacheResult(cpTaxCategory);
+					cacheResult(cpTaxCategory);
+				}
 			}
 		}
 	}
@@ -2144,14 +2145,20 @@ public class CPTaxCategoryPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		CPTaxCategoryModelImpl cpTaxCategoryModelImpl) {
 
-		Object[] args = new Object[] {
-			cpTaxCategoryModelImpl.getExternalReferenceCode(),
-			cpTaxCategoryModelImpl.getCompanyId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					cpTaxCategoryModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByERC_C, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByERC_C, args, cpTaxCategoryModelImpl);
+			Object[] args = new Object[] {
+				cpTaxCategoryModelImpl.getExternalReferenceCode(),
+				cpTaxCategoryModelImpl.getCompanyId()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByERC_C, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByERC_C, args, cpTaxCategoryModelImpl);
+		}
 	}
 
 	/**
@@ -2265,113 +2272,124 @@ public class CPTaxCategoryPersistenceImpl
 
 	@Override
 	public CPTaxCategory updateImpl(CPTaxCategory cpTaxCategory) {
-		boolean isNew = cpTaxCategory.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(cpTaxCategory instanceof CPTaxCategoryModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = cpTaxCategory.isNew();
 
-			if (ProxyUtil.isProxyClass(cpTaxCategory.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					cpTaxCategory);
+			if (!(cpTaxCategory instanceof CPTaxCategoryModelImpl)) {
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(cpTaxCategory.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						cpTaxCategory);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in cpTaxCategory proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in cpTaxCategory proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom CPTaxCategory implementation " +
+						cpTaxCategory.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom CPTaxCategory implementation " +
-					cpTaxCategory.getClass());
-		}
+			CPTaxCategoryModelImpl cpTaxCategoryModelImpl =
+				(CPTaxCategoryModelImpl)cpTaxCategory;
 
-		CPTaxCategoryModelImpl cpTaxCategoryModelImpl =
-			(CPTaxCategoryModelImpl)cpTaxCategory;
+			if (Validator.isNull(cpTaxCategory.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
 
-		if (Validator.isNull(cpTaxCategory.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
+				cpTaxCategory.setUuid(uuid);
+			}
 
-			cpTaxCategory.setUuid(uuid);
-		}
+			if (Validator.isNull(cpTaxCategory.getExternalReferenceCode())) {
+				cpTaxCategory.setExternalReferenceCode(cpTaxCategory.getUuid());
+			}
+			else {
+				CPTaxCategory ercCPTaxCategory = fetchByERC_C(
+					cpTaxCategory.getExternalReferenceCode(),
+					cpTaxCategory.getCompanyId());
 
-		if (Validator.isNull(cpTaxCategory.getExternalReferenceCode())) {
-			cpTaxCategory.setExternalReferenceCode(cpTaxCategory.getUuid());
-		}
-		else {
-			CPTaxCategory ercCPTaxCategory = fetchByERC_C(
-				cpTaxCategory.getExternalReferenceCode(),
-				cpTaxCategory.getCompanyId());
+				if (isNew) {
+					if (ercCPTaxCategory != null) {
+						throw new DuplicateCPTaxCategoryExternalReferenceCodeException(
+							"Duplicate cp tax category with external reference code " +
+								cpTaxCategory.getExternalReferenceCode() +
+									" and company " +
+										cpTaxCategory.getCompanyId());
+					}
+				}
+				else {
+					if ((ercCPTaxCategory != null) &&
+						(cpTaxCategory.getCPTaxCategoryId() !=
+							ercCPTaxCategory.getCPTaxCategoryId())) {
 
-			if (isNew) {
-				if (ercCPTaxCategory != null) {
-					throw new DuplicateCPTaxCategoryExternalReferenceCodeException(
-						"Duplicate cp tax category with external reference code " +
-							cpTaxCategory.getExternalReferenceCode() +
-								" and company " + cpTaxCategory.getCompanyId());
+						throw new DuplicateCPTaxCategoryExternalReferenceCodeException(
+							"Duplicate cp tax category with external reference code " +
+								cpTaxCategory.getExternalReferenceCode() +
+									" and company " +
+										cpTaxCategory.getCompanyId());
+					}
 				}
 			}
-			else {
-				if ((ercCPTaxCategory != null) &&
-					(cpTaxCategory.getCPTaxCategoryId() !=
-						ercCPTaxCategory.getCPTaxCategoryId())) {
 
-					throw new DuplicateCPTaxCategoryExternalReferenceCodeException(
-						"Duplicate cp tax category with external reference code " +
-							cpTaxCategory.getExternalReferenceCode() +
-								" and company " + cpTaxCategory.getCompanyId());
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (cpTaxCategory.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					cpTaxCategory.setCreateDate(date);
+				}
+				else {
+					cpTaxCategory.setCreateDate(
+						serviceContext.getCreateDate(date));
 				}
 			}
-		}
 
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (cpTaxCategory.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				cpTaxCategory.setCreateDate(date);
-			}
-			else {
-				cpTaxCategory.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!cpTaxCategoryModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				cpTaxCategory.setModifiedDate(date);
-			}
-			else {
-				cpTaxCategory.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(cpTaxCategory)) {
-				if (!isNew) {
-					session.evict(
-						CPTaxCategoryImpl.class,
-						cpTaxCategory.getPrimaryKeyObj());
+			if (!cpTaxCategoryModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					cpTaxCategory.setModifiedDate(date);
 				}
-
-				session.save(cpTaxCategory);
+				else {
+					cpTaxCategory.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
 			}
-			else {
-				cpTaxCategory = (CPTaxCategory)session.merge(cpTaxCategory);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (cpTaxCategory.getCtCollectionId() != 0) {
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(cpTaxCategory)) {
+					if (!isNew) {
+						session.evict(
+							CPTaxCategoryImpl.class,
+							cpTaxCategory.getPrimaryKeyObj());
+					}
+
+					session.save(cpTaxCategory);
+				}
+				else {
+					cpTaxCategory = (CPTaxCategory)session.merge(cpTaxCategory);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				CPTaxCategoryImpl.class, cpTaxCategoryModelImpl, false, true);
+
+			cacheUniqueFindersCache(cpTaxCategoryModelImpl);
+
 			if (isNew) {
 				cpTaxCategory.setNew(false);
 			}
@@ -2380,19 +2398,6 @@ public class CPTaxCategoryPersistenceImpl
 
 			return cpTaxCategory;
 		}
-
-		entityCache.putResult(
-			CPTaxCategoryImpl.class, cpTaxCategoryModelImpl, false, true);
-
-		cacheUniqueFindersCache(cpTaxCategoryModelImpl);
-
-		if (isNew) {
-			cpTaxCategory.setNew(false);
-		}
-
-		cpTaxCategory.resetOriginalValues();
-
-		return cpTaxCategory;
 	}
 
 	/**
@@ -2442,34 +2447,13 @@ public class CPTaxCategoryPersistenceImpl
 	 */
 	@Override
 	public CPTaxCategory fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				CPTaxCategory.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPTaxCategory.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		CPTaxCategory cpTaxCategory = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			cpTaxCategory = (CPTaxCategory)session.get(
-				CPTaxCategoryImpl.class, primaryKey);
-
-			if (cpTaxCategory != null) {
-				cacheResult(cpTaxCategory);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return cpTaxCategory;
 	}
 
 	/**
@@ -2487,93 +2471,13 @@ public class CPTaxCategoryPersistenceImpl
 	public Map<Serializable, CPTaxCategory> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(CPTaxCategory.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPTaxCategory.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, CPTaxCategory> map =
-			new HashMap<Serializable, CPTaxCategory>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			CPTaxCategory cpTaxCategory = fetchByPrimaryKey(primaryKey);
-
-			if (cpTaxCategory != null) {
-				map.put(primaryKey, cpTaxCategory);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (CPTaxCategory cpTaxCategory :
-					(List<CPTaxCategory>)query.list()) {
-
-				map.put(cpTaxCategory.getPrimaryKeyObj(), cpTaxCategory);
-
-				cacheResult(cpTaxCategory);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

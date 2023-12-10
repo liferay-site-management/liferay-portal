@@ -5,8 +5,11 @@
 
 package com.liferay.portal.workflow.kaleo.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -45,9 +48,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1356,12 +1357,13 @@ public class KaleoTimerPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(KaleoTimer kaleoTimer) {
-		if (kaleoTimer.getCtCollectionId() != 0) {
-			return;
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					kaleoTimer.getCtCollectionId() != 0)) {
 
-		entityCache.putResult(
-			KaleoTimerImpl.class, kaleoTimer.getPrimaryKey(), kaleoTimer);
+			entityCache.putResult(
+				KaleoTimerImpl.class, kaleoTimer.getPrimaryKey(), kaleoTimer);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -1381,14 +1383,18 @@ public class KaleoTimerPersistenceImpl
 		}
 
 		for (KaleoTimer kaleoTimer : kaleoTimers) {
-			if (kaleoTimer.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(kaleoTimer.getCtCollectionId() != 0) &&
+						(kaleoTimer.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					KaleoTimerImpl.class, kaleoTimer.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						KaleoTimerImpl.class, kaleoTimer.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(kaleoTimer);
+					cacheResult(kaleoTimer);
+				}
 			}
 		}
 	}
@@ -1540,76 +1546,85 @@ public class KaleoTimerPersistenceImpl
 
 	@Override
 	public KaleoTimer updateImpl(KaleoTimer kaleoTimer) {
-		boolean isNew = kaleoTimer.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(kaleoTimer instanceof KaleoTimerModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = kaleoTimer.isNew();
 
-			if (ProxyUtil.isProxyClass(kaleoTimer.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(kaleoTimer);
+			if (!(kaleoTimer instanceof KaleoTimerModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in kaleoTimer proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(kaleoTimer.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						kaleoTimer);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom KaleoTimer implementation " +
-					kaleoTimer.getClass());
-		}
-
-		KaleoTimerModelImpl kaleoTimerModelImpl =
-			(KaleoTimerModelImpl)kaleoTimer;
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (kaleoTimer.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				kaleoTimer.setCreateDate(date);
-			}
-			else {
-				kaleoTimer.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!kaleoTimerModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				kaleoTimer.setModifiedDate(date);
-			}
-			else {
-				kaleoTimer.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(kaleoTimer)) {
-				if (!isNew) {
-					session.evict(
-						KaleoTimerImpl.class, kaleoTimer.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in kaleoTimer proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(kaleoTimer);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom KaleoTimer implementation " +
+						kaleoTimer.getClass());
 			}
-			else {
-				kaleoTimer = (KaleoTimer)session.merge(kaleoTimer);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (kaleoTimer.getCtCollectionId() != 0) {
+			KaleoTimerModelImpl kaleoTimerModelImpl =
+				(KaleoTimerModelImpl)kaleoTimer;
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (kaleoTimer.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					kaleoTimer.setCreateDate(date);
+				}
+				else {
+					kaleoTimer.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!kaleoTimerModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					kaleoTimer.setModifiedDate(date);
+				}
+				else {
+					kaleoTimer.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(kaleoTimer)) {
+					if (!isNew) {
+						session.evict(
+							KaleoTimerImpl.class,
+							kaleoTimer.getPrimaryKeyObj());
+					}
+
+					session.save(kaleoTimer);
+				}
+				else {
+					kaleoTimer = (KaleoTimer)session.merge(kaleoTimer);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				KaleoTimerImpl.class, kaleoTimerModelImpl, false, true);
+
 			if (isNew) {
 				kaleoTimer.setNew(false);
 			}
@@ -1618,17 +1633,6 @@ public class KaleoTimerPersistenceImpl
 
 			return kaleoTimer;
 		}
-
-		entityCache.putResult(
-			KaleoTimerImpl.class, kaleoTimerModelImpl, false, true);
-
-		if (isNew) {
-			kaleoTimer.setNew(false);
-		}
-
-		kaleoTimer.resetOriginalValues();
-
-		return kaleoTimer;
 	}
 
 	/**
@@ -1678,34 +1682,13 @@ public class KaleoTimerPersistenceImpl
 	 */
 	@Override
 	public KaleoTimer fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				KaleoTimer.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						KaleoTimer.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		KaleoTimer kaleoTimer = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			kaleoTimer = (KaleoTimer)session.get(
-				KaleoTimerImpl.class, primaryKey);
-
-			if (kaleoTimer != null) {
-				cacheResult(kaleoTimer);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return kaleoTimer;
 	}
 
 	/**
@@ -1723,91 +1706,12 @@ public class KaleoTimerPersistenceImpl
 	public Map<Serializable, KaleoTimer> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(KaleoTimer.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(KaleoTimer.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, KaleoTimer> map =
-			new HashMap<Serializable, KaleoTimer>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			KaleoTimer kaleoTimer = fetchByPrimaryKey(primaryKey);
-
-			if (kaleoTimer != null) {
-				map.put(primaryKey, kaleoTimer);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (KaleoTimer kaleoTimer : (List<KaleoTimer>)query.list()) {
-				map.put(kaleoTimer.getPrimaryKeyObj(), kaleoTimer);
-
-				cacheResult(kaleoTimer);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

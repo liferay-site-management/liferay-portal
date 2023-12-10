@@ -5,9 +5,12 @@
 
 package com.liferay.portal.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -51,7 +54,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -2301,102 +2303,96 @@ public class CountryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, a2};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_A2, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Country.class);
-
-		if (result instanceof Country) {
-			Country country = (Country)result;
-
-			if ((companyId != country.getCompanyId()) ||
-				!Objects.equals(a2, country.getA2())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Country.class, country.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_COUNTRY_WHERE);
-
-			sb.append(_FINDER_COLUMN_C_A2_COMPANYID_2);
-
-			boolean bindA2 = false;
-
-			if (a2.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_A2_A2_3);
-			}
-			else {
-				bindA2 = true;
-
-				sb.append(_FINDER_COLUMN_C_A2_A2_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {companyId, a2};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_A2, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof Country) {
+				Country country = (Country)result;
 
-				Query query = session.createQuery(sql);
+				if ((companyId != country.getCompanyId()) ||
+					!Objects.equals(a2, country.getA2())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				if (bindA2) {
-					queryPos.add(a2);
+					result = null;
 				}
+			}
 
-				List<Country> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_A2, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_COUNTRY_WHERE);
+
+				sb.append(_FINDER_COLUMN_C_A2_COMPANYID_2);
+
+				boolean bindA2 = false;
+
+				if (a2.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_A2_A2_3);
 				}
 				else {
-					Country country = list.get(0);
+					bindA2 = true;
 
-					result = country;
+					sb.append(_FINDER_COLUMN_C_A2_A2_2);
+				}
 
-					cacheResult(country);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					if (bindA2) {
+						queryPos.add(a2);
+					}
+
+					List<Country> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_A2, finderArgs, list);
+						}
+					}
+					else {
+						Country country = list.get(0);
+
+						result = country;
+
+						cacheResult(country);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Country)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Country)result;
+			}
 		}
 	}
 
@@ -2572,102 +2568,96 @@ public class CountryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, a3};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_A3, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Country.class);
-
-		if (result instanceof Country) {
-			Country country = (Country)result;
-
-			if ((companyId != country.getCompanyId()) ||
-				!Objects.equals(a3, country.getA3())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Country.class, country.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_COUNTRY_WHERE);
-
-			sb.append(_FINDER_COLUMN_C_A3_COMPANYID_2);
-
-			boolean bindA3 = false;
-
-			if (a3.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_A3_A3_3);
-			}
-			else {
-				bindA3 = true;
-
-				sb.append(_FINDER_COLUMN_C_A3_A3_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {companyId, a3};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_A3, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof Country) {
+				Country country = (Country)result;
 
-				Query query = session.createQuery(sql);
+				if ((companyId != country.getCompanyId()) ||
+					!Objects.equals(a3, country.getA3())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				if (bindA3) {
-					queryPos.add(a3);
+					result = null;
 				}
+			}
 
-				List<Country> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_A3, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_COUNTRY_WHERE);
+
+				sb.append(_FINDER_COLUMN_C_A3_COMPANYID_2);
+
+				boolean bindA3 = false;
+
+				if (a3.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_A3_A3_3);
 				}
 				else {
-					Country country = list.get(0);
+					bindA3 = true;
 
-					result = country;
+					sb.append(_FINDER_COLUMN_C_A3_A3_2);
+				}
 
-					cacheResult(country);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					if (bindA3) {
+						queryPos.add(a3);
+					}
+
+					List<Country> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_A3, finderArgs, list);
+						}
+					}
+					else {
+						Country country = list.get(0);
+
+						result = country;
+
+						cacheResult(country);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Country)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Country)result;
+			}
 		}
 	}
 
@@ -3394,102 +3384,96 @@ public class CountryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, name};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_Name, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Country.class);
-
-		if (result instanceof Country) {
-			Country country = (Country)result;
-
-			if ((companyId != country.getCompanyId()) ||
-				!Objects.equals(name, country.getName())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Country.class, country.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_COUNTRY_WHERE);
-
-			sb.append(_FINDER_COLUMN_C_NAME_COMPANYID_2);
-
-			boolean bindName = false;
-
-			if (name.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_NAME_NAME_3);
-			}
-			else {
-				bindName = true;
-
-				sb.append(_FINDER_COLUMN_C_NAME_NAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {companyId, name};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_Name, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof Country) {
+				Country country = (Country)result;
 
-				Query query = session.createQuery(sql);
+				if ((companyId != country.getCompanyId()) ||
+					!Objects.equals(name, country.getName())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				if (bindName) {
-					queryPos.add(name);
+					result = null;
 				}
+			}
 
-				List<Country> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_Name, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_COUNTRY_WHERE);
+
+				sb.append(_FINDER_COLUMN_C_NAME_COMPANYID_2);
+
+				boolean bindName = false;
+
+				if (name.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_NAME_NAME_3);
 				}
 				else {
-					Country country = list.get(0);
+					bindName = true;
 
-					result = country;
+					sb.append(_FINDER_COLUMN_C_NAME_NAME_2);
+				}
 
-					cacheResult(country);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					if (bindName) {
+						queryPos.add(name);
+					}
+
+					List<Country> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_Name, finderArgs, list);
+						}
+					}
+					else {
+						Country country = list.get(0);
+
+						result = country;
+
+						cacheResult(country);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Country)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Country)result;
+			}
 		}
 	}
 
@@ -3666,102 +3650,96 @@ public class CountryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, number};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_Number, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Country.class);
-
-		if (result instanceof Country) {
-			Country country = (Country)result;
-
-			if ((companyId != country.getCompanyId()) ||
-				!Objects.equals(number, country.getNumber())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Country.class, country.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_COUNTRY_WHERE);
-
-			sb.append(_FINDER_COLUMN_C_NUMBER_COMPANYID_2);
-
-			boolean bindNumber = false;
-
-			if (number.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_NUMBER_NUMBER_3);
-			}
-			else {
-				bindNumber = true;
-
-				sb.append(_FINDER_COLUMN_C_NUMBER_NUMBER_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {companyId, number};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_Number, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof Country) {
+				Country country = (Country)result;
 
-				Query query = session.createQuery(sql);
+				if ((companyId != country.getCompanyId()) ||
+					!Objects.equals(number, country.getNumber())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				if (bindNumber) {
-					queryPos.add(number);
+					result = null;
 				}
+			}
 
-				List<Country> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_Number, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_COUNTRY_WHERE);
+
+				sb.append(_FINDER_COLUMN_C_NUMBER_COMPANYID_2);
+
+				boolean bindNumber = false;
+
+				if (number.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_NUMBER_NUMBER_3);
 				}
 				else {
-					Country country = list.get(0);
+					bindNumber = true;
 
-					result = country;
+					sb.append(_FINDER_COLUMN_C_NUMBER_NUMBER_2);
+				}
 
-					cacheResult(country);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					if (bindNumber) {
+						queryPos.add(number);
+					}
+
+					List<Country> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_Number, finderArgs, list);
+						}
+					}
+					else {
+						Country country = list.get(0);
+
+						result = country;
+
+						cacheResult(country);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Country)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Country)result;
+			}
 		}
 	}
 
@@ -5095,29 +5073,33 @@ public class CountryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(Country country) {
-		if (country.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					country.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				CountryImpl.class, country.getPrimaryKey(), country);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_A2,
+				new Object[] {country.getCompanyId(), country.getA2()},
+				country);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_A3,
+				new Object[] {country.getCompanyId(), country.getA3()},
+				country);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_Name,
+				new Object[] {country.getCompanyId(), country.getName()},
+				country);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_Number,
+				new Object[] {country.getCompanyId(), country.getNumber()},
+				country);
 		}
-
-		EntityCacheUtil.putResult(
-			CountryImpl.class, country.getPrimaryKey(), country);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_A2,
-			new Object[] {country.getCompanyId(), country.getA2()}, country);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_A3,
-			new Object[] {country.getCompanyId(), country.getA3()}, country);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_Name,
-			new Object[] {country.getCompanyId(), country.getName()}, country);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_Number,
-			new Object[] {country.getCompanyId(), country.getNumber()},
-			country);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -5137,14 +5119,17 @@ public class CountryPersistenceImpl
 		}
 
 		for (Country country : countries) {
-			if (country.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(country.getCtCollectionId() != 0) &&
+						(country.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					CountryImpl.class, country.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						CountryImpl.class, country.getPrimaryKey()) == null) {
 
-				cacheResult(country);
+					cacheResult(country);
+				}
 			}
 		}
 	}
@@ -5192,41 +5177,46 @@ public class CountryPersistenceImpl
 	}
 
 	protected void cacheUniqueFindersCache(CountryModelImpl countryModelImpl) {
-		Object[] args = new Object[] {
-			countryModelImpl.getCompanyId(), countryModelImpl.getA2()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					countryModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByC_A2, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_A2, args, countryModelImpl);
+			Object[] args = new Object[] {
+				countryModelImpl.getCompanyId(), countryModelImpl.getA2()
+			};
 
-		args = new Object[] {
-			countryModelImpl.getCompanyId(), countryModelImpl.getA3()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_A2, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_A2, args, countryModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByC_A3, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_A3, args, countryModelImpl);
+			args = new Object[] {
+				countryModelImpl.getCompanyId(), countryModelImpl.getA3()
+			};
 
-		args = new Object[] {
-			countryModelImpl.getCompanyId(), countryModelImpl.getName()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_A3, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_A3, args, countryModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByC_Name, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_Name, args, countryModelImpl);
+			args = new Object[] {
+				countryModelImpl.getCompanyId(), countryModelImpl.getName()
+			};
 
-		args = new Object[] {
-			countryModelImpl.getCompanyId(), countryModelImpl.getNumber()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_Name, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_Name, args, countryModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByC_Number, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_Number, args, countryModelImpl);
+			args = new Object[] {
+				countryModelImpl.getCompanyId(), countryModelImpl.getNumber()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_Number, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_Number, args, countryModelImpl);
+		}
 	}
 
 	/**
@@ -5341,80 +5331,89 @@ public class CountryPersistenceImpl
 
 	@Override
 	public Country updateImpl(Country country) {
-		boolean isNew = country.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(country instanceof CountryModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = country.isNew();
 
-			if (ProxyUtil.isProxyClass(country.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(country);
+			if (!(country instanceof CountryModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in country proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(country.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(country);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom Country implementation " +
-					country.getClass());
-		}
-
-		CountryModelImpl countryModelImpl = (CountryModelImpl)country;
-
-		if (Validator.isNull(country.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			country.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (country.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				country.setCreateDate(date);
-			}
-			else {
-				country.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!countryModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				country.setModifiedDate(date);
-			}
-			else {
-				country.setModifiedDate(serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(country)) {
-				if (!isNew) {
-					session.evict(
-						CountryImpl.class, country.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in country proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(country);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom Country implementation " +
+						country.getClass());
 			}
-			else {
-				country = (Country)session.merge(country);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (country.getCtCollectionId() != 0) {
+			CountryModelImpl countryModelImpl = (CountryModelImpl)country;
+
+			if (Validator.isNull(country.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				country.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (country.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					country.setCreateDate(date);
+				}
+				else {
+					country.setCreateDate(serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!countryModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					country.setModifiedDate(date);
+				}
+				else {
+					country.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(country)) {
+					if (!isNew) {
+						session.evict(
+							CountryImpl.class, country.getPrimaryKeyObj());
+					}
+
+					session.save(country);
+				}
+				else {
+					country = (Country)session.merge(country);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				CountryImpl.class, countryModelImpl, false, true);
+
+			cacheUniqueFindersCache(countryModelImpl);
+
 			if (isNew) {
 				country.setNew(false);
 			}
@@ -5423,19 +5422,6 @@ public class CountryPersistenceImpl
 
 			return country;
 		}
-
-		EntityCacheUtil.putResult(
-			CountryImpl.class, countryModelImpl, false, true);
-
-		cacheUniqueFindersCache(countryModelImpl);
-
-		if (isNew) {
-			country.setNew(false);
-		}
-
-		country.resetOriginalValues();
-
-		return country;
 	}
 
 	/**
@@ -5485,33 +5471,13 @@ public class CountryPersistenceImpl
 	 */
 	@Override
 	public Country fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				Country.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						Country.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		Country country = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			country = (Country)session.get(CountryImpl.class, primaryKey);
-
-			if (country != null) {
-				cacheResult(country);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return country;
 	}
 
 	/**
@@ -5529,90 +5495,12 @@ public class CountryPersistenceImpl
 	public Map<Serializable, Country> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(Country.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, Country> map = new HashMap<Serializable, Country>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			Country country = fetchByPrimaryKey(primaryKey);
-
-			if (country != null) {
-				map.put(primaryKey, country);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (Country country : (List<Country>)query.list()) {
-				map.put(country.getPrimaryKeyObj(), country);
-
-				cacheResult(country);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

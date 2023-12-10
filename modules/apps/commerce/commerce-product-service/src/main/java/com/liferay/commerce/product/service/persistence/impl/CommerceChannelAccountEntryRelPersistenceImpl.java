@@ -13,8 +13,11 @@ import com.liferay.commerce.product.model.impl.CommerceChannelAccountEntryRelMod
 import com.liferay.commerce.product.service.persistence.CommerceChannelAccountEntryRelPersistence;
 import com.liferay.commerce.product.service.persistence.CommerceChannelAccountEntryRelUtil;
 import com.liferay.commerce.product.service.persistence.impl.constants.CommercePersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -48,7 +51,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -4232,114 +4234,110 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {
-				accountEntryId, classNameId, classPK, commerceChannelId, type
-			};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByA_C_C_C_T, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
-
-		if (result instanceof CommerceChannelAccountEntryRel) {
-			CommerceChannelAccountEntryRel commerceChannelAccountEntryRel =
-				(CommerceChannelAccountEntryRel)result;
-
-			if ((accountEntryId !=
-					commerceChannelAccountEntryRel.getAccountEntryId()) ||
-				(classNameId !=
-					commerceChannelAccountEntryRel.getClassNameId()) ||
-				(classPK != commerceChannelAccountEntryRel.getClassPK()) ||
-				(commerceChannelId !=
-					commerceChannelAccountEntryRel.getCommerceChannelId()) ||
-				(type != commerceChannelAccountEntryRel.getType())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					accountEntryId, classNameId, classPK, commerceChannelId,
+					type
+				};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class,
-						commerceChannelAccountEntryRel.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByA_C_C_C_T, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(7);
+			if (result instanceof CommerceChannelAccountEntryRel) {
+				CommerceChannelAccountEntryRel commerceChannelAccountEntryRel =
+					(CommerceChannelAccountEntryRel)result;
 
-			sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
+				if ((accountEntryId !=
+						commerceChannelAccountEntryRel.getAccountEntryId()) ||
+					(classNameId !=
+						commerceChannelAccountEntryRel.getClassNameId()) ||
+					(classPK != commerceChannelAccountEntryRel.getClassPK()) ||
+					(commerceChannelId !=
+						commerceChannelAccountEntryRel.
+							getCommerceChannelId()) ||
+					(type != commerceChannelAccountEntryRel.getType())) {
 
-			sb.append(_FINDER_COLUMN_A_C_C_C_T_ACCOUNTENTRYID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_A_C_C_C_T_CLASSNAMEID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(7);
 
-			sb.append(_FINDER_COLUMN_A_C_C_C_T_CLASSPK_2);
+				sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
 
-			sb.append(_FINDER_COLUMN_A_C_C_C_T_COMMERCECHANNELID_2);
+				sb.append(_FINDER_COLUMN_A_C_C_C_T_ACCOUNTENTRYID_2);
 
-			sb.append(_FINDER_COLUMN_A_C_C_C_T_TYPE_2);
+				sb.append(_FINDER_COLUMN_A_C_C_C_T_CLASSNAMEID_2);
 
-			String sql = sb.toString();
+				sb.append(_FINDER_COLUMN_A_C_C_C_T_CLASSPK_2);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_A_C_C_C_T_COMMERCECHANNELID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_A_C_C_C_T_TYPE_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(accountEntryId);
+				try {
+					session = openSession();
 
-				queryPos.add(classNameId);
+					Query query = session.createQuery(sql);
 
-				queryPos.add(classPK);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(commerceChannelId);
+					queryPos.add(accountEntryId);
 
-				queryPos.add(type);
+					queryPos.add(classNameId);
 
-				List<CommerceChannelAccountEntryRel> list = query.list();
+					queryPos.add(classPK);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByA_C_C_C_T, finderArgs, list);
+					queryPos.add(commerceChannelId);
+
+					queryPos.add(type);
+
+					List<CommerceChannelAccountEntryRel> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByA_C_C_C_T, finderArgs, list);
+						}
+					}
+					else {
+						CommerceChannelAccountEntryRel
+							commerceChannelAccountEntryRel = list.get(0);
+
+						result = commerceChannelAccountEntryRel;
+
+						cacheResult(commerceChannelAccountEntryRel);
 					}
 				}
-				else {
-					CommerceChannelAccountEntryRel
-						commerceChannelAccountEntryRel = list.get(0);
-
-					result = commerceChannelAccountEntryRel;
-
-					cacheResult(commerceChannelAccountEntryRel);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (CommerceChannelAccountEntryRel)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (CommerceChannelAccountEntryRel)result;
+			}
 		}
 	}
 
@@ -4493,25 +4491,26 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	public void cacheResult(
 		CommerceChannelAccountEntryRel commerceChannelAccountEntryRel) {
 
-		if (commerceChannelAccountEntryRel.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					commerceChannelAccountEntryRel.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				CommerceChannelAccountEntryRelImpl.class,
+				commerceChannelAccountEntryRel.getPrimaryKey(),
+				commerceChannelAccountEntryRel);
+
+			finderCache.putResult(
+				_finderPathFetchByA_C_C_C_T,
+				new Object[] {
+					commerceChannelAccountEntryRel.getAccountEntryId(),
+					commerceChannelAccountEntryRel.getClassNameId(),
+					commerceChannelAccountEntryRel.getClassPK(),
+					commerceChannelAccountEntryRel.getCommerceChannelId(),
+					commerceChannelAccountEntryRel.getType()
+				},
+				commerceChannelAccountEntryRel);
 		}
-
-		entityCache.putResult(
-			CommerceChannelAccountEntryRelImpl.class,
-			commerceChannelAccountEntryRel.getPrimaryKey(),
-			commerceChannelAccountEntryRel);
-
-		finderCache.putResult(
-			_finderPathFetchByA_C_C_C_T,
-			new Object[] {
-				commerceChannelAccountEntryRel.getAccountEntryId(),
-				commerceChannelAccountEntryRel.getClassNameId(),
-				commerceChannelAccountEntryRel.getClassPK(),
-				commerceChannelAccountEntryRel.getCommerceChannelId(),
-				commerceChannelAccountEntryRel.getType()
-			},
-			commerceChannelAccountEntryRel);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -4536,15 +4535,20 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		for (CommerceChannelAccountEntryRel commerceChannelAccountEntryRel :
 				commerceChannelAccountEntryRels) {
 
-			if (commerceChannelAccountEntryRel.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(commerceChannelAccountEntryRel.getCtCollectionId() !=
+							0) &&
+						(commerceChannelAccountEntryRel.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					CommerceChannelAccountEntryRelImpl.class,
-					commerceChannelAccountEntryRel.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						CommerceChannelAccountEntryRelImpl.class,
+						commerceChannelAccountEntryRel.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(commerceChannelAccountEntryRel);
+					cacheResult(commerceChannelAccountEntryRel);
+				}
 			}
 		}
 	}
@@ -4606,19 +4610,25 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		CommerceChannelAccountEntryRelModelImpl
 			commerceChannelAccountEntryRelModelImpl) {
 
-		Object[] args = new Object[] {
-			commerceChannelAccountEntryRelModelImpl.getAccountEntryId(),
-			commerceChannelAccountEntryRelModelImpl.getClassNameId(),
-			commerceChannelAccountEntryRelModelImpl.getClassPK(),
-			commerceChannelAccountEntryRelModelImpl.getCommerceChannelId(),
-			commerceChannelAccountEntryRelModelImpl.getType()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					commerceChannelAccountEntryRelModelImpl.
+						getCtCollectionId() != 0)) {
 
-		finderCache.putResult(
-			_finderPathCountByA_C_C_C_T, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByA_C_C_C_T, args,
-			commerceChannelAccountEntryRelModelImpl);
+			Object[] args = new Object[] {
+				commerceChannelAccountEntryRelModelImpl.getAccountEntryId(),
+				commerceChannelAccountEntryRelModelImpl.getClassNameId(),
+				commerceChannelAccountEntryRelModelImpl.getClassPK(),
+				commerceChannelAccountEntryRelModelImpl.getCommerceChannelId(),
+				commerceChannelAccountEntryRelModelImpl.getType()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByA_C_C_C_T, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByA_C_C_C_T, args,
+				commerceChannelAccountEntryRelModelImpl);
+		}
 	}
 
 	/**
@@ -4741,87 +4751,100 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	public CommerceChannelAccountEntryRel updateImpl(
 		CommerceChannelAccountEntryRel commerceChannelAccountEntryRel) {
 
-		boolean isNew = commerceChannelAccountEntryRel.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(commerceChannelAccountEntryRel instanceof
-				CommerceChannelAccountEntryRelModelImpl)) {
+			boolean isNew = commerceChannelAccountEntryRel.isNew();
 
-			InvocationHandler invocationHandler = null;
+			if (!(commerceChannelAccountEntryRel instanceof
+					CommerceChannelAccountEntryRelModelImpl)) {
 
-			if (ProxyUtil.isProxyClass(
-					commerceChannelAccountEntryRel.getClass())) {
+				InvocationHandler invocationHandler = null;
 
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					commerceChannelAccountEntryRel);
+				if (ProxyUtil.isProxyClass(
+						commerceChannelAccountEntryRel.getClass())) {
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in commerceChannelAccountEntryRel proxy " +
-						invocationHandler.getClass());
-			}
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						commerceChannelAccountEntryRel);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom CommerceChannelAccountEntryRel implementation " +
-					commerceChannelAccountEntryRel.getClass());
-		}
-
-		CommerceChannelAccountEntryRelModelImpl
-			commerceChannelAccountEntryRelModelImpl =
-				(CommerceChannelAccountEntryRelModelImpl)
-					commerceChannelAccountEntryRel;
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (commerceChannelAccountEntryRel.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				commerceChannelAccountEntryRel.setCreateDate(date);
-			}
-			else {
-				commerceChannelAccountEntryRel.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!commerceChannelAccountEntryRelModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				commerceChannelAccountEntryRel.setModifiedDate(date);
-			}
-			else {
-				commerceChannelAccountEntryRel.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(commerceChannelAccountEntryRel)) {
-				if (!isNew) {
-					session.evict(
-						CommerceChannelAccountEntryRelImpl.class,
-						commerceChannelAccountEntryRel.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in commerceChannelAccountEntryRel proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(commerceChannelAccountEntryRel);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom CommerceChannelAccountEntryRel implementation " +
+						commerceChannelAccountEntryRel.getClass());
 			}
-			else {
-				commerceChannelAccountEntryRel =
-					(CommerceChannelAccountEntryRel)session.merge(
-						commerceChannelAccountEntryRel);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (commerceChannelAccountEntryRel.getCtCollectionId() != 0) {
+			CommerceChannelAccountEntryRelModelImpl
+				commerceChannelAccountEntryRelModelImpl =
+					(CommerceChannelAccountEntryRelModelImpl)
+						commerceChannelAccountEntryRel;
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew &&
+				(commerceChannelAccountEntryRel.getCreateDate() == null)) {
+
+				if (serviceContext == null) {
+					commerceChannelAccountEntryRel.setCreateDate(date);
+				}
+				else {
+					commerceChannelAccountEntryRel.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!commerceChannelAccountEntryRelModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					commerceChannelAccountEntryRel.setModifiedDate(date);
+				}
+				else {
+					commerceChannelAccountEntryRel.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(
+						commerceChannelAccountEntryRel)) {
+
+					if (!isNew) {
+						session.evict(
+							CommerceChannelAccountEntryRelImpl.class,
+							commerceChannelAccountEntryRel.getPrimaryKeyObj());
+					}
+
+					session.save(commerceChannelAccountEntryRel);
+				}
+				else {
+					commerceChannelAccountEntryRel =
+						(CommerceChannelAccountEntryRel)session.merge(
+							commerceChannelAccountEntryRel);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				CommerceChannelAccountEntryRelImpl.class,
+				commerceChannelAccountEntryRelModelImpl, false, true);
+
+			cacheUniqueFindersCache(commerceChannelAccountEntryRelModelImpl);
+
 			if (isNew) {
 				commerceChannelAccountEntryRel.setNew(false);
 			}
@@ -4830,20 +4853,6 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 
 			return commerceChannelAccountEntryRel;
 		}
-
-		entityCache.putResult(
-			CommerceChannelAccountEntryRelImpl.class,
-			commerceChannelAccountEntryRelModelImpl, false, true);
-
-		cacheUniqueFindersCache(commerceChannelAccountEntryRelModelImpl);
-
-		if (isNew) {
-			commerceChannelAccountEntryRel.setNew(false);
-		}
-
-		commerceChannelAccountEntryRel.resetOriginalValues();
-
-		return commerceChannelAccountEntryRel;
 	}
 
 	/**
@@ -4898,35 +4907,13 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	public CommerceChannelAccountEntryRel fetchByPrimaryKey(
 		Serializable primaryKey) {
 
-		if (ctPersistenceHelper.isProductionMode(
-				CommerceChannelAccountEntryRel.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		CommerceChannelAccountEntryRel commerceChannelAccountEntryRel = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			commerceChannelAccountEntryRel =
-				(CommerceChannelAccountEntryRel)session.get(
-					CommerceChannelAccountEntryRelImpl.class, primaryKey);
-
-			if (commerceChannelAccountEntryRel != null) {
-				cacheResult(commerceChannelAccountEntryRel);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return commerceChannelAccountEntryRel;
 	}
 
 	/**
@@ -4947,98 +4934,13 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	public Map<Serializable, CommerceChannelAccountEntryRel> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(
-				CommerceChannelAccountEntryRel.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, CommerceChannelAccountEntryRel> map =
-			new HashMap<Serializable, CommerceChannelAccountEntryRel>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			CommerceChannelAccountEntryRel commerceChannelAccountEntryRel =
-				fetchByPrimaryKey(primaryKey);
-
-			if (commerceChannelAccountEntryRel != null) {
-				map.put(primaryKey, commerceChannelAccountEntryRel);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (CommerceChannelAccountEntryRel commerceChannelAccountEntryRel :
-					(List<CommerceChannelAccountEntryRel>)query.list()) {
-
-				map.put(
-					commerceChannelAccountEntryRel.getPrimaryKeyObj(),
-					commerceChannelAccountEntryRel);
-
-				cacheResult(commerceChannelAccountEntryRel);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

@@ -5,9 +5,12 @@
 
 package com.liferay.portal.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -58,7 +61,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -703,102 +705,96 @@ public class TeamPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Team.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Team.class);
-
-		if (result instanceof Team) {
-			Team team = (Team)result;
-
-			if (!Objects.equals(uuid, team.getUuid()) ||
-				(groupId != team.getGroupId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Team.class, team.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_TEAM_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof Team) {
+				Team team = (Team)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, team.getUuid()) ||
+					(groupId != team.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<Team> list = query.list();
+				sb.append(_SQL_SELECT_TEAM_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					Team team = list.get(0);
+					bindUuid = true;
 
-					result = team;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(team);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<Team> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						Team team = list.get(0);
+
+						result = team;
+
+						cacheResult(team);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Team)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Team)result;
+			}
 		}
 	}
 
@@ -2944,102 +2940,96 @@ public class TeamPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, name};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Team.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByG_N, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Team.class);
-
-		if (result instanceof Team) {
-			Team team = (Team)result;
-
-			if ((groupId != team.getGroupId()) ||
-				!Objects.equals(name, team.getName())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Team.class, team.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_TEAM_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_N_GROUPID_2);
-
-			boolean bindName = false;
-
-			if (name.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_N_NAME_3);
-			}
-			else {
-				bindName = true;
-
-				sb.append(_FINDER_COLUMN_G_N_NAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, name};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByG_N, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof Team) {
+				Team team = (Team)result;
 
-				Query query = session.createQuery(sql);
+				if ((groupId != team.getGroupId()) ||
+					!Objects.equals(name, team.getName())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				if (bindName) {
-					queryPos.add(name);
+					result = null;
 				}
+			}
 
-				List<Team> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByG_N, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_TEAM_WHERE);
+
+				sb.append(_FINDER_COLUMN_G_N_GROUPID_2);
+
+				boolean bindName = false;
+
+				if (name.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_N_NAME_3);
 				}
 				else {
-					Team team = list.get(0);
+					bindName = true;
 
-					result = team;
+					sb.append(_FINDER_COLUMN_G_N_NAME_2);
+				}
 
-					cacheResult(team);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					if (bindName) {
+						queryPos.add(name);
+					}
+
+					List<Team> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByG_N, finderArgs, list);
+						}
+					}
+					else {
+						Team team = list.get(0);
+
+						result = team;
+
+						cacheResult(team);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Team)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Team)result;
+			}
 		}
 	}
 
@@ -3169,19 +3159,21 @@ public class TeamPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(Team team) {
-		if (team.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					team.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				TeamImpl.class, team.getPrimaryKey(), team);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {team.getUuid(), team.getGroupId()}, team);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_N,
+				new Object[] {team.getGroupId(), team.getName()}, team);
 		}
-
-		EntityCacheUtil.putResult(TeamImpl.class, team.getPrimaryKey(), team);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {team.getUuid(), team.getGroupId()}, team);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_N,
-			new Object[] {team.getGroupId(), team.getName()}, team);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -3201,14 +3193,17 @@ public class TeamPersistenceImpl
 		}
 
 		for (Team team : teams) {
-			if (team.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(team.getCtCollectionId() != 0) &&
+						(team.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					TeamImpl.class, team.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						TeamImpl.class, team.getPrimaryKey()) == null) {
 
-				cacheResult(team);
+					cacheResult(team);
+				}
 			}
 		}
 	}
@@ -3256,21 +3251,28 @@ public class TeamPersistenceImpl
 	}
 
 	protected void cacheUniqueFindersCache(TeamModelImpl teamModelImpl) {
-		Object[] args = new Object[] {
-			teamModelImpl.getUuid(), teamModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					teamModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByUUID_G, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G, args, teamModelImpl);
+			Object[] args = new Object[] {
+				teamModelImpl.getUuid(), teamModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			teamModelImpl.getGroupId(), teamModelImpl.getName()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G, args, teamModelImpl);
 
-		FinderCacheUtil.putResult(_finderPathCountByG_N, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(_finderPathFetchByG_N, args, teamModelImpl);
+			args = new Object[] {
+				teamModelImpl.getGroupId(), teamModelImpl.getName()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByG_N, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_N, args, teamModelImpl);
+		}
 	}
 
 	/**
@@ -3383,79 +3385,87 @@ public class TeamPersistenceImpl
 
 	@Override
 	public Team updateImpl(Team team) {
-		boolean isNew = team.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(team instanceof TeamModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = team.isNew();
 
-			if (ProxyUtil.isProxyClass(team.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(team);
+			if (!(team instanceof TeamModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in team proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(team.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(team);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom Team implementation " +
-					team.getClass());
-		}
-
-		TeamModelImpl teamModelImpl = (TeamModelImpl)team;
-
-		if (Validator.isNull(team.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			team.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (team.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				team.setCreateDate(date);
-			}
-			else {
-				team.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!teamModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				team.setModifiedDate(date);
-			}
-			else {
-				team.setModifiedDate(serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(team)) {
-				if (!isNew) {
-					session.evict(TeamImpl.class, team.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in team proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(team);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom Team implementation " +
+						team.getClass());
 			}
-			else {
-				team = (Team)session.merge(team);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (team.getCtCollectionId() != 0) {
+			TeamModelImpl teamModelImpl = (TeamModelImpl)team;
+
+			if (Validator.isNull(team.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				team.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (team.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					team.setCreateDate(date);
+				}
+				else {
+					team.setCreateDate(serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!teamModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					team.setModifiedDate(date);
+				}
+				else {
+					team.setModifiedDate(serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(team)) {
+					if (!isNew) {
+						session.evict(TeamImpl.class, team.getPrimaryKeyObj());
+					}
+
+					session.save(team);
+				}
+				else {
+					team = (Team)session.merge(team);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				TeamImpl.class, teamModelImpl, false, true);
+
+			cacheUniqueFindersCache(teamModelImpl);
+
 			if (isNew) {
 				team.setNew(false);
 			}
@@ -3464,18 +3474,6 @@ public class TeamPersistenceImpl
 
 			return team;
 		}
-
-		EntityCacheUtil.putResult(TeamImpl.class, teamModelImpl, false, true);
-
-		cacheUniqueFindersCache(teamModelImpl);
-
-		if (isNew) {
-			team.setNew(false);
-		}
-
-		team.resetOriginalValues();
-
-		return team;
 	}
 
 	/**
@@ -3523,31 +3521,13 @@ public class TeamPersistenceImpl
 	 */
 	@Override
 	public Team fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(Team.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						Team.class, primaryKey))) {
+
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		Team team = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			team = (Team)session.get(TeamImpl.class, primaryKey);
-
-			if (team != null) {
-				cacheResult(team);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return team;
 	}
 
 	/**
@@ -3565,90 +3545,12 @@ public class TeamPersistenceImpl
 	public Map<Serializable, Team> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(Team.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Team.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, Team> map = new HashMap<Serializable, Team>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			Team team = fetchByPrimaryKey(primaryKey);
-
-			if (team != null) {
-				map.put(primaryKey, team);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (Team team : (List<Team>)query.list()) {
-				map.put(team.getPrimaryKeyObj(), team);
-
-				cacheResult(team);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

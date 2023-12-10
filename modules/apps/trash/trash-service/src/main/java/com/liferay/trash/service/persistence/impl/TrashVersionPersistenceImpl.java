@@ -5,8 +5,11 @@
 
 package com.liferay.trash.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -42,9 +45,7 @@ import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1215,91 +1216,86 @@ public class TrashVersionPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {classNameId, classPK};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						TrashVersion.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByC_C, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			TrashVersion.class);
-
-		if (result instanceof TrashVersion) {
-			TrashVersion trashVersion = (TrashVersion)result;
-
-			if ((classNameId != trashVersion.getClassNameId()) ||
-				(classPK != trashVersion.getClassPK())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {classNameId, classPK};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						TrashVersion.class, trashVersion.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByC_C, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
+			if (result instanceof TrashVersion) {
+				TrashVersion trashVersion = (TrashVersion)result;
 
-			sb.append(_SQL_SELECT_TRASHVERSION_WHERE);
+				if ((classNameId != trashVersion.getClassNameId()) ||
+					(classPK != trashVersion.getClassPK())) {
 
-			sb.append(_FINDER_COLUMN_C_C_CLASSNAMEID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_C_C_CLASSPK_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-			String sql = sb.toString();
+				sb.append(_SQL_SELECT_TRASHVERSION_WHERE);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_C_C_CLASSNAMEID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_C_C_CLASSPK_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(classNameId);
+				try {
+					session = openSession();
 
-				queryPos.add(classPK);
+					Query query = session.createQuery(sql);
 
-				List<TrashVersion> list = query.list();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByC_C, finderArgs, list);
+					queryPos.add(classNameId);
+
+					queryPos.add(classPK);
+
+					List<TrashVersion> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByC_C, finderArgs, list);
+						}
+					}
+					else {
+						TrashVersion trashVersion = list.get(0);
+
+						result = trashVersion;
+
+						cacheResult(trashVersion);
 					}
 				}
-				else {
-					TrashVersion trashVersion = list.get(0);
-
-					result = trashVersion;
-
-					cacheResult(trashVersion);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (TrashVersion)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (TrashVersion)result;
+			}
 		}
 	}
 
@@ -1407,19 +1403,21 @@ public class TrashVersionPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(TrashVersion trashVersion) {
-		if (trashVersion.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					trashVersion.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				TrashVersionImpl.class, trashVersion.getPrimaryKey(),
+				trashVersion);
+
+			finderCache.putResult(
+				_finderPathFetchByC_C,
+				new Object[] {
+					trashVersion.getClassNameId(), trashVersion.getClassPK()
+				},
+				trashVersion);
 		}
-
-		entityCache.putResult(
-			TrashVersionImpl.class, trashVersion.getPrimaryKey(), trashVersion);
-
-		finderCache.putResult(
-			_finderPathFetchByC_C,
-			new Object[] {
-				trashVersion.getClassNameId(), trashVersion.getClassPK()
-			},
-			trashVersion);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -1439,15 +1437,18 @@ public class TrashVersionPersistenceImpl
 		}
 
 		for (TrashVersion trashVersion : trashVersions) {
-			if (trashVersion.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(trashVersion.getCtCollectionId() != 0) &&
+						(trashVersion.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					TrashVersionImpl.class, trashVersion.getPrimaryKey()) ==
-						null) {
+				if (entityCache.getResult(
+						TrashVersionImpl.class, trashVersion.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(trashVersion);
+					cacheResult(trashVersion);
+				}
 			}
 		}
 	}
@@ -1497,14 +1498,19 @@ public class TrashVersionPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		TrashVersionModelImpl trashVersionModelImpl) {
 
-		Object[] args = new Object[] {
-			trashVersionModelImpl.getClassNameId(),
-			trashVersionModelImpl.getClassPK()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					trashVersionModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByC_C, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByC_C, args, trashVersionModelImpl);
+			Object[] args = new Object[] {
+				trashVersionModelImpl.getClassNameId(),
+				trashVersionModelImpl.getClassPK()
+			};
+
+			finderCache.putResult(_finderPathCountByC_C, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByC_C, args, trashVersionModelImpl);
+		}
 	}
 
 	/**
@@ -1612,54 +1618,62 @@ public class TrashVersionPersistenceImpl
 
 	@Override
 	public TrashVersion updateImpl(TrashVersion trashVersion) {
-		boolean isNew = trashVersion.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(trashVersion instanceof TrashVersionModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = trashVersion.isNew();
 
-			if (ProxyUtil.isProxyClass(trashVersion.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					trashVersion);
+			if (!(trashVersion instanceof TrashVersionModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in trashVersion proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(trashVersion.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						trashVersion);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom TrashVersion implementation " +
-					trashVersion.getClass());
-		}
-
-		TrashVersionModelImpl trashVersionModelImpl =
-			(TrashVersionModelImpl)trashVersion;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(trashVersion)) {
-				if (!isNew) {
-					session.evict(
-						TrashVersionImpl.class,
-						trashVersion.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in trashVersion proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(trashVersion);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom TrashVersion implementation " +
+						trashVersion.getClass());
 			}
-			else {
-				trashVersion = (TrashVersion)session.merge(trashVersion);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (trashVersion.getCtCollectionId() != 0) {
+			TrashVersionModelImpl trashVersionModelImpl =
+				(TrashVersionModelImpl)trashVersion;
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(trashVersion)) {
+					if (!isNew) {
+						session.evict(
+							TrashVersionImpl.class,
+							trashVersion.getPrimaryKeyObj());
+					}
+
+					session.save(trashVersion);
+				}
+				else {
+					trashVersion = (TrashVersion)session.merge(trashVersion);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				TrashVersionImpl.class, trashVersionModelImpl, false, true);
+
+			cacheUniqueFindersCache(trashVersionModelImpl);
+
 			if (isNew) {
 				trashVersion.setNew(false);
 			}
@@ -1668,19 +1682,6 @@ public class TrashVersionPersistenceImpl
 
 			return trashVersion;
 		}
-
-		entityCache.putResult(
-			TrashVersionImpl.class, trashVersionModelImpl, false, true);
-
-		cacheUniqueFindersCache(trashVersionModelImpl);
-
-		if (isNew) {
-			trashVersion.setNew(false);
-		}
-
-		trashVersion.resetOriginalValues();
-
-		return trashVersion;
 	}
 
 	/**
@@ -1730,34 +1731,13 @@ public class TrashVersionPersistenceImpl
 	 */
 	@Override
 	public TrashVersion fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				TrashVersion.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						TrashVersion.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		TrashVersion trashVersion = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			trashVersion = (TrashVersion)session.get(
-				TrashVersionImpl.class, primaryKey);
-
-			if (trashVersion != null) {
-				cacheResult(trashVersion);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return trashVersion;
 	}
 
 	/**
@@ -1775,91 +1755,13 @@ public class TrashVersionPersistenceImpl
 	public Map<Serializable, TrashVersion> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(TrashVersion.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						TrashVersion.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, TrashVersion> map =
-			new HashMap<Serializable, TrashVersion>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			TrashVersion trashVersion = fetchByPrimaryKey(primaryKey);
-
-			if (trashVersion != null) {
-				map.put(primaryKey, trashVersion);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (TrashVersion trashVersion : (List<TrashVersion>)query.list()) {
-				map.put(trashVersion.getPrimaryKeyObj(), trashVersion);
-
-				cacheResult(trashVersion);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

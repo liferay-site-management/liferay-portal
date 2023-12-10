@@ -5,8 +5,11 @@
 
 package com.liferay.segments.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -52,7 +55,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -719,103 +721,98 @@ public class SegmentsExperimentPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						SegmentsExperiment.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsExperiment.class);
-
-		if (result instanceof SegmentsExperiment) {
-			SegmentsExperiment segmentsExperiment = (SegmentsExperiment)result;
-
-			if (!Objects.equals(uuid, segmentsExperiment.getUuid()) ||
-				(groupId != segmentsExperiment.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class,
-						segmentsExperiment.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_SEGMENTSEXPERIMENT_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof SegmentsExperiment) {
+				SegmentsExperiment segmentsExperiment =
+					(SegmentsExperiment)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, segmentsExperiment.getUuid()) ||
+					(groupId != segmentsExperiment.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<SegmentsExperiment> list = query.list();
+				sb.append(_SQL_SELECT_SEGMENTSEXPERIMENT_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					SegmentsExperiment segmentsExperiment = list.get(0);
+					bindUuid = true;
 
-					result = segmentsExperiment;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(segmentsExperiment);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<SegmentsExperiment> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						SegmentsExperiment segmentsExperiment = list.get(0);
+
+						result = segmentsExperiment;
+
+						cacheResult(segmentsExperiment);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (SegmentsExperiment)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (SegmentsExperiment)result;
+			}
 		}
 	}
 
@@ -3071,105 +3068,100 @@ public class SegmentsExperimentPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, segmentsExperimentKey};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						SegmentsExperiment.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_S, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsExperiment.class);
-
-		if (result instanceof SegmentsExperiment) {
-			SegmentsExperiment segmentsExperiment = (SegmentsExperiment)result;
-
-			if ((groupId != segmentsExperiment.getGroupId()) ||
-				!Objects.equals(
-					segmentsExperimentKey,
-					segmentsExperiment.getSegmentsExperimentKey())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class,
-						segmentsExperiment.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_SEGMENTSEXPERIMENT_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_S_GROUPID_2);
-
-			boolean bindSegmentsExperimentKey = false;
-
-			if (segmentsExperimentKey.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_S_SEGMENTSEXPERIMENTKEY_3);
-			}
-			else {
-				bindSegmentsExperimentKey = true;
-
-				sb.append(_FINDER_COLUMN_G_S_SEGMENTSEXPERIMENTKEY_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, segmentsExperimentKey};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_S, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof SegmentsExperiment) {
+				SegmentsExperiment segmentsExperiment =
+					(SegmentsExperiment)result;
 
-				Query query = session.createQuery(sql);
+				if ((groupId != segmentsExperiment.getGroupId()) ||
+					!Objects.equals(
+						segmentsExperimentKey,
+						segmentsExperiment.getSegmentsExperimentKey())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				if (bindSegmentsExperimentKey) {
-					queryPos.add(segmentsExperimentKey);
+					result = null;
 				}
+			}
 
-				List<SegmentsExperiment> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_S, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_SEGMENTSEXPERIMENT_WHERE);
+
+				sb.append(_FINDER_COLUMN_G_S_GROUPID_2);
+
+				boolean bindSegmentsExperimentKey = false;
+
+				if (segmentsExperimentKey.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_S_SEGMENTSEXPERIMENTKEY_3);
 				}
 				else {
-					SegmentsExperiment segmentsExperiment = list.get(0);
+					bindSegmentsExperimentKey = true;
 
-					result = segmentsExperiment;
+					sb.append(_FINDER_COLUMN_G_S_SEGMENTSEXPERIMENTKEY_2);
+				}
 
-					cacheResult(segmentsExperiment);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					if (bindSegmentsExperimentKey) {
+						queryPos.add(segmentsExperimentKey);
+					}
+
+					List<SegmentsExperiment> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_S, finderArgs, list);
+						}
+					}
+					else {
+						SegmentsExperiment segmentsExperiment = list.get(0);
+
+						result = segmentsExperiment;
+
+						cacheResult(segmentsExperiment);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (SegmentsExperiment)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (SegmentsExperiment)result;
+			}
 		}
 	}
 
@@ -3356,98 +3348,93 @@ public class SegmentsExperimentPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, segmentsExperienceId, plid};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						SegmentsExperiment.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_S_P, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsExperiment.class);
-
-		if (result instanceof SegmentsExperiment) {
-			SegmentsExperiment segmentsExperiment = (SegmentsExperiment)result;
-
-			if ((groupId != segmentsExperiment.getGroupId()) ||
-				(segmentsExperienceId !=
-					segmentsExperiment.getSegmentsExperienceId()) ||
-				(plid != segmentsExperiment.getPlid())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, segmentsExperienceId, plid};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class,
-						segmentsExperiment.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_S_P, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
+			if (result instanceof SegmentsExperiment) {
+				SegmentsExperiment segmentsExperiment =
+					(SegmentsExperiment)result;
 
-			sb.append(_SQL_SELECT_SEGMENTSEXPERIMENT_WHERE);
+				if ((groupId != segmentsExperiment.getGroupId()) ||
+					(segmentsExperienceId !=
+						segmentsExperiment.getSegmentsExperienceId()) ||
+					(plid != segmentsExperiment.getPlid())) {
 
-			sb.append(_FINDER_COLUMN_G_S_P_GROUPID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_G_S_P_SEGMENTSEXPERIENCEID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-			sb.append(_FINDER_COLUMN_G_S_P_PLID_2);
+				sb.append(_SQL_SELECT_SEGMENTSEXPERIMENT_WHERE);
 
-			String sql = sb.toString();
+				sb.append(_FINDER_COLUMN_G_S_P_GROUPID_2);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_G_S_P_SEGMENTSEXPERIENCEID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_G_S_P_PLID_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(groupId);
+				try {
+					session = openSession();
 
-				queryPos.add(segmentsExperienceId);
+					Query query = session.createQuery(sql);
 
-				queryPos.add(plid);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				List<SegmentsExperiment> list = query.list();
+					queryPos.add(groupId);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_S_P, finderArgs, list);
+					queryPos.add(segmentsExperienceId);
+
+					queryPos.add(plid);
+
+					List<SegmentsExperiment> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_S_P, finderArgs, list);
+						}
+					}
+					else {
+						SegmentsExperiment segmentsExperiment = list.get(0);
+
+						result = segmentsExperiment;
+
+						cacheResult(segmentsExperiment);
 					}
 				}
-				else {
-					SegmentsExperiment segmentsExperiment = list.get(0);
-
-					result = segmentsExperiment;
-
-					cacheResult(segmentsExperiment);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (SegmentsExperiment)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (SegmentsExperiment)result;
+			}
 		}
 	}
 
@@ -3574,37 +3561,39 @@ public class SegmentsExperimentPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(SegmentsExperiment segmentsExperiment) {
-		if (segmentsExperiment.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					segmentsExperiment.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				SegmentsExperimentImpl.class,
+				segmentsExperiment.getPrimaryKey(), segmentsExperiment);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					segmentsExperiment.getUuid(),
+					segmentsExperiment.getGroupId()
+				},
+				segmentsExperiment);
+
+			finderCache.putResult(
+				_finderPathFetchByG_S,
+				new Object[] {
+					segmentsExperiment.getGroupId(),
+					segmentsExperiment.getSegmentsExperimentKey()
+				},
+				segmentsExperiment);
+
+			finderCache.putResult(
+				_finderPathFetchByG_S_P,
+				new Object[] {
+					segmentsExperiment.getGroupId(),
+					segmentsExperiment.getSegmentsExperienceId(),
+					segmentsExperiment.getPlid()
+				},
+				segmentsExperiment);
 		}
-
-		entityCache.putResult(
-			SegmentsExperimentImpl.class, segmentsExperiment.getPrimaryKey(),
-			segmentsExperiment);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {
-				segmentsExperiment.getUuid(), segmentsExperiment.getGroupId()
-			},
-			segmentsExperiment);
-
-		finderCache.putResult(
-			_finderPathFetchByG_S,
-			new Object[] {
-				segmentsExperiment.getGroupId(),
-				segmentsExperiment.getSegmentsExperimentKey()
-			},
-			segmentsExperiment);
-
-		finderCache.putResult(
-			_finderPathFetchByG_S_P,
-			new Object[] {
-				segmentsExperiment.getGroupId(),
-				segmentsExperiment.getSegmentsExperienceId(),
-				segmentsExperiment.getPlid()
-			},
-			segmentsExperiment);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -3625,15 +3614,18 @@ public class SegmentsExperimentPersistenceImpl
 		}
 
 		for (SegmentsExperiment segmentsExperiment : segmentsExperiments) {
-			if (segmentsExperiment.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(segmentsExperiment.getCtCollectionId() != 0) &&
+						(segmentsExperiment.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					SegmentsExperimentImpl.class,
-					segmentsExperiment.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						SegmentsExperimentImpl.class,
+						segmentsExperiment.getPrimaryKey()) == null) {
 
-				cacheResult(segmentsExperiment);
+					cacheResult(segmentsExperiment);
+				}
 			}
 		}
 	}
@@ -3685,33 +3677,40 @@ public class SegmentsExperimentPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		SegmentsExperimentModelImpl segmentsExperimentModelImpl) {
 
-		Object[] args = new Object[] {
-			segmentsExperimentModelImpl.getUuid(),
-			segmentsExperimentModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					segmentsExperimentModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, segmentsExperimentModelImpl);
+			Object[] args = new Object[] {
+				segmentsExperimentModelImpl.getUuid(),
+				segmentsExperimentModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			segmentsExperimentModelImpl.getGroupId(),
-			segmentsExperimentModelImpl.getSegmentsExperimentKey()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, segmentsExperimentModelImpl);
 
-		finderCache.putResult(_finderPathCountByG_S, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByG_S, args, segmentsExperimentModelImpl);
+			args = new Object[] {
+				segmentsExperimentModelImpl.getGroupId(),
+				segmentsExperimentModelImpl.getSegmentsExperimentKey()
+			};
 
-		args = new Object[] {
-			segmentsExperimentModelImpl.getGroupId(),
-			segmentsExperimentModelImpl.getSegmentsExperienceId(),
-			segmentsExperimentModelImpl.getPlid()
-		};
+			finderCache.putResult(_finderPathCountByG_S, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_S, args, segmentsExperimentModelImpl);
 
-		finderCache.putResult(_finderPathCountByG_S_P, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByG_S_P, args, segmentsExperimentModelImpl);
+			args = new Object[] {
+				segmentsExperimentModelImpl.getGroupId(),
+				segmentsExperimentModelImpl.getSegmentsExperienceId(),
+				segmentsExperimentModelImpl.getPlid()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByG_S_P, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_S_P, args, segmentsExperimentModelImpl);
+		}
 	}
 
 	/**
@@ -3831,86 +3830,95 @@ public class SegmentsExperimentPersistenceImpl
 	public SegmentsExperiment updateImpl(
 		SegmentsExperiment segmentsExperiment) {
 
-		boolean isNew = segmentsExperiment.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(segmentsExperiment instanceof SegmentsExperimentModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = segmentsExperiment.isNew();
 
-			if (ProxyUtil.isProxyClass(segmentsExperiment.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					segmentsExperiment);
+			if (!(segmentsExperiment instanceof SegmentsExperimentModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in segmentsExperiment proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(segmentsExperiment.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						segmentsExperiment);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom SegmentsExperiment implementation " +
-					segmentsExperiment.getClass());
-		}
-
-		SegmentsExperimentModelImpl segmentsExperimentModelImpl =
-			(SegmentsExperimentModelImpl)segmentsExperiment;
-
-		if (Validator.isNull(segmentsExperiment.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			segmentsExperiment.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (segmentsExperiment.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				segmentsExperiment.setCreateDate(date);
-			}
-			else {
-				segmentsExperiment.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!segmentsExperimentModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				segmentsExperiment.setModifiedDate(date);
-			}
-			else {
-				segmentsExperiment.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(segmentsExperiment)) {
-				if (!isNew) {
-					session.evict(
-						SegmentsExperimentImpl.class,
-						segmentsExperiment.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in segmentsExperiment proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(segmentsExperiment);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom SegmentsExperiment implementation " +
+						segmentsExperiment.getClass());
 			}
-			else {
-				segmentsExperiment = (SegmentsExperiment)session.merge(
-					segmentsExperiment);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (segmentsExperiment.getCtCollectionId() != 0) {
+			SegmentsExperimentModelImpl segmentsExperimentModelImpl =
+				(SegmentsExperimentModelImpl)segmentsExperiment;
+
+			if (Validator.isNull(segmentsExperiment.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				segmentsExperiment.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (segmentsExperiment.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					segmentsExperiment.setCreateDate(date);
+				}
+				else {
+					segmentsExperiment.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!segmentsExperimentModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					segmentsExperiment.setModifiedDate(date);
+				}
+				else {
+					segmentsExperiment.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(segmentsExperiment)) {
+					if (!isNew) {
+						session.evict(
+							SegmentsExperimentImpl.class,
+							segmentsExperiment.getPrimaryKeyObj());
+					}
+
+					session.save(segmentsExperiment);
+				}
+				else {
+					segmentsExperiment = (SegmentsExperiment)session.merge(
+						segmentsExperiment);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				SegmentsExperimentImpl.class, segmentsExperimentModelImpl,
+				false, true);
+
+			cacheUniqueFindersCache(segmentsExperimentModelImpl);
+
 			if (isNew) {
 				segmentsExperiment.setNew(false);
 			}
@@ -3919,20 +3927,6 @@ public class SegmentsExperimentPersistenceImpl
 
 			return segmentsExperiment;
 		}
-
-		entityCache.putResult(
-			SegmentsExperimentImpl.class, segmentsExperimentModelImpl, false,
-			true);
-
-		cacheUniqueFindersCache(segmentsExperimentModelImpl);
-
-		if (isNew) {
-			segmentsExperiment.setNew(false);
-		}
-
-		segmentsExperiment.resetOriginalValues();
-
-		return segmentsExperiment;
 	}
 
 	/**
@@ -3982,34 +3976,13 @@ public class SegmentsExperimentPersistenceImpl
 	 */
 	@Override
 	public SegmentsExperiment fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				SegmentsExperiment.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						SegmentsExperiment.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		SegmentsExperiment segmentsExperiment = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			segmentsExperiment = (SegmentsExperiment)session.get(
-				SegmentsExperimentImpl.class, primaryKey);
-
-			if (segmentsExperiment != null) {
-				cacheResult(segmentsExperiment);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return segmentsExperiment;
 	}
 
 	/**
@@ -4027,95 +4000,13 @@ public class SegmentsExperimentPersistenceImpl
 	public Map<Serializable, SegmentsExperiment> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(SegmentsExperiment.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						SegmentsExperiment.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, SegmentsExperiment> map =
-			new HashMap<Serializable, SegmentsExperiment>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			SegmentsExperiment segmentsExperiment = fetchByPrimaryKey(
-				primaryKey);
-
-			if (segmentsExperiment != null) {
-				map.put(primaryKey, segmentsExperiment);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (SegmentsExperiment segmentsExperiment :
-					(List<SegmentsExperiment>)query.list()) {
-
-				map.put(
-					segmentsExperiment.getPrimaryKeyObj(), segmentsExperiment);
-
-				cacheResult(segmentsExperiment);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

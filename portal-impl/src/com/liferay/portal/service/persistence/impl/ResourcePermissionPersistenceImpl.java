@@ -5,8 +5,11 @@
 
 package com.liferay.portal.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -43,9 +46,7 @@ import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -5336,129 +5337,126 @@ public class ResourcePermissionPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, name, scope, primKey, roleId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						ResourcePermission.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_N_S_P_R, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			ResourcePermission.class);
-
-		if (result instanceof ResourcePermission) {
-			ResourcePermission resourcePermission = (ResourcePermission)result;
-
-			if ((companyId != resourcePermission.getCompanyId()) ||
-				!Objects.equals(name, resourcePermission.getName()) ||
-				(scope != resourcePermission.getScope()) ||
-				!Objects.equals(primKey, resourcePermission.getPrimKey()) ||
-				(roleId != resourcePermission.getRoleId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class,
-						resourcePermission.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(7);
-
-			sb.append(_SQL_SELECT_RESOURCEPERMISSION_WHERE);
-
-			sb.append(_FINDER_COLUMN_C_N_S_P_R_COMPANYID_2);
-
-			boolean bindName = false;
-
-			if (name.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_N_S_P_R_NAME_3);
-			}
-			else {
-				bindName = true;
-
-				sb.append(_FINDER_COLUMN_C_N_S_P_R_NAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					companyId, name, scope, primKey, roleId
+				};
 			}
 
-			sb.append(_FINDER_COLUMN_C_N_S_P_R_SCOPE_2);
+			Object result = null;
 
-			boolean bindPrimKey = false;
-
-			if (primKey.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_N_S_P_R_PRIMKEY_3);
-			}
-			else {
-				bindPrimKey = true;
-
-				sb.append(_FINDER_COLUMN_C_N_S_P_R_PRIMKEY_2);
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_N_S_P_R, finderArgs, this);
 			}
 
-			sb.append(_FINDER_COLUMN_C_N_S_P_R_ROLEID_2);
+			if (result instanceof ResourcePermission) {
+				ResourcePermission resourcePermission =
+					(ResourcePermission)result;
 
-			String sql = sb.toString();
+				if ((companyId != resourcePermission.getCompanyId()) ||
+					!Objects.equals(name, resourcePermission.getName()) ||
+					(scope != resourcePermission.getScope()) ||
+					!Objects.equals(primKey, resourcePermission.getPrimKey()) ||
+					(roleId != resourcePermission.getRoleId())) {
 
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				if (bindName) {
-					queryPos.add(name);
+					result = null;
 				}
+			}
 
-				queryPos.add(scope);
+			if (result == null) {
+				StringBundler sb = new StringBundler(7);
 
-				if (bindPrimKey) {
-					queryPos.add(primKey);
-				}
+				sb.append(_SQL_SELECT_RESOURCEPERMISSION_WHERE);
 
-				queryPos.add(roleId);
+				sb.append(_FINDER_COLUMN_C_N_S_P_R_COMPANYID_2);
 
-				List<ResourcePermission> list = query.list();
+				boolean bindName = false;
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_N_S_P_R, finderArgs, list);
-					}
+				if (name.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_N_S_P_R_NAME_3);
 				}
 				else {
-					ResourcePermission resourcePermission = list.get(0);
+					bindName = true;
 
-					result = resourcePermission;
+					sb.append(_FINDER_COLUMN_C_N_S_P_R_NAME_2);
+				}
 
-					cacheResult(resourcePermission);
+				sb.append(_FINDER_COLUMN_C_N_S_P_R_SCOPE_2);
+
+				boolean bindPrimKey = false;
+
+				if (primKey.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_N_S_P_R_PRIMKEY_3);
+				}
+				else {
+					bindPrimKey = true;
+
+					sb.append(_FINDER_COLUMN_C_N_S_P_R_PRIMKEY_2);
+				}
+
+				sb.append(_FINDER_COLUMN_C_N_S_P_R_ROLEID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					if (bindName) {
+						queryPos.add(name);
+					}
+
+					queryPos.add(scope);
+
+					if (bindPrimKey) {
+						queryPos.add(primKey);
+					}
+
+					queryPos.add(roleId);
+
+					List<ResourcePermission> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_N_S_P_R, finderArgs, list);
+						}
+					}
+					else {
+						ResourcePermission resourcePermission = list.get(0);
+
+						result = resourcePermission;
+
+						cacheResult(resourcePermission);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (ResourcePermission)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (ResourcePermission)result;
+			}
 		}
 	}
 
@@ -7028,22 +7026,24 @@ public class ResourcePermissionPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(ResourcePermission resourcePermission) {
-		if (resourcePermission.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					resourcePermission.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				ResourcePermissionImpl.class,
+				resourcePermission.getPrimaryKey(), resourcePermission);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_N_S_P_R,
+				new Object[] {
+					resourcePermission.getCompanyId(),
+					resourcePermission.getName(), resourcePermission.getScope(),
+					resourcePermission.getPrimKey(),
+					resourcePermission.getRoleId()
+				},
+				resourcePermission);
 		}
-
-		EntityCacheUtil.putResult(
-			ResourcePermissionImpl.class, resourcePermission.getPrimaryKey(),
-			resourcePermission);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_N_S_P_R,
-			new Object[] {
-				resourcePermission.getCompanyId(), resourcePermission.getName(),
-				resourcePermission.getScope(), resourcePermission.getPrimKey(),
-				resourcePermission.getRoleId()
-			},
-			resourcePermission);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -7064,15 +7064,18 @@ public class ResourcePermissionPersistenceImpl
 		}
 
 		for (ResourcePermission resourcePermission : resourcePermissions) {
-			if (resourcePermission.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(resourcePermission.getCtCollectionId() != 0) &&
+						(resourcePermission.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					ResourcePermissionImpl.class,
-					resourcePermission.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						ResourcePermissionImpl.class,
+						resourcePermission.getPrimaryKey()) == null) {
 
-				cacheResult(resourcePermission);
+					cacheResult(resourcePermission);
+				}
 			}
 		}
 	}
@@ -7125,18 +7128,23 @@ public class ResourcePermissionPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		ResourcePermissionModelImpl resourcePermissionModelImpl) {
 
-		Object[] args = new Object[] {
-			resourcePermissionModelImpl.getCompanyId(),
-			resourcePermissionModelImpl.getName(),
-			resourcePermissionModelImpl.getScope(),
-			resourcePermissionModelImpl.getPrimKey(),
-			resourcePermissionModelImpl.getRoleId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					resourcePermissionModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByC_N_S_P_R, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_N_S_P_R, args, resourcePermissionModelImpl);
+			Object[] args = new Object[] {
+				resourcePermissionModelImpl.getCompanyId(),
+				resourcePermissionModelImpl.getName(),
+				resourcePermissionModelImpl.getScope(),
+				resourcePermissionModelImpl.getPrimKey(),
+				resourcePermissionModelImpl.getRoleId()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_N_S_P_R, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_N_S_P_R, args, resourcePermissionModelImpl);
+		}
 	}
 
 	/**
@@ -7252,55 +7260,64 @@ public class ResourcePermissionPersistenceImpl
 	public ResourcePermission updateImpl(
 		ResourcePermission resourcePermission) {
 
-		boolean isNew = resourcePermission.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(resourcePermission instanceof ResourcePermissionModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = resourcePermission.isNew();
 
-			if (ProxyUtil.isProxyClass(resourcePermission.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					resourcePermission);
+			if (!(resourcePermission instanceof ResourcePermissionModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in resourcePermission proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(resourcePermission.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						resourcePermission);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom ResourcePermission implementation " +
-					resourcePermission.getClass());
-		}
-
-		ResourcePermissionModelImpl resourcePermissionModelImpl =
-			(ResourcePermissionModelImpl)resourcePermission;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(resourcePermission)) {
-				if (!isNew) {
-					session.evict(
-						ResourcePermissionImpl.class,
-						resourcePermission.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in resourcePermission proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(resourcePermission);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom ResourcePermission implementation " +
+						resourcePermission.getClass());
 			}
-			else {
-				resourcePermission = (ResourcePermission)session.merge(
-					resourcePermission);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (resourcePermission.getCtCollectionId() != 0) {
+			ResourcePermissionModelImpl resourcePermissionModelImpl =
+				(ResourcePermissionModelImpl)resourcePermission;
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(resourcePermission)) {
+					if (!isNew) {
+						session.evict(
+							ResourcePermissionImpl.class,
+							resourcePermission.getPrimaryKeyObj());
+					}
+
+					session.save(resourcePermission);
+				}
+				else {
+					resourcePermission = (ResourcePermission)session.merge(
+						resourcePermission);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				ResourcePermissionImpl.class, resourcePermissionModelImpl,
+				false, true);
+
+			cacheUniqueFindersCache(resourcePermissionModelImpl);
+
 			if (isNew) {
 				resourcePermission.setNew(false);
 			}
@@ -7309,20 +7326,6 @@ public class ResourcePermissionPersistenceImpl
 
 			return resourcePermission;
 		}
-
-		EntityCacheUtil.putResult(
-			ResourcePermissionImpl.class, resourcePermissionModelImpl, false,
-			true);
-
-		cacheUniqueFindersCache(resourcePermissionModelImpl);
-
-		if (isNew) {
-			resourcePermission.setNew(false);
-		}
-
-		resourcePermission.resetOriginalValues();
-
-		return resourcePermission;
 	}
 
 	/**
@@ -7372,34 +7375,13 @@ public class ResourcePermissionPersistenceImpl
 	 */
 	@Override
 	public ResourcePermission fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				ResourcePermission.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						ResourcePermission.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		ResourcePermission resourcePermission = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			resourcePermission = (ResourcePermission)session.get(
-				ResourcePermissionImpl.class, primaryKey);
-
-			if (resourcePermission != null) {
-				cacheResult(resourcePermission);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return resourcePermission;
 	}
 
 	/**
@@ -7417,97 +7399,13 @@ public class ResourcePermissionPersistenceImpl
 	public Map<Serializable, ResourcePermission> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(
-				ResourcePermission.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						ResourcePermission.class))) {
 
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, ResourcePermission> map =
-			new HashMap<Serializable, ResourcePermission>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			ResourcePermission resourcePermission = fetchByPrimaryKey(
-				primaryKey);
-
-			if (resourcePermission != null) {
-				map.put(primaryKey, resourcePermission);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (ResourcePermission resourcePermission :
-					(List<ResourcePermission>)query.list()) {
-
-				map.put(
-					resourcePermission.getPrimaryKeyObj(), resourcePermission);
-
-				cacheResult(resourcePermission);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

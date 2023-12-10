@@ -5,8 +5,11 @@
 
 package com.liferay.portal.workflow.kaleo.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -47,9 +50,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -2930,13 +2931,14 @@ public class KaleoInstanceTokenPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(KaleoInstanceToken kaleoInstanceToken) {
-		if (kaleoInstanceToken.getCtCollectionId() != 0) {
-			return;
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					kaleoInstanceToken.getCtCollectionId() != 0)) {
 
-		entityCache.putResult(
-			KaleoInstanceTokenImpl.class, kaleoInstanceToken.getPrimaryKey(),
-			kaleoInstanceToken);
+			entityCache.putResult(
+				KaleoInstanceTokenImpl.class,
+				kaleoInstanceToken.getPrimaryKey(), kaleoInstanceToken);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2957,15 +2959,18 @@ public class KaleoInstanceTokenPersistenceImpl
 		}
 
 		for (KaleoInstanceToken kaleoInstanceToken : kaleoInstanceTokens) {
-			if (kaleoInstanceToken.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(kaleoInstanceToken.getCtCollectionId() != 0) &&
+						(kaleoInstanceToken.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					KaleoInstanceTokenImpl.class,
-					kaleoInstanceToken.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						KaleoInstanceTokenImpl.class,
+						kaleoInstanceToken.getPrimaryKey()) == null) {
 
-				cacheResult(kaleoInstanceToken);
+					cacheResult(kaleoInstanceToken);
+				}
 			}
 		}
 	}
@@ -3127,80 +3132,87 @@ public class KaleoInstanceTokenPersistenceImpl
 	public KaleoInstanceToken updateImpl(
 		KaleoInstanceToken kaleoInstanceToken) {
 
-		boolean isNew = kaleoInstanceToken.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(kaleoInstanceToken instanceof KaleoInstanceTokenModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = kaleoInstanceToken.isNew();
 
-			if (ProxyUtil.isProxyClass(kaleoInstanceToken.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					kaleoInstanceToken);
+			if (!(kaleoInstanceToken instanceof KaleoInstanceTokenModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in kaleoInstanceToken proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(kaleoInstanceToken.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						kaleoInstanceToken);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom KaleoInstanceToken implementation " +
-					kaleoInstanceToken.getClass());
-		}
-
-		KaleoInstanceTokenModelImpl kaleoInstanceTokenModelImpl =
-			(KaleoInstanceTokenModelImpl)kaleoInstanceToken;
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (kaleoInstanceToken.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				kaleoInstanceToken.setCreateDate(date);
-			}
-			else {
-				kaleoInstanceToken.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!kaleoInstanceTokenModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				kaleoInstanceToken.setModifiedDate(date);
-			}
-			else {
-				kaleoInstanceToken.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(kaleoInstanceToken)) {
-				if (!isNew) {
-					session.evict(
-						KaleoInstanceTokenImpl.class,
-						kaleoInstanceToken.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in kaleoInstanceToken proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(kaleoInstanceToken);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom KaleoInstanceToken implementation " +
+						kaleoInstanceToken.getClass());
 			}
-			else {
-				kaleoInstanceToken = (KaleoInstanceToken)session.merge(
-					kaleoInstanceToken);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (kaleoInstanceToken.getCtCollectionId() != 0) {
+			KaleoInstanceTokenModelImpl kaleoInstanceTokenModelImpl =
+				(KaleoInstanceTokenModelImpl)kaleoInstanceToken;
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (kaleoInstanceToken.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					kaleoInstanceToken.setCreateDate(date);
+				}
+				else {
+					kaleoInstanceToken.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!kaleoInstanceTokenModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					kaleoInstanceToken.setModifiedDate(date);
+				}
+				else {
+					kaleoInstanceToken.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(kaleoInstanceToken)) {
+					if (!isNew) {
+						session.evict(
+							KaleoInstanceTokenImpl.class,
+							kaleoInstanceToken.getPrimaryKeyObj());
+					}
+
+					session.save(kaleoInstanceToken);
+				}
+				else {
+					kaleoInstanceToken = (KaleoInstanceToken)session.merge(
+						kaleoInstanceToken);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				KaleoInstanceTokenImpl.class, kaleoInstanceTokenModelImpl,
+				false, true);
+
 			if (isNew) {
 				kaleoInstanceToken.setNew(false);
 			}
@@ -3209,18 +3221,6 @@ public class KaleoInstanceTokenPersistenceImpl
 
 			return kaleoInstanceToken;
 		}
-
-		entityCache.putResult(
-			KaleoInstanceTokenImpl.class, kaleoInstanceTokenModelImpl, false,
-			true);
-
-		if (isNew) {
-			kaleoInstanceToken.setNew(false);
-		}
-
-		kaleoInstanceToken.resetOriginalValues();
-
-		return kaleoInstanceToken;
 	}
 
 	/**
@@ -3270,34 +3270,13 @@ public class KaleoInstanceTokenPersistenceImpl
 	 */
 	@Override
 	public KaleoInstanceToken fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				KaleoInstanceToken.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						KaleoInstanceToken.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		KaleoInstanceToken kaleoInstanceToken = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			kaleoInstanceToken = (KaleoInstanceToken)session.get(
-				KaleoInstanceTokenImpl.class, primaryKey);
-
-			if (kaleoInstanceToken != null) {
-				cacheResult(kaleoInstanceToken);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return kaleoInstanceToken;
 	}
 
 	/**
@@ -3315,95 +3294,13 @@ public class KaleoInstanceTokenPersistenceImpl
 	public Map<Serializable, KaleoInstanceToken> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(KaleoInstanceToken.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						KaleoInstanceToken.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, KaleoInstanceToken> map =
-			new HashMap<Serializable, KaleoInstanceToken>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			KaleoInstanceToken kaleoInstanceToken = fetchByPrimaryKey(
-				primaryKey);
-
-			if (kaleoInstanceToken != null) {
-				map.put(primaryKey, kaleoInstanceToken);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (KaleoInstanceToken kaleoInstanceToken :
-					(List<KaleoInstanceToken>)query.list()) {
-
-				map.put(
-					kaleoInstanceToken.getPrimaryKeyObj(), kaleoInstanceToken);
-
-				cacheResult(kaleoInstanceToken);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

@@ -5,8 +5,11 @@
 
 package com.liferay.subscription.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -47,9 +50,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -3123,101 +3124,98 @@ public class SubscriptionPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, userId, classNameId, classPK};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						Subscription.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByC_U_C_C, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			Subscription.class);
-
-		if (result instanceof Subscription) {
-			Subscription subscription = (Subscription)result;
-
-			if ((companyId != subscription.getCompanyId()) ||
-				(userId != subscription.getUserId()) ||
-				(classNameId != subscription.getClassNameId()) ||
-				(classPK != subscription.getClassPK())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					companyId, userId, classNameId, classPK
+				};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						Subscription.class, subscription.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByC_U_C_C, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(6);
+			if (result instanceof Subscription) {
+				Subscription subscription = (Subscription)result;
 
-			sb.append(_SQL_SELECT_SUBSCRIPTION_WHERE);
+				if ((companyId != subscription.getCompanyId()) ||
+					(userId != subscription.getUserId()) ||
+					(classNameId != subscription.getClassNameId()) ||
+					(classPK != subscription.getClassPK())) {
 
-			sb.append(_FINDER_COLUMN_C_U_C_C_COMPANYID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_C_U_C_C_USERID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(6);
 
-			sb.append(_FINDER_COLUMN_C_U_C_C_CLASSNAMEID_2);
+				sb.append(_SQL_SELECT_SUBSCRIPTION_WHERE);
 
-			sb.append(_FINDER_COLUMN_C_U_C_C_CLASSPK_2);
+				sb.append(_FINDER_COLUMN_C_U_C_C_COMPANYID_2);
 
-			String sql = sb.toString();
+				sb.append(_FINDER_COLUMN_C_U_C_C_USERID_2);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_C_U_C_C_CLASSNAMEID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_C_U_C_C_CLASSPK_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(companyId);
+				try {
+					session = openSession();
 
-				queryPos.add(userId);
+					Query query = session.createQuery(sql);
 
-				queryPos.add(classNameId);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(classPK);
+					queryPos.add(companyId);
 
-				List<Subscription> list = query.list();
+					queryPos.add(userId);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByC_U_C_C, finderArgs, list);
+					queryPos.add(classNameId);
+
+					queryPos.add(classPK);
+
+					List<Subscription> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByC_U_C_C, finderArgs, list);
+						}
+					}
+					else {
+						Subscription subscription = list.get(0);
+
+						result = subscription;
+
+						cacheResult(subscription);
 					}
 				}
-				else {
-					Subscription subscription = list.get(0);
-
-					result = subscription;
-
-					cacheResult(subscription);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Subscription)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Subscription)result;
+			}
 		}
 	}
 
@@ -3448,20 +3446,22 @@ public class SubscriptionPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(Subscription subscription) {
-		if (subscription.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					subscription.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				SubscriptionImpl.class, subscription.getPrimaryKey(),
+				subscription);
+
+			finderCache.putResult(
+				_finderPathFetchByC_U_C_C,
+				new Object[] {
+					subscription.getCompanyId(), subscription.getUserId(),
+					subscription.getClassNameId(), subscription.getClassPK()
+				},
+				subscription);
 		}
-
-		entityCache.putResult(
-			SubscriptionImpl.class, subscription.getPrimaryKey(), subscription);
-
-		finderCache.putResult(
-			_finderPathFetchByC_U_C_C,
-			new Object[] {
-				subscription.getCompanyId(), subscription.getUserId(),
-				subscription.getClassNameId(), subscription.getClassPK()
-			},
-			subscription);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -3481,15 +3481,18 @@ public class SubscriptionPersistenceImpl
 		}
 
 		for (Subscription subscription : subscriptions) {
-			if (subscription.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(subscription.getCtCollectionId() != 0) &&
+						(subscription.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					SubscriptionImpl.class, subscription.getPrimaryKey()) ==
-						null) {
+				if (entityCache.getResult(
+						SubscriptionImpl.class, subscription.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(subscription);
+					cacheResult(subscription);
+				}
 			}
 		}
 	}
@@ -3539,16 +3542,22 @@ public class SubscriptionPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		SubscriptionModelImpl subscriptionModelImpl) {
 
-		Object[] args = new Object[] {
-			subscriptionModelImpl.getCompanyId(),
-			subscriptionModelImpl.getUserId(),
-			subscriptionModelImpl.getClassNameId(),
-			subscriptionModelImpl.getClassPK()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					subscriptionModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByC_U_C_C, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByC_U_C_C, args, subscriptionModelImpl);
+			Object[] args = new Object[] {
+				subscriptionModelImpl.getCompanyId(),
+				subscriptionModelImpl.getUserId(),
+				subscriptionModelImpl.getClassNameId(),
+				subscriptionModelImpl.getClassPK()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByC_U_C_C, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByC_U_C_C, args, subscriptionModelImpl);
+		}
 	}
 
 	/**
@@ -3658,78 +3667,87 @@ public class SubscriptionPersistenceImpl
 
 	@Override
 	public Subscription updateImpl(Subscription subscription) {
-		boolean isNew = subscription.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(subscription instanceof SubscriptionModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = subscription.isNew();
 
-			if (ProxyUtil.isProxyClass(subscription.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					subscription);
+			if (!(subscription instanceof SubscriptionModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in subscription proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(subscription.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						subscription);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom Subscription implementation " +
-					subscription.getClass());
-		}
-
-		SubscriptionModelImpl subscriptionModelImpl =
-			(SubscriptionModelImpl)subscription;
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (subscription.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				subscription.setCreateDate(date);
-			}
-			else {
-				subscription.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!subscriptionModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				subscription.setModifiedDate(date);
-			}
-			else {
-				subscription.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(subscription)) {
-				if (!isNew) {
-					session.evict(
-						SubscriptionImpl.class,
-						subscription.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in subscription proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(subscription);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom Subscription implementation " +
+						subscription.getClass());
 			}
-			else {
-				subscription = (Subscription)session.merge(subscription);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (subscription.getCtCollectionId() != 0) {
+			SubscriptionModelImpl subscriptionModelImpl =
+				(SubscriptionModelImpl)subscription;
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (subscription.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					subscription.setCreateDate(date);
+				}
+				else {
+					subscription.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!subscriptionModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					subscription.setModifiedDate(date);
+				}
+				else {
+					subscription.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(subscription)) {
+					if (!isNew) {
+						session.evict(
+							SubscriptionImpl.class,
+							subscription.getPrimaryKeyObj());
+					}
+
+					session.save(subscription);
+				}
+				else {
+					subscription = (Subscription)session.merge(subscription);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				SubscriptionImpl.class, subscriptionModelImpl, false, true);
+
+			cacheUniqueFindersCache(subscriptionModelImpl);
+
 			if (isNew) {
 				subscription.setNew(false);
 			}
@@ -3738,19 +3756,6 @@ public class SubscriptionPersistenceImpl
 
 			return subscription;
 		}
-
-		entityCache.putResult(
-			SubscriptionImpl.class, subscriptionModelImpl, false, true);
-
-		cacheUniqueFindersCache(subscriptionModelImpl);
-
-		if (isNew) {
-			subscription.setNew(false);
-		}
-
-		subscription.resetOriginalValues();
-
-		return subscription;
 	}
 
 	/**
@@ -3800,34 +3805,13 @@ public class SubscriptionPersistenceImpl
 	 */
 	@Override
 	public Subscription fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				Subscription.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						Subscription.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		Subscription subscription = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			subscription = (Subscription)session.get(
-				SubscriptionImpl.class, primaryKey);
-
-			if (subscription != null) {
-				cacheResult(subscription);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return subscription;
 	}
 
 	/**
@@ -3845,91 +3829,13 @@ public class SubscriptionPersistenceImpl
 	public Map<Serializable, Subscription> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(Subscription.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						Subscription.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, Subscription> map =
-			new HashMap<Serializable, Subscription>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			Subscription subscription = fetchByPrimaryKey(primaryKey);
-
-			if (subscription != null) {
-				map.put(primaryKey, subscription);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (Subscription subscription : (List<Subscription>)query.list()) {
-				map.put(subscription.getPrimaryKeyObj(), subscription);
-
-				cacheResult(subscription);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

@@ -5,8 +5,11 @@
 
 package com.liferay.portlet.ratings.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -51,7 +54,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -2119,96 +2121,91 @@ public class RatingsEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {userId, classNameId, classPK};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						RatingsEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByU_C_C, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			RatingsEntry.class);
-
-		if (result instanceof RatingsEntry) {
-			RatingsEntry ratingsEntry = (RatingsEntry)result;
-
-			if ((userId != ratingsEntry.getUserId()) ||
-				(classNameId != ratingsEntry.getClassNameId()) ||
-				(classPK != ratingsEntry.getClassPK())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {userId, classNameId, classPK};
 			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						RatingsEntry.class, ratingsEntry.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByU_C_C, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
+			if (result instanceof RatingsEntry) {
+				RatingsEntry ratingsEntry = (RatingsEntry)result;
 
-			sb.append(_SQL_SELECT_RATINGSENTRY_WHERE);
+				if ((userId != ratingsEntry.getUserId()) ||
+					(classNameId != ratingsEntry.getClassNameId()) ||
+					(classPK != ratingsEntry.getClassPK())) {
 
-			sb.append(_FINDER_COLUMN_U_C_C_USERID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_U_C_C_CLASSNAMEID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-			sb.append(_FINDER_COLUMN_U_C_C_CLASSPK_2);
+				sb.append(_SQL_SELECT_RATINGSENTRY_WHERE);
 
-			String sql = sb.toString();
+				sb.append(_FINDER_COLUMN_U_C_C_USERID_2);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_U_C_C_CLASSNAMEID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_U_C_C_CLASSPK_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(userId);
+				try {
+					session = openSession();
 
-				queryPos.add(classNameId);
+					Query query = session.createQuery(sql);
 
-				queryPos.add(classPK);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				List<RatingsEntry> list = query.list();
+					queryPos.add(userId);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByU_C_C, finderArgs, list);
+					queryPos.add(classNameId);
+
+					queryPos.add(classPK);
+
+					List<RatingsEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByU_C_C, finderArgs, list);
+						}
+					}
+					else {
+						RatingsEntry ratingsEntry = list.get(0);
+
+						result = ratingsEntry;
+
+						cacheResult(ratingsEntry);
 					}
 				}
-				else {
-					RatingsEntry ratingsEntry = list.get(0);
-
-					result = ratingsEntry;
-
-					cacheResult(ratingsEntry);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (RatingsEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (RatingsEntry)result;
+			}
 		}
 	}
 
@@ -3047,20 +3044,22 @@ public class RatingsEntryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(RatingsEntry ratingsEntry) {
-		if (ratingsEntry.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					ratingsEntry.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				RatingsEntryImpl.class, ratingsEntry.getPrimaryKey(),
+				ratingsEntry);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByU_C_C,
+				new Object[] {
+					ratingsEntry.getUserId(), ratingsEntry.getClassNameId(),
+					ratingsEntry.getClassPK()
+				},
+				ratingsEntry);
 		}
-
-		EntityCacheUtil.putResult(
-			RatingsEntryImpl.class, ratingsEntry.getPrimaryKey(), ratingsEntry);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByU_C_C,
-			new Object[] {
-				ratingsEntry.getUserId(), ratingsEntry.getClassNameId(),
-				ratingsEntry.getClassPK()
-			},
-			ratingsEntry);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -3080,15 +3079,18 @@ public class RatingsEntryPersistenceImpl
 		}
 
 		for (RatingsEntry ratingsEntry : ratingsEntries) {
-			if (ratingsEntry.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(ratingsEntry.getCtCollectionId() != 0) &&
+						(ratingsEntry.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					RatingsEntryImpl.class, ratingsEntry.getPrimaryKey()) ==
-						null) {
+				if (EntityCacheUtil.getResult(
+						RatingsEntryImpl.class, ratingsEntry.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(ratingsEntry);
+					cacheResult(ratingsEntry);
+				}
 			}
 		}
 	}
@@ -3138,16 +3140,21 @@ public class RatingsEntryPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		RatingsEntryModelImpl ratingsEntryModelImpl) {
 
-		Object[] args = new Object[] {
-			ratingsEntryModelImpl.getUserId(),
-			ratingsEntryModelImpl.getClassNameId(),
-			ratingsEntryModelImpl.getClassPK()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					ratingsEntryModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByU_C_C, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByU_C_C, args, ratingsEntryModelImpl);
+			Object[] args = new Object[] {
+				ratingsEntryModelImpl.getUserId(),
+				ratingsEntryModelImpl.getClassNameId(),
+				ratingsEntryModelImpl.getClassPK()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByU_C_C, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByU_C_C, args, ratingsEntryModelImpl);
+		}
 	}
 
 	/**
@@ -3259,84 +3266,93 @@ public class RatingsEntryPersistenceImpl
 
 	@Override
 	public RatingsEntry updateImpl(RatingsEntry ratingsEntry) {
-		boolean isNew = ratingsEntry.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(ratingsEntry instanceof RatingsEntryModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = ratingsEntry.isNew();
 
-			if (ProxyUtil.isProxyClass(ratingsEntry.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					ratingsEntry);
+			if (!(ratingsEntry instanceof RatingsEntryModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in ratingsEntry proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(ratingsEntry.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						ratingsEntry);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom RatingsEntry implementation " +
-					ratingsEntry.getClass());
-		}
-
-		RatingsEntryModelImpl ratingsEntryModelImpl =
-			(RatingsEntryModelImpl)ratingsEntry;
-
-		if (Validator.isNull(ratingsEntry.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			ratingsEntry.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (ratingsEntry.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				ratingsEntry.setCreateDate(date);
-			}
-			else {
-				ratingsEntry.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!ratingsEntryModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				ratingsEntry.setModifiedDate(date);
-			}
-			else {
-				ratingsEntry.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(ratingsEntry)) {
-				if (!isNew) {
-					session.evict(
-						RatingsEntryImpl.class,
-						ratingsEntry.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in ratingsEntry proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(ratingsEntry);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom RatingsEntry implementation " +
+						ratingsEntry.getClass());
 			}
-			else {
-				ratingsEntry = (RatingsEntry)session.merge(ratingsEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (ratingsEntry.getCtCollectionId() != 0) {
+			RatingsEntryModelImpl ratingsEntryModelImpl =
+				(RatingsEntryModelImpl)ratingsEntry;
+
+			if (Validator.isNull(ratingsEntry.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				ratingsEntry.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (ratingsEntry.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					ratingsEntry.setCreateDate(date);
+				}
+				else {
+					ratingsEntry.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!ratingsEntryModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					ratingsEntry.setModifiedDate(date);
+				}
+				else {
+					ratingsEntry.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(ratingsEntry)) {
+					if (!isNew) {
+						session.evict(
+							RatingsEntryImpl.class,
+							ratingsEntry.getPrimaryKeyObj());
+					}
+
+					session.save(ratingsEntry);
+				}
+				else {
+					ratingsEntry = (RatingsEntry)session.merge(ratingsEntry);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				RatingsEntryImpl.class, ratingsEntryModelImpl, false, true);
+
+			cacheUniqueFindersCache(ratingsEntryModelImpl);
+
 			if (isNew) {
 				ratingsEntry.setNew(false);
 			}
@@ -3345,19 +3361,6 @@ public class RatingsEntryPersistenceImpl
 
 			return ratingsEntry;
 		}
-
-		EntityCacheUtil.putResult(
-			RatingsEntryImpl.class, ratingsEntryModelImpl, false, true);
-
-		cacheUniqueFindersCache(ratingsEntryModelImpl);
-
-		if (isNew) {
-			ratingsEntry.setNew(false);
-		}
-
-		ratingsEntry.resetOriginalValues();
-
-		return ratingsEntry;
 	}
 
 	/**
@@ -3407,34 +3410,13 @@ public class RatingsEntryPersistenceImpl
 	 */
 	@Override
 	public RatingsEntry fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				RatingsEntry.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						RatingsEntry.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		RatingsEntry ratingsEntry = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			ratingsEntry = (RatingsEntry)session.get(
-				RatingsEntryImpl.class, primaryKey);
-
-			if (ratingsEntry != null) {
-				cacheResult(ratingsEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return ratingsEntry;
 	}
 
 	/**
@@ -3452,91 +3434,13 @@ public class RatingsEntryPersistenceImpl
 	public Map<Serializable, RatingsEntry> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(RatingsEntry.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						RatingsEntry.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, RatingsEntry> map =
-			new HashMap<Serializable, RatingsEntry>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			RatingsEntry ratingsEntry = fetchByPrimaryKey(primaryKey);
-
-			if (ratingsEntry != null) {
-				map.put(primaryKey, ratingsEntry);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (RatingsEntry ratingsEntry : (List<RatingsEntry>)query.list()) {
-				map.put(ratingsEntry.getPrimaryKeyObj(), ratingsEntry);
-
-				cacheResult(ratingsEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

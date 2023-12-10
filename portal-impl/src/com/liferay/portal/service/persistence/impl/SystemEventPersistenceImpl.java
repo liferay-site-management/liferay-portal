@@ -5,8 +5,11 @@
 
 package com.liferay.portal.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -47,7 +50,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -2393,12 +2395,14 @@ public class SystemEventPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(SystemEvent systemEvent) {
-		if (systemEvent.getCtCollectionId() != 0) {
-			return;
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					systemEvent.getCtCollectionId() != 0)) {
 
-		EntityCacheUtil.putResult(
-			SystemEventImpl.class, systemEvent.getPrimaryKey(), systemEvent);
+			EntityCacheUtil.putResult(
+				SystemEventImpl.class, systemEvent.getPrimaryKey(),
+				systemEvent);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2418,15 +2422,18 @@ public class SystemEventPersistenceImpl
 		}
 
 		for (SystemEvent systemEvent : systemEvents) {
-			if (systemEvent.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(systemEvent.getCtCollectionId() != 0) &&
+						(systemEvent.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					SystemEventImpl.class, systemEvent.getPrimaryKey()) ==
-						null) {
+				if (EntityCacheUtil.getResult(
+						SystemEventImpl.class, systemEvent.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(systemEvent);
+					cacheResult(systemEvent);
+				}
 			}
 		}
 	}
@@ -2580,66 +2587,75 @@ public class SystemEventPersistenceImpl
 
 	@Override
 	public SystemEvent updateImpl(SystemEvent systemEvent) {
-		boolean isNew = systemEvent.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(systemEvent instanceof SystemEventModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = systemEvent.isNew();
 
-			if (ProxyUtil.isProxyClass(systemEvent.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(systemEvent);
+			if (!(systemEvent instanceof SystemEventModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in systemEvent proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(systemEvent.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						systemEvent);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom SystemEvent implementation " +
-					systemEvent.getClass());
-		}
-
-		SystemEventModelImpl systemEventModelImpl =
-			(SystemEventModelImpl)systemEvent;
-
-		if (isNew && (systemEvent.getCreateDate() == null)) {
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (serviceContext == null) {
-				systemEvent.setCreateDate(date);
-			}
-			else {
-				systemEvent.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(systemEvent)) {
-				if (!isNew) {
-					session.evict(
-						SystemEventImpl.class, systemEvent.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in systemEvent proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(systemEvent);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom SystemEvent implementation " +
+						systemEvent.getClass());
 			}
-			else {
-				systemEvent = (SystemEvent)session.merge(systemEvent);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (systemEvent.getCtCollectionId() != 0) {
+			SystemEventModelImpl systemEventModelImpl =
+				(SystemEventModelImpl)systemEvent;
+
+			if (isNew && (systemEvent.getCreateDate() == null)) {
+				ServiceContext serviceContext =
+					ServiceContextThreadLocal.getServiceContext();
+
+				Date date = new Date();
+
+				if (serviceContext == null) {
+					systemEvent.setCreateDate(date);
+				}
+				else {
+					systemEvent.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(systemEvent)) {
+					if (!isNew) {
+						session.evict(
+							SystemEventImpl.class,
+							systemEvent.getPrimaryKeyObj());
+					}
+
+					session.save(systemEvent);
+				}
+				else {
+					systemEvent = (SystemEvent)session.merge(systemEvent);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				SystemEventImpl.class, systemEventModelImpl, false, true);
+
 			if (isNew) {
 				systemEvent.setNew(false);
 			}
@@ -2648,17 +2664,6 @@ public class SystemEventPersistenceImpl
 
 			return systemEvent;
 		}
-
-		EntityCacheUtil.putResult(
-			SystemEventImpl.class, systemEventModelImpl, false, true);
-
-		if (isNew) {
-			systemEvent.setNew(false);
-		}
-
-		systemEvent.resetOriginalValues();
-
-		return systemEvent;
 	}
 
 	/**
@@ -2708,34 +2713,13 @@ public class SystemEventPersistenceImpl
 	 */
 	@Override
 	public SystemEvent fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				SystemEvent.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SystemEvent.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		SystemEvent systemEvent = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			systemEvent = (SystemEvent)session.get(
-				SystemEventImpl.class, primaryKey);
-
-			if (systemEvent != null) {
-				cacheResult(systemEvent);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return systemEvent;
 	}
 
 	/**
@@ -2753,91 +2737,13 @@ public class SystemEventPersistenceImpl
 	public Map<Serializable, SystemEvent> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(SystemEvent.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SystemEvent.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, SystemEvent> map =
-			new HashMap<Serializable, SystemEvent>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			SystemEvent systemEvent = fetchByPrimaryKey(primaryKey);
-
-			if (systemEvent != null) {
-				map.put(primaryKey, systemEvent);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (SystemEvent systemEvent : (List<SystemEvent>)query.list()) {
-				map.put(systemEvent.getPrimaryKeyObj(), systemEvent);
-
-				cacheResult(systemEvent);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

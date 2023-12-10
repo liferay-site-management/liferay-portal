@@ -13,8 +13,11 @@ import com.liferay.json.storage.model.impl.JSONStorageEntryModelImpl;
 import com.liferay.json.storage.service.persistence.JSONStorageEntryPersistence;
 import com.liferay.json.storage.service.persistence.JSONStorageEntryUtil;
 import com.liferay.json.storage.service.persistence.impl.constants.JSONStorePersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -45,7 +48,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -2143,121 +2145,117 @@ public class JSONStorageEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {
-				classNameId, classPK, parentJSONStorageEntryId, index, key
-			};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						JSONStorageEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByCN_CPK_P_I_K, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JSONStorageEntry.class);
-
-		if (result instanceof JSONStorageEntry) {
-			JSONStorageEntry jsonStorageEntry = (JSONStorageEntry)result;
-
-			if ((classNameId != jsonStorageEntry.getClassNameId()) ||
-				(classPK != jsonStorageEntry.getClassPK()) ||
-				(parentJSONStorageEntryId !=
-					jsonStorageEntry.getParentJSONStorageEntryId()) ||
-				(index != jsonStorageEntry.getIndex()) ||
-				!Objects.equals(key, jsonStorageEntry.getKey())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						JSONStorageEntry.class,
-						jsonStorageEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(7);
-
-			sb.append(_SQL_SELECT_JSONSTORAGEENTRY_WHERE);
-
-			sb.append(_FINDER_COLUMN_CN_CPK_P_I_K_CLASSNAMEID_2);
-
-			sb.append(_FINDER_COLUMN_CN_CPK_P_I_K_CLASSPK_2);
-
-			sb.append(_FINDER_COLUMN_CN_CPK_P_I_K_PARENTJSONSTORAGEENTRYID_2);
-
-			sb.append(_FINDER_COLUMN_CN_CPK_P_I_K_INDEX_2);
-
-			boolean bindKey = false;
-
-			if (key.isEmpty()) {
-				sb.append(_FINDER_COLUMN_CN_CPK_P_I_K_KEY_3);
-			}
-			else {
-				bindKey = true;
-
-				sb.append(_FINDER_COLUMN_CN_CPK_P_I_K_KEY_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					classNameId, classPK, parentJSONStorageEntryId, index, key
+				};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByCN_CPK_P_I_K, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof JSONStorageEntry) {
+				JSONStorageEntry jsonStorageEntry = (JSONStorageEntry)result;
 
-				Query query = session.createQuery(sql);
+				if ((classNameId != jsonStorageEntry.getClassNameId()) ||
+					(classPK != jsonStorageEntry.getClassPK()) ||
+					(parentJSONStorageEntryId !=
+						jsonStorageEntry.getParentJSONStorageEntryId()) ||
+					(index != jsonStorageEntry.getIndex()) ||
+					!Objects.equals(key, jsonStorageEntry.getKey())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(classNameId);
-
-				queryPos.add(classPK);
-
-				queryPos.add(parentJSONStorageEntryId);
-
-				queryPos.add(index);
-
-				if (bindKey) {
-					queryPos.add(key);
+					result = null;
 				}
+			}
 
-				List<JSONStorageEntry> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(7);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByCN_CPK_P_I_K, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_JSONSTORAGEENTRY_WHERE);
+
+				sb.append(_FINDER_COLUMN_CN_CPK_P_I_K_CLASSNAMEID_2);
+
+				sb.append(_FINDER_COLUMN_CN_CPK_P_I_K_CLASSPK_2);
+
+				sb.append(
+					_FINDER_COLUMN_CN_CPK_P_I_K_PARENTJSONSTORAGEENTRYID_2);
+
+				sb.append(_FINDER_COLUMN_CN_CPK_P_I_K_INDEX_2);
+
+				boolean bindKey = false;
+
+				if (key.isEmpty()) {
+					sb.append(_FINDER_COLUMN_CN_CPK_P_I_K_KEY_3);
 				}
 				else {
-					JSONStorageEntry jsonStorageEntry = list.get(0);
+					bindKey = true;
 
-					result = jsonStorageEntry;
+					sb.append(_FINDER_COLUMN_CN_CPK_P_I_K_KEY_2);
+				}
 
-					cacheResult(jsonStorageEntry);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(classNameId);
+
+					queryPos.add(classPK);
+
+					queryPos.add(parentJSONStorageEntryId);
+
+					queryPos.add(index);
+
+					if (bindKey) {
+						queryPos.add(key);
+					}
+
+					List<JSONStorageEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByCN_CPK_P_I_K, finderArgs,
+								list);
+						}
+					}
+					else {
+						JSONStorageEntry jsonStorageEntry = list.get(0);
+
+						result = jsonStorageEntry;
+
+						cacheResult(jsonStorageEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (JSONStorageEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (JSONStorageEntry)result;
+			}
 		}
 	}
 
@@ -2425,23 +2423,24 @@ public class JSONStorageEntryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(JSONStorageEntry jsonStorageEntry) {
-		if (jsonStorageEntry.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					jsonStorageEntry.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				JSONStorageEntryImpl.class, jsonStorageEntry.getPrimaryKey(),
+				jsonStorageEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByCN_CPK_P_I_K,
+				new Object[] {
+					jsonStorageEntry.getClassNameId(),
+					jsonStorageEntry.getClassPK(),
+					jsonStorageEntry.getParentJSONStorageEntryId(),
+					jsonStorageEntry.getIndex(), jsonStorageEntry.getKey()
+				},
+				jsonStorageEntry);
 		}
-
-		entityCache.putResult(
-			JSONStorageEntryImpl.class, jsonStorageEntry.getPrimaryKey(),
-			jsonStorageEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByCN_CPK_P_I_K,
-			new Object[] {
-				jsonStorageEntry.getClassNameId(),
-				jsonStorageEntry.getClassPK(),
-				jsonStorageEntry.getParentJSONStorageEntryId(),
-				jsonStorageEntry.getIndex(), jsonStorageEntry.getKey()
-			},
-			jsonStorageEntry);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2462,15 +2461,18 @@ public class JSONStorageEntryPersistenceImpl
 		}
 
 		for (JSONStorageEntry jsonStorageEntry : jsonStorageEntries) {
-			if (jsonStorageEntry.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(jsonStorageEntry.getCtCollectionId() != 0) &&
+						(jsonStorageEntry.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					JSONStorageEntryImpl.class,
-					jsonStorageEntry.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						JSONStorageEntryImpl.class,
+						jsonStorageEntry.getPrimaryKey()) == null) {
 
-				cacheResult(jsonStorageEntry);
+					cacheResult(jsonStorageEntry);
+				}
 			}
 		}
 	}
@@ -2521,18 +2523,24 @@ public class JSONStorageEntryPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		JSONStorageEntryModelImpl jsonStorageEntryModelImpl) {
 
-		Object[] args = new Object[] {
-			jsonStorageEntryModelImpl.getClassNameId(),
-			jsonStorageEntryModelImpl.getClassPK(),
-			jsonStorageEntryModelImpl.getParentJSONStorageEntryId(),
-			jsonStorageEntryModelImpl.getIndex(),
-			jsonStorageEntryModelImpl.getKey()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					jsonStorageEntryModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(
-			_finderPathCountByCN_CPK_P_I_K, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByCN_CPK_P_I_K, args, jsonStorageEntryModelImpl);
+			Object[] args = new Object[] {
+				jsonStorageEntryModelImpl.getClassNameId(),
+				jsonStorageEntryModelImpl.getClassPK(),
+				jsonStorageEntryModelImpl.getParentJSONStorageEntryId(),
+				jsonStorageEntryModelImpl.getIndex(),
+				jsonStorageEntryModelImpl.getKey()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByCN_CPK_P_I_K, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByCN_CPK_P_I_K, args,
+				jsonStorageEntryModelImpl);
+		}
 	}
 
 	/**
@@ -2643,55 +2651,64 @@ public class JSONStorageEntryPersistenceImpl
 
 	@Override
 	public JSONStorageEntry updateImpl(JSONStorageEntry jsonStorageEntry) {
-		boolean isNew = jsonStorageEntry.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(jsonStorageEntry instanceof JSONStorageEntryModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = jsonStorageEntry.isNew();
 
-			if (ProxyUtil.isProxyClass(jsonStorageEntry.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					jsonStorageEntry);
+			if (!(jsonStorageEntry instanceof JSONStorageEntryModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in jsonStorageEntry proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(jsonStorageEntry.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						jsonStorageEntry);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom JSONStorageEntry implementation " +
-					jsonStorageEntry.getClass());
-		}
-
-		JSONStorageEntryModelImpl jsonStorageEntryModelImpl =
-			(JSONStorageEntryModelImpl)jsonStorageEntry;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(jsonStorageEntry)) {
-				if (!isNew) {
-					session.evict(
-						JSONStorageEntryImpl.class,
-						jsonStorageEntry.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in jsonStorageEntry proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(jsonStorageEntry);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom JSONStorageEntry implementation " +
+						jsonStorageEntry.getClass());
 			}
-			else {
-				jsonStorageEntry = (JSONStorageEntry)session.merge(
-					jsonStorageEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (jsonStorageEntry.getCtCollectionId() != 0) {
+			JSONStorageEntryModelImpl jsonStorageEntryModelImpl =
+				(JSONStorageEntryModelImpl)jsonStorageEntry;
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(jsonStorageEntry)) {
+					if (!isNew) {
+						session.evict(
+							JSONStorageEntryImpl.class,
+							jsonStorageEntry.getPrimaryKeyObj());
+					}
+
+					session.save(jsonStorageEntry);
+				}
+				else {
+					jsonStorageEntry = (JSONStorageEntry)session.merge(
+						jsonStorageEntry);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				JSONStorageEntryImpl.class, jsonStorageEntryModelImpl, false,
+				true);
+
+			cacheUniqueFindersCache(jsonStorageEntryModelImpl);
+
 			if (isNew) {
 				jsonStorageEntry.setNew(false);
 			}
@@ -2700,19 +2717,6 @@ public class JSONStorageEntryPersistenceImpl
 
 			return jsonStorageEntry;
 		}
-
-		entityCache.putResult(
-			JSONStorageEntryImpl.class, jsonStorageEntryModelImpl, false, true);
-
-		cacheUniqueFindersCache(jsonStorageEntryModelImpl);
-
-		if (isNew) {
-			jsonStorageEntry.setNew(false);
-		}
-
-		jsonStorageEntry.resetOriginalValues();
-
-		return jsonStorageEntry;
 	}
 
 	/**
@@ -2762,34 +2766,13 @@ public class JSONStorageEntryPersistenceImpl
 	 */
 	@Override
 	public JSONStorageEntry fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				JSONStorageEntry.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						JSONStorageEntry.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		JSONStorageEntry jsonStorageEntry = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			jsonStorageEntry = (JSONStorageEntry)session.get(
-				JSONStorageEntryImpl.class, primaryKey);
-
-			if (jsonStorageEntry != null) {
-				cacheResult(jsonStorageEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return jsonStorageEntry;
 	}
 
 	/**
@@ -2807,93 +2790,13 @@ public class JSONStorageEntryPersistenceImpl
 	public Map<Serializable, JSONStorageEntry> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(JSONStorageEntry.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						JSONStorageEntry.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, JSONStorageEntry> map =
-			new HashMap<Serializable, JSONStorageEntry>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			JSONStorageEntry jsonStorageEntry = fetchByPrimaryKey(primaryKey);
-
-			if (jsonStorageEntry != null) {
-				map.put(primaryKey, jsonStorageEntry);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (JSONStorageEntry jsonStorageEntry :
-					(List<JSONStorageEntry>)query.list()) {
-
-				map.put(jsonStorageEntry.getPrimaryKeyObj(), jsonStorageEntry);
-
-				cacheResult(jsonStorageEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

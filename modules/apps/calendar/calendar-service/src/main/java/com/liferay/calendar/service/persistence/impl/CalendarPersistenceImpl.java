@@ -13,8 +13,11 @@ import com.liferay.calendar.model.impl.CalendarModelImpl;
 import com.liferay.calendar.service.persistence.CalendarPersistence;
 import com.liferay.calendar.service.persistence.CalendarUtil;
 import com.liferay.calendar.service.persistence.impl.constants.CalendarPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -52,7 +55,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -707,102 +709,96 @@ public class CalendarPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(Calendar.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			Calendar.class);
-
-		if (result instanceof Calendar) {
-			Calendar calendar = (Calendar)result;
-
-			if (!Objects.equals(uuid, calendar.getUuid()) ||
-				(groupId != calendar.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						Calendar.class, calendar.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_CALENDAR_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof Calendar) {
+				Calendar calendar = (Calendar)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, calendar.getUuid()) ||
+					(groupId != calendar.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<Calendar> list = query.list();
+				sb.append(_SQL_SELECT_CALENDAR_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					Calendar calendar = list.get(0);
+					bindUuid = true;
 
-					result = calendar;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(calendar);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<Calendar> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						Calendar calendar = list.get(0);
+
+						result = calendar;
+
+						cacheResult(calendar);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Calendar)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Calendar)result;
+			}
 		}
 	}
 
@@ -3501,16 +3497,18 @@ public class CalendarPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(Calendar calendar) {
-		if (calendar.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					calendar.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				CalendarImpl.class, calendar.getPrimaryKey(), calendar);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {calendar.getUuid(), calendar.getGroupId()},
+				calendar);
 		}
-
-		entityCache.putResult(
-			CalendarImpl.class, calendar.getPrimaryKey(), calendar);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {calendar.getUuid(), calendar.getGroupId()}, calendar);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -3530,14 +3528,17 @@ public class CalendarPersistenceImpl
 		}
 
 		for (Calendar calendar : calendars) {
-			if (calendar.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(calendar.getCtCollectionId() != 0) &&
+						(calendar.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					CalendarImpl.class, calendar.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						CalendarImpl.class, calendar.getPrimaryKey()) == null) {
 
-				cacheResult(calendar);
+					cacheResult(calendar);
+				}
 			}
 		}
 	}
@@ -3587,13 +3588,19 @@ public class CalendarPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		CalendarModelImpl calendarModelImpl) {
 
-		Object[] args = new Object[] {
-			calendarModelImpl.getUuid(), calendarModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					calendarModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, calendarModelImpl);
+			Object[] args = new Object[] {
+				calendarModelImpl.getUuid(), calendarModelImpl.getGroupId()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, calendarModelImpl);
+		}
 	}
 
 	/**
@@ -3703,80 +3710,90 @@ public class CalendarPersistenceImpl
 
 	@Override
 	public Calendar updateImpl(Calendar calendar) {
-		boolean isNew = calendar.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(calendar instanceof CalendarModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = calendar.isNew();
 
-			if (ProxyUtil.isProxyClass(calendar.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(calendar);
+			if (!(calendar instanceof CalendarModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in calendar proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(calendar.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						calendar);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom Calendar implementation " +
-					calendar.getClass());
-		}
-
-		CalendarModelImpl calendarModelImpl = (CalendarModelImpl)calendar;
-
-		if (Validator.isNull(calendar.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			calendar.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (calendar.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				calendar.setCreateDate(date);
-			}
-			else {
-				calendar.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!calendarModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				calendar.setModifiedDate(date);
-			}
-			else {
-				calendar.setModifiedDate(serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(calendar)) {
-				if (!isNew) {
-					session.evict(
-						CalendarImpl.class, calendar.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in calendar proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(calendar);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom Calendar implementation " +
+						calendar.getClass());
 			}
-			else {
-				calendar = (Calendar)session.merge(calendar);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (calendar.getCtCollectionId() != 0) {
+			CalendarModelImpl calendarModelImpl = (CalendarModelImpl)calendar;
+
+			if (Validator.isNull(calendar.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				calendar.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (calendar.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					calendar.setCreateDate(date);
+				}
+				else {
+					calendar.setCreateDate(serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!calendarModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					calendar.setModifiedDate(date);
+				}
+				else {
+					calendar.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(calendar)) {
+					if (!isNew) {
+						session.evict(
+							CalendarImpl.class, calendar.getPrimaryKeyObj());
+					}
+
+					session.save(calendar);
+				}
+				else {
+					calendar = (Calendar)session.merge(calendar);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				CalendarImpl.class, calendarModelImpl, false, true);
+
+			cacheUniqueFindersCache(calendarModelImpl);
+
 			if (isNew) {
 				calendar.setNew(false);
 			}
@@ -3785,19 +3802,6 @@ public class CalendarPersistenceImpl
 
 			return calendar;
 		}
-
-		entityCache.putResult(
-			CalendarImpl.class, calendarModelImpl, false, true);
-
-		cacheUniqueFindersCache(calendarModelImpl);
-
-		if (isNew) {
-			calendar.setNew(false);
-		}
-
-		calendar.resetOriginalValues();
-
-		return calendar;
 	}
 
 	/**
@@ -3847,31 +3851,13 @@ public class CalendarPersistenceImpl
 	 */
 	@Override
 	public Calendar fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(Calendar.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						Calendar.class, primaryKey))) {
+
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		Calendar calendar = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			calendar = (Calendar)session.get(CalendarImpl.class, primaryKey);
-
-			if (calendar != null) {
-				cacheResult(calendar);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return calendar;
 	}
 
 	/**
@@ -3889,90 +3875,12 @@ public class CalendarPersistenceImpl
 	public Map<Serializable, Calendar> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(Calendar.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(Calendar.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, Calendar> map = new HashMap<Serializable, Calendar>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			Calendar calendar = fetchByPrimaryKey(primaryKey);
-
-			if (calendar != null) {
-				map.put(primaryKey, calendar);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (Calendar calendar : (List<Calendar>)query.list()) {
-				map.put(calendar.getPrimaryKeyObj(), calendar);
-
-				cacheResult(calendar);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

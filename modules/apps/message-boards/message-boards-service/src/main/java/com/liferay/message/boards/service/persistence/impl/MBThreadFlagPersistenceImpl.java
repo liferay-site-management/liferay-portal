@@ -13,8 +13,11 @@ import com.liferay.message.boards.model.impl.MBThreadFlagModelImpl;
 import com.liferay.message.boards.service.persistence.MBThreadFlagPersistence;
 import com.liferay.message.boards.service.persistence.MBThreadFlagUtil;
 import com.liferay.message.boards.service.persistence.impl.constants.MBPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -50,7 +53,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -707,102 +709,97 @@ public class MBThreadFlagPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						MBThreadFlag.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBThreadFlag.class);
-
-		if (result instanceof MBThreadFlag) {
-			MBThreadFlag mbThreadFlag = (MBThreadFlag)result;
-
-			if (!Objects.equals(uuid, mbThreadFlag.getUuid()) ||
-				(groupId != mbThreadFlag.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						MBThreadFlag.class, mbThreadFlag.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_MBTHREADFLAG_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof MBThreadFlag) {
+				MBThreadFlag mbThreadFlag = (MBThreadFlag)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, mbThreadFlag.getUuid()) ||
+					(groupId != mbThreadFlag.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<MBThreadFlag> list = query.list();
+				sb.append(_SQL_SELECT_MBTHREADFLAG_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					MBThreadFlag mbThreadFlag = list.get(0);
+					bindUuid = true;
 
-					result = mbThreadFlag;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(mbThreadFlag);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<MBThreadFlag> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						MBThreadFlag mbThreadFlag = list.get(0);
+
+						result = mbThreadFlag;
+
+						cacheResult(mbThreadFlag);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (MBThreadFlag)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (MBThreadFlag)result;
+			}
 		}
 	}
 
@@ -2585,91 +2582,86 @@ public class MBThreadFlagPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {userId, threadId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						MBThreadFlag.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByU_T, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBThreadFlag.class);
-
-		if (result instanceof MBThreadFlag) {
-			MBThreadFlag mbThreadFlag = (MBThreadFlag)result;
-
-			if ((userId != mbThreadFlag.getUserId()) ||
-				(threadId != mbThreadFlag.getThreadId())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {userId, threadId};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						MBThreadFlag.class, mbThreadFlag.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByU_T, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
+			if (result instanceof MBThreadFlag) {
+				MBThreadFlag mbThreadFlag = (MBThreadFlag)result;
 
-			sb.append(_SQL_SELECT_MBTHREADFLAG_WHERE);
+				if ((userId != mbThreadFlag.getUserId()) ||
+					(threadId != mbThreadFlag.getThreadId())) {
 
-			sb.append(_FINDER_COLUMN_U_T_USERID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_U_T_THREADID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-			String sql = sb.toString();
+				sb.append(_SQL_SELECT_MBTHREADFLAG_WHERE);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_U_T_USERID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_U_T_THREADID_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(userId);
+				try {
+					session = openSession();
 
-				queryPos.add(threadId);
+					Query query = session.createQuery(sql);
 
-				List<MBThreadFlag> list = query.list();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByU_T, finderArgs, list);
+					queryPos.add(userId);
+
+					queryPos.add(threadId);
+
+					List<MBThreadFlag> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByU_T, finderArgs, list);
+						}
+					}
+					else {
+						MBThreadFlag mbThreadFlag = list.get(0);
+
+						result = mbThreadFlag;
+
+						cacheResult(mbThreadFlag);
 					}
 				}
-				else {
-					MBThreadFlag mbThreadFlag = list.get(0);
-
-					result = mbThreadFlag;
-
-					cacheResult(mbThreadFlag);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (MBThreadFlag)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (MBThreadFlag)result;
+			}
 		}
 	}
 
@@ -2783,22 +2775,28 @@ public class MBThreadFlagPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(MBThreadFlag mbThreadFlag) {
-		if (mbThreadFlag.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					mbThreadFlag.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				MBThreadFlagImpl.class, mbThreadFlag.getPrimaryKey(),
+				mbThreadFlag);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					mbThreadFlag.getUuid(), mbThreadFlag.getGroupId()
+				},
+				mbThreadFlag);
+
+			finderCache.putResult(
+				_finderPathFetchByU_T,
+				new Object[] {
+					mbThreadFlag.getUserId(), mbThreadFlag.getThreadId()
+				},
+				mbThreadFlag);
 		}
-
-		entityCache.putResult(
-			MBThreadFlagImpl.class, mbThreadFlag.getPrimaryKey(), mbThreadFlag);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {mbThreadFlag.getUuid(), mbThreadFlag.getGroupId()},
-			mbThreadFlag);
-
-		finderCache.putResult(
-			_finderPathFetchByU_T,
-			new Object[] {mbThreadFlag.getUserId(), mbThreadFlag.getThreadId()},
-			mbThreadFlag);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2818,15 +2816,18 @@ public class MBThreadFlagPersistenceImpl
 		}
 
 		for (MBThreadFlag mbThreadFlag : mbThreadFlags) {
-			if (mbThreadFlag.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(mbThreadFlag.getCtCollectionId() != 0) &&
+						(mbThreadFlag.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					MBThreadFlagImpl.class, mbThreadFlag.getPrimaryKey()) ==
-						null) {
+				if (entityCache.getResult(
+						MBThreadFlagImpl.class, mbThreadFlag.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(mbThreadFlag);
+					cacheResult(mbThreadFlag);
+				}
 			}
 		}
 	}
@@ -2876,22 +2877,29 @@ public class MBThreadFlagPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		MBThreadFlagModelImpl mbThreadFlagModelImpl) {
 
-		Object[] args = new Object[] {
-			mbThreadFlagModelImpl.getUuid(), mbThreadFlagModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					mbThreadFlagModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, mbThreadFlagModelImpl);
+			Object[] args = new Object[] {
+				mbThreadFlagModelImpl.getUuid(),
+				mbThreadFlagModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			mbThreadFlagModelImpl.getUserId(),
-			mbThreadFlagModelImpl.getThreadId()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, mbThreadFlagModelImpl);
 
-		finderCache.putResult(_finderPathCountByU_T, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByU_T, args, mbThreadFlagModelImpl);
+			args = new Object[] {
+				mbThreadFlagModelImpl.getUserId(),
+				mbThreadFlagModelImpl.getThreadId()
+			};
+
+			finderCache.putResult(_finderPathCountByU_T, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByU_T, args, mbThreadFlagModelImpl);
+		}
 	}
 
 	/**
@@ -3005,84 +3013,93 @@ public class MBThreadFlagPersistenceImpl
 
 	@Override
 	public MBThreadFlag updateImpl(MBThreadFlag mbThreadFlag) {
-		boolean isNew = mbThreadFlag.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(mbThreadFlag instanceof MBThreadFlagModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = mbThreadFlag.isNew();
 
-			if (ProxyUtil.isProxyClass(mbThreadFlag.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					mbThreadFlag);
+			if (!(mbThreadFlag instanceof MBThreadFlagModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in mbThreadFlag proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(mbThreadFlag.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						mbThreadFlag);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom MBThreadFlag implementation " +
-					mbThreadFlag.getClass());
-		}
-
-		MBThreadFlagModelImpl mbThreadFlagModelImpl =
-			(MBThreadFlagModelImpl)mbThreadFlag;
-
-		if (Validator.isNull(mbThreadFlag.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			mbThreadFlag.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (mbThreadFlag.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				mbThreadFlag.setCreateDate(date);
-			}
-			else {
-				mbThreadFlag.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!mbThreadFlagModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				mbThreadFlag.setModifiedDate(date);
-			}
-			else {
-				mbThreadFlag.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(mbThreadFlag)) {
-				if (!isNew) {
-					session.evict(
-						MBThreadFlagImpl.class,
-						mbThreadFlag.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in mbThreadFlag proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(mbThreadFlag);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom MBThreadFlag implementation " +
+						mbThreadFlag.getClass());
 			}
-			else {
-				mbThreadFlag = (MBThreadFlag)session.merge(mbThreadFlag);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (mbThreadFlag.getCtCollectionId() != 0) {
+			MBThreadFlagModelImpl mbThreadFlagModelImpl =
+				(MBThreadFlagModelImpl)mbThreadFlag;
+
+			if (Validator.isNull(mbThreadFlag.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				mbThreadFlag.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (mbThreadFlag.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					mbThreadFlag.setCreateDate(date);
+				}
+				else {
+					mbThreadFlag.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!mbThreadFlagModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					mbThreadFlag.setModifiedDate(date);
+				}
+				else {
+					mbThreadFlag.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(mbThreadFlag)) {
+					if (!isNew) {
+						session.evict(
+							MBThreadFlagImpl.class,
+							mbThreadFlag.getPrimaryKeyObj());
+					}
+
+					session.save(mbThreadFlag);
+				}
+				else {
+					mbThreadFlag = (MBThreadFlag)session.merge(mbThreadFlag);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				MBThreadFlagImpl.class, mbThreadFlagModelImpl, false, true);
+
+			cacheUniqueFindersCache(mbThreadFlagModelImpl);
+
 			if (isNew) {
 				mbThreadFlag.setNew(false);
 			}
@@ -3091,19 +3108,6 @@ public class MBThreadFlagPersistenceImpl
 
 			return mbThreadFlag;
 		}
-
-		entityCache.putResult(
-			MBThreadFlagImpl.class, mbThreadFlagModelImpl, false, true);
-
-		cacheUniqueFindersCache(mbThreadFlagModelImpl);
-
-		if (isNew) {
-			mbThreadFlag.setNew(false);
-		}
-
-		mbThreadFlag.resetOriginalValues();
-
-		return mbThreadFlag;
 	}
 
 	/**
@@ -3153,34 +3157,13 @@ public class MBThreadFlagPersistenceImpl
 	 */
 	@Override
 	public MBThreadFlag fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				MBThreadFlag.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						MBThreadFlag.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		MBThreadFlag mbThreadFlag = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			mbThreadFlag = (MBThreadFlag)session.get(
-				MBThreadFlagImpl.class, primaryKey);
-
-			if (mbThreadFlag != null) {
-				cacheResult(mbThreadFlag);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return mbThreadFlag;
 	}
 
 	/**
@@ -3198,91 +3181,13 @@ public class MBThreadFlagPersistenceImpl
 	public Map<Serializable, MBThreadFlag> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(MBThreadFlag.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						MBThreadFlag.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, MBThreadFlag> map =
-			new HashMap<Serializable, MBThreadFlag>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			MBThreadFlag mbThreadFlag = fetchByPrimaryKey(primaryKey);
-
-			if (mbThreadFlag != null) {
-				map.put(primaryKey, mbThreadFlag);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (MBThreadFlag mbThreadFlag : (List<MBThreadFlag>)query.list()) {
-				map.put(mbThreadFlag.getPrimaryKeyObj(), mbThreadFlag);
-
-				cacheResult(mbThreadFlag);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

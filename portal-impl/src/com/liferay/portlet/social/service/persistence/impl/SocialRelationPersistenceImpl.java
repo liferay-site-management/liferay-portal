@@ -5,8 +5,11 @@
 
 package com.liferay.portlet.social.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -46,7 +49,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -5561,96 +5563,91 @@ public class SocialRelationPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {userId1, userId2, type};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialRelation.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByU1_U2_T, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialRelation.class);
-
-		if (result instanceof SocialRelation) {
-			SocialRelation socialRelation = (SocialRelation)result;
-
-			if ((userId1 != socialRelation.getUserId1()) ||
-				(userId2 != socialRelation.getUserId2()) ||
-				(type != socialRelation.getType())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {userId1, userId2, type};
 			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class, socialRelation.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByU1_U2_T, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
+			if (result instanceof SocialRelation) {
+				SocialRelation socialRelation = (SocialRelation)result;
 
-			sb.append(_SQL_SELECT_SOCIALRELATION_WHERE);
+				if ((userId1 != socialRelation.getUserId1()) ||
+					(userId2 != socialRelation.getUserId2()) ||
+					(type != socialRelation.getType())) {
 
-			sb.append(_FINDER_COLUMN_U1_U2_T_USERID1_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_U1_U2_T_USERID2_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-			sb.append(_FINDER_COLUMN_U1_U2_T_TYPE_2);
+				sb.append(_SQL_SELECT_SOCIALRELATION_WHERE);
 
-			String sql = sb.toString();
+				sb.append(_FINDER_COLUMN_U1_U2_T_USERID1_2);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_U1_U2_T_USERID2_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_U1_U2_T_TYPE_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(userId1);
+				try {
+					session = openSession();
 
-				queryPos.add(userId2);
+					Query query = session.createQuery(sql);
 
-				queryPos.add(type);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				List<SocialRelation> list = query.list();
+					queryPos.add(userId1);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByU1_U2_T, finderArgs, list);
+					queryPos.add(userId2);
+
+					queryPos.add(type);
+
+					List<SocialRelation> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByU1_U2_T, finderArgs, list);
+						}
+					}
+					else {
+						SocialRelation socialRelation = list.get(0);
+
+						result = socialRelation;
+
+						cacheResult(socialRelation);
 					}
 				}
-				else {
-					SocialRelation socialRelation = list.get(0);
-
-					result = socialRelation;
-
-					cacheResult(socialRelation);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (SocialRelation)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (SocialRelation)result;
+			}
 		}
 	}
 
@@ -5775,21 +5772,22 @@ public class SocialRelationPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(SocialRelation socialRelation) {
-		if (socialRelation.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					socialRelation.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				SocialRelationImpl.class, socialRelation.getPrimaryKey(),
+				socialRelation);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByU1_U2_T,
+				new Object[] {
+					socialRelation.getUserId1(), socialRelation.getUserId2(),
+					socialRelation.getType()
+				},
+				socialRelation);
 		}
-
-		EntityCacheUtil.putResult(
-			SocialRelationImpl.class, socialRelation.getPrimaryKey(),
-			socialRelation);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByU1_U2_T,
-			new Object[] {
-				socialRelation.getUserId1(), socialRelation.getUserId2(),
-				socialRelation.getType()
-			},
-			socialRelation);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -5809,15 +5807,18 @@ public class SocialRelationPersistenceImpl
 		}
 
 		for (SocialRelation socialRelation : socialRelations) {
-			if (socialRelation.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(socialRelation.getCtCollectionId() != 0) &&
+						(socialRelation.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					SocialRelationImpl.class, socialRelation.getPrimaryKey()) ==
-						null) {
+				if (EntityCacheUtil.getResult(
+						SocialRelationImpl.class,
+						socialRelation.getPrimaryKey()) == null) {
 
-				cacheResult(socialRelation);
+					cacheResult(socialRelation);
+				}
 			}
 		}
 	}
@@ -5868,16 +5869,21 @@ public class SocialRelationPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		SocialRelationModelImpl socialRelationModelImpl) {
 
-		Object[] args = new Object[] {
-			socialRelationModelImpl.getUserId1(),
-			socialRelationModelImpl.getUserId2(),
-			socialRelationModelImpl.getType()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					socialRelationModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByU1_U2_T, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByU1_U2_T, args, socialRelationModelImpl);
+			Object[] args = new Object[] {
+				socialRelationModelImpl.getUserId1(),
+				socialRelationModelImpl.getUserId2(),
+				socialRelationModelImpl.getType()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByU1_U2_T, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByU1_U2_T, args, socialRelationModelImpl);
+		}
 	}
 
 	/**
@@ -5992,60 +5998,69 @@ public class SocialRelationPersistenceImpl
 
 	@Override
 	public SocialRelation updateImpl(SocialRelation socialRelation) {
-		boolean isNew = socialRelation.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(socialRelation instanceof SocialRelationModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = socialRelation.isNew();
 
-			if (ProxyUtil.isProxyClass(socialRelation.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					socialRelation);
+			if (!(socialRelation instanceof SocialRelationModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in socialRelation proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(socialRelation.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						socialRelation);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom SocialRelation implementation " +
-					socialRelation.getClass());
-		}
-
-		SocialRelationModelImpl socialRelationModelImpl =
-			(SocialRelationModelImpl)socialRelation;
-
-		if (Validator.isNull(socialRelation.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			socialRelation.setUuid(uuid);
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(socialRelation)) {
-				if (!isNew) {
-					session.evict(
-						SocialRelationImpl.class,
-						socialRelation.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in socialRelation proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(socialRelation);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom SocialRelation implementation " +
+						socialRelation.getClass());
 			}
-			else {
-				socialRelation = (SocialRelation)session.merge(socialRelation);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (socialRelation.getCtCollectionId() != 0) {
+			SocialRelationModelImpl socialRelationModelImpl =
+				(SocialRelationModelImpl)socialRelation;
+
+			if (Validator.isNull(socialRelation.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				socialRelation.setUuid(uuid);
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(socialRelation)) {
+					if (!isNew) {
+						session.evict(
+							SocialRelationImpl.class,
+							socialRelation.getPrimaryKeyObj());
+					}
+
+					session.save(socialRelation);
+				}
+				else {
+					socialRelation = (SocialRelation)session.merge(
+						socialRelation);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				SocialRelationImpl.class, socialRelationModelImpl, false, true);
+
+			cacheUniqueFindersCache(socialRelationModelImpl);
+
 			if (isNew) {
 				socialRelation.setNew(false);
 			}
@@ -6054,19 +6069,6 @@ public class SocialRelationPersistenceImpl
 
 			return socialRelation;
 		}
-
-		EntityCacheUtil.putResult(
-			SocialRelationImpl.class, socialRelationModelImpl, false, true);
-
-		cacheUniqueFindersCache(socialRelationModelImpl);
-
-		if (isNew) {
-			socialRelation.setNew(false);
-		}
-
-		socialRelation.resetOriginalValues();
-
-		return socialRelation;
 	}
 
 	/**
@@ -6116,34 +6118,13 @@ public class SocialRelationPersistenceImpl
 	 */
 	@Override
 	public SocialRelation fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				SocialRelation.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialRelation.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		SocialRelation socialRelation = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			socialRelation = (SocialRelation)session.get(
-				SocialRelationImpl.class, primaryKey);
-
-			if (socialRelation != null) {
-				cacheResult(socialRelation);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return socialRelation;
 	}
 
 	/**
@@ -6161,93 +6142,13 @@ public class SocialRelationPersistenceImpl
 	public Map<Serializable, SocialRelation> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(SocialRelation.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialRelation.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, SocialRelation> map =
-			new HashMap<Serializable, SocialRelation>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			SocialRelation socialRelation = fetchByPrimaryKey(primaryKey);
-
-			if (socialRelation != null) {
-				map.put(primaryKey, socialRelation);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (SocialRelation socialRelation :
-					(List<SocialRelation>)query.list()) {
-
-				map.put(socialRelation.getPrimaryKeyObj(), socialRelation);
-
-				cacheResult(socialRelation);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

@@ -5,8 +5,11 @@
 
 package com.liferay.portal.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -51,7 +54,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -3986,13 +3988,14 @@ public class LayoutPrototypePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(LayoutPrototype layoutPrototype) {
-		if (layoutPrototype.getCtCollectionId() != 0) {
-			return;
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					layoutPrototype.getCtCollectionId() != 0)) {
 
-		EntityCacheUtil.putResult(
-			LayoutPrototypeImpl.class, layoutPrototype.getPrimaryKey(),
-			layoutPrototype);
+			EntityCacheUtil.putResult(
+				LayoutPrototypeImpl.class, layoutPrototype.getPrimaryKey(),
+				layoutPrototype);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -4013,15 +4016,18 @@ public class LayoutPrototypePersistenceImpl
 		}
 
 		for (LayoutPrototype layoutPrototype : layoutPrototypes) {
-			if (layoutPrototype.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(layoutPrototype.getCtCollectionId() != 0) &&
+						(layoutPrototype.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					LayoutPrototypeImpl.class,
-					layoutPrototype.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						LayoutPrototypeImpl.class,
+						layoutPrototype.getPrimaryKey()) == null) {
 
-				cacheResult(layoutPrototype);
+					cacheResult(layoutPrototype);
+				}
 			}
 		}
 	}
@@ -4182,86 +4188,93 @@ public class LayoutPrototypePersistenceImpl
 
 	@Override
 	public LayoutPrototype updateImpl(LayoutPrototype layoutPrototype) {
-		boolean isNew = layoutPrototype.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(layoutPrototype instanceof LayoutPrototypeModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = layoutPrototype.isNew();
 
-			if (ProxyUtil.isProxyClass(layoutPrototype.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					layoutPrototype);
+			if (!(layoutPrototype instanceof LayoutPrototypeModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in layoutPrototype proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(layoutPrototype.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						layoutPrototype);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom LayoutPrototype implementation " +
-					layoutPrototype.getClass());
-		}
-
-		LayoutPrototypeModelImpl layoutPrototypeModelImpl =
-			(LayoutPrototypeModelImpl)layoutPrototype;
-
-		if (Validator.isNull(layoutPrototype.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			layoutPrototype.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (layoutPrototype.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				layoutPrototype.setCreateDate(date);
-			}
-			else {
-				layoutPrototype.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!layoutPrototypeModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				layoutPrototype.setModifiedDate(date);
-			}
-			else {
-				layoutPrototype.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(layoutPrototype)) {
-				if (!isNew) {
-					session.evict(
-						LayoutPrototypeImpl.class,
-						layoutPrototype.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in layoutPrototype proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(layoutPrototype);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom LayoutPrototype implementation " +
+						layoutPrototype.getClass());
 			}
-			else {
-				layoutPrototype = (LayoutPrototype)session.merge(
-					layoutPrototype);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (layoutPrototype.getCtCollectionId() != 0) {
+			LayoutPrototypeModelImpl layoutPrototypeModelImpl =
+				(LayoutPrototypeModelImpl)layoutPrototype;
+
+			if (Validator.isNull(layoutPrototype.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				layoutPrototype.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (layoutPrototype.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					layoutPrototype.setCreateDate(date);
+				}
+				else {
+					layoutPrototype.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!layoutPrototypeModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					layoutPrototype.setModifiedDate(date);
+				}
+				else {
+					layoutPrototype.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(layoutPrototype)) {
+					if (!isNew) {
+						session.evict(
+							LayoutPrototypeImpl.class,
+							layoutPrototype.getPrimaryKeyObj());
+					}
+
+					session.save(layoutPrototype);
+				}
+				else {
+					layoutPrototype = (LayoutPrototype)session.merge(
+						layoutPrototype);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				LayoutPrototypeImpl.class, layoutPrototypeModelImpl, false,
+				true);
+
 			if (isNew) {
 				layoutPrototype.setNew(false);
 			}
@@ -4270,17 +4283,6 @@ public class LayoutPrototypePersistenceImpl
 
 			return layoutPrototype;
 		}
-
-		EntityCacheUtil.putResult(
-			LayoutPrototypeImpl.class, layoutPrototypeModelImpl, false, true);
-
-		if (isNew) {
-			layoutPrototype.setNew(false);
-		}
-
-		layoutPrototype.resetOriginalValues();
-
-		return layoutPrototype;
 	}
 
 	/**
@@ -4330,34 +4332,13 @@ public class LayoutPrototypePersistenceImpl
 	 */
 	@Override
 	public LayoutPrototype fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				LayoutPrototype.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						LayoutPrototype.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		LayoutPrototype layoutPrototype = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			layoutPrototype = (LayoutPrototype)session.get(
-				LayoutPrototypeImpl.class, primaryKey);
-
-			if (layoutPrototype != null) {
-				cacheResult(layoutPrototype);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return layoutPrototype;
 	}
 
 	/**
@@ -4375,93 +4356,13 @@ public class LayoutPrototypePersistenceImpl
 	public Map<Serializable, LayoutPrototype> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(LayoutPrototype.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						LayoutPrototype.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, LayoutPrototype> map =
-			new HashMap<Serializable, LayoutPrototype>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			LayoutPrototype layoutPrototype = fetchByPrimaryKey(primaryKey);
-
-			if (layoutPrototype != null) {
-				map.put(primaryKey, layoutPrototype);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (LayoutPrototype layoutPrototype :
-					(List<LayoutPrototype>)query.list()) {
-
-				map.put(layoutPrototype.getPrimaryKeyObj(), layoutPrototype);
-
-				cacheResult(layoutPrototype);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

@@ -5,8 +5,11 @@
 
 package com.liferay.portlet.social.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -44,7 +47,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1904,126 +1906,122 @@ public class SocialActivityCounterPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {
-				groupId, classNameId, classPK, name, ownerType, startPeriod
-			};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialActivityCounter.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByG_C_C_N_O_S, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialActivityCounter.class);
-
-		if (result instanceof SocialActivityCounter) {
-			SocialActivityCounter socialActivityCounter =
-				(SocialActivityCounter)result;
-
-			if ((groupId != socialActivityCounter.getGroupId()) ||
-				(classNameId != socialActivityCounter.getClassNameId()) ||
-				(classPK != socialActivityCounter.getClassPK()) ||
-				!Objects.equals(name, socialActivityCounter.getName()) ||
-				(ownerType != socialActivityCounter.getOwnerType()) ||
-				(startPeriod != socialActivityCounter.getStartPeriod())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivityCounter.class,
-						socialActivityCounter.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(8);
-
-			sb.append(_SQL_SELECT_SOCIALACTIVITYCOUNTER_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_C_C_N_O_S_GROUPID_2);
-
-			sb.append(_FINDER_COLUMN_G_C_C_N_O_S_CLASSNAMEID_2);
-
-			sb.append(_FINDER_COLUMN_G_C_C_N_O_S_CLASSPK_2);
-
-			boolean bindName = false;
-
-			if (name.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_C_C_N_O_S_NAME_3);
-			}
-			else {
-				bindName = true;
-
-				sb.append(_FINDER_COLUMN_G_C_C_N_O_S_NAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					groupId, classNameId, classPK, name, ownerType, startPeriod
+				};
 			}
 
-			sb.append(_FINDER_COLUMN_G_C_C_N_O_S_OWNERTYPE_2);
+			Object result = null;
 
-			sb.append(_FINDER_COLUMN_G_C_C_N_O_S_STARTPERIOD_2);
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByG_C_C_N_O_S, finderArgs, this);
+			}
 
-			String sql = sb.toString();
+			if (result instanceof SocialActivityCounter) {
+				SocialActivityCounter socialActivityCounter =
+					(SocialActivityCounter)result;
 
-			Session session = null;
+				if ((groupId != socialActivityCounter.getGroupId()) ||
+					(classNameId != socialActivityCounter.getClassNameId()) ||
+					(classPK != socialActivityCounter.getClassPK()) ||
+					!Objects.equals(name, socialActivityCounter.getName()) ||
+					(ownerType != socialActivityCounter.getOwnerType()) ||
+					(startPeriod != socialActivityCounter.getStartPeriod())) {
 
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				queryPos.add(classNameId);
-
-				queryPos.add(classPK);
-
-				if (bindName) {
-					queryPos.add(name);
+					result = null;
 				}
+			}
 
-				queryPos.add(ownerType);
+			if (result == null) {
+				StringBundler sb = new StringBundler(8);
 
-				queryPos.add(startPeriod);
+				sb.append(_SQL_SELECT_SOCIALACTIVITYCOUNTER_WHERE);
 
-				List<SocialActivityCounter> list = query.list();
+				sb.append(_FINDER_COLUMN_G_C_C_N_O_S_GROUPID_2);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByG_C_C_N_O_S, finderArgs, list);
-					}
+				sb.append(_FINDER_COLUMN_G_C_C_N_O_S_CLASSNAMEID_2);
+
+				sb.append(_FINDER_COLUMN_G_C_C_N_O_S_CLASSPK_2);
+
+				boolean bindName = false;
+
+				if (name.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_C_C_N_O_S_NAME_3);
 				}
 				else {
-					SocialActivityCounter socialActivityCounter = list.get(0);
+					bindName = true;
 
-					result = socialActivityCounter;
+					sb.append(_FINDER_COLUMN_G_C_C_N_O_S_NAME_2);
+				}
 
-					cacheResult(socialActivityCounter);
+				sb.append(_FINDER_COLUMN_G_C_C_N_O_S_OWNERTYPE_2);
+
+				sb.append(_FINDER_COLUMN_G_C_C_N_O_S_STARTPERIOD_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					queryPos.add(classNameId);
+
+					queryPos.add(classPK);
+
+					if (bindName) {
+						queryPos.add(name);
+					}
+
+					queryPos.add(ownerType);
+
+					queryPos.add(startPeriod);
+
+					List<SocialActivityCounter> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByG_C_C_N_O_S, finderArgs,
+								list);
+						}
+					}
+					else {
+						SocialActivityCounter socialActivityCounter = list.get(
+							0);
+
+						result = socialActivityCounter;
+
+						cacheResult(socialActivityCounter);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (SocialActivityCounter)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (SocialActivityCounter)result;
+			}
 		}
 	}
 
@@ -2276,126 +2274,122 @@ public class SocialActivityCounterPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {
-				groupId, classNameId, classPK, name, ownerType, endPeriod
-			};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialActivityCounter.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByG_C_C_N_O_E, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialActivityCounter.class);
-
-		if (result instanceof SocialActivityCounter) {
-			SocialActivityCounter socialActivityCounter =
-				(SocialActivityCounter)result;
-
-			if ((groupId != socialActivityCounter.getGroupId()) ||
-				(classNameId != socialActivityCounter.getClassNameId()) ||
-				(classPK != socialActivityCounter.getClassPK()) ||
-				!Objects.equals(name, socialActivityCounter.getName()) ||
-				(ownerType != socialActivityCounter.getOwnerType()) ||
-				(endPeriod != socialActivityCounter.getEndPeriod())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivityCounter.class,
-						socialActivityCounter.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(8);
-
-			sb.append(_SQL_SELECT_SOCIALACTIVITYCOUNTER_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_C_C_N_O_E_GROUPID_2);
-
-			sb.append(_FINDER_COLUMN_G_C_C_N_O_E_CLASSNAMEID_2);
-
-			sb.append(_FINDER_COLUMN_G_C_C_N_O_E_CLASSPK_2);
-
-			boolean bindName = false;
-
-			if (name.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_C_C_N_O_E_NAME_3);
-			}
-			else {
-				bindName = true;
-
-				sb.append(_FINDER_COLUMN_G_C_C_N_O_E_NAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					groupId, classNameId, classPK, name, ownerType, endPeriod
+				};
 			}
 
-			sb.append(_FINDER_COLUMN_G_C_C_N_O_E_OWNERTYPE_2);
+			Object result = null;
 
-			sb.append(_FINDER_COLUMN_G_C_C_N_O_E_ENDPERIOD_2);
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByG_C_C_N_O_E, finderArgs, this);
+			}
 
-			String sql = sb.toString();
+			if (result instanceof SocialActivityCounter) {
+				SocialActivityCounter socialActivityCounter =
+					(SocialActivityCounter)result;
 
-			Session session = null;
+				if ((groupId != socialActivityCounter.getGroupId()) ||
+					(classNameId != socialActivityCounter.getClassNameId()) ||
+					(classPK != socialActivityCounter.getClassPK()) ||
+					!Objects.equals(name, socialActivityCounter.getName()) ||
+					(ownerType != socialActivityCounter.getOwnerType()) ||
+					(endPeriod != socialActivityCounter.getEndPeriod())) {
 
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				queryPos.add(classNameId);
-
-				queryPos.add(classPK);
-
-				if (bindName) {
-					queryPos.add(name);
+					result = null;
 				}
+			}
 
-				queryPos.add(ownerType);
+			if (result == null) {
+				StringBundler sb = new StringBundler(8);
 
-				queryPos.add(endPeriod);
+				sb.append(_SQL_SELECT_SOCIALACTIVITYCOUNTER_WHERE);
 
-				List<SocialActivityCounter> list = query.list();
+				sb.append(_FINDER_COLUMN_G_C_C_N_O_E_GROUPID_2);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByG_C_C_N_O_E, finderArgs, list);
-					}
+				sb.append(_FINDER_COLUMN_G_C_C_N_O_E_CLASSNAMEID_2);
+
+				sb.append(_FINDER_COLUMN_G_C_C_N_O_E_CLASSPK_2);
+
+				boolean bindName = false;
+
+				if (name.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_C_C_N_O_E_NAME_3);
 				}
 				else {
-					SocialActivityCounter socialActivityCounter = list.get(0);
+					bindName = true;
 
-					result = socialActivityCounter;
+					sb.append(_FINDER_COLUMN_G_C_C_N_O_E_NAME_2);
+				}
 
-					cacheResult(socialActivityCounter);
+				sb.append(_FINDER_COLUMN_G_C_C_N_O_E_OWNERTYPE_2);
+
+				sb.append(_FINDER_COLUMN_G_C_C_N_O_E_ENDPERIOD_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					queryPos.add(classNameId);
+
+					queryPos.add(classPK);
+
+					if (bindName) {
+						queryPos.add(name);
+					}
+
+					queryPos.add(ownerType);
+
+					queryPos.add(endPeriod);
+
+					List<SocialActivityCounter> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByG_C_C_N_O_E, finderArgs,
+								list);
+						}
+					}
+					else {
+						SocialActivityCounter socialActivityCounter = list.get(
+							0);
+
+						result = socialActivityCounter;
+
+						cacheResult(socialActivityCounter);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (SocialActivityCounter)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (SocialActivityCounter)result;
+			}
 		}
 	}
 
@@ -2570,37 +2564,38 @@ public class SocialActivityCounterPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(SocialActivityCounter socialActivityCounter) {
-		if (socialActivityCounter.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					socialActivityCounter.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				SocialActivityCounterImpl.class,
+				socialActivityCounter.getPrimaryKey(), socialActivityCounter);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_C_C_N_O_S,
+				new Object[] {
+					socialActivityCounter.getGroupId(),
+					socialActivityCounter.getClassNameId(),
+					socialActivityCounter.getClassPK(),
+					socialActivityCounter.getName(),
+					socialActivityCounter.getOwnerType(),
+					socialActivityCounter.getStartPeriod()
+				},
+				socialActivityCounter);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_C_C_N_O_E,
+				new Object[] {
+					socialActivityCounter.getGroupId(),
+					socialActivityCounter.getClassNameId(),
+					socialActivityCounter.getClassPK(),
+					socialActivityCounter.getName(),
+					socialActivityCounter.getOwnerType(),
+					socialActivityCounter.getEndPeriod()
+				},
+				socialActivityCounter);
 		}
-
-		EntityCacheUtil.putResult(
-			SocialActivityCounterImpl.class,
-			socialActivityCounter.getPrimaryKey(), socialActivityCounter);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_C_C_N_O_S,
-			new Object[] {
-				socialActivityCounter.getGroupId(),
-				socialActivityCounter.getClassNameId(),
-				socialActivityCounter.getClassPK(),
-				socialActivityCounter.getName(),
-				socialActivityCounter.getOwnerType(),
-				socialActivityCounter.getStartPeriod()
-			},
-			socialActivityCounter);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_C_C_N_O_E,
-			new Object[] {
-				socialActivityCounter.getGroupId(),
-				socialActivityCounter.getClassNameId(),
-				socialActivityCounter.getClassPK(),
-				socialActivityCounter.getName(),
-				socialActivityCounter.getOwnerType(),
-				socialActivityCounter.getEndPeriod()
-			},
-			socialActivityCounter);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2625,15 +2620,18 @@ public class SocialActivityCounterPersistenceImpl
 		for (SocialActivityCounter socialActivityCounter :
 				socialActivityCounters) {
 
-			if (socialActivityCounter.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(socialActivityCounter.getCtCollectionId() != 0) &&
+						(socialActivityCounter.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					SocialActivityCounterImpl.class,
-					socialActivityCounter.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						SocialActivityCounterImpl.class,
+						socialActivityCounter.getPrimaryKey()) == null) {
 
-				cacheResult(socialActivityCounter);
+					cacheResult(socialActivityCounter);
+				}
 			}
 		}
 	}
@@ -2688,35 +2686,40 @@ public class SocialActivityCounterPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		SocialActivityCounterModelImpl socialActivityCounterModelImpl) {
 
-		Object[] args = new Object[] {
-			socialActivityCounterModelImpl.getGroupId(),
-			socialActivityCounterModelImpl.getClassNameId(),
-			socialActivityCounterModelImpl.getClassPK(),
-			socialActivityCounterModelImpl.getName(),
-			socialActivityCounterModelImpl.getOwnerType(),
-			socialActivityCounterModelImpl.getStartPeriod()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					socialActivityCounterModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByG_C_C_N_O_S, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_C_C_N_O_S, args,
-			socialActivityCounterModelImpl);
+			Object[] args = new Object[] {
+				socialActivityCounterModelImpl.getGroupId(),
+				socialActivityCounterModelImpl.getClassNameId(),
+				socialActivityCounterModelImpl.getClassPK(),
+				socialActivityCounterModelImpl.getName(),
+				socialActivityCounterModelImpl.getOwnerType(),
+				socialActivityCounterModelImpl.getStartPeriod()
+			};
 
-		args = new Object[] {
-			socialActivityCounterModelImpl.getGroupId(),
-			socialActivityCounterModelImpl.getClassNameId(),
-			socialActivityCounterModelImpl.getClassPK(),
-			socialActivityCounterModelImpl.getName(),
-			socialActivityCounterModelImpl.getOwnerType(),
-			socialActivityCounterModelImpl.getEndPeriod()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByG_C_C_N_O_S, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_C_C_N_O_S, args,
+				socialActivityCounterModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByG_C_C_N_O_E, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_C_C_N_O_E, args,
-			socialActivityCounterModelImpl);
+			args = new Object[] {
+				socialActivityCounterModelImpl.getGroupId(),
+				socialActivityCounterModelImpl.getClassNameId(),
+				socialActivityCounterModelImpl.getClassPK(),
+				socialActivityCounterModelImpl.getName(),
+				socialActivityCounterModelImpl.getOwnerType(),
+				socialActivityCounterModelImpl.getEndPeriod()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByG_C_C_N_O_E, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_C_C_N_O_E, args,
+				socialActivityCounterModelImpl);
+		}
 	}
 
 	/**
@@ -2833,57 +2836,67 @@ public class SocialActivityCounterPersistenceImpl
 	public SocialActivityCounter updateImpl(
 		SocialActivityCounter socialActivityCounter) {
 
-		boolean isNew = socialActivityCounter.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(socialActivityCounter instanceof
-				SocialActivityCounterModelImpl)) {
+			boolean isNew = socialActivityCounter.isNew();
 
-			InvocationHandler invocationHandler = null;
+			if (!(socialActivityCounter instanceof
+					SocialActivityCounterModelImpl)) {
 
-			if (ProxyUtil.isProxyClass(socialActivityCounter.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					socialActivityCounter);
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in socialActivityCounter proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(socialActivityCounter.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						socialActivityCounter);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom SocialActivityCounter implementation " +
-					socialActivityCounter.getClass());
-		}
-
-		SocialActivityCounterModelImpl socialActivityCounterModelImpl =
-			(SocialActivityCounterModelImpl)socialActivityCounter;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(socialActivityCounter)) {
-				if (!isNew) {
-					session.evict(
-						SocialActivityCounterImpl.class,
-						socialActivityCounter.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in socialActivityCounter proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(socialActivityCounter);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom SocialActivityCounter implementation " +
+						socialActivityCounter.getClass());
 			}
-			else {
-				socialActivityCounter = (SocialActivityCounter)session.merge(
-					socialActivityCounter);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (socialActivityCounter.getCtCollectionId() != 0) {
+			SocialActivityCounterModelImpl socialActivityCounterModelImpl =
+				(SocialActivityCounterModelImpl)socialActivityCounter;
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(socialActivityCounter)) {
+					if (!isNew) {
+						session.evict(
+							SocialActivityCounterImpl.class,
+							socialActivityCounter.getPrimaryKeyObj());
+					}
+
+					session.save(socialActivityCounter);
+				}
+				else {
+					socialActivityCounter =
+						(SocialActivityCounter)session.merge(
+							socialActivityCounter);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				SocialActivityCounterImpl.class, socialActivityCounterModelImpl,
+				false, true);
+
+			cacheUniqueFindersCache(socialActivityCounterModelImpl);
+
 			if (isNew) {
 				socialActivityCounter.setNew(false);
 			}
@@ -2892,20 +2905,6 @@ public class SocialActivityCounterPersistenceImpl
 
 			return socialActivityCounter;
 		}
-
-		EntityCacheUtil.putResult(
-			SocialActivityCounterImpl.class, socialActivityCounterModelImpl,
-			false, true);
-
-		cacheUniqueFindersCache(socialActivityCounterModelImpl);
-
-		if (isNew) {
-			socialActivityCounter.setNew(false);
-		}
-
-		socialActivityCounter.resetOriginalValues();
-
-		return socialActivityCounter;
 	}
 
 	/**
@@ -2956,34 +2955,13 @@ public class SocialActivityCounterPersistenceImpl
 	 */
 	@Override
 	public SocialActivityCounter fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				SocialActivityCounter.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialActivityCounter.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		SocialActivityCounter socialActivityCounter = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			socialActivityCounter = (SocialActivityCounter)session.get(
-				SocialActivityCounterImpl.class, primaryKey);
-
-			if (socialActivityCounter != null) {
-				cacheResult(socialActivityCounter);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return socialActivityCounter;
 	}
 
 	/**
@@ -3001,98 +2979,13 @@ public class SocialActivityCounterPersistenceImpl
 	public Map<Serializable, SocialActivityCounter> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(
-				SocialActivityCounter.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialActivityCounter.class))) {
 
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, SocialActivityCounter> map =
-			new HashMap<Serializable, SocialActivityCounter>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			SocialActivityCounter socialActivityCounter = fetchByPrimaryKey(
-				primaryKey);
-
-			if (socialActivityCounter != null) {
-				map.put(primaryKey, socialActivityCounter);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (SocialActivityCounter socialActivityCounter :
-					(List<SocialActivityCounter>)query.list()) {
-
-				map.put(
-					socialActivityCounter.getPrimaryKeyObj(),
-					socialActivityCounter);
-
-				cacheResult(socialActivityCounter);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

@@ -14,8 +14,11 @@ import com.liferay.journal.model.impl.JournalFolderModelImpl;
 import com.liferay.journal.service.persistence.JournalFolderPersistence;
 import com.liferay.journal.service.persistence.JournalFolderUtil;
 import com.liferay.journal.service.persistence.impl.constants.JournalPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -54,7 +57,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -713,102 +715,97 @@ public class JournalFolderPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						JournalFolder.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalFolder.class);
-
-		if (result instanceof JournalFolder) {
-			JournalFolder journalFolder = (JournalFolder)result;
-
-			if (!Objects.equals(uuid, journalFolder.getUuid()) ||
-				(groupId != journalFolder.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						JournalFolder.class, journalFolder.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_JOURNALFOLDER_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof JournalFolder) {
+				JournalFolder journalFolder = (JournalFolder)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, journalFolder.getUuid()) ||
+					(groupId != journalFolder.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<JournalFolder> list = query.list();
+				sb.append(_SQL_SELECT_JOURNALFOLDER_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					JournalFolder journalFolder = list.get(0);
+					bindUuid = true;
 
-					result = journalFolder;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(journalFolder);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<JournalFolder> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						JournalFolder journalFolder = list.get(0);
+
+						result = journalFolder;
+
+						cacheResult(journalFolder);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (JournalFolder)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (JournalFolder)result;
+			}
 		}
 	}
 
@@ -3939,117 +3936,112 @@ public class JournalFolderPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, name};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						JournalFolder.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_N, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalFolder.class);
-
-		if (result instanceof JournalFolder) {
-			JournalFolder journalFolder = (JournalFolder)result;
-
-			if ((groupId != journalFolder.getGroupId()) ||
-				!Objects.equals(name, journalFolder.getName())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						JournalFolder.class, journalFolder.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_JOURNALFOLDER_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_N_GROUPID_2);
-
-			boolean bindName = false;
-
-			if (name.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_N_NAME_3);
-			}
-			else {
-				bindName = true;
-
-				sb.append(_FINDER_COLUMN_G_N_NAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, name};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_N, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof JournalFolder) {
+				JournalFolder journalFolder = (JournalFolder)result;
 
-				Query query = session.createQuery(sql);
+				if ((groupId != journalFolder.getGroupId()) ||
+					!Objects.equals(name, journalFolder.getName())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				if (bindName) {
-					queryPos.add(name);
+					result = null;
 				}
+			}
 
-				List<JournalFolder> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_N, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_JOURNALFOLDER_WHERE);
+
+				sb.append(_FINDER_COLUMN_G_N_GROUPID_2);
+
+				boolean bindName = false;
+
+				if (name.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_N_NAME_3);
 				}
 				else {
-					if (list.size() > 1) {
-						Collections.sort(list, Collections.reverseOrder());
+					bindName = true;
 
-						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
-								finderArgs = new Object[] {groupId, name};
-							}
+					sb.append(_FINDER_COLUMN_G_N_NAME_2);
+				}
 
-							_log.warn(
-								"JournalFolderPersistenceImpl.fetchByG_N(long, String, boolean) with parameters (" +
-									StringUtil.merge(finderArgs) +
-										") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
-						}
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					if (bindName) {
+						queryPos.add(name);
 					}
 
-					JournalFolder journalFolder = list.get(0);
+					List<JournalFolder> list = query.list();
 
-					result = journalFolder;
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_N, finderArgs, list);
+						}
+					}
+					else {
+						if (list.size() > 1) {
+							Collections.sort(list, Collections.reverseOrder());
 
-					cacheResult(journalFolder);
+							if (_log.isWarnEnabled()) {
+								if (!useFinderCache) {
+									finderArgs = new Object[] {groupId, name};
+								}
+
+								_log.warn(
+									"JournalFolderPersistenceImpl.fetchByG_N(long, String, boolean) with parameters (" +
+										StringUtil.merge(finderArgs) +
+											") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+							}
+						}
+
+						JournalFolder journalFolder = list.get(0);
+
+						result = journalFolder;
+
+						cacheResult(journalFolder);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (JournalFolder)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (JournalFolder)result;
+			}
 		}
 	}
 
@@ -4780,107 +4772,102 @@ public class JournalFolderPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, parentFolderId, name};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						JournalFolder.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_P_N, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalFolder.class);
-
-		if (result instanceof JournalFolder) {
-			JournalFolder journalFolder = (JournalFolder)result;
-
-			if ((groupId != journalFolder.getGroupId()) ||
-				(parentFolderId != journalFolder.getParentFolderId()) ||
-				!Objects.equals(name, journalFolder.getName())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						JournalFolder.class, journalFolder.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_JOURNALFOLDER_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_P_N_GROUPID_2);
-
-			sb.append(_FINDER_COLUMN_G_P_N_PARENTFOLDERID_2);
-
-			boolean bindName = false;
-
-			if (name.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_P_N_NAME_3);
-			}
-			else {
-				bindName = true;
-
-				sb.append(_FINDER_COLUMN_G_P_N_NAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, parentFolderId, name};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_P_N, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof JournalFolder) {
+				JournalFolder journalFolder = (JournalFolder)result;
 
-				Query query = session.createQuery(sql);
+				if ((groupId != journalFolder.getGroupId()) ||
+					(parentFolderId != journalFolder.getParentFolderId()) ||
+					!Objects.equals(name, journalFolder.getName())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				queryPos.add(parentFolderId);
-
-				if (bindName) {
-					queryPos.add(name);
+					result = null;
 				}
+			}
 
-				List<JournalFolder> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_P_N, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_JOURNALFOLDER_WHERE);
+
+				sb.append(_FINDER_COLUMN_G_P_N_GROUPID_2);
+
+				sb.append(_FINDER_COLUMN_G_P_N_PARENTFOLDERID_2);
+
+				boolean bindName = false;
+
+				if (name.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_P_N_NAME_3);
 				}
 				else {
-					JournalFolder journalFolder = list.get(0);
+					bindName = true;
 
-					result = journalFolder;
+					sb.append(_FINDER_COLUMN_G_P_N_NAME_2);
+				}
 
-					cacheResult(journalFolder);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					queryPos.add(parentFolderId);
+
+					if (bindName) {
+						queryPos.add(name);
+					}
+
+					List<JournalFolder> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_P_N, finderArgs, list);
+						}
+					}
+					else {
+						JournalFolder journalFolder = list.get(0);
+
+						result = journalFolder;
+
+						cacheResult(journalFolder);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (JournalFolder)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (JournalFolder)result;
+			}
 		}
 	}
 
@@ -7552,104 +7539,99 @@ public class JournalFolderPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {externalReferenceCode, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						JournalFolder.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByERC_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			JournalFolder.class);
-
-		if (result instanceof JournalFolder) {
-			JournalFolder journalFolder = (JournalFolder)result;
-
-			if (!Objects.equals(
-					externalReferenceCode,
-					journalFolder.getExternalReferenceCode()) ||
-				(groupId != journalFolder.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						JournalFolder.class, journalFolder.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_JOURNALFOLDER_WHERE);
-
-			boolean bindExternalReferenceCode = false;
-
-			if (externalReferenceCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindExternalReferenceCode = true;
-
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {externalReferenceCode, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByERC_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof JournalFolder) {
+				JournalFolder journalFolder = (JournalFolder)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(
+						externalReferenceCode,
+						journalFolder.getExternalReferenceCode()) ||
+					(groupId != journalFolder.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindExternalReferenceCode) {
-					queryPos.add(externalReferenceCode);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<JournalFolder> list = query.list();
+				sb.append(_SQL_SELECT_JOURNALFOLDER_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByERC_G, finderArgs, list);
-					}
+				boolean bindExternalReferenceCode = false;
+
+				if (externalReferenceCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
 				}
 				else {
-					JournalFolder journalFolder = list.get(0);
+					bindExternalReferenceCode = true;
 
-					result = journalFolder;
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(journalFolder);
+				sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindExternalReferenceCode) {
+						queryPos.add(externalReferenceCode);
+					}
+
+					queryPos.add(groupId);
+
+					List<JournalFolder> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByERC_G, finderArgs, list);
+						}
+					}
+					else {
+						JournalFolder journalFolder = list.get(0);
+
+						result = journalFolder;
+
+						cacheResult(journalFolder);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (JournalFolder)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (JournalFolder)result;
+			}
 		}
 	}
 
@@ -7781,39 +7763,44 @@ public class JournalFolderPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(JournalFolder journalFolder) {
-		if (journalFolder.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					journalFolder.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				JournalFolderImpl.class, journalFolder.getPrimaryKey(),
+				journalFolder);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					journalFolder.getUuid(), journalFolder.getGroupId()
+				},
+				journalFolder);
+
+			finderCache.putResult(
+				_finderPathFetchByG_N,
+				new Object[] {
+					journalFolder.getGroupId(), journalFolder.getName()
+				},
+				journalFolder);
+
+			finderCache.putResult(
+				_finderPathFetchByG_P_N,
+				new Object[] {
+					journalFolder.getGroupId(),
+					journalFolder.getParentFolderId(), journalFolder.getName()
+				},
+				journalFolder);
+
+			finderCache.putResult(
+				_finderPathFetchByERC_G,
+				new Object[] {
+					journalFolder.getExternalReferenceCode(),
+					journalFolder.getGroupId()
+				},
+				journalFolder);
 		}
-
-		entityCache.putResult(
-			JournalFolderImpl.class, journalFolder.getPrimaryKey(),
-			journalFolder);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {journalFolder.getUuid(), journalFolder.getGroupId()},
-			journalFolder);
-
-		finderCache.putResult(
-			_finderPathFetchByG_N,
-			new Object[] {journalFolder.getGroupId(), journalFolder.getName()},
-			journalFolder);
-
-		finderCache.putResult(
-			_finderPathFetchByG_P_N,
-			new Object[] {
-				journalFolder.getGroupId(), journalFolder.getParentFolderId(),
-				journalFolder.getName()
-			},
-			journalFolder);
-
-		finderCache.putResult(
-			_finderPathFetchByERC_G,
-			new Object[] {
-				journalFolder.getExternalReferenceCode(),
-				journalFolder.getGroupId()
-			},
-			journalFolder);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -7833,15 +7820,18 @@ public class JournalFolderPersistenceImpl
 		}
 
 		for (JournalFolder journalFolder : journalFolders) {
-			if (journalFolder.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(journalFolder.getCtCollectionId() != 0) &&
+						(journalFolder.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					JournalFolderImpl.class, journalFolder.getPrimaryKey()) ==
-						null) {
+				if (entityCache.getResult(
+						JournalFolderImpl.class,
+						journalFolder.getPrimaryKey()) == null) {
 
-				cacheResult(journalFolder);
+					cacheResult(journalFolder);
+				}
 			}
 		}
 	}
@@ -7891,42 +7881,50 @@ public class JournalFolderPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		JournalFolderModelImpl journalFolderModelImpl) {
 
-		Object[] args = new Object[] {
-			journalFolderModelImpl.getUuid(),
-			journalFolderModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					journalFolderModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, journalFolderModelImpl);
+			Object[] args = new Object[] {
+				journalFolderModelImpl.getUuid(),
+				journalFolderModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			journalFolderModelImpl.getGroupId(),
-			journalFolderModelImpl.getName()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, journalFolderModelImpl);
 
-		finderCache.putResult(_finderPathCountByG_N, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByG_N, args, journalFolderModelImpl);
+			args = new Object[] {
+				journalFolderModelImpl.getGroupId(),
+				journalFolderModelImpl.getName()
+			};
 
-		args = new Object[] {
-			journalFolderModelImpl.getGroupId(),
-			journalFolderModelImpl.getParentFolderId(),
-			journalFolderModelImpl.getName()
-		};
+			finderCache.putResult(_finderPathCountByG_N, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_N, args, journalFolderModelImpl);
 
-		finderCache.putResult(_finderPathCountByG_P_N, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByG_P_N, args, journalFolderModelImpl);
+			args = new Object[] {
+				journalFolderModelImpl.getGroupId(),
+				journalFolderModelImpl.getParentFolderId(),
+				journalFolderModelImpl.getName()
+			};
 
-		args = new Object[] {
-			journalFolderModelImpl.getExternalReferenceCode(),
-			journalFolderModelImpl.getGroupId()
-		};
+			finderCache.putResult(
+				_finderPathCountByG_P_N, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_P_N, args, journalFolderModelImpl);
 
-		finderCache.putResult(_finderPathCountByERC_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByERC_G, args, journalFolderModelImpl);
+			args = new Object[] {
+				journalFolderModelImpl.getExternalReferenceCode(),
+				journalFolderModelImpl.getGroupId()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByERC_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByERC_G, args, journalFolderModelImpl);
+		}
 	}
 
 	/**
@@ -8038,113 +8036,122 @@ public class JournalFolderPersistenceImpl
 
 	@Override
 	public JournalFolder updateImpl(JournalFolder journalFolder) {
-		boolean isNew = journalFolder.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(journalFolder instanceof JournalFolderModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = journalFolder.isNew();
 
-			if (ProxyUtil.isProxyClass(journalFolder.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					journalFolder);
+			if (!(journalFolder instanceof JournalFolderModelImpl)) {
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(journalFolder.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						journalFolder);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in journalFolder proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in journalFolder proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom JournalFolder implementation " +
+						journalFolder.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom JournalFolder implementation " +
-					journalFolder.getClass());
-		}
+			JournalFolderModelImpl journalFolderModelImpl =
+				(JournalFolderModelImpl)journalFolder;
 
-		JournalFolderModelImpl journalFolderModelImpl =
-			(JournalFolderModelImpl)journalFolder;
+			if (Validator.isNull(journalFolder.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
 
-		if (Validator.isNull(journalFolder.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
+				journalFolder.setUuid(uuid);
+			}
 
-			journalFolder.setUuid(uuid);
-		}
+			if (Validator.isNull(journalFolder.getExternalReferenceCode())) {
+				journalFolder.setExternalReferenceCode(journalFolder.getUuid());
+			}
+			else {
+				JournalFolder ercJournalFolder = fetchByERC_G(
+					journalFolder.getExternalReferenceCode(),
+					journalFolder.getGroupId());
 
-		if (Validator.isNull(journalFolder.getExternalReferenceCode())) {
-			journalFolder.setExternalReferenceCode(journalFolder.getUuid());
-		}
-		else {
-			JournalFolder ercJournalFolder = fetchByERC_G(
-				journalFolder.getExternalReferenceCode(),
-				journalFolder.getGroupId());
+				if (isNew) {
+					if (ercJournalFolder != null) {
+						throw new DuplicateJournalFolderExternalReferenceCodeException(
+							"Duplicate journal folder with external reference code " +
+								journalFolder.getExternalReferenceCode() +
+									" and group " + journalFolder.getGroupId());
+					}
+				}
+				else {
+					if ((ercJournalFolder != null) &&
+						(journalFolder.getFolderId() !=
+							ercJournalFolder.getFolderId())) {
 
-			if (isNew) {
-				if (ercJournalFolder != null) {
-					throw new DuplicateJournalFolderExternalReferenceCodeException(
-						"Duplicate journal folder with external reference code " +
-							journalFolder.getExternalReferenceCode() +
-								" and group " + journalFolder.getGroupId());
+						throw new DuplicateJournalFolderExternalReferenceCodeException(
+							"Duplicate journal folder with external reference code " +
+								journalFolder.getExternalReferenceCode() +
+									" and group " + journalFolder.getGroupId());
+					}
 				}
 			}
-			else {
-				if ((ercJournalFolder != null) &&
-					(journalFolder.getFolderId() !=
-						ercJournalFolder.getFolderId())) {
 
-					throw new DuplicateJournalFolderExternalReferenceCodeException(
-						"Duplicate journal folder with external reference code " +
-							journalFolder.getExternalReferenceCode() +
-								" and group " + journalFolder.getGroupId());
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (journalFolder.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					journalFolder.setCreateDate(date);
+				}
+				else {
+					journalFolder.setCreateDate(
+						serviceContext.getCreateDate(date));
 				}
 			}
-		}
 
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (journalFolder.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				journalFolder.setCreateDate(date);
-			}
-			else {
-				journalFolder.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!journalFolderModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				journalFolder.setModifiedDate(date);
-			}
-			else {
-				journalFolder.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(journalFolder)) {
-				if (!isNew) {
-					session.evict(
-						JournalFolderImpl.class,
-						journalFolder.getPrimaryKeyObj());
+			if (!journalFolderModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					journalFolder.setModifiedDate(date);
 				}
-
-				session.save(journalFolder);
+				else {
+					journalFolder.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
 			}
-			else {
-				journalFolder = (JournalFolder)session.merge(journalFolder);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (journalFolder.getCtCollectionId() != 0) {
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(journalFolder)) {
+					if (!isNew) {
+						session.evict(
+							JournalFolderImpl.class,
+							journalFolder.getPrimaryKeyObj());
+					}
+
+					session.save(journalFolder);
+				}
+				else {
+					journalFolder = (JournalFolder)session.merge(journalFolder);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				JournalFolderImpl.class, journalFolderModelImpl, false, true);
+
+			cacheUniqueFindersCache(journalFolderModelImpl);
+
 			if (isNew) {
 				journalFolder.setNew(false);
 			}
@@ -8153,19 +8160,6 @@ public class JournalFolderPersistenceImpl
 
 			return journalFolder;
 		}
-
-		entityCache.putResult(
-			JournalFolderImpl.class, journalFolderModelImpl, false, true);
-
-		cacheUniqueFindersCache(journalFolderModelImpl);
-
-		if (isNew) {
-			journalFolder.setNew(false);
-		}
-
-		journalFolder.resetOriginalValues();
-
-		return journalFolder;
 	}
 
 	/**
@@ -8215,34 +8209,13 @@ public class JournalFolderPersistenceImpl
 	 */
 	@Override
 	public JournalFolder fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				JournalFolder.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						JournalFolder.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		JournalFolder journalFolder = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			journalFolder = (JournalFolder)session.get(
-				JournalFolderImpl.class, primaryKey);
-
-			if (journalFolder != null) {
-				cacheResult(journalFolder);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return journalFolder;
 	}
 
 	/**
@@ -8260,93 +8233,13 @@ public class JournalFolderPersistenceImpl
 	public Map<Serializable, JournalFolder> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(JournalFolder.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						JournalFolder.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, JournalFolder> map =
-			new HashMap<Serializable, JournalFolder>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			JournalFolder journalFolder = fetchByPrimaryKey(primaryKey);
-
-			if (journalFolder != null) {
-				map.put(primaryKey, journalFolder);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (JournalFolder journalFolder :
-					(List<JournalFolder>)query.list()) {
-
-				map.put(journalFolder.getPrimaryKeyObj(), journalFolder);
-
-				cacheResult(journalFolder);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

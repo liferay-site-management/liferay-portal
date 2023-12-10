@@ -5,8 +5,11 @@
 
 package com.liferay.wiki.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -53,7 +56,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -708,102 +710,96 @@ public class WikiNodePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			WikiNode.class);
-
-		if (result instanceof WikiNode) {
-			WikiNode wikiNode = (WikiNode)result;
-
-			if (!Objects.equals(uuid, wikiNode.getUuid()) ||
-				(groupId != wikiNode.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						WikiNode.class, wikiNode.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_WIKINODE_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof WikiNode) {
+				WikiNode wikiNode = (WikiNode)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, wikiNode.getUuid()) ||
+					(groupId != wikiNode.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<WikiNode> list = query.list();
+				sb.append(_SQL_SELECT_WIKINODE_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					WikiNode wikiNode = list.get(0);
+					bindUuid = true;
 
-					result = wikiNode;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(wikiNode);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<WikiNode> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						WikiNode wikiNode = list.get(0);
+
+						result = wikiNode;
+
+						cacheResult(wikiNode);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (WikiNode)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (WikiNode)result;
+			}
 		}
 	}
 
@@ -2953,102 +2949,96 @@ public class WikiNodePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, name};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_N, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			WikiNode.class);
-
-		if (result instanceof WikiNode) {
-			WikiNode wikiNode = (WikiNode)result;
-
-			if ((groupId != wikiNode.getGroupId()) ||
-				!Objects.equals(name, wikiNode.getName())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						WikiNode.class, wikiNode.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_WIKINODE_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_N_GROUPID_2);
-
-			boolean bindName = false;
-
-			if (name.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_N_NAME_3);
-			}
-			else {
-				bindName = true;
-
-				sb.append(_FINDER_COLUMN_G_N_NAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, name};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_N, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof WikiNode) {
+				WikiNode wikiNode = (WikiNode)result;
 
-				Query query = session.createQuery(sql);
+				if ((groupId != wikiNode.getGroupId()) ||
+					!Objects.equals(name, wikiNode.getName())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				if (bindName) {
-					queryPos.add(name);
+					result = null;
 				}
+			}
 
-				List<WikiNode> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_N, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_WIKINODE_WHERE);
+
+				sb.append(_FINDER_COLUMN_G_N_GROUPID_2);
+
+				boolean bindName = false;
+
+				if (name.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_N_NAME_3);
 				}
 				else {
-					WikiNode wikiNode = list.get(0);
+					bindName = true;
 
-					result = wikiNode;
+					sb.append(_FINDER_COLUMN_G_N_NAME_2);
+				}
 
-					cacheResult(wikiNode);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					if (bindName) {
+						queryPos.add(name);
+					}
+
+					List<WikiNode> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_N, finderArgs, list);
+						}
+					}
+					else {
+						WikiNode wikiNode = list.get(0);
+
+						result = wikiNode;
+
+						cacheResult(wikiNode);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (WikiNode)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (WikiNode)result;
+			}
 		}
 	}
 
@@ -4710,104 +4700,98 @@ public class WikiNodePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {externalReferenceCode, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByERC_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			WikiNode.class);
-
-		if (result instanceof WikiNode) {
-			WikiNode wikiNode = (WikiNode)result;
-
-			if (!Objects.equals(
-					externalReferenceCode,
-					wikiNode.getExternalReferenceCode()) ||
-				(groupId != wikiNode.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						WikiNode.class, wikiNode.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_WIKINODE_WHERE);
-
-			boolean bindExternalReferenceCode = false;
-
-			if (externalReferenceCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindExternalReferenceCode = true;
-
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {externalReferenceCode, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByERC_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof WikiNode) {
+				WikiNode wikiNode = (WikiNode)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(
+						externalReferenceCode,
+						wikiNode.getExternalReferenceCode()) ||
+					(groupId != wikiNode.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindExternalReferenceCode) {
-					queryPos.add(externalReferenceCode);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<WikiNode> list = query.list();
+				sb.append(_SQL_SELECT_WIKINODE_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByERC_G, finderArgs, list);
-					}
+				boolean bindExternalReferenceCode = false;
+
+				if (externalReferenceCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
 				}
 				else {
-					WikiNode wikiNode = list.get(0);
+					bindExternalReferenceCode = true;
 
-					result = wikiNode;
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(wikiNode);
+				sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindExternalReferenceCode) {
+						queryPos.add(externalReferenceCode);
+					}
+
+					queryPos.add(groupId);
+
+					List<WikiNode> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByERC_G, finderArgs, list);
+						}
+					}
+					else {
+						WikiNode wikiNode = list.get(0);
+
+						result = wikiNode;
+
+						cacheResult(wikiNode);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (WikiNode)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (WikiNode)result;
+			}
 		}
 	}
 
@@ -4937,27 +4921,30 @@ public class WikiNodePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(WikiNode wikiNode) {
-		if (wikiNode.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					wikiNode.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				WikiNodeImpl.class, wikiNode.getPrimaryKey(), wikiNode);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {wikiNode.getUuid(), wikiNode.getGroupId()},
+				wikiNode);
+
+			finderCache.putResult(
+				_finderPathFetchByG_N,
+				new Object[] {wikiNode.getGroupId(), wikiNode.getName()},
+				wikiNode);
+
+			finderCache.putResult(
+				_finderPathFetchByERC_G,
+				new Object[] {
+					wikiNode.getExternalReferenceCode(), wikiNode.getGroupId()
+				},
+				wikiNode);
 		}
-
-		entityCache.putResult(
-			WikiNodeImpl.class, wikiNode.getPrimaryKey(), wikiNode);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {wikiNode.getUuid(), wikiNode.getGroupId()}, wikiNode);
-
-		finderCache.putResult(
-			_finderPathFetchByG_N,
-			new Object[] {wikiNode.getGroupId(), wikiNode.getName()}, wikiNode);
-
-		finderCache.putResult(
-			_finderPathFetchByERC_G,
-			new Object[] {
-				wikiNode.getExternalReferenceCode(), wikiNode.getGroupId()
-			},
-			wikiNode);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -4977,14 +4964,17 @@ public class WikiNodePersistenceImpl
 		}
 
 		for (WikiNode wikiNode : wikiNodes) {
-			if (wikiNode.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(wikiNode.getCtCollectionId() != 0) &&
+						(wikiNode.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					WikiNodeImpl.class, wikiNode.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						WikiNodeImpl.class, wikiNode.getPrimaryKey()) == null) {
 
-				cacheResult(wikiNode);
+					cacheResult(wikiNode);
+				}
 			}
 		}
 	}
@@ -5034,28 +5024,37 @@ public class WikiNodePersistenceImpl
 	protected void cacheUniqueFindersCache(
 		WikiNodeModelImpl wikiNodeModelImpl) {
 
-		Object[] args = new Object[] {
-			wikiNodeModelImpl.getUuid(), wikiNodeModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					wikiNodeModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, wikiNodeModelImpl);
+			Object[] args = new Object[] {
+				wikiNodeModelImpl.getUuid(), wikiNodeModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			wikiNodeModelImpl.getGroupId(), wikiNodeModelImpl.getName()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, wikiNodeModelImpl);
 
-		finderCache.putResult(_finderPathCountByG_N, args, Long.valueOf(1));
-		finderCache.putResult(_finderPathFetchByG_N, args, wikiNodeModelImpl);
+			args = new Object[] {
+				wikiNodeModelImpl.getGroupId(), wikiNodeModelImpl.getName()
+			};
 
-		args = new Object[] {
-			wikiNodeModelImpl.getExternalReferenceCode(),
-			wikiNodeModelImpl.getGroupId()
-		};
+			finderCache.putResult(_finderPathCountByG_N, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_N, args, wikiNodeModelImpl);
 
-		finderCache.putResult(_finderPathCountByERC_G, args, Long.valueOf(1));
-		finderCache.putResult(_finderPathFetchByERC_G, args, wikiNodeModelImpl);
+			args = new Object[] {
+				wikiNodeModelImpl.getExternalReferenceCode(),
+				wikiNodeModelImpl.getGroupId()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByERC_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByERC_G, args, wikiNodeModelImpl);
+		}
 	}
 
 	/**
@@ -5163,107 +5162,117 @@ public class WikiNodePersistenceImpl
 
 	@Override
 	public WikiNode updateImpl(WikiNode wikiNode) {
-		boolean isNew = wikiNode.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(wikiNode instanceof WikiNodeModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = wikiNode.isNew();
 
-			if (ProxyUtil.isProxyClass(wikiNode.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(wikiNode);
+			if (!(wikiNode instanceof WikiNodeModelImpl)) {
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(wikiNode.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						wikiNode);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in wikiNode proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in wikiNode proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom WikiNode implementation " +
+						wikiNode.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom WikiNode implementation " +
-					wikiNode.getClass());
-		}
+			WikiNodeModelImpl wikiNodeModelImpl = (WikiNodeModelImpl)wikiNode;
 
-		WikiNodeModelImpl wikiNodeModelImpl = (WikiNodeModelImpl)wikiNode;
+			if (Validator.isNull(wikiNode.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
 
-		if (Validator.isNull(wikiNode.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
+				wikiNode.setUuid(uuid);
+			}
 
-			wikiNode.setUuid(uuid);
-		}
+			if (Validator.isNull(wikiNode.getExternalReferenceCode())) {
+				wikiNode.setExternalReferenceCode(wikiNode.getUuid());
+			}
+			else {
+				WikiNode ercWikiNode = fetchByERC_G(
+					wikiNode.getExternalReferenceCode(), wikiNode.getGroupId());
 
-		if (Validator.isNull(wikiNode.getExternalReferenceCode())) {
-			wikiNode.setExternalReferenceCode(wikiNode.getUuid());
-		}
-		else {
-			WikiNode ercWikiNode = fetchByERC_G(
-				wikiNode.getExternalReferenceCode(), wikiNode.getGroupId());
+				if (isNew) {
+					if (ercWikiNode != null) {
+						throw new DuplicateWikiNodeExternalReferenceCodeException(
+							"Duplicate wiki node with external reference code " +
+								wikiNode.getExternalReferenceCode() +
+									" and group " + wikiNode.getGroupId());
+					}
+				}
+				else {
+					if ((ercWikiNode != null) &&
+						(wikiNode.getNodeId() != ercWikiNode.getNodeId())) {
 
-			if (isNew) {
-				if (ercWikiNode != null) {
-					throw new DuplicateWikiNodeExternalReferenceCodeException(
-						"Duplicate wiki node with external reference code " +
-							wikiNode.getExternalReferenceCode() +
-								" and group " + wikiNode.getGroupId());
+						throw new DuplicateWikiNodeExternalReferenceCodeException(
+							"Duplicate wiki node with external reference code " +
+								wikiNode.getExternalReferenceCode() +
+									" and group " + wikiNode.getGroupId());
+					}
 				}
 			}
-			else {
-				if ((ercWikiNode != null) &&
-					(wikiNode.getNodeId() != ercWikiNode.getNodeId())) {
 
-					throw new DuplicateWikiNodeExternalReferenceCodeException(
-						"Duplicate wiki node with external reference code " +
-							wikiNode.getExternalReferenceCode() +
-								" and group " + wikiNode.getGroupId());
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (wikiNode.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					wikiNode.setCreateDate(date);
+				}
+				else {
+					wikiNode.setCreateDate(serviceContext.getCreateDate(date));
 				}
 			}
-		}
 
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (wikiNode.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				wikiNode.setCreateDate(date);
-			}
-			else {
-				wikiNode.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!wikiNodeModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				wikiNode.setModifiedDate(date);
-			}
-			else {
-				wikiNode.setModifiedDate(serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(wikiNode)) {
-				if (!isNew) {
-					session.evict(
-						WikiNodeImpl.class, wikiNode.getPrimaryKeyObj());
+			if (!wikiNodeModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					wikiNode.setModifiedDate(date);
 				}
-
-				session.save(wikiNode);
+				else {
+					wikiNode.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
 			}
-			else {
-				wikiNode = (WikiNode)session.merge(wikiNode);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (wikiNode.getCtCollectionId() != 0) {
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(wikiNode)) {
+					if (!isNew) {
+						session.evict(
+							WikiNodeImpl.class, wikiNode.getPrimaryKeyObj());
+					}
+
+					session.save(wikiNode);
+				}
+				else {
+					wikiNode = (WikiNode)session.merge(wikiNode);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				WikiNodeImpl.class, wikiNodeModelImpl, false, true);
+
+			cacheUniqueFindersCache(wikiNodeModelImpl);
+
 			if (isNew) {
 				wikiNode.setNew(false);
 			}
@@ -5272,19 +5281,6 @@ public class WikiNodePersistenceImpl
 
 			return wikiNode;
 		}
-
-		entityCache.putResult(
-			WikiNodeImpl.class, wikiNodeModelImpl, false, true);
-
-		cacheUniqueFindersCache(wikiNodeModelImpl);
-
-		if (isNew) {
-			wikiNode.setNew(false);
-		}
-
-		wikiNode.resetOriginalValues();
-
-		return wikiNode;
 	}
 
 	/**
@@ -5332,31 +5328,13 @@ public class WikiNodePersistenceImpl
 	 */
 	@Override
 	public WikiNode fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(WikiNode.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						WikiNode.class, primaryKey))) {
+
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		WikiNode wikiNode = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			wikiNode = (WikiNode)session.get(WikiNodeImpl.class, primaryKey);
-
-			if (wikiNode != null) {
-				cacheResult(wikiNode);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return wikiNode;
 	}
 
 	/**
@@ -5374,90 +5352,12 @@ public class WikiNodePersistenceImpl
 	public Map<Serializable, WikiNode> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(WikiNode.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, WikiNode> map = new HashMap<Serializable, WikiNode>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			WikiNode wikiNode = fetchByPrimaryKey(primaryKey);
-
-			if (wikiNode != null) {
-				map.put(primaryKey, wikiNode);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (WikiNode wikiNode : (List<WikiNode>)query.list()) {
-				map.put(wikiNode.getPrimaryKeyObj(), wikiNode);
-
-				cacheResult(wikiNode);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

@@ -10,8 +10,11 @@ import com.liferay.document.library.kernel.model.DLFileVersion;
 import com.liferay.document.library.kernel.model.DLFileVersionTable;
 import com.liferay.document.library.kernel.service.persistence.DLFileVersionPersistence;
 import com.liferay.document.library.kernel.service.persistence.DLFileVersionUtil;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -49,7 +52,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -701,102 +703,97 @@ public class DLFileVersionPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						DLFileVersion.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileVersion.class);
-
-		if (result instanceof DLFileVersion) {
-			DLFileVersion dlFileVersion = (DLFileVersion)result;
-
-			if (!Objects.equals(uuid, dlFileVersion.getUuid()) ||
-				(groupId != dlFileVersion.getGroupId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class, dlFileVersion.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_DLFILEVERSION_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof DLFileVersion) {
+				DLFileVersion dlFileVersion = (DLFileVersion)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, dlFileVersion.getUuid()) ||
+					(groupId != dlFileVersion.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<DLFileVersion> list = query.list();
+				sb.append(_SQL_SELECT_DLFILEVERSION_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					DLFileVersion dlFileVersion = list.get(0);
+					bindUuid = true;
 
-					result = dlFileVersion;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(dlFileVersion);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<DLFileVersion> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						DLFileVersion dlFileVersion = list.get(0);
+
+						result = dlFileVersion;
+
+						cacheResult(dlFileVersion);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (DLFileVersion)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (DLFileVersion)result;
+			}
 		}
 	}
 
@@ -4296,102 +4293,97 @@ public class DLFileVersionPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {fileEntryId, version};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						DLFileVersion.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByF_V, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileVersion.class);
-
-		if (result instanceof DLFileVersion) {
-			DLFileVersion dlFileVersion = (DLFileVersion)result;
-
-			if ((fileEntryId != dlFileVersion.getFileEntryId()) ||
-				!Objects.equals(version, dlFileVersion.getVersion())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class, dlFileVersion.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_DLFILEVERSION_WHERE);
-
-			sb.append(_FINDER_COLUMN_F_V_FILEENTRYID_2);
-
-			boolean bindVersion = false;
-
-			if (version.isEmpty()) {
-				sb.append(_FINDER_COLUMN_F_V_VERSION_3);
-			}
-			else {
-				bindVersion = true;
-
-				sb.append(_FINDER_COLUMN_F_V_VERSION_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {fileEntryId, version};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByF_V, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof DLFileVersion) {
+				DLFileVersion dlFileVersion = (DLFileVersion)result;
 
-				Query query = session.createQuery(sql);
+				if ((fileEntryId != dlFileVersion.getFileEntryId()) ||
+					!Objects.equals(version, dlFileVersion.getVersion())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(fileEntryId);
-
-				if (bindVersion) {
-					queryPos.add(version);
+					result = null;
 				}
+			}
 
-				List<DLFileVersion> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByF_V, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_DLFILEVERSION_WHERE);
+
+				sb.append(_FINDER_COLUMN_F_V_FILEENTRYID_2);
+
+				boolean bindVersion = false;
+
+				if (version.isEmpty()) {
+					sb.append(_FINDER_COLUMN_F_V_VERSION_3);
 				}
 				else {
-					DLFileVersion dlFileVersion = list.get(0);
+					bindVersion = true;
 
-					result = dlFileVersion;
+					sb.append(_FINDER_COLUMN_F_V_VERSION_2);
+				}
 
-					cacheResult(dlFileVersion);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(fileEntryId);
+
+					if (bindVersion) {
+						queryPos.add(version);
+					}
+
+					List<DLFileVersion> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByF_V, finderArgs, list);
+						}
+					}
+					else {
+						DLFileVersion dlFileVersion = list.get(0);
+
+						result = dlFileVersion;
+
+						cacheResult(dlFileVersion);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (DLFileVersion)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (DLFileVersion)result;
+			}
 		}
 	}
 
@@ -6385,25 +6377,28 @@ public class DLFileVersionPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(DLFileVersion dlFileVersion) {
-		if (dlFileVersion.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					dlFileVersion.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				DLFileVersionImpl.class, dlFileVersion.getPrimaryKey(),
+				dlFileVersion);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					dlFileVersion.getUuid(), dlFileVersion.getGroupId()
+				},
+				dlFileVersion);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByF_V,
+				new Object[] {
+					dlFileVersion.getFileEntryId(), dlFileVersion.getVersion()
+				},
+				dlFileVersion);
 		}
-
-		EntityCacheUtil.putResult(
-			DLFileVersionImpl.class, dlFileVersion.getPrimaryKey(),
-			dlFileVersion);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {dlFileVersion.getUuid(), dlFileVersion.getGroupId()},
-			dlFileVersion);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByF_V,
-			new Object[] {
-				dlFileVersion.getFileEntryId(), dlFileVersion.getVersion()
-			},
-			dlFileVersion);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -6423,15 +6418,18 @@ public class DLFileVersionPersistenceImpl
 		}
 
 		for (DLFileVersion dlFileVersion : dlFileVersions) {
-			if (dlFileVersion.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(dlFileVersion.getCtCollectionId() != 0) &&
+						(dlFileVersion.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					DLFileVersionImpl.class, dlFileVersion.getPrimaryKey()) ==
-						null) {
+				if (EntityCacheUtil.getResult(
+						DLFileVersionImpl.class,
+						dlFileVersion.getPrimaryKey()) == null) {
 
-				cacheResult(dlFileVersion);
+					cacheResult(dlFileVersion);
+				}
 			}
 		}
 	}
@@ -6482,24 +6480,30 @@ public class DLFileVersionPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		DLFileVersionModelImpl dlFileVersionModelImpl) {
 
-		Object[] args = new Object[] {
-			dlFileVersionModelImpl.getUuid(),
-			dlFileVersionModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					dlFileVersionModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByUUID_G, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G, args, dlFileVersionModelImpl);
+			Object[] args = new Object[] {
+				dlFileVersionModelImpl.getUuid(),
+				dlFileVersionModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			dlFileVersionModelImpl.getFileEntryId(),
-			dlFileVersionModelImpl.getVersion()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G, args, dlFileVersionModelImpl);
 
-		FinderCacheUtil.putResult(_finderPathCountByF_V, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByF_V, args, dlFileVersionModelImpl);
+			args = new Object[] {
+				dlFileVersionModelImpl.getFileEntryId(),
+				dlFileVersionModelImpl.getVersion()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByF_V, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByF_V, args, dlFileVersionModelImpl);
+		}
 	}
 
 	/**
@@ -6613,84 +6617,93 @@ public class DLFileVersionPersistenceImpl
 
 	@Override
 	public DLFileVersion updateImpl(DLFileVersion dlFileVersion) {
-		boolean isNew = dlFileVersion.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(dlFileVersion instanceof DLFileVersionModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = dlFileVersion.isNew();
 
-			if (ProxyUtil.isProxyClass(dlFileVersion.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					dlFileVersion);
+			if (!(dlFileVersion instanceof DLFileVersionModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in dlFileVersion proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(dlFileVersion.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						dlFileVersion);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom DLFileVersion implementation " +
-					dlFileVersion.getClass());
-		}
-
-		DLFileVersionModelImpl dlFileVersionModelImpl =
-			(DLFileVersionModelImpl)dlFileVersion;
-
-		if (Validator.isNull(dlFileVersion.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			dlFileVersion.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (dlFileVersion.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				dlFileVersion.setCreateDate(date);
-			}
-			else {
-				dlFileVersion.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!dlFileVersionModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				dlFileVersion.setModifiedDate(date);
-			}
-			else {
-				dlFileVersion.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(dlFileVersion)) {
-				if (!isNew) {
-					session.evict(
-						DLFileVersionImpl.class,
-						dlFileVersion.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in dlFileVersion proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(dlFileVersion);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom DLFileVersion implementation " +
+						dlFileVersion.getClass());
 			}
-			else {
-				dlFileVersion = (DLFileVersion)session.merge(dlFileVersion);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (dlFileVersion.getCtCollectionId() != 0) {
+			DLFileVersionModelImpl dlFileVersionModelImpl =
+				(DLFileVersionModelImpl)dlFileVersion;
+
+			if (Validator.isNull(dlFileVersion.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				dlFileVersion.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (dlFileVersion.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					dlFileVersion.setCreateDate(date);
+				}
+				else {
+					dlFileVersion.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!dlFileVersionModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					dlFileVersion.setModifiedDate(date);
+				}
+				else {
+					dlFileVersion.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(dlFileVersion)) {
+					if (!isNew) {
+						session.evict(
+							DLFileVersionImpl.class,
+							dlFileVersion.getPrimaryKeyObj());
+					}
+
+					session.save(dlFileVersion);
+				}
+				else {
+					dlFileVersion = (DLFileVersion)session.merge(dlFileVersion);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				DLFileVersionImpl.class, dlFileVersionModelImpl, false, true);
+
+			cacheUniqueFindersCache(dlFileVersionModelImpl);
+
 			if (isNew) {
 				dlFileVersion.setNew(false);
 			}
@@ -6699,19 +6712,6 @@ public class DLFileVersionPersistenceImpl
 
 			return dlFileVersion;
 		}
-
-		EntityCacheUtil.putResult(
-			DLFileVersionImpl.class, dlFileVersionModelImpl, false, true);
-
-		cacheUniqueFindersCache(dlFileVersionModelImpl);
-
-		if (isNew) {
-			dlFileVersion.setNew(false);
-		}
-
-		dlFileVersion.resetOriginalValues();
-
-		return dlFileVersion;
 	}
 
 	/**
@@ -6761,34 +6761,13 @@ public class DLFileVersionPersistenceImpl
 	 */
 	@Override
 	public DLFileVersion fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				DLFileVersion.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						DLFileVersion.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		DLFileVersion dlFileVersion = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			dlFileVersion = (DLFileVersion)session.get(
-				DLFileVersionImpl.class, primaryKey);
-
-			if (dlFileVersion != null) {
-				cacheResult(dlFileVersion);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return dlFileVersion;
 	}
 
 	/**
@@ -6806,93 +6785,13 @@ public class DLFileVersionPersistenceImpl
 	public Map<Serializable, DLFileVersion> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(DLFileVersion.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						DLFileVersion.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, DLFileVersion> map =
-			new HashMap<Serializable, DLFileVersion>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			DLFileVersion dlFileVersion = fetchByPrimaryKey(primaryKey);
-
-			if (dlFileVersion != null) {
-				map.put(primaryKey, dlFileVersion);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (DLFileVersion dlFileVersion :
-					(List<DLFileVersion>)query.list()) {
-
-				map.put(dlFileVersion.getPrimaryKeyObj(), dlFileVersion);
-
-				cacheResult(dlFileVersion);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

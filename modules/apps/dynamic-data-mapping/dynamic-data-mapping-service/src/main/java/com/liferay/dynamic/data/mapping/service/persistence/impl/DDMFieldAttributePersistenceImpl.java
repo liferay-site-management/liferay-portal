@@ -13,8 +13,11 @@ import com.liferay.dynamic.data.mapping.model.impl.DDMFieldAttributeModelImpl;
 import com.liferay.dynamic.data.mapping.service.persistence.DDMFieldAttributePersistence;
 import com.liferay.dynamic.data.mapping.service.persistence.DDMFieldAttributeUtil;
 import com.liferay.dynamic.data.mapping.service.persistence.impl.constants.DDMPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -44,9 +47,7 @@ import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -2868,121 +2869,115 @@ public class DDMFieldAttributePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {fieldId, attributeName, languageId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						DDMFieldAttribute.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByF_AN_L, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			DDMFieldAttribute.class);
-
-		if (result instanceof DDMFieldAttribute) {
-			DDMFieldAttribute ddmFieldAttribute = (DDMFieldAttribute)result;
-
-			if ((fieldId != ddmFieldAttribute.getFieldId()) ||
-				!Objects.equals(
-					attributeName, ddmFieldAttribute.getAttributeName()) ||
-				!Objects.equals(
-					languageId, ddmFieldAttribute.getLanguageId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						DDMFieldAttribute.class,
-						ddmFieldAttribute.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_DDMFIELDATTRIBUTE_WHERE);
-
-			sb.append(_FINDER_COLUMN_F_AN_L_FIELDID_2);
-
-			boolean bindAttributeName = false;
-
-			if (attributeName.isEmpty()) {
-				sb.append(_FINDER_COLUMN_F_AN_L_ATTRIBUTENAME_3);
-			}
-			else {
-				bindAttributeName = true;
-
-				sb.append(_FINDER_COLUMN_F_AN_L_ATTRIBUTENAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {fieldId, attributeName, languageId};
 			}
 
-			boolean bindLanguageId = false;
+			Object result = null;
 
-			if (languageId.isEmpty()) {
-				sb.append(_FINDER_COLUMN_F_AN_L_LANGUAGEID_3);
-			}
-			else {
-				bindLanguageId = true;
-
-				sb.append(_FINDER_COLUMN_F_AN_L_LANGUAGEID_2);
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByF_AN_L, finderArgs, this);
 			}
 
-			String sql = sb.toString();
+			if (result instanceof DDMFieldAttribute) {
+				DDMFieldAttribute ddmFieldAttribute = (DDMFieldAttribute)result;
 
-			Session session = null;
+				if ((fieldId != ddmFieldAttribute.getFieldId()) ||
+					!Objects.equals(
+						attributeName, ddmFieldAttribute.getAttributeName()) ||
+					!Objects.equals(
+						languageId, ddmFieldAttribute.getLanguageId())) {
 
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(fieldId);
-
-				if (bindAttributeName) {
-					queryPos.add(attributeName);
+					result = null;
 				}
+			}
 
-				if (bindLanguageId) {
-					queryPos.add(languageId);
-				}
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				List<DDMFieldAttribute> list = query.list();
+				sb.append(_SQL_SELECT_DDMFIELDATTRIBUTE_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByF_AN_L, finderArgs, list);
-					}
+				sb.append(_FINDER_COLUMN_F_AN_L_FIELDID_2);
+
+				boolean bindAttributeName = false;
+
+				if (attributeName.isEmpty()) {
+					sb.append(_FINDER_COLUMN_F_AN_L_ATTRIBUTENAME_3);
 				}
 				else {
-					DDMFieldAttribute ddmFieldAttribute = list.get(0);
+					bindAttributeName = true;
 
-					result = ddmFieldAttribute;
+					sb.append(_FINDER_COLUMN_F_AN_L_ATTRIBUTENAME_2);
+				}
 
-					cacheResult(ddmFieldAttribute);
+				boolean bindLanguageId = false;
+
+				if (languageId.isEmpty()) {
+					sb.append(_FINDER_COLUMN_F_AN_L_LANGUAGEID_3);
+				}
+				else {
+					bindLanguageId = true;
+
+					sb.append(_FINDER_COLUMN_F_AN_L_LANGUAGEID_2);
+				}
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(fieldId);
+
+					if (bindAttributeName) {
+						queryPos.add(attributeName);
+					}
+
+					if (bindLanguageId) {
+						queryPos.add(languageId);
+					}
+
+					List<DDMFieldAttribute> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByF_AN_L, finderArgs, list);
+						}
+					}
+					else {
+						DDMFieldAttribute ddmFieldAttribute = list.get(0);
+
+						result = ddmFieldAttribute;
+
+						cacheResult(ddmFieldAttribute);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (DDMFieldAttribute)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (DDMFieldAttribute)result;
+			}
 		}
 	}
 
@@ -3134,22 +3129,23 @@ public class DDMFieldAttributePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(DDMFieldAttribute ddmFieldAttribute) {
-		if (ddmFieldAttribute.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					ddmFieldAttribute.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				DDMFieldAttributeImpl.class, ddmFieldAttribute.getPrimaryKey(),
+				ddmFieldAttribute);
+
+			finderCache.putResult(
+				_finderPathFetchByF_AN_L,
+				new Object[] {
+					ddmFieldAttribute.getFieldId(),
+					ddmFieldAttribute.getAttributeName(),
+					ddmFieldAttribute.getLanguageId()
+				},
+				ddmFieldAttribute);
 		}
-
-		entityCache.putResult(
-			DDMFieldAttributeImpl.class, ddmFieldAttribute.getPrimaryKey(),
-			ddmFieldAttribute);
-
-		finderCache.putResult(
-			_finderPathFetchByF_AN_L,
-			new Object[] {
-				ddmFieldAttribute.getFieldId(),
-				ddmFieldAttribute.getAttributeName(),
-				ddmFieldAttribute.getLanguageId()
-			},
-			ddmFieldAttribute);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -3170,15 +3166,18 @@ public class DDMFieldAttributePersistenceImpl
 		}
 
 		for (DDMFieldAttribute ddmFieldAttribute : ddmFieldAttributes) {
-			if (ddmFieldAttribute.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(ddmFieldAttribute.getCtCollectionId() != 0) &&
+						(ddmFieldAttribute.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					DDMFieldAttributeImpl.class,
-					ddmFieldAttribute.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						DDMFieldAttributeImpl.class,
+						ddmFieldAttribute.getPrimaryKey()) == null) {
 
-				cacheResult(ddmFieldAttribute);
+					cacheResult(ddmFieldAttribute);
+				}
 			}
 		}
 	}
@@ -3230,15 +3229,21 @@ public class DDMFieldAttributePersistenceImpl
 	protected void cacheUniqueFindersCache(
 		DDMFieldAttributeModelImpl ddmFieldAttributeModelImpl) {
 
-		Object[] args = new Object[] {
-			ddmFieldAttributeModelImpl.getFieldId(),
-			ddmFieldAttributeModelImpl.getAttributeName(),
-			ddmFieldAttributeModelImpl.getLanguageId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					ddmFieldAttributeModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByF_AN_L, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByF_AN_L, args, ddmFieldAttributeModelImpl);
+			Object[] args = new Object[] {
+				ddmFieldAttributeModelImpl.getFieldId(),
+				ddmFieldAttributeModelImpl.getAttributeName(),
+				ddmFieldAttributeModelImpl.getLanguageId()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByF_AN_L, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByF_AN_L, args, ddmFieldAttributeModelImpl);
+		}
 	}
 
 	/**
@@ -3352,55 +3357,64 @@ public class DDMFieldAttributePersistenceImpl
 
 	@Override
 	public DDMFieldAttribute updateImpl(DDMFieldAttribute ddmFieldAttribute) {
-		boolean isNew = ddmFieldAttribute.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(ddmFieldAttribute instanceof DDMFieldAttributeModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = ddmFieldAttribute.isNew();
 
-			if (ProxyUtil.isProxyClass(ddmFieldAttribute.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					ddmFieldAttribute);
+			if (!(ddmFieldAttribute instanceof DDMFieldAttributeModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in ddmFieldAttribute proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(ddmFieldAttribute.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						ddmFieldAttribute);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom DDMFieldAttribute implementation " +
-					ddmFieldAttribute.getClass());
-		}
-
-		DDMFieldAttributeModelImpl ddmFieldAttributeModelImpl =
-			(DDMFieldAttributeModelImpl)ddmFieldAttribute;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(ddmFieldAttribute)) {
-				if (!isNew) {
-					session.evict(
-						DDMFieldAttributeImpl.class,
-						ddmFieldAttribute.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in ddmFieldAttribute proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(ddmFieldAttribute);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom DDMFieldAttribute implementation " +
+						ddmFieldAttribute.getClass());
 			}
-			else {
-				ddmFieldAttribute = (DDMFieldAttribute)session.merge(
-					ddmFieldAttribute);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (ddmFieldAttribute.getCtCollectionId() != 0) {
+			DDMFieldAttributeModelImpl ddmFieldAttributeModelImpl =
+				(DDMFieldAttributeModelImpl)ddmFieldAttribute;
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(ddmFieldAttribute)) {
+					if (!isNew) {
+						session.evict(
+							DDMFieldAttributeImpl.class,
+							ddmFieldAttribute.getPrimaryKeyObj());
+					}
+
+					session.save(ddmFieldAttribute);
+				}
+				else {
+					ddmFieldAttribute = (DDMFieldAttribute)session.merge(
+						ddmFieldAttribute);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				DDMFieldAttributeImpl.class, ddmFieldAttributeModelImpl, false,
+				true);
+
+			cacheUniqueFindersCache(ddmFieldAttributeModelImpl);
+
 			if (isNew) {
 				ddmFieldAttribute.setNew(false);
 			}
@@ -3409,20 +3423,6 @@ public class DDMFieldAttributePersistenceImpl
 
 			return ddmFieldAttribute;
 		}
-
-		entityCache.putResult(
-			DDMFieldAttributeImpl.class, ddmFieldAttributeModelImpl, false,
-			true);
-
-		cacheUniqueFindersCache(ddmFieldAttributeModelImpl);
-
-		if (isNew) {
-			ddmFieldAttribute.setNew(false);
-		}
-
-		ddmFieldAttribute.resetOriginalValues();
-
-		return ddmFieldAttribute;
 	}
 
 	/**
@@ -3472,34 +3472,13 @@ public class DDMFieldAttributePersistenceImpl
 	 */
 	@Override
 	public DDMFieldAttribute fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				DDMFieldAttribute.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						DDMFieldAttribute.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		DDMFieldAttribute ddmFieldAttribute = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			ddmFieldAttribute = (DDMFieldAttribute)session.get(
-				DDMFieldAttributeImpl.class, primaryKey);
-
-			if (ddmFieldAttribute != null) {
-				cacheResult(ddmFieldAttribute);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return ddmFieldAttribute;
 	}
 
 	/**
@@ -3517,94 +3496,13 @@ public class DDMFieldAttributePersistenceImpl
 	public Map<Serializable, DDMFieldAttribute> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(DDMFieldAttribute.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						DDMFieldAttribute.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, DDMFieldAttribute> map =
-			new HashMap<Serializable, DDMFieldAttribute>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			DDMFieldAttribute ddmFieldAttribute = fetchByPrimaryKey(primaryKey);
-
-			if (ddmFieldAttribute != null) {
-				map.put(primaryKey, ddmFieldAttribute);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (DDMFieldAttribute ddmFieldAttribute :
-					(List<DDMFieldAttribute>)query.list()) {
-
-				map.put(
-					ddmFieldAttribute.getPrimaryKeyObj(), ddmFieldAttribute);
-
-				cacheResult(ddmFieldAttribute);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

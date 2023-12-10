@@ -5,8 +5,11 @@
 
 package com.liferay.portal.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -44,7 +47,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1977,110 +1979,105 @@ public class PortletPreferenceValuePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {portletPreferencesId, index, name};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						PortletPreferenceValue.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByP_I_N, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			PortletPreferenceValue.class);
-
-		if (result instanceof PortletPreferenceValue) {
-			PortletPreferenceValue portletPreferenceValue =
-				(PortletPreferenceValue)result;
-
-			if ((portletPreferencesId !=
-					portletPreferenceValue.getPortletPreferencesId()) ||
-				(index != portletPreferenceValue.getIndex()) ||
-				!Objects.equals(name, portletPreferenceValue.getName())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferenceValue.class,
-						portletPreferenceValue.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_PORTLETPREFERENCEVALUE_WHERE);
-
-			sb.append(_FINDER_COLUMN_P_I_N_PORTLETPREFERENCESID_2);
-
-			sb.append(_FINDER_COLUMN_P_I_N_INDEX_2);
-
-			boolean bindName = false;
-
-			if (name.isEmpty()) {
-				sb.append(_FINDER_COLUMN_P_I_N_NAME_3);
-			}
-			else {
-				bindName = true;
-
-				sb.append(_FINDER_COLUMN_P_I_N_NAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {portletPreferencesId, index, name};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByP_I_N, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof PortletPreferenceValue) {
+				PortletPreferenceValue portletPreferenceValue =
+					(PortletPreferenceValue)result;
 
-				Query query = session.createQuery(sql);
+				if ((portletPreferencesId !=
+						portletPreferenceValue.getPortletPreferencesId()) ||
+					(index != portletPreferenceValue.getIndex()) ||
+					!Objects.equals(name, portletPreferenceValue.getName())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(portletPreferencesId);
-
-				queryPos.add(index);
-
-				if (bindName) {
-					queryPos.add(name);
+					result = null;
 				}
+			}
 
-				List<PortletPreferenceValue> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByP_I_N, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_PORTLETPREFERENCEVALUE_WHERE);
+
+				sb.append(_FINDER_COLUMN_P_I_N_PORTLETPREFERENCESID_2);
+
+				sb.append(_FINDER_COLUMN_P_I_N_INDEX_2);
+
+				boolean bindName = false;
+
+				if (name.isEmpty()) {
+					sb.append(_FINDER_COLUMN_P_I_N_NAME_3);
 				}
 				else {
-					PortletPreferenceValue portletPreferenceValue = list.get(0);
+					bindName = true;
 
-					result = portletPreferenceValue;
+					sb.append(_FINDER_COLUMN_P_I_N_NAME_2);
+				}
 
-					cacheResult(portletPreferenceValue);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(portletPreferencesId);
+
+					queryPos.add(index);
+
+					if (bindName) {
+						queryPos.add(name);
+					}
+
+					List<PortletPreferenceValue> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByP_I_N, finderArgs, list);
+						}
+					}
+					else {
+						PortletPreferenceValue portletPreferenceValue =
+							list.get(0);
+
+						result = portletPreferenceValue;
+
+						cacheResult(portletPreferenceValue);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (PortletPreferenceValue)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (PortletPreferenceValue)result;
+			}
 		}
 	}
 
@@ -2911,22 +2908,23 @@ public class PortletPreferenceValuePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(PortletPreferenceValue portletPreferenceValue) {
-		if (portletPreferenceValue.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					portletPreferenceValue.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				PortletPreferenceValueImpl.class,
+				portletPreferenceValue.getPrimaryKey(), portletPreferenceValue);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByP_I_N,
+				new Object[] {
+					portletPreferenceValue.getPortletPreferencesId(),
+					portletPreferenceValue.getIndex(),
+					portletPreferenceValue.getName()
+				},
+				portletPreferenceValue);
 		}
-
-		EntityCacheUtil.putResult(
-			PortletPreferenceValueImpl.class,
-			portletPreferenceValue.getPrimaryKey(), portletPreferenceValue);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByP_I_N,
-			new Object[] {
-				portletPreferenceValue.getPortletPreferencesId(),
-				portletPreferenceValue.getIndex(),
-				portletPreferenceValue.getName()
-			},
-			portletPreferenceValue);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2951,15 +2949,18 @@ public class PortletPreferenceValuePersistenceImpl
 		for (PortletPreferenceValue portletPreferenceValue :
 				portletPreferenceValues) {
 
-			if (portletPreferenceValue.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(portletPreferenceValue.getCtCollectionId() != 0) &&
+						(portletPreferenceValue.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					PortletPreferenceValueImpl.class,
-					portletPreferenceValue.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						PortletPreferenceValueImpl.class,
+						portletPreferenceValue.getPrimaryKey()) == null) {
 
-				cacheResult(portletPreferenceValue);
+					cacheResult(portletPreferenceValue);
+				}
 			}
 		}
 	}
@@ -3016,16 +3017,21 @@ public class PortletPreferenceValuePersistenceImpl
 	protected void cacheUniqueFindersCache(
 		PortletPreferenceValueModelImpl portletPreferenceValueModelImpl) {
 
-		Object[] args = new Object[] {
-			portletPreferenceValueModelImpl.getPortletPreferencesId(),
-			portletPreferenceValueModelImpl.getIndex(),
-			portletPreferenceValueModelImpl.getName()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					portletPreferenceValueModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByP_I_N, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByP_I_N, args, portletPreferenceValueModelImpl);
+			Object[] args = new Object[] {
+				portletPreferenceValueModelImpl.getPortletPreferencesId(),
+				portletPreferenceValueModelImpl.getIndex(),
+				portletPreferenceValueModelImpl.getName()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByP_I_N, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByP_I_N, args, portletPreferenceValueModelImpl);
+		}
 	}
 
 	/**
@@ -3142,57 +3148,67 @@ public class PortletPreferenceValuePersistenceImpl
 	public PortletPreferenceValue updateImpl(
 		PortletPreferenceValue portletPreferenceValue) {
 
-		boolean isNew = portletPreferenceValue.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(portletPreferenceValue instanceof
-				PortletPreferenceValueModelImpl)) {
+			boolean isNew = portletPreferenceValue.isNew();
 
-			InvocationHandler invocationHandler = null;
+			if (!(portletPreferenceValue instanceof
+					PortletPreferenceValueModelImpl)) {
 
-			if (ProxyUtil.isProxyClass(portletPreferenceValue.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					portletPreferenceValue);
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in portletPreferenceValue proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(portletPreferenceValue.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						portletPreferenceValue);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom PortletPreferenceValue implementation " +
-					portletPreferenceValue.getClass());
-		}
-
-		PortletPreferenceValueModelImpl portletPreferenceValueModelImpl =
-			(PortletPreferenceValueModelImpl)portletPreferenceValue;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(portletPreferenceValue)) {
-				if (!isNew) {
-					session.evict(
-						PortletPreferenceValueImpl.class,
-						portletPreferenceValue.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in portletPreferenceValue proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(portletPreferenceValue);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom PortletPreferenceValue implementation " +
+						portletPreferenceValue.getClass());
 			}
-			else {
-				portletPreferenceValue = (PortletPreferenceValue)session.merge(
-					portletPreferenceValue);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (portletPreferenceValue.getCtCollectionId() != 0) {
+			PortletPreferenceValueModelImpl portletPreferenceValueModelImpl =
+				(PortletPreferenceValueModelImpl)portletPreferenceValue;
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(portletPreferenceValue)) {
+					if (!isNew) {
+						session.evict(
+							PortletPreferenceValueImpl.class,
+							portletPreferenceValue.getPrimaryKeyObj());
+					}
+
+					session.save(portletPreferenceValue);
+				}
+				else {
+					portletPreferenceValue =
+						(PortletPreferenceValue)session.merge(
+							portletPreferenceValue);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				PortletPreferenceValueImpl.class,
+				portletPreferenceValueModelImpl, false, true);
+
+			cacheUniqueFindersCache(portletPreferenceValueModelImpl);
+
 			if (isNew) {
 				portletPreferenceValue.setNew(false);
 			}
@@ -3201,20 +3217,6 @@ public class PortletPreferenceValuePersistenceImpl
 
 			return portletPreferenceValue;
 		}
-
-		EntityCacheUtil.putResult(
-			PortletPreferenceValueImpl.class, portletPreferenceValueModelImpl,
-			false, true);
-
-		cacheUniqueFindersCache(portletPreferenceValueModelImpl);
-
-		if (isNew) {
-			portletPreferenceValue.setNew(false);
-		}
-
-		portletPreferenceValue.resetOriginalValues();
-
-		return portletPreferenceValue;
 	}
 
 	/**
@@ -3266,34 +3268,13 @@ public class PortletPreferenceValuePersistenceImpl
 	 */
 	@Override
 	public PortletPreferenceValue fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				PortletPreferenceValue.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						PortletPreferenceValue.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		PortletPreferenceValue portletPreferenceValue = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			portletPreferenceValue = (PortletPreferenceValue)session.get(
-				PortletPreferenceValueImpl.class, primaryKey);
-
-			if (portletPreferenceValue != null) {
-				cacheResult(portletPreferenceValue);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return portletPreferenceValue;
 	}
 
 	/**
@@ -3313,98 +3294,13 @@ public class PortletPreferenceValuePersistenceImpl
 	public Map<Serializable, PortletPreferenceValue> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(
-				PortletPreferenceValue.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						PortletPreferenceValue.class))) {
 
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, PortletPreferenceValue> map =
-			new HashMap<Serializable, PortletPreferenceValue>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			PortletPreferenceValue portletPreferenceValue = fetchByPrimaryKey(
-				primaryKey);
-
-			if (portletPreferenceValue != null) {
-				map.put(primaryKey, portletPreferenceValue);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (PortletPreferenceValue portletPreferenceValue :
-					(List<PortletPreferenceValue>)query.list()) {
-
-				map.put(
-					portletPreferenceValue.getPrimaryKeyObj(),
-					portletPreferenceValue);
-
-				cacheResult(portletPreferenceValue);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

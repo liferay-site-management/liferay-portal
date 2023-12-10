@@ -13,8 +13,11 @@ import com.liferay.analytics.message.storage.model.impl.AnalyticsAssociationMode
 import com.liferay.analytics.message.storage.service.persistence.AnalyticsAssociationPersistence;
 import com.liferay.analytics.message.storage.service.persistence.AnalyticsAssociationUtil;
 import com.liferay.analytics.message.storage.service.persistence.impl.constants.AnalyticsPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -47,9 +50,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -2055,13 +2056,14 @@ public class AnalyticsAssociationPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(AnalyticsAssociation analyticsAssociation) {
-		if (analyticsAssociation.getCtCollectionId() != 0) {
-			return;
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					analyticsAssociation.getCtCollectionId() != 0)) {
 
-		entityCache.putResult(
-			AnalyticsAssociationImpl.class,
-			analyticsAssociation.getPrimaryKey(), analyticsAssociation);
+			entityCache.putResult(
+				AnalyticsAssociationImpl.class,
+				analyticsAssociation.getPrimaryKey(), analyticsAssociation);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2084,15 +2086,18 @@ public class AnalyticsAssociationPersistenceImpl
 		for (AnalyticsAssociation analyticsAssociation :
 				analyticsAssociations) {
 
-			if (analyticsAssociation.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(analyticsAssociation.getCtCollectionId() != 0) &&
+						(analyticsAssociation.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					AnalyticsAssociationImpl.class,
-					analyticsAssociation.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						AnalyticsAssociationImpl.class,
+						analyticsAssociation.getPrimaryKey()) == null) {
 
-				cacheResult(analyticsAssociation);
+					cacheResult(analyticsAssociation);
+				}
 			}
 		}
 	}
@@ -2258,80 +2263,89 @@ public class AnalyticsAssociationPersistenceImpl
 	public AnalyticsAssociation updateImpl(
 		AnalyticsAssociation analyticsAssociation) {
 
-		boolean isNew = analyticsAssociation.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(analyticsAssociation instanceof AnalyticsAssociationModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = analyticsAssociation.isNew();
 
-			if (ProxyUtil.isProxyClass(analyticsAssociation.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					analyticsAssociation);
+			if (!(analyticsAssociation instanceof
+					AnalyticsAssociationModelImpl)) {
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in analyticsAssociation proxy " +
-						invocationHandler.getClass());
-			}
+				InvocationHandler invocationHandler = null;
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom AnalyticsAssociation implementation " +
-					analyticsAssociation.getClass());
-		}
+				if (ProxyUtil.isProxyClass(analyticsAssociation.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						analyticsAssociation);
 
-		AnalyticsAssociationModelImpl analyticsAssociationModelImpl =
-			(AnalyticsAssociationModelImpl)analyticsAssociation;
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (analyticsAssociation.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				analyticsAssociation.setCreateDate(date);
-			}
-			else {
-				analyticsAssociation.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!analyticsAssociationModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				analyticsAssociation.setModifiedDate(date);
-			}
-			else {
-				analyticsAssociation.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(analyticsAssociation)) {
-				if (!isNew) {
-					session.evict(
-						AnalyticsAssociationImpl.class,
-						analyticsAssociation.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in analyticsAssociation proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(analyticsAssociation);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom AnalyticsAssociation implementation " +
+						analyticsAssociation.getClass());
 			}
-			else {
-				analyticsAssociation = (AnalyticsAssociation)session.merge(
-					analyticsAssociation);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (analyticsAssociation.getCtCollectionId() != 0) {
+			AnalyticsAssociationModelImpl analyticsAssociationModelImpl =
+				(AnalyticsAssociationModelImpl)analyticsAssociation;
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (analyticsAssociation.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					analyticsAssociation.setCreateDate(date);
+				}
+				else {
+					analyticsAssociation.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!analyticsAssociationModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					analyticsAssociation.setModifiedDate(date);
+				}
+				else {
+					analyticsAssociation.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(analyticsAssociation)) {
+					if (!isNew) {
+						session.evict(
+							AnalyticsAssociationImpl.class,
+							analyticsAssociation.getPrimaryKeyObj());
+					}
+
+					session.save(analyticsAssociation);
+				}
+				else {
+					analyticsAssociation = (AnalyticsAssociation)session.merge(
+						analyticsAssociation);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				AnalyticsAssociationImpl.class, analyticsAssociationModelImpl,
+				false, true);
+
 			if (isNew) {
 				analyticsAssociation.setNew(false);
 			}
@@ -2340,18 +2354,6 @@ public class AnalyticsAssociationPersistenceImpl
 
 			return analyticsAssociation;
 		}
-
-		entityCache.putResult(
-			AnalyticsAssociationImpl.class, analyticsAssociationModelImpl,
-			false, true);
-
-		if (isNew) {
-			analyticsAssociation.setNew(false);
-		}
-
-		analyticsAssociation.resetOriginalValues();
-
-		return analyticsAssociation;
 	}
 
 	/**
@@ -2402,34 +2404,13 @@ public class AnalyticsAssociationPersistenceImpl
 	 */
 	@Override
 	public AnalyticsAssociation fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				AnalyticsAssociation.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AnalyticsAssociation.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		AnalyticsAssociation analyticsAssociation = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			analyticsAssociation = (AnalyticsAssociation)session.get(
-				AnalyticsAssociationImpl.class, primaryKey);
-
-			if (analyticsAssociation != null) {
-				cacheResult(analyticsAssociation);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return analyticsAssociation;
 	}
 
 	/**
@@ -2447,96 +2428,13 @@ public class AnalyticsAssociationPersistenceImpl
 	public Map<Serializable, AnalyticsAssociation> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(AnalyticsAssociation.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AnalyticsAssociation.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, AnalyticsAssociation> map =
-			new HashMap<Serializable, AnalyticsAssociation>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			AnalyticsAssociation analyticsAssociation = fetchByPrimaryKey(
-				primaryKey);
-
-			if (analyticsAssociation != null) {
-				map.put(primaryKey, analyticsAssociation);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (AnalyticsAssociation analyticsAssociation :
-					(List<AnalyticsAssociation>)query.list()) {
-
-				map.put(
-					analyticsAssociation.getPrimaryKeyObj(),
-					analyticsAssociation);
-
-				cacheResult(analyticsAssociation);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

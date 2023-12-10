@@ -13,8 +13,11 @@ import com.liferay.commerce.product.model.impl.CPDefinitionLinkModelImpl;
 import com.liferay.commerce.product.service.persistence.CPDefinitionLinkPersistence;
 import com.liferay.commerce.product.service.persistence.CPDefinitionLinkUtil;
 import com.liferay.commerce.product.service.persistence.impl.constants.CommercePersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -52,7 +55,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -714,103 +716,97 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPDefinitionLink.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionLink.class);
-
-		if (result instanceof CPDefinitionLink) {
-			CPDefinitionLink cpDefinitionLink = (CPDefinitionLink)result;
-
-			if (!Objects.equals(uuid, cpDefinitionLink.getUuid()) ||
-				(groupId != cpDefinitionLink.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						CPDefinitionLink.class,
-						cpDefinitionLink.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_CPDEFINITIONLINK_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof CPDefinitionLink) {
+				CPDefinitionLink cpDefinitionLink = (CPDefinitionLink)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, cpDefinitionLink.getUuid()) ||
+					(groupId != cpDefinitionLink.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<CPDefinitionLink> list = query.list();
+				sb.append(_SQL_SELECT_CPDEFINITIONLINK_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					CPDefinitionLink cpDefinitionLink = list.get(0);
+					bindUuid = true;
 
-					result = cpDefinitionLink;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(cpDefinitionLink);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<CPDefinitionLink> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						CPDefinitionLink cpDefinitionLink = list.get(0);
+
+						result = cpDefinitionLink;
+
+						cacheResult(cpDefinitionLink);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (CPDefinitionLink)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (CPDefinitionLink)result;
+			}
 		}
 	}
 
@@ -6117,108 +6113,102 @@ public class CPDefinitionLinkPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {CPDefinitionId, CProductId, type};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPDefinitionLink.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByC_C_T, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionLink.class);
-
-		if (result instanceof CPDefinitionLink) {
-			CPDefinitionLink cpDefinitionLink = (CPDefinitionLink)result;
-
-			if ((CPDefinitionId != cpDefinitionLink.getCPDefinitionId()) ||
-				(CProductId != cpDefinitionLink.getCProductId()) ||
-				!Objects.equals(type, cpDefinitionLink.getType())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						CPDefinitionLink.class,
-						cpDefinitionLink.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_CPDEFINITIONLINK_WHERE);
-
-			sb.append(_FINDER_COLUMN_C_C_T_CPDEFINITIONID_2);
-
-			sb.append(_FINDER_COLUMN_C_C_T_CPRODUCTID_2);
-
-			boolean bindType = false;
-
-			if (type.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_C_T_TYPE_3);
-			}
-			else {
-				bindType = true;
-
-				sb.append(_FINDER_COLUMN_C_C_T_TYPE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {CPDefinitionId, CProductId, type};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByC_C_T, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof CPDefinitionLink) {
+				CPDefinitionLink cpDefinitionLink = (CPDefinitionLink)result;
 
-				Query query = session.createQuery(sql);
+				if ((CPDefinitionId != cpDefinitionLink.getCPDefinitionId()) ||
+					(CProductId != cpDefinitionLink.getCProductId()) ||
+					!Objects.equals(type, cpDefinitionLink.getType())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(CPDefinitionId);
-
-				queryPos.add(CProductId);
-
-				if (bindType) {
-					queryPos.add(type);
+					result = null;
 				}
+			}
 
-				List<CPDefinitionLink> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByC_C_T, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_CPDEFINITIONLINK_WHERE);
+
+				sb.append(_FINDER_COLUMN_C_C_T_CPDEFINITIONID_2);
+
+				sb.append(_FINDER_COLUMN_C_C_T_CPRODUCTID_2);
+
+				boolean bindType = false;
+
+				if (type.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_C_T_TYPE_3);
 				}
 				else {
-					CPDefinitionLink cpDefinitionLink = list.get(0);
+					bindType = true;
 
-					result = cpDefinitionLink;
+					sb.append(_FINDER_COLUMN_C_C_T_TYPE_2);
+				}
 
-					cacheResult(cpDefinitionLink);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(CPDefinitionId);
+
+					queryPos.add(CProductId);
+
+					if (bindType) {
+						queryPos.add(type);
+					}
+
+					List<CPDefinitionLink> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByC_C_T, finderArgs, list);
+						}
+					}
+					else {
+						CPDefinitionLink cpDefinitionLink = list.get(0);
+
+						result = cpDefinitionLink;
+
+						cacheResult(cpDefinitionLink);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (CPDefinitionLink)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (CPDefinitionLink)result;
+			}
 		}
 	}
 
@@ -7631,28 +7621,29 @@ public class CPDefinitionLinkPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(CPDefinitionLink cpDefinitionLink) {
-		if (cpDefinitionLink.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					cpDefinitionLink.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				CPDefinitionLinkImpl.class, cpDefinitionLink.getPrimaryKey(),
+				cpDefinitionLink);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					cpDefinitionLink.getUuid(), cpDefinitionLink.getGroupId()
+				},
+				cpDefinitionLink);
+
+			finderCache.putResult(
+				_finderPathFetchByC_C_T,
+				new Object[] {
+					cpDefinitionLink.getCPDefinitionId(),
+					cpDefinitionLink.getCProductId(), cpDefinitionLink.getType()
+				},
+				cpDefinitionLink);
 		}
-
-		entityCache.putResult(
-			CPDefinitionLinkImpl.class, cpDefinitionLink.getPrimaryKey(),
-			cpDefinitionLink);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {
-				cpDefinitionLink.getUuid(), cpDefinitionLink.getGroupId()
-			},
-			cpDefinitionLink);
-
-		finderCache.putResult(
-			_finderPathFetchByC_C_T,
-			new Object[] {
-				cpDefinitionLink.getCPDefinitionId(),
-				cpDefinitionLink.getCProductId(), cpDefinitionLink.getType()
-			},
-			cpDefinitionLink);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -7673,15 +7664,18 @@ public class CPDefinitionLinkPersistenceImpl
 		}
 
 		for (CPDefinitionLink cpDefinitionLink : cpDefinitionLinks) {
-			if (cpDefinitionLink.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(cpDefinitionLink.getCtCollectionId() != 0) &&
+						(cpDefinitionLink.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					CPDefinitionLinkImpl.class,
-					cpDefinitionLink.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						CPDefinitionLinkImpl.class,
+						cpDefinitionLink.getPrimaryKey()) == null) {
 
-				cacheResult(cpDefinitionLink);
+					cacheResult(cpDefinitionLink);
+				}
 			}
 		}
 	}
@@ -7732,24 +7726,31 @@ public class CPDefinitionLinkPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		CPDefinitionLinkModelImpl cpDefinitionLinkModelImpl) {
 
-		Object[] args = new Object[] {
-			cpDefinitionLinkModelImpl.getUuid(),
-			cpDefinitionLinkModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					cpDefinitionLinkModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, cpDefinitionLinkModelImpl);
+			Object[] args = new Object[] {
+				cpDefinitionLinkModelImpl.getUuid(),
+				cpDefinitionLinkModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			cpDefinitionLinkModelImpl.getCPDefinitionId(),
-			cpDefinitionLinkModelImpl.getCProductId(),
-			cpDefinitionLinkModelImpl.getType()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, cpDefinitionLinkModelImpl);
 
-		finderCache.putResult(_finderPathCountByC_C_T, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByC_C_T, args, cpDefinitionLinkModelImpl);
+			args = new Object[] {
+				cpDefinitionLinkModelImpl.getCPDefinitionId(),
+				cpDefinitionLinkModelImpl.getCProductId(),
+				cpDefinitionLinkModelImpl.getType()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByC_C_T, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByC_C_T, args, cpDefinitionLinkModelImpl);
+		}
 	}
 
 	/**
@@ -7864,86 +7865,95 @@ public class CPDefinitionLinkPersistenceImpl
 
 	@Override
 	public CPDefinitionLink updateImpl(CPDefinitionLink cpDefinitionLink) {
-		boolean isNew = cpDefinitionLink.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(cpDefinitionLink instanceof CPDefinitionLinkModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = cpDefinitionLink.isNew();
 
-			if (ProxyUtil.isProxyClass(cpDefinitionLink.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					cpDefinitionLink);
+			if (!(cpDefinitionLink instanceof CPDefinitionLinkModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in cpDefinitionLink proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(cpDefinitionLink.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						cpDefinitionLink);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom CPDefinitionLink implementation " +
-					cpDefinitionLink.getClass());
-		}
-
-		CPDefinitionLinkModelImpl cpDefinitionLinkModelImpl =
-			(CPDefinitionLinkModelImpl)cpDefinitionLink;
-
-		if (Validator.isNull(cpDefinitionLink.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			cpDefinitionLink.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (cpDefinitionLink.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				cpDefinitionLink.setCreateDate(date);
-			}
-			else {
-				cpDefinitionLink.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!cpDefinitionLinkModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				cpDefinitionLink.setModifiedDate(date);
-			}
-			else {
-				cpDefinitionLink.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(cpDefinitionLink)) {
-				if (!isNew) {
-					session.evict(
-						CPDefinitionLinkImpl.class,
-						cpDefinitionLink.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in cpDefinitionLink proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(cpDefinitionLink);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom CPDefinitionLink implementation " +
+						cpDefinitionLink.getClass());
 			}
-			else {
-				cpDefinitionLink = (CPDefinitionLink)session.merge(
-					cpDefinitionLink);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (cpDefinitionLink.getCtCollectionId() != 0) {
+			CPDefinitionLinkModelImpl cpDefinitionLinkModelImpl =
+				(CPDefinitionLinkModelImpl)cpDefinitionLink;
+
+			if (Validator.isNull(cpDefinitionLink.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				cpDefinitionLink.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (cpDefinitionLink.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					cpDefinitionLink.setCreateDate(date);
+				}
+				else {
+					cpDefinitionLink.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!cpDefinitionLinkModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					cpDefinitionLink.setModifiedDate(date);
+				}
+				else {
+					cpDefinitionLink.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(cpDefinitionLink)) {
+					if (!isNew) {
+						session.evict(
+							CPDefinitionLinkImpl.class,
+							cpDefinitionLink.getPrimaryKeyObj());
+					}
+
+					session.save(cpDefinitionLink);
+				}
+				else {
+					cpDefinitionLink = (CPDefinitionLink)session.merge(
+						cpDefinitionLink);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				CPDefinitionLinkImpl.class, cpDefinitionLinkModelImpl, false,
+				true);
+
+			cacheUniqueFindersCache(cpDefinitionLinkModelImpl);
+
 			if (isNew) {
 				cpDefinitionLink.setNew(false);
 			}
@@ -7952,19 +7962,6 @@ public class CPDefinitionLinkPersistenceImpl
 
 			return cpDefinitionLink;
 		}
-
-		entityCache.putResult(
-			CPDefinitionLinkImpl.class, cpDefinitionLinkModelImpl, false, true);
-
-		cacheUniqueFindersCache(cpDefinitionLinkModelImpl);
-
-		if (isNew) {
-			cpDefinitionLink.setNew(false);
-		}
-
-		cpDefinitionLink.resetOriginalValues();
-
-		return cpDefinitionLink;
 	}
 
 	/**
@@ -8014,34 +8011,13 @@ public class CPDefinitionLinkPersistenceImpl
 	 */
 	@Override
 	public CPDefinitionLink fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				CPDefinitionLink.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPDefinitionLink.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		CPDefinitionLink cpDefinitionLink = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			cpDefinitionLink = (CPDefinitionLink)session.get(
-				CPDefinitionLinkImpl.class, primaryKey);
-
-			if (cpDefinitionLink != null) {
-				cacheResult(cpDefinitionLink);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return cpDefinitionLink;
 	}
 
 	/**
@@ -8059,93 +8035,13 @@ public class CPDefinitionLinkPersistenceImpl
 	public Map<Serializable, CPDefinitionLink> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(CPDefinitionLink.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPDefinitionLink.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, CPDefinitionLink> map =
-			new HashMap<Serializable, CPDefinitionLink>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			CPDefinitionLink cpDefinitionLink = fetchByPrimaryKey(primaryKey);
-
-			if (cpDefinitionLink != null) {
-				map.put(primaryKey, cpDefinitionLink);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (CPDefinitionLink cpDefinitionLink :
-					(List<CPDefinitionLink>)query.list()) {
-
-				map.put(cpDefinitionLink.getPrimaryKeyObj(), cpDefinitionLink);
-
-				cacheResult(cpDefinitionLink);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

@@ -14,8 +14,11 @@ import com.liferay.blogs.model.impl.BlogsEntryModelImpl;
 import com.liferay.blogs.service.persistence.BlogsEntryPersistence;
 import com.liferay.blogs.service.persistence.BlogsEntryUtil;
 import com.liferay.blogs.service.persistence.impl.constants.BlogsPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -63,7 +66,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -719,102 +721,96 @@ public class BlogsEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			BlogsEntry.class);
-
-		if (result instanceof BlogsEntry) {
-			BlogsEntry blogsEntry = (BlogsEntry)result;
-
-			if (!Objects.equals(uuid, blogsEntry.getUuid()) ||
-				(groupId != blogsEntry.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						BlogsEntry.class, blogsEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_BLOGSENTRY_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof BlogsEntry) {
+				BlogsEntry blogsEntry = (BlogsEntry)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, blogsEntry.getUuid()) ||
+					(groupId != blogsEntry.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<BlogsEntry> list = query.list();
+				sb.append(_SQL_SELECT_BLOGSENTRY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					BlogsEntry blogsEntry = list.get(0);
+					bindUuid = true;
 
-					result = blogsEntry;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(blogsEntry);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<BlogsEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						BlogsEntry blogsEntry = list.get(0);
+
+						result = blogsEntry;
+
+						cacheResult(blogsEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (BlogsEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (BlogsEntry)result;
+			}
 		}
 	}
 
@@ -2971,102 +2967,96 @@ public class BlogsEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, urlTitle};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_UT, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			BlogsEntry.class);
-
-		if (result instanceof BlogsEntry) {
-			BlogsEntry blogsEntry = (BlogsEntry)result;
-
-			if ((groupId != blogsEntry.getGroupId()) ||
-				!Objects.equals(urlTitle, blogsEntry.getUrlTitle())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						BlogsEntry.class, blogsEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_BLOGSENTRY_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_UT_GROUPID_2);
-
-			boolean bindUrlTitle = false;
-
-			if (urlTitle.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_UT_URLTITLE_3);
-			}
-			else {
-				bindUrlTitle = true;
-
-				sb.append(_FINDER_COLUMN_G_UT_URLTITLE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, urlTitle};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_UT, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof BlogsEntry) {
+				BlogsEntry blogsEntry = (BlogsEntry)result;
 
-				Query query = session.createQuery(sql);
+				if ((groupId != blogsEntry.getGroupId()) ||
+					!Objects.equals(urlTitle, blogsEntry.getUrlTitle())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				if (bindUrlTitle) {
-					queryPos.add(urlTitle);
+					result = null;
 				}
+			}
 
-				List<BlogsEntry> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_UT, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_BLOGSENTRY_WHERE);
+
+				sb.append(_FINDER_COLUMN_G_UT_GROUPID_2);
+
+				boolean bindUrlTitle = false;
+
+				if (urlTitle.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_UT_URLTITLE_3);
 				}
 				else {
-					BlogsEntry blogsEntry = list.get(0);
+					bindUrlTitle = true;
 
-					result = blogsEntry;
+					sb.append(_FINDER_COLUMN_G_UT_URLTITLE_2);
+				}
 
-					cacheResult(blogsEntry);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					if (bindUrlTitle) {
+						queryPos.add(urlTitle);
+					}
+
+					List<BlogsEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_UT, finderArgs, list);
+						}
+					}
+					else {
+						BlogsEntry blogsEntry = list.get(0);
+
+						result = blogsEntry;
+
+						cacheResult(blogsEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (BlogsEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (BlogsEntry)result;
+			}
 		}
 	}
 
@@ -21455,104 +21445,98 @@ public class BlogsEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {externalReferenceCode, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByERC_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			BlogsEntry.class);
-
-		if (result instanceof BlogsEntry) {
-			BlogsEntry blogsEntry = (BlogsEntry)result;
-
-			if (!Objects.equals(
-					externalReferenceCode,
-					blogsEntry.getExternalReferenceCode()) ||
-				(groupId != blogsEntry.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						BlogsEntry.class, blogsEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_BLOGSENTRY_WHERE);
-
-			boolean bindExternalReferenceCode = false;
-
-			if (externalReferenceCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindExternalReferenceCode = true;
-
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {externalReferenceCode, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByERC_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof BlogsEntry) {
+				BlogsEntry blogsEntry = (BlogsEntry)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(
+						externalReferenceCode,
+						blogsEntry.getExternalReferenceCode()) ||
+					(groupId != blogsEntry.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindExternalReferenceCode) {
-					queryPos.add(externalReferenceCode);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<BlogsEntry> list = query.list();
+				sb.append(_SQL_SELECT_BLOGSENTRY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByERC_G, finderArgs, list);
-					}
+				boolean bindExternalReferenceCode = false;
+
+				if (externalReferenceCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
 				}
 				else {
-					BlogsEntry blogsEntry = list.get(0);
+					bindExternalReferenceCode = true;
 
-					result = blogsEntry;
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(blogsEntry);
+				sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindExternalReferenceCode) {
+						queryPos.add(externalReferenceCode);
+					}
+
+					queryPos.add(groupId);
+
+					List<BlogsEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByERC_G, finderArgs, list);
+						}
+					}
+					else {
+						BlogsEntry blogsEntry = list.get(0);
+
+						result = blogsEntry;
+
+						cacheResult(blogsEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (BlogsEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (BlogsEntry)result;
+			}
 		}
 	}
 
@@ -21682,29 +21666,33 @@ public class BlogsEntryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(BlogsEntry blogsEntry) {
-		if (blogsEntry.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					blogsEntry.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				BlogsEntryImpl.class, blogsEntry.getPrimaryKey(), blogsEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {blogsEntry.getUuid(), blogsEntry.getGroupId()},
+				blogsEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByG_UT,
+				new Object[] {
+					blogsEntry.getGroupId(), blogsEntry.getUrlTitle()
+				},
+				blogsEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByERC_G,
+				new Object[] {
+					blogsEntry.getExternalReferenceCode(),
+					blogsEntry.getGroupId()
+				},
+				blogsEntry);
 		}
-
-		entityCache.putResult(
-			BlogsEntryImpl.class, blogsEntry.getPrimaryKey(), blogsEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {blogsEntry.getUuid(), blogsEntry.getGroupId()},
-			blogsEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByG_UT,
-			new Object[] {blogsEntry.getGroupId(), blogsEntry.getUrlTitle()},
-			blogsEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByERC_G,
-			new Object[] {
-				blogsEntry.getExternalReferenceCode(), blogsEntry.getGroupId()
-			},
-			blogsEntry);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -21724,14 +21712,18 @@ public class BlogsEntryPersistenceImpl
 		}
 
 		for (BlogsEntry blogsEntry : blogsEntries) {
-			if (blogsEntry.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(blogsEntry.getCtCollectionId() != 0) &&
+						(blogsEntry.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					BlogsEntryImpl.class, blogsEntry.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						BlogsEntryImpl.class, blogsEntry.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(blogsEntry);
+					cacheResult(blogsEntry);
+				}
 			}
 		}
 	}
@@ -21781,30 +21773,39 @@ public class BlogsEntryPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		BlogsEntryModelImpl blogsEntryModelImpl) {
 
-		Object[] args = new Object[] {
-			blogsEntryModelImpl.getUuid(), blogsEntryModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					blogsEntryModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, blogsEntryModelImpl);
+			Object[] args = new Object[] {
+				blogsEntryModelImpl.getUuid(), blogsEntryModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			blogsEntryModelImpl.getGroupId(), blogsEntryModelImpl.getUrlTitle()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, blogsEntryModelImpl);
 
-		finderCache.putResult(_finderPathCountByG_UT, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByG_UT, args, blogsEntryModelImpl);
+			args = new Object[] {
+				blogsEntryModelImpl.getGroupId(),
+				blogsEntryModelImpl.getUrlTitle()
+			};
 
-		args = new Object[] {
-			blogsEntryModelImpl.getExternalReferenceCode(),
-			blogsEntryModelImpl.getGroupId()
-		};
+			finderCache.putResult(
+				_finderPathCountByG_UT, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_UT, args, blogsEntryModelImpl);
 
-		finderCache.putResult(_finderPathCountByERC_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByERC_G, args, blogsEntryModelImpl);
+			args = new Object[] {
+				blogsEntryModelImpl.getExternalReferenceCode(),
+				blogsEntryModelImpl.getGroupId()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByERC_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByERC_G, args, blogsEntryModelImpl);
+		}
 	}
 
 	/**
@@ -21916,146 +21917,162 @@ public class BlogsEntryPersistenceImpl
 
 	@Override
 	public BlogsEntry updateImpl(BlogsEntry blogsEntry) {
-		boolean isNew = blogsEntry.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(blogsEntry instanceof BlogsEntryModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = blogsEntry.isNew();
 
-			if (ProxyUtil.isProxyClass(blogsEntry.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(blogsEntry);
+			if (!(blogsEntry instanceof BlogsEntryModelImpl)) {
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(blogsEntry.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						blogsEntry);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in blogsEntry proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in blogsEntry proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom BlogsEntry implementation " +
+						blogsEntry.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom BlogsEntry implementation " +
-					blogsEntry.getClass());
-		}
+			BlogsEntryModelImpl blogsEntryModelImpl =
+				(BlogsEntryModelImpl)blogsEntry;
 
-		BlogsEntryModelImpl blogsEntryModelImpl =
-			(BlogsEntryModelImpl)blogsEntry;
+			if (Validator.isNull(blogsEntry.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
 
-		if (Validator.isNull(blogsEntry.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
+				blogsEntry.setUuid(uuid);
+			}
 
-			blogsEntry.setUuid(uuid);
-		}
+			if (Validator.isNull(blogsEntry.getExternalReferenceCode())) {
+				blogsEntry.setExternalReferenceCode(blogsEntry.getUuid());
+			}
+			else {
+				BlogsEntry ercBlogsEntry = fetchByERC_G(
+					blogsEntry.getExternalReferenceCode(),
+					blogsEntry.getGroupId());
 
-		if (Validator.isNull(blogsEntry.getExternalReferenceCode())) {
-			blogsEntry.setExternalReferenceCode(blogsEntry.getUuid());
-		}
-		else {
-			BlogsEntry ercBlogsEntry = fetchByERC_G(
-				blogsEntry.getExternalReferenceCode(), blogsEntry.getGroupId());
+				if (isNew) {
+					if (ercBlogsEntry != null) {
+						throw new DuplicateBlogsEntryExternalReferenceCodeException(
+							"Duplicate blogs entry with external reference code " +
+								blogsEntry.getExternalReferenceCode() +
+									" and group " + blogsEntry.getGroupId());
+					}
+				}
+				else {
+					if ((ercBlogsEntry != null) &&
+						(blogsEntry.getEntryId() !=
+							ercBlogsEntry.getEntryId())) {
 
-			if (isNew) {
-				if (ercBlogsEntry != null) {
-					throw new DuplicateBlogsEntryExternalReferenceCodeException(
-						"Duplicate blogs entry with external reference code " +
-							blogsEntry.getExternalReferenceCode() +
-								" and group " + blogsEntry.getGroupId());
+						throw new DuplicateBlogsEntryExternalReferenceCodeException(
+							"Duplicate blogs entry with external reference code " +
+								blogsEntry.getExternalReferenceCode() +
+									" and group " + blogsEntry.getGroupId());
+					}
 				}
 			}
-			else {
-				if ((ercBlogsEntry != null) &&
-					(blogsEntry.getEntryId() != ercBlogsEntry.getEntryId())) {
 
-					throw new DuplicateBlogsEntryExternalReferenceCodeException(
-						"Duplicate blogs entry with external reference code " +
-							blogsEntry.getExternalReferenceCode() +
-								" and group " + blogsEntry.getGroupId());
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (blogsEntry.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					blogsEntry.setCreateDate(date);
+				}
+				else {
+					blogsEntry.setCreateDate(
+						serviceContext.getCreateDate(date));
 				}
 			}
-		}
 
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (blogsEntry.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				blogsEntry.setCreateDate(date);
+			if (!blogsEntryModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					blogsEntry.setModifiedDate(date);
+				}
+				else {
+					blogsEntry.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
 			}
-			else {
-				blogsEntry.setCreateDate(serviceContext.getCreateDate(date));
+
+			long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
+
+			if (userId > 0) {
+				long companyId = blogsEntry.getCompanyId();
+
+				long groupId = blogsEntry.getGroupId();
+
+				long entryId = 0;
+
+				if (!isNew) {
+					entryId = blogsEntry.getPrimaryKey();
+				}
+
+				try {
+					blogsEntry.setTitle(
+						SanitizerUtil.sanitize(
+							companyId, groupId, userId,
+							BlogsEntry.class.getName(), entryId,
+							ContentTypes.TEXT_PLAIN, Sanitizer.MODE_ALL,
+							blogsEntry.getTitle(), null));
+
+					blogsEntry.setContent(
+						SanitizerUtil.sanitize(
+							companyId, groupId, userId,
+							BlogsEntry.class.getName(), entryId,
+							ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+							blogsEntry.getContent(), null));
+
+					blogsEntry.setCoverImageCaption(
+						SanitizerUtil.sanitize(
+							companyId, groupId, userId,
+							BlogsEntry.class.getName(), entryId,
+							ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+							blogsEntry.getCoverImageCaption(), null));
+				}
+				catch (SanitizerException sanitizerException) {
+					throw new SystemException(sanitizerException);
+				}
 			}
-		}
 
-		if (!blogsEntryModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				blogsEntry.setModifiedDate(date);
-			}
-			else {
-				blogsEntry.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
-
-		if (userId > 0) {
-			long companyId = blogsEntry.getCompanyId();
-
-			long groupId = blogsEntry.getGroupId();
-
-			long entryId = 0;
-
-			if (!isNew) {
-				entryId = blogsEntry.getPrimaryKey();
-			}
+			Session session = null;
 
 			try {
-				blogsEntry.setTitle(
-					SanitizerUtil.sanitize(
-						companyId, groupId, userId, BlogsEntry.class.getName(),
-						entryId, ContentTypes.TEXT_PLAIN, Sanitizer.MODE_ALL,
-						blogsEntry.getTitle(), null));
+				session = openSession();
 
-				blogsEntry.setContent(
-					SanitizerUtil.sanitize(
-						companyId, groupId, userId, BlogsEntry.class.getName(),
-						entryId, ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-						blogsEntry.getContent(), null));
+				if (ctPersistenceHelper.isInsert(blogsEntry)) {
+					if (!isNew) {
+						session.evict(
+							BlogsEntryImpl.class,
+							blogsEntry.getPrimaryKeyObj());
+					}
 
-				blogsEntry.setCoverImageCaption(
-					SanitizerUtil.sanitize(
-						companyId, groupId, userId, BlogsEntry.class.getName(),
-						entryId, ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-						blogsEntry.getCoverImageCaption(), null));
-			}
-			catch (SanitizerException sanitizerException) {
-				throw new SystemException(sanitizerException);
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(blogsEntry)) {
-				if (!isNew) {
-					session.evict(
-						BlogsEntryImpl.class, blogsEntry.getPrimaryKeyObj());
+					session.save(blogsEntry);
 				}
-
-				session.save(blogsEntry);
+				else {
+					blogsEntry = (BlogsEntry)session.merge(blogsEntry);
+				}
 			}
-			else {
-				blogsEntry = (BlogsEntry)session.merge(blogsEntry);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
+			finally {
+				closeSession(session);
+			}
 
-		if (blogsEntry.getCtCollectionId() != 0) {
+			entityCache.putResult(
+				BlogsEntryImpl.class, blogsEntryModelImpl, false, true);
+
+			cacheUniqueFindersCache(blogsEntryModelImpl);
+
 			if (isNew) {
 				blogsEntry.setNew(false);
 			}
@@ -22064,19 +22081,6 @@ public class BlogsEntryPersistenceImpl
 
 			return blogsEntry;
 		}
-
-		entityCache.putResult(
-			BlogsEntryImpl.class, blogsEntryModelImpl, false, true);
-
-		cacheUniqueFindersCache(blogsEntryModelImpl);
-
-		if (isNew) {
-			blogsEntry.setNew(false);
-		}
-
-		blogsEntry.resetOriginalValues();
-
-		return blogsEntry;
 	}
 
 	/**
@@ -22126,34 +22130,13 @@ public class BlogsEntryPersistenceImpl
 	 */
 	@Override
 	public BlogsEntry fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				BlogsEntry.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						BlogsEntry.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		BlogsEntry blogsEntry = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			blogsEntry = (BlogsEntry)session.get(
-				BlogsEntryImpl.class, primaryKey);
-
-			if (blogsEntry != null) {
-				cacheResult(blogsEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return blogsEntry;
 	}
 
 	/**
@@ -22171,91 +22154,12 @@ public class BlogsEntryPersistenceImpl
 	public Map<Serializable, BlogsEntry> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(BlogsEntry.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, BlogsEntry> map =
-			new HashMap<Serializable, BlogsEntry>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			BlogsEntry blogsEntry = fetchByPrimaryKey(primaryKey);
-
-			if (blogsEntry != null) {
-				map.put(primaryKey, blogsEntry);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (BlogsEntry blogsEntry : (List<BlogsEntry>)query.list()) {
-				map.put(blogsEntry.getPrimaryKeyObj(), blogsEntry);
-
-				cacheResult(blogsEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

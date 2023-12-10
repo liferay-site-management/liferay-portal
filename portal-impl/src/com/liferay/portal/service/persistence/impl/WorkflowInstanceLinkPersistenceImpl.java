@@ -5,8 +5,11 @@
 
 package com.liferay.portal.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -44,9 +47,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1338,13 +1339,14 @@ public class WorkflowInstanceLinkPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(WorkflowInstanceLink workflowInstanceLink) {
-		if (workflowInstanceLink.getCtCollectionId() != 0) {
-			return;
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					workflowInstanceLink.getCtCollectionId() != 0)) {
 
-		EntityCacheUtil.putResult(
-			WorkflowInstanceLinkImpl.class,
-			workflowInstanceLink.getPrimaryKey(), workflowInstanceLink);
+			EntityCacheUtil.putResult(
+				WorkflowInstanceLinkImpl.class,
+				workflowInstanceLink.getPrimaryKey(), workflowInstanceLink);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -1367,15 +1369,18 @@ public class WorkflowInstanceLinkPersistenceImpl
 		for (WorkflowInstanceLink workflowInstanceLink :
 				workflowInstanceLinks) {
 
-			if (workflowInstanceLink.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(workflowInstanceLink.getCtCollectionId() != 0) &&
+						(workflowInstanceLink.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					WorkflowInstanceLinkImpl.class,
-					workflowInstanceLink.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						WorkflowInstanceLinkImpl.class,
+						workflowInstanceLink.getPrimaryKey()) == null) {
 
-				cacheResult(workflowInstanceLink);
+					cacheResult(workflowInstanceLink);
+				}
 			}
 		}
 	}
@@ -1541,80 +1546,89 @@ public class WorkflowInstanceLinkPersistenceImpl
 	public WorkflowInstanceLink updateImpl(
 		WorkflowInstanceLink workflowInstanceLink) {
 
-		boolean isNew = workflowInstanceLink.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(workflowInstanceLink instanceof WorkflowInstanceLinkModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = workflowInstanceLink.isNew();
 
-			if (ProxyUtil.isProxyClass(workflowInstanceLink.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					workflowInstanceLink);
+			if (!(workflowInstanceLink instanceof
+					WorkflowInstanceLinkModelImpl)) {
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in workflowInstanceLink proxy " +
-						invocationHandler.getClass());
-			}
+				InvocationHandler invocationHandler = null;
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom WorkflowInstanceLink implementation " +
-					workflowInstanceLink.getClass());
-		}
+				if (ProxyUtil.isProxyClass(workflowInstanceLink.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						workflowInstanceLink);
 
-		WorkflowInstanceLinkModelImpl workflowInstanceLinkModelImpl =
-			(WorkflowInstanceLinkModelImpl)workflowInstanceLink;
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (workflowInstanceLink.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				workflowInstanceLink.setCreateDate(date);
-			}
-			else {
-				workflowInstanceLink.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!workflowInstanceLinkModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				workflowInstanceLink.setModifiedDate(date);
-			}
-			else {
-				workflowInstanceLink.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(workflowInstanceLink)) {
-				if (!isNew) {
-					session.evict(
-						WorkflowInstanceLinkImpl.class,
-						workflowInstanceLink.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in workflowInstanceLink proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(workflowInstanceLink);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom WorkflowInstanceLink implementation " +
+						workflowInstanceLink.getClass());
 			}
-			else {
-				workflowInstanceLink = (WorkflowInstanceLink)session.merge(
-					workflowInstanceLink);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (workflowInstanceLink.getCtCollectionId() != 0) {
+			WorkflowInstanceLinkModelImpl workflowInstanceLinkModelImpl =
+				(WorkflowInstanceLinkModelImpl)workflowInstanceLink;
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (workflowInstanceLink.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					workflowInstanceLink.setCreateDate(date);
+				}
+				else {
+					workflowInstanceLink.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!workflowInstanceLinkModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					workflowInstanceLink.setModifiedDate(date);
+				}
+				else {
+					workflowInstanceLink.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(workflowInstanceLink)) {
+					if (!isNew) {
+						session.evict(
+							WorkflowInstanceLinkImpl.class,
+							workflowInstanceLink.getPrimaryKeyObj());
+					}
+
+					session.save(workflowInstanceLink);
+				}
+				else {
+					workflowInstanceLink = (WorkflowInstanceLink)session.merge(
+						workflowInstanceLink);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				WorkflowInstanceLinkImpl.class, workflowInstanceLinkModelImpl,
+				false, true);
+
 			if (isNew) {
 				workflowInstanceLink.setNew(false);
 			}
@@ -1623,18 +1637,6 @@ public class WorkflowInstanceLinkPersistenceImpl
 
 			return workflowInstanceLink;
 		}
-
-		EntityCacheUtil.putResult(
-			WorkflowInstanceLinkImpl.class, workflowInstanceLinkModelImpl,
-			false, true);
-
-		if (isNew) {
-			workflowInstanceLink.setNew(false);
-		}
-
-		workflowInstanceLink.resetOriginalValues();
-
-		return workflowInstanceLink;
 	}
 
 	/**
@@ -1685,34 +1687,13 @@ public class WorkflowInstanceLinkPersistenceImpl
 	 */
 	@Override
 	public WorkflowInstanceLink fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				WorkflowInstanceLink.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						WorkflowInstanceLink.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		WorkflowInstanceLink workflowInstanceLink = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			workflowInstanceLink = (WorkflowInstanceLink)session.get(
-				WorkflowInstanceLinkImpl.class, primaryKey);
-
-			if (workflowInstanceLink != null) {
-				cacheResult(workflowInstanceLink);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return workflowInstanceLink;
 	}
 
 	/**
@@ -1730,98 +1711,13 @@ public class WorkflowInstanceLinkPersistenceImpl
 	public Map<Serializable, WorkflowInstanceLink> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(
-				WorkflowInstanceLink.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						WorkflowInstanceLink.class))) {
 
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, WorkflowInstanceLink> map =
-			new HashMap<Serializable, WorkflowInstanceLink>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			WorkflowInstanceLink workflowInstanceLink = fetchByPrimaryKey(
-				primaryKey);
-
-			if (workflowInstanceLink != null) {
-				map.put(primaryKey, workflowInstanceLink);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (WorkflowInstanceLink workflowInstanceLink :
-					(List<WorkflowInstanceLink>)query.list()) {
-
-				map.put(
-					workflowInstanceLink.getPrimaryKeyObj(),
-					workflowInstanceLink);
-
-				cacheResult(workflowInstanceLink);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

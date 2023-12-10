@@ -13,8 +13,11 @@ import com.liferay.message.boards.model.impl.MBDiscussionModelImpl;
 import com.liferay.message.boards.service.persistence.MBDiscussionPersistence;
 import com.liferay.message.boards.service.persistence.MBDiscussionUtil;
 import com.liferay.message.boards.service.persistence.impl.constants.MBPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -50,7 +53,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -707,102 +709,97 @@ public class MBDiscussionPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						MBDiscussion.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBDiscussion.class);
-
-		if (result instanceof MBDiscussion) {
-			MBDiscussion mbDiscussion = (MBDiscussion)result;
-
-			if (!Objects.equals(uuid, mbDiscussion.getUuid()) ||
-				(groupId != mbDiscussion.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						MBDiscussion.class, mbDiscussion.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_MBDISCUSSION_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof MBDiscussion) {
+				MBDiscussion mbDiscussion = (MBDiscussion)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, mbDiscussion.getUuid()) ||
+					(groupId != mbDiscussion.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<MBDiscussion> list = query.list();
+				sb.append(_SQL_SELECT_MBDISCUSSION_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					MBDiscussion mbDiscussion = list.get(0);
+					bindUuid = true;
 
-					result = mbDiscussion;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(mbDiscussion);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<MBDiscussion> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						MBDiscussion mbDiscussion = list.get(0);
+
+						result = mbDiscussion;
+
+						cacheResult(mbDiscussion);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (MBDiscussion)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (MBDiscussion)result;
+			}
 		}
 	}
 
@@ -1563,85 +1560,80 @@ public class MBDiscussionPersistenceImpl
 	public MBDiscussion fetchByThreadId(long threadId, boolean useFinderCache) {
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {threadId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						MBDiscussion.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByThreadId, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBDiscussion.class);
-
-		if (result instanceof MBDiscussion) {
-			MBDiscussion mbDiscussion = (MBDiscussion)result;
-
-			if (threadId != mbDiscussion.getThreadId()) {
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {threadId};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						MBDiscussion.class, mbDiscussion.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByThreadId, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(3);
+			if (result instanceof MBDiscussion) {
+				MBDiscussion mbDiscussion = (MBDiscussion)result;
 
-			sb.append(_SQL_SELECT_MBDISCUSSION_WHERE);
+				if (threadId != mbDiscussion.getThreadId()) {
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_THREADID_THREADID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(3);
 
-			String sql = sb.toString();
+				sb.append(_SQL_SELECT_MBDISCUSSION_WHERE);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_THREADID_THREADID_2);
 
-			try {
-				session = openSession();
+				String sql = sb.toString();
 
-				Query query = session.createQuery(sql);
+				Session session = null;
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				try {
+					session = openSession();
 
-				queryPos.add(threadId);
+					Query query = session.createQuery(sql);
 
-				List<MBDiscussion> list = query.list();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByThreadId, finderArgs, list);
+					queryPos.add(threadId);
+
+					List<MBDiscussion> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByThreadId, finderArgs, list);
+						}
+					}
+					else {
+						MBDiscussion mbDiscussion = list.get(0);
+
+						result = mbDiscussion;
+
+						cacheResult(mbDiscussion);
 					}
 				}
-				else {
-					MBDiscussion mbDiscussion = list.get(0);
-
-					result = mbDiscussion;
-
-					cacheResult(mbDiscussion);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (MBDiscussion)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (MBDiscussion)result;
+			}
 		}
 	}
 
@@ -1790,91 +1782,86 @@ public class MBDiscussionPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {classNameId, classPK};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						MBDiscussion.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByC_C, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBDiscussion.class);
-
-		if (result instanceof MBDiscussion) {
-			MBDiscussion mbDiscussion = (MBDiscussion)result;
-
-			if ((classNameId != mbDiscussion.getClassNameId()) ||
-				(classPK != mbDiscussion.getClassPK())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {classNameId, classPK};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						MBDiscussion.class, mbDiscussion.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByC_C, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
+			if (result instanceof MBDiscussion) {
+				MBDiscussion mbDiscussion = (MBDiscussion)result;
 
-			sb.append(_SQL_SELECT_MBDISCUSSION_WHERE);
+				if ((classNameId != mbDiscussion.getClassNameId()) ||
+					(classPK != mbDiscussion.getClassPK())) {
 
-			sb.append(_FINDER_COLUMN_C_C_CLASSNAMEID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_C_C_CLASSPK_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-			String sql = sb.toString();
+				sb.append(_SQL_SELECT_MBDISCUSSION_WHERE);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_C_C_CLASSNAMEID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_C_C_CLASSPK_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(classNameId);
+				try {
+					session = openSession();
 
-				queryPos.add(classPK);
+					Query query = session.createQuery(sql);
 
-				List<MBDiscussion> list = query.list();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByC_C, finderArgs, list);
+					queryPos.add(classNameId);
+
+					queryPos.add(classPK);
+
+					List<MBDiscussion> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByC_C, finderArgs, list);
+						}
+					}
+					else {
+						MBDiscussion mbDiscussion = list.get(0);
+
+						result = mbDiscussion;
+
+						cacheResult(mbDiscussion);
 					}
 				}
-				else {
-					MBDiscussion mbDiscussion = list.get(0);
-
-					result = mbDiscussion;
-
-					cacheResult(mbDiscussion);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (MBDiscussion)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (MBDiscussion)result;
+			}
 		}
 	}
 
@@ -1988,28 +1975,32 @@ public class MBDiscussionPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(MBDiscussion mbDiscussion) {
-		if (mbDiscussion.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					mbDiscussion.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				MBDiscussionImpl.class, mbDiscussion.getPrimaryKey(),
+				mbDiscussion);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					mbDiscussion.getUuid(), mbDiscussion.getGroupId()
+				},
+				mbDiscussion);
+
+			finderCache.putResult(
+				_finderPathFetchByThreadId,
+				new Object[] {mbDiscussion.getThreadId()}, mbDiscussion);
+
+			finderCache.putResult(
+				_finderPathFetchByC_C,
+				new Object[] {
+					mbDiscussion.getClassNameId(), mbDiscussion.getClassPK()
+				},
+				mbDiscussion);
 		}
-
-		entityCache.putResult(
-			MBDiscussionImpl.class, mbDiscussion.getPrimaryKey(), mbDiscussion);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {mbDiscussion.getUuid(), mbDiscussion.getGroupId()},
-			mbDiscussion);
-
-		finderCache.putResult(
-			_finderPathFetchByThreadId,
-			new Object[] {mbDiscussion.getThreadId()}, mbDiscussion);
-
-		finderCache.putResult(
-			_finderPathFetchByC_C,
-			new Object[] {
-				mbDiscussion.getClassNameId(), mbDiscussion.getClassPK()
-			},
-			mbDiscussion);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2029,15 +2020,18 @@ public class MBDiscussionPersistenceImpl
 		}
 
 		for (MBDiscussion mbDiscussion : mbDiscussions) {
-			if (mbDiscussion.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(mbDiscussion.getCtCollectionId() != 0) &&
+						(mbDiscussion.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					MBDiscussionImpl.class, mbDiscussion.getPrimaryKey()) ==
-						null) {
+				if (entityCache.getResult(
+						MBDiscussionImpl.class, mbDiscussion.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(mbDiscussion);
+					cacheResult(mbDiscussion);
+				}
 			}
 		}
 	}
@@ -2087,29 +2081,36 @@ public class MBDiscussionPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		MBDiscussionModelImpl mbDiscussionModelImpl) {
 
-		Object[] args = new Object[] {
-			mbDiscussionModelImpl.getUuid(), mbDiscussionModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					mbDiscussionModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, mbDiscussionModelImpl);
+			Object[] args = new Object[] {
+				mbDiscussionModelImpl.getUuid(),
+				mbDiscussionModelImpl.getGroupId()
+			};
 
-		args = new Object[] {mbDiscussionModelImpl.getThreadId()};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, mbDiscussionModelImpl);
 
-		finderCache.putResult(
-			_finderPathCountByThreadId, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByThreadId, args, mbDiscussionModelImpl);
+			args = new Object[] {mbDiscussionModelImpl.getThreadId()};
 
-		args = new Object[] {
-			mbDiscussionModelImpl.getClassNameId(),
-			mbDiscussionModelImpl.getClassPK()
-		};
+			finderCache.putResult(
+				_finderPathCountByThreadId, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByThreadId, args, mbDiscussionModelImpl);
 
-		finderCache.putResult(_finderPathCountByC_C, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByC_C, args, mbDiscussionModelImpl);
+			args = new Object[] {
+				mbDiscussionModelImpl.getClassNameId(),
+				mbDiscussionModelImpl.getClassPK()
+			};
+
+			finderCache.putResult(_finderPathCountByC_C, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByC_C, args, mbDiscussionModelImpl);
+		}
 	}
 
 	/**
@@ -2223,84 +2224,93 @@ public class MBDiscussionPersistenceImpl
 
 	@Override
 	public MBDiscussion updateImpl(MBDiscussion mbDiscussion) {
-		boolean isNew = mbDiscussion.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(mbDiscussion instanceof MBDiscussionModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = mbDiscussion.isNew();
 
-			if (ProxyUtil.isProxyClass(mbDiscussion.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					mbDiscussion);
+			if (!(mbDiscussion instanceof MBDiscussionModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in mbDiscussion proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(mbDiscussion.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						mbDiscussion);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom MBDiscussion implementation " +
-					mbDiscussion.getClass());
-		}
-
-		MBDiscussionModelImpl mbDiscussionModelImpl =
-			(MBDiscussionModelImpl)mbDiscussion;
-
-		if (Validator.isNull(mbDiscussion.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			mbDiscussion.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (mbDiscussion.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				mbDiscussion.setCreateDate(date);
-			}
-			else {
-				mbDiscussion.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!mbDiscussionModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				mbDiscussion.setModifiedDate(date);
-			}
-			else {
-				mbDiscussion.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(mbDiscussion)) {
-				if (!isNew) {
-					session.evict(
-						MBDiscussionImpl.class,
-						mbDiscussion.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in mbDiscussion proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(mbDiscussion);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom MBDiscussion implementation " +
+						mbDiscussion.getClass());
 			}
-			else {
-				mbDiscussion = (MBDiscussion)session.merge(mbDiscussion);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (mbDiscussion.getCtCollectionId() != 0) {
+			MBDiscussionModelImpl mbDiscussionModelImpl =
+				(MBDiscussionModelImpl)mbDiscussion;
+
+			if (Validator.isNull(mbDiscussion.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				mbDiscussion.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (mbDiscussion.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					mbDiscussion.setCreateDate(date);
+				}
+				else {
+					mbDiscussion.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!mbDiscussionModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					mbDiscussion.setModifiedDate(date);
+				}
+				else {
+					mbDiscussion.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(mbDiscussion)) {
+					if (!isNew) {
+						session.evict(
+							MBDiscussionImpl.class,
+							mbDiscussion.getPrimaryKeyObj());
+					}
+
+					session.save(mbDiscussion);
+				}
+				else {
+					mbDiscussion = (MBDiscussion)session.merge(mbDiscussion);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				MBDiscussionImpl.class, mbDiscussionModelImpl, false, true);
+
+			cacheUniqueFindersCache(mbDiscussionModelImpl);
+
 			if (isNew) {
 				mbDiscussion.setNew(false);
 			}
@@ -2309,19 +2319,6 @@ public class MBDiscussionPersistenceImpl
 
 			return mbDiscussion;
 		}
-
-		entityCache.putResult(
-			MBDiscussionImpl.class, mbDiscussionModelImpl, false, true);
-
-		cacheUniqueFindersCache(mbDiscussionModelImpl);
-
-		if (isNew) {
-			mbDiscussion.setNew(false);
-		}
-
-		mbDiscussion.resetOriginalValues();
-
-		return mbDiscussion;
 	}
 
 	/**
@@ -2371,34 +2368,13 @@ public class MBDiscussionPersistenceImpl
 	 */
 	@Override
 	public MBDiscussion fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				MBDiscussion.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						MBDiscussion.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		MBDiscussion mbDiscussion = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			mbDiscussion = (MBDiscussion)session.get(
-				MBDiscussionImpl.class, primaryKey);
-
-			if (mbDiscussion != null) {
-				cacheResult(mbDiscussion);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return mbDiscussion;
 	}
 
 	/**
@@ -2416,91 +2392,13 @@ public class MBDiscussionPersistenceImpl
 	public Map<Serializable, MBDiscussion> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(MBDiscussion.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						MBDiscussion.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, MBDiscussion> map =
-			new HashMap<Serializable, MBDiscussion>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			MBDiscussion mbDiscussion = fetchByPrimaryKey(primaryKey);
-
-			if (mbDiscussion != null) {
-				map.put(primaryKey, mbDiscussion);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (MBDiscussion mbDiscussion : (List<MBDiscussion>)query.list()) {
-				map.put(mbDiscussion.getPrimaryKeyObj(), mbDiscussion);
-
-				cacheResult(mbDiscussion);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

@@ -5,8 +5,11 @@
 
 package com.liferay.portal.workflow.kaleo.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -45,9 +48,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -4659,14 +4660,15 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 	public void cacheResult(
 		KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance) {
 
-		if (kaleoTaskAssignmentInstance.getCtCollectionId() != 0) {
-			return;
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					kaleoTaskAssignmentInstance.getCtCollectionId() != 0)) {
 
-		entityCache.putResult(
-			KaleoTaskAssignmentInstanceImpl.class,
-			kaleoTaskAssignmentInstance.getPrimaryKey(),
-			kaleoTaskAssignmentInstance);
+			entityCache.putResult(
+				KaleoTaskAssignmentInstanceImpl.class,
+				kaleoTaskAssignmentInstance.getPrimaryKey(),
+				kaleoTaskAssignmentInstance);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -4691,15 +4693,19 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 		for (KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance :
 				kaleoTaskAssignmentInstances) {
 
-			if (kaleoTaskAssignmentInstance.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(kaleoTaskAssignmentInstance.getCtCollectionId() !=
+							0) &&
+						(kaleoTaskAssignmentInstance.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					KaleoTaskAssignmentInstanceImpl.class,
-					kaleoTaskAssignmentInstance.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						KaleoTaskAssignmentInstanceImpl.class,
+						kaleoTaskAssignmentInstance.getPrimaryKey()) == null) {
 
-				cacheResult(kaleoTaskAssignmentInstance);
+					cacheResult(kaleoTaskAssignmentInstance);
+				}
 			}
 		}
 	}
@@ -4876,87 +4882,96 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 	public KaleoTaskAssignmentInstance updateImpl(
 		KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance) {
 
-		boolean isNew = kaleoTaskAssignmentInstance.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(kaleoTaskAssignmentInstance instanceof
-				KaleoTaskAssignmentInstanceModelImpl)) {
+			boolean isNew = kaleoTaskAssignmentInstance.isNew();
 
-			InvocationHandler invocationHandler = null;
+			if (!(kaleoTaskAssignmentInstance instanceof
+					KaleoTaskAssignmentInstanceModelImpl)) {
 
-			if (ProxyUtil.isProxyClass(
-					kaleoTaskAssignmentInstance.getClass())) {
+				InvocationHandler invocationHandler = null;
 
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					kaleoTaskAssignmentInstance);
+				if (ProxyUtil.isProxyClass(
+						kaleoTaskAssignmentInstance.getClass())) {
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in kaleoTaskAssignmentInstance proxy " +
-						invocationHandler.getClass());
-			}
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						kaleoTaskAssignmentInstance);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom KaleoTaskAssignmentInstance implementation " +
-					kaleoTaskAssignmentInstance.getClass());
-		}
-
-		KaleoTaskAssignmentInstanceModelImpl
-			kaleoTaskAssignmentInstanceModelImpl =
-				(KaleoTaskAssignmentInstanceModelImpl)
-					kaleoTaskAssignmentInstance;
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (kaleoTaskAssignmentInstance.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				kaleoTaskAssignmentInstance.setCreateDate(date);
-			}
-			else {
-				kaleoTaskAssignmentInstance.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!kaleoTaskAssignmentInstanceModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				kaleoTaskAssignmentInstance.setModifiedDate(date);
-			}
-			else {
-				kaleoTaskAssignmentInstance.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(kaleoTaskAssignmentInstance)) {
-				if (!isNew) {
-					session.evict(
-						KaleoTaskAssignmentInstanceImpl.class,
-						kaleoTaskAssignmentInstance.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in kaleoTaskAssignmentInstance proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(kaleoTaskAssignmentInstance);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom KaleoTaskAssignmentInstance implementation " +
+						kaleoTaskAssignmentInstance.getClass());
 			}
-			else {
-				kaleoTaskAssignmentInstance =
-					(KaleoTaskAssignmentInstance)session.merge(
-						kaleoTaskAssignmentInstance);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (kaleoTaskAssignmentInstance.getCtCollectionId() != 0) {
+			KaleoTaskAssignmentInstanceModelImpl
+				kaleoTaskAssignmentInstanceModelImpl =
+					(KaleoTaskAssignmentInstanceModelImpl)
+						kaleoTaskAssignmentInstance;
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew &&
+				(kaleoTaskAssignmentInstance.getCreateDate() == null)) {
+
+				if (serviceContext == null) {
+					kaleoTaskAssignmentInstance.setCreateDate(date);
+				}
+				else {
+					kaleoTaskAssignmentInstance.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!kaleoTaskAssignmentInstanceModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					kaleoTaskAssignmentInstance.setModifiedDate(date);
+				}
+				else {
+					kaleoTaskAssignmentInstance.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(kaleoTaskAssignmentInstance)) {
+					if (!isNew) {
+						session.evict(
+							KaleoTaskAssignmentInstanceImpl.class,
+							kaleoTaskAssignmentInstance.getPrimaryKeyObj());
+					}
+
+					session.save(kaleoTaskAssignmentInstance);
+				}
+				else {
+					kaleoTaskAssignmentInstance =
+						(KaleoTaskAssignmentInstance)session.merge(
+							kaleoTaskAssignmentInstance);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				KaleoTaskAssignmentInstanceImpl.class,
+				kaleoTaskAssignmentInstanceModelImpl, false, true);
+
 			if (isNew) {
 				kaleoTaskAssignmentInstance.setNew(false);
 			}
@@ -4965,18 +4980,6 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 
 			return kaleoTaskAssignmentInstance;
 		}
-
-		entityCache.putResult(
-			KaleoTaskAssignmentInstanceImpl.class,
-			kaleoTaskAssignmentInstanceModelImpl, false, true);
-
-		if (isNew) {
-			kaleoTaskAssignmentInstance.setNew(false);
-		}
-
-		kaleoTaskAssignmentInstance.resetOriginalValues();
-
-		return kaleoTaskAssignmentInstance;
 	}
 
 	/**
@@ -5030,35 +5033,13 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 	public KaleoTaskAssignmentInstance fetchByPrimaryKey(
 		Serializable primaryKey) {
 
-		if (ctPersistenceHelper.isProductionMode(
-				KaleoTaskAssignmentInstance.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						KaleoTaskAssignmentInstance.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			kaleoTaskAssignmentInstance =
-				(KaleoTaskAssignmentInstance)session.get(
-					KaleoTaskAssignmentInstanceImpl.class, primaryKey);
-
-			if (kaleoTaskAssignmentInstance != null) {
-				cacheResult(kaleoTaskAssignmentInstance);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return kaleoTaskAssignmentInstance;
 	}
 
 	/**
@@ -5078,98 +5059,13 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 	public Map<Serializable, KaleoTaskAssignmentInstance> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(
-				KaleoTaskAssignmentInstance.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						KaleoTaskAssignmentInstance.class))) {
 
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, KaleoTaskAssignmentInstance> map =
-			new HashMap<Serializable, KaleoTaskAssignmentInstance>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance =
-				fetchByPrimaryKey(primaryKey);
-
-			if (kaleoTaskAssignmentInstance != null) {
-				map.put(primaryKey, kaleoTaskAssignmentInstance);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance :
-					(List<KaleoTaskAssignmentInstance>)query.list()) {
-
-				map.put(
-					kaleoTaskAssignmentInstance.getPrimaryKeyObj(),
-					kaleoTaskAssignmentInstance);
-
-				cacheResult(kaleoTaskAssignmentInstance);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

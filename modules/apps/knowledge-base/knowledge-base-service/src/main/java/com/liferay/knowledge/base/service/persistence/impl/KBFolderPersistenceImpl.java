@@ -14,8 +14,11 @@ import com.liferay.knowledge.base.model.impl.KBFolderModelImpl;
 import com.liferay.knowledge.base.service.persistence.KBFolderPersistence;
 import com.liferay.knowledge.base.service.persistence.KBFolderUtil;
 import com.liferay.knowledge.base.service.persistence.impl.constants.KBPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -54,7 +57,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -709,102 +711,96 @@ public class KBFolderPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			KBFolder.class);
-
-		if (result instanceof KBFolder) {
-			KBFolder kbFolder = (KBFolder)result;
-
-			if (!Objects.equals(uuid, kbFolder.getUuid()) ||
-				(groupId != kbFolder.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						KBFolder.class, kbFolder.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_KBFOLDER_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof KBFolder) {
+				KBFolder kbFolder = (KBFolder)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, kbFolder.getUuid()) ||
+					(groupId != kbFolder.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<KBFolder> list = query.list();
+				sb.append(_SQL_SELECT_KBFOLDER_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					KBFolder kbFolder = list.get(0);
+					bindUuid = true;
 
-					result = kbFolder;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(kbFolder);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<KBFolder> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						KBFolder kbFolder = list.get(0);
+
+						result = kbFolder;
+
+						cacheResult(kbFolder);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (KBFolder)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (KBFolder)result;
+			}
 		}
 	}
 
@@ -3035,124 +3031,118 @@ public class KBFolderPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, parentKBFolderId, name};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_P_N, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			KBFolder.class);
-
-		if (result instanceof KBFolder) {
-			KBFolder kbFolder = (KBFolder)result;
-
-			if ((groupId != kbFolder.getGroupId()) ||
-				(parentKBFolderId != kbFolder.getParentKBFolderId()) ||
-				!Objects.equals(name, kbFolder.getName())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						KBFolder.class, kbFolder.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_KBFOLDER_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_P_N_GROUPID_2);
-
-			sb.append(_FINDER_COLUMN_G_P_N_PARENTKBFOLDERID_2);
-
-			boolean bindName = false;
-
-			if (name.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_P_N_NAME_3);
-			}
-			else {
-				bindName = true;
-
-				sb.append(_FINDER_COLUMN_G_P_N_NAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, parentKBFolderId, name};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_P_N, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof KBFolder) {
+				KBFolder kbFolder = (KBFolder)result;
 
-				Query query = session.createQuery(sql);
+				if ((groupId != kbFolder.getGroupId()) ||
+					(parentKBFolderId != kbFolder.getParentKBFolderId()) ||
+					!Objects.equals(name, kbFolder.getName())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				queryPos.add(parentKBFolderId);
-
-				if (bindName) {
-					queryPos.add(name);
+					result = null;
 				}
+			}
 
-				List<KBFolder> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_P_N, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_KBFOLDER_WHERE);
+
+				sb.append(_FINDER_COLUMN_G_P_N_GROUPID_2);
+
+				sb.append(_FINDER_COLUMN_G_P_N_PARENTKBFOLDERID_2);
+
+				boolean bindName = false;
+
+				if (name.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_P_N_NAME_3);
 				}
 				else {
-					if (list.size() > 1) {
-						Collections.sort(list, Collections.reverseOrder());
+					bindName = true;
 
-						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
-								finderArgs = new Object[] {
-									groupId, parentKBFolderId, name
-								};
-							}
+					sb.append(_FINDER_COLUMN_G_P_N_NAME_2);
+				}
 
-							_log.warn(
-								"KBFolderPersistenceImpl.fetchByG_P_N(long, long, String, boolean) with parameters (" +
-									StringUtil.merge(finderArgs) +
-										") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
-						}
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					queryPos.add(parentKBFolderId);
+
+					if (bindName) {
+						queryPos.add(name);
 					}
 
-					KBFolder kbFolder = list.get(0);
+					List<KBFolder> list = query.list();
 
-					result = kbFolder;
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_P_N, finderArgs, list);
+						}
+					}
+					else {
+						if (list.size() > 1) {
+							Collections.sort(list, Collections.reverseOrder());
 
-					cacheResult(kbFolder);
+							if (_log.isWarnEnabled()) {
+								if (!useFinderCache) {
+									finderArgs = new Object[] {
+										groupId, parentKBFolderId, name
+									};
+								}
+
+								_log.warn(
+									"KBFolderPersistenceImpl.fetchByG_P_N(long, long, String, boolean) with parameters (" +
+										StringUtil.merge(finderArgs) +
+											") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+							}
+						}
+
+						KBFolder kbFolder = list.get(0);
+
+						result = kbFolder;
+
+						cacheResult(kbFolder);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (KBFolder)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (KBFolder)result;
+			}
 		}
 	}
 
@@ -3348,124 +3338,118 @@ public class KBFolderPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, parentKBFolderId, urlTitle};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_P_UT, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			KBFolder.class);
-
-		if (result instanceof KBFolder) {
-			KBFolder kbFolder = (KBFolder)result;
-
-			if ((groupId != kbFolder.getGroupId()) ||
-				(parentKBFolderId != kbFolder.getParentKBFolderId()) ||
-				!Objects.equals(urlTitle, kbFolder.getUrlTitle())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						KBFolder.class, kbFolder.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_KBFOLDER_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_P_UT_GROUPID_2);
-
-			sb.append(_FINDER_COLUMN_G_P_UT_PARENTKBFOLDERID_2);
-
-			boolean bindUrlTitle = false;
-
-			if (urlTitle.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_P_UT_URLTITLE_3);
-			}
-			else {
-				bindUrlTitle = true;
-
-				sb.append(_FINDER_COLUMN_G_P_UT_URLTITLE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, parentKBFolderId, urlTitle};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_P_UT, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof KBFolder) {
+				KBFolder kbFolder = (KBFolder)result;
 
-				Query query = session.createQuery(sql);
+				if ((groupId != kbFolder.getGroupId()) ||
+					(parentKBFolderId != kbFolder.getParentKBFolderId()) ||
+					!Objects.equals(urlTitle, kbFolder.getUrlTitle())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				queryPos.add(parentKBFolderId);
-
-				if (bindUrlTitle) {
-					queryPos.add(urlTitle);
+					result = null;
 				}
+			}
 
-				List<KBFolder> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_P_UT, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_KBFOLDER_WHERE);
+
+				sb.append(_FINDER_COLUMN_G_P_UT_GROUPID_2);
+
+				sb.append(_FINDER_COLUMN_G_P_UT_PARENTKBFOLDERID_2);
+
+				boolean bindUrlTitle = false;
+
+				if (urlTitle.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_P_UT_URLTITLE_3);
 				}
 				else {
-					if (list.size() > 1) {
-						Collections.sort(list, Collections.reverseOrder());
+					bindUrlTitle = true;
 
-						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
-								finderArgs = new Object[] {
-									groupId, parentKBFolderId, urlTitle
-								};
-							}
+					sb.append(_FINDER_COLUMN_G_P_UT_URLTITLE_2);
+				}
 
-							_log.warn(
-								"KBFolderPersistenceImpl.fetchByG_P_UT(long, long, String, boolean) with parameters (" +
-									StringUtil.merge(finderArgs) +
-										") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
-						}
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					queryPos.add(parentKBFolderId);
+
+					if (bindUrlTitle) {
+						queryPos.add(urlTitle);
 					}
 
-					KBFolder kbFolder = list.get(0);
+					List<KBFolder> list = query.list();
 
-					result = kbFolder;
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_P_UT, finderArgs, list);
+						}
+					}
+					else {
+						if (list.size() > 1) {
+							Collections.sort(list, Collections.reverseOrder());
 
-					cacheResult(kbFolder);
+							if (_log.isWarnEnabled()) {
+								if (!useFinderCache) {
+									finderArgs = new Object[] {
+										groupId, parentKBFolderId, urlTitle
+									};
+								}
+
+								_log.warn(
+									"KBFolderPersistenceImpl.fetchByG_P_UT(long, long, String, boolean) with parameters (" +
+										StringUtil.merge(finderArgs) +
+											") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+							}
+						}
+
+						KBFolder kbFolder = list.get(0);
+
+						result = kbFolder;
+
+						cacheResult(kbFolder);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (KBFolder)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (KBFolder)result;
+			}
 		}
 	}
 
@@ -4662,104 +4646,98 @@ public class KBFolderPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {externalReferenceCode, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByERC_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			KBFolder.class);
-
-		if (result instanceof KBFolder) {
-			KBFolder kbFolder = (KBFolder)result;
-
-			if (!Objects.equals(
-					externalReferenceCode,
-					kbFolder.getExternalReferenceCode()) ||
-				(groupId != kbFolder.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						KBFolder.class, kbFolder.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_KBFOLDER_WHERE);
-
-			boolean bindExternalReferenceCode = false;
-
-			if (externalReferenceCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindExternalReferenceCode = true;
-
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {externalReferenceCode, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByERC_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof KBFolder) {
+				KBFolder kbFolder = (KBFolder)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(
+						externalReferenceCode,
+						kbFolder.getExternalReferenceCode()) ||
+					(groupId != kbFolder.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindExternalReferenceCode) {
-					queryPos.add(externalReferenceCode);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<KBFolder> list = query.list();
+				sb.append(_SQL_SELECT_KBFOLDER_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByERC_G, finderArgs, list);
-					}
+				boolean bindExternalReferenceCode = false;
+
+				if (externalReferenceCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
 				}
 				else {
-					KBFolder kbFolder = list.get(0);
+					bindExternalReferenceCode = true;
 
-					result = kbFolder;
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(kbFolder);
+				sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindExternalReferenceCode) {
+						queryPos.add(externalReferenceCode);
+					}
+
+					queryPos.add(groupId);
+
+					List<KBFolder> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByERC_G, finderArgs, list);
+						}
+					}
+					else {
+						KBFolder kbFolder = list.get(0);
+
+						result = kbFolder;
+
+						cacheResult(kbFolder);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (KBFolder)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (KBFolder)result;
+			}
 		}
 	}
 
@@ -4889,39 +4867,41 @@ public class KBFolderPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(KBFolder kbFolder) {
-		if (kbFolder.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					kbFolder.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				KBFolderImpl.class, kbFolder.getPrimaryKey(), kbFolder);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {kbFolder.getUuid(), kbFolder.getGroupId()},
+				kbFolder);
+
+			finderCache.putResult(
+				_finderPathFetchByG_P_N,
+				new Object[] {
+					kbFolder.getGroupId(), kbFolder.getParentKBFolderId(),
+					kbFolder.getName()
+				},
+				kbFolder);
+
+			finderCache.putResult(
+				_finderPathFetchByG_P_UT,
+				new Object[] {
+					kbFolder.getGroupId(), kbFolder.getParentKBFolderId(),
+					kbFolder.getUrlTitle()
+				},
+				kbFolder);
+
+			finderCache.putResult(
+				_finderPathFetchByERC_G,
+				new Object[] {
+					kbFolder.getExternalReferenceCode(), kbFolder.getGroupId()
+				},
+				kbFolder);
 		}
-
-		entityCache.putResult(
-			KBFolderImpl.class, kbFolder.getPrimaryKey(), kbFolder);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {kbFolder.getUuid(), kbFolder.getGroupId()}, kbFolder);
-
-		finderCache.putResult(
-			_finderPathFetchByG_P_N,
-			new Object[] {
-				kbFolder.getGroupId(), kbFolder.getParentKBFolderId(),
-				kbFolder.getName()
-			},
-			kbFolder);
-
-		finderCache.putResult(
-			_finderPathFetchByG_P_UT,
-			new Object[] {
-				kbFolder.getGroupId(), kbFolder.getParentKBFolderId(),
-				kbFolder.getUrlTitle()
-			},
-			kbFolder);
-
-		finderCache.putResult(
-			_finderPathFetchByERC_G,
-			new Object[] {
-				kbFolder.getExternalReferenceCode(), kbFolder.getGroupId()
-			},
-			kbFolder);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -4941,14 +4921,17 @@ public class KBFolderPersistenceImpl
 		}
 
 		for (KBFolder kbFolder : kbFolders) {
-			if (kbFolder.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(kbFolder.getCtCollectionId() != 0) &&
+						(kbFolder.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					KBFolderImpl.class, kbFolder.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						KBFolderImpl.class, kbFolder.getPrimaryKey()) == null) {
 
-				cacheResult(kbFolder);
+					cacheResult(kbFolder);
+				}
 			}
 		}
 	}
@@ -4998,39 +4981,51 @@ public class KBFolderPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		KBFolderModelImpl kbFolderModelImpl) {
 
-		Object[] args = new Object[] {
-			kbFolderModelImpl.getUuid(), kbFolderModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					kbFolderModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, kbFolderModelImpl);
+			Object[] args = new Object[] {
+				kbFolderModelImpl.getUuid(), kbFolderModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			kbFolderModelImpl.getGroupId(),
-			kbFolderModelImpl.getParentKBFolderId(), kbFolderModelImpl.getName()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, kbFolderModelImpl);
 
-		finderCache.putResult(_finderPathCountByG_P_N, args, Long.valueOf(1));
-		finderCache.putResult(_finderPathFetchByG_P_N, args, kbFolderModelImpl);
+			args = new Object[] {
+				kbFolderModelImpl.getGroupId(),
+				kbFolderModelImpl.getParentKBFolderId(),
+				kbFolderModelImpl.getName()
+			};
 
-		args = new Object[] {
-			kbFolderModelImpl.getGroupId(),
-			kbFolderModelImpl.getParentKBFolderId(),
-			kbFolderModelImpl.getUrlTitle()
-		};
+			finderCache.putResult(
+				_finderPathCountByG_P_N, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_P_N, args, kbFolderModelImpl);
 
-		finderCache.putResult(_finderPathCountByG_P_UT, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByG_P_UT, args, kbFolderModelImpl);
+			args = new Object[] {
+				kbFolderModelImpl.getGroupId(),
+				kbFolderModelImpl.getParentKBFolderId(),
+				kbFolderModelImpl.getUrlTitle()
+			};
 
-		args = new Object[] {
-			kbFolderModelImpl.getExternalReferenceCode(),
-			kbFolderModelImpl.getGroupId()
-		};
+			finderCache.putResult(
+				_finderPathCountByG_P_UT, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_P_UT, args, kbFolderModelImpl);
 
-		finderCache.putResult(_finderPathCountByERC_G, args, Long.valueOf(1));
-		finderCache.putResult(_finderPathFetchByERC_G, args, kbFolderModelImpl);
+			args = new Object[] {
+				kbFolderModelImpl.getExternalReferenceCode(),
+				kbFolderModelImpl.getGroupId()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByERC_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByERC_G, args, kbFolderModelImpl);
+		}
 	}
 
 	/**
@@ -5140,107 +5135,118 @@ public class KBFolderPersistenceImpl
 
 	@Override
 	public KBFolder updateImpl(KBFolder kbFolder) {
-		boolean isNew = kbFolder.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(kbFolder instanceof KBFolderModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = kbFolder.isNew();
 
-			if (ProxyUtil.isProxyClass(kbFolder.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(kbFolder);
+			if (!(kbFolder instanceof KBFolderModelImpl)) {
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(kbFolder.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						kbFolder);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in kbFolder proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in kbFolder proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom KBFolder implementation " +
+						kbFolder.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom KBFolder implementation " +
-					kbFolder.getClass());
-		}
+			KBFolderModelImpl kbFolderModelImpl = (KBFolderModelImpl)kbFolder;
 
-		KBFolderModelImpl kbFolderModelImpl = (KBFolderModelImpl)kbFolder;
+			if (Validator.isNull(kbFolder.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
 
-		if (Validator.isNull(kbFolder.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
+				kbFolder.setUuid(uuid);
+			}
 
-			kbFolder.setUuid(uuid);
-		}
+			if (Validator.isNull(kbFolder.getExternalReferenceCode())) {
+				kbFolder.setExternalReferenceCode(kbFolder.getUuid());
+			}
+			else {
+				KBFolder ercKBFolder = fetchByERC_G(
+					kbFolder.getExternalReferenceCode(), kbFolder.getGroupId());
 
-		if (Validator.isNull(kbFolder.getExternalReferenceCode())) {
-			kbFolder.setExternalReferenceCode(kbFolder.getUuid());
-		}
-		else {
-			KBFolder ercKBFolder = fetchByERC_G(
-				kbFolder.getExternalReferenceCode(), kbFolder.getGroupId());
+				if (isNew) {
+					if (ercKBFolder != null) {
+						throw new DuplicateKBFolderExternalReferenceCodeException(
+							"Duplicate kb folder with external reference code " +
+								kbFolder.getExternalReferenceCode() +
+									" and group " + kbFolder.getGroupId());
+					}
+				}
+				else {
+					if ((ercKBFolder != null) &&
+						(kbFolder.getKbFolderId() !=
+							ercKBFolder.getKbFolderId())) {
 
-			if (isNew) {
-				if (ercKBFolder != null) {
-					throw new DuplicateKBFolderExternalReferenceCodeException(
-						"Duplicate kb folder with external reference code " +
-							kbFolder.getExternalReferenceCode() +
-								" and group " + kbFolder.getGroupId());
+						throw new DuplicateKBFolderExternalReferenceCodeException(
+							"Duplicate kb folder with external reference code " +
+								kbFolder.getExternalReferenceCode() +
+									" and group " + kbFolder.getGroupId());
+					}
 				}
 			}
-			else {
-				if ((ercKBFolder != null) &&
-					(kbFolder.getKbFolderId() != ercKBFolder.getKbFolderId())) {
 
-					throw new DuplicateKBFolderExternalReferenceCodeException(
-						"Duplicate kb folder with external reference code " +
-							kbFolder.getExternalReferenceCode() +
-								" and group " + kbFolder.getGroupId());
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (kbFolder.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					kbFolder.setCreateDate(date);
+				}
+				else {
+					kbFolder.setCreateDate(serviceContext.getCreateDate(date));
 				}
 			}
-		}
 
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (kbFolder.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				kbFolder.setCreateDate(date);
-			}
-			else {
-				kbFolder.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!kbFolderModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				kbFolder.setModifiedDate(date);
-			}
-			else {
-				kbFolder.setModifiedDate(serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(kbFolder)) {
-				if (!isNew) {
-					session.evict(
-						KBFolderImpl.class, kbFolder.getPrimaryKeyObj());
+			if (!kbFolderModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					kbFolder.setModifiedDate(date);
 				}
-
-				session.save(kbFolder);
+				else {
+					kbFolder.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
 			}
-			else {
-				kbFolder = (KBFolder)session.merge(kbFolder);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (kbFolder.getCtCollectionId() != 0) {
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(kbFolder)) {
+					if (!isNew) {
+						session.evict(
+							KBFolderImpl.class, kbFolder.getPrimaryKeyObj());
+					}
+
+					session.save(kbFolder);
+				}
+				else {
+					kbFolder = (KBFolder)session.merge(kbFolder);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				KBFolderImpl.class, kbFolderModelImpl, false, true);
+
+			cacheUniqueFindersCache(kbFolderModelImpl);
+
 			if (isNew) {
 				kbFolder.setNew(false);
 			}
@@ -5249,19 +5255,6 @@ public class KBFolderPersistenceImpl
 
 			return kbFolder;
 		}
-
-		entityCache.putResult(
-			KBFolderImpl.class, kbFolderModelImpl, false, true);
-
-		cacheUniqueFindersCache(kbFolderModelImpl);
-
-		if (isNew) {
-			kbFolder.setNew(false);
-		}
-
-		kbFolder.resetOriginalValues();
-
-		return kbFolder;
 	}
 
 	/**
@@ -5311,31 +5304,13 @@ public class KBFolderPersistenceImpl
 	 */
 	@Override
 	public KBFolder fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(KBFolder.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						KBFolder.class, primaryKey))) {
+
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		KBFolder kbFolder = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			kbFolder = (KBFolder)session.get(KBFolderImpl.class, primaryKey);
-
-			if (kbFolder != null) {
-				cacheResult(kbFolder);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return kbFolder;
 	}
 
 	/**
@@ -5353,90 +5328,12 @@ public class KBFolderPersistenceImpl
 	public Map<Serializable, KBFolder> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(KBFolder.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, KBFolder> map = new HashMap<Serializable, KBFolder>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			KBFolder kbFolder = fetchByPrimaryKey(primaryKey);
-
-			if (kbFolder != null) {
-				map.put(primaryKey, kbFolder);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (KBFolder kbFolder : (List<KBFolder>)query.list()) {
-				map.put(kbFolder.getPrimaryKeyObj(), kbFolder);
-
-				cacheResult(kbFolder);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

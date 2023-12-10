@@ -5,8 +5,11 @@
 
 package com.liferay.portal.workflow.kaleo.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -48,7 +51,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -3529,12 +3531,13 @@ public class KaleoLogPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(KaleoLog kaleoLog) {
-		if (kaleoLog.getCtCollectionId() != 0) {
-			return;
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					kaleoLog.getCtCollectionId() != 0)) {
 
-		entityCache.putResult(
-			KaleoLogImpl.class, kaleoLog.getPrimaryKey(), kaleoLog);
+			entityCache.putResult(
+				KaleoLogImpl.class, kaleoLog.getPrimaryKey(), kaleoLog);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -3554,14 +3557,17 @@ public class KaleoLogPersistenceImpl
 		}
 
 		for (KaleoLog kaleoLog : kaleoLogs) {
-			if (kaleoLog.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(kaleoLog.getCtCollectionId() != 0) &&
+						(kaleoLog.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					KaleoLogImpl.class, kaleoLog.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						KaleoLogImpl.class, kaleoLog.getPrimaryKey()) == null) {
 
-				cacheResult(kaleoLog);
+					cacheResult(kaleoLog);
+				}
 			}
 		}
 	}
@@ -3709,74 +3715,82 @@ public class KaleoLogPersistenceImpl
 
 	@Override
 	public KaleoLog updateImpl(KaleoLog kaleoLog) {
-		boolean isNew = kaleoLog.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(kaleoLog instanceof KaleoLogModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = kaleoLog.isNew();
 
-			if (ProxyUtil.isProxyClass(kaleoLog.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(kaleoLog);
+			if (!(kaleoLog instanceof KaleoLogModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in kaleoLog proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(kaleoLog.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						kaleoLog);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom KaleoLog implementation " +
-					kaleoLog.getClass());
-		}
-
-		KaleoLogModelImpl kaleoLogModelImpl = (KaleoLogModelImpl)kaleoLog;
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (kaleoLog.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				kaleoLog.setCreateDate(date);
-			}
-			else {
-				kaleoLog.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!kaleoLogModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				kaleoLog.setModifiedDate(date);
-			}
-			else {
-				kaleoLog.setModifiedDate(serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(kaleoLog)) {
-				if (!isNew) {
-					session.evict(
-						KaleoLogImpl.class, kaleoLog.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in kaleoLog proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(kaleoLog);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom KaleoLog implementation " +
+						kaleoLog.getClass());
 			}
-			else {
-				kaleoLog = (KaleoLog)session.merge(kaleoLog);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (kaleoLog.getCtCollectionId() != 0) {
+			KaleoLogModelImpl kaleoLogModelImpl = (KaleoLogModelImpl)kaleoLog;
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (kaleoLog.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					kaleoLog.setCreateDate(date);
+				}
+				else {
+					kaleoLog.setCreateDate(serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!kaleoLogModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					kaleoLog.setModifiedDate(date);
+				}
+				else {
+					kaleoLog.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(kaleoLog)) {
+					if (!isNew) {
+						session.evict(
+							KaleoLogImpl.class, kaleoLog.getPrimaryKeyObj());
+					}
+
+					session.save(kaleoLog);
+				}
+				else {
+					kaleoLog = (KaleoLog)session.merge(kaleoLog);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				KaleoLogImpl.class, kaleoLogModelImpl, false, true);
+
 			if (isNew) {
 				kaleoLog.setNew(false);
 			}
@@ -3785,17 +3799,6 @@ public class KaleoLogPersistenceImpl
 
 			return kaleoLog;
 		}
-
-		entityCache.putResult(
-			KaleoLogImpl.class, kaleoLogModelImpl, false, true);
-
-		if (isNew) {
-			kaleoLog.setNew(false);
-		}
-
-		kaleoLog.resetOriginalValues();
-
-		return kaleoLog;
 	}
 
 	/**
@@ -3845,31 +3848,13 @@ public class KaleoLogPersistenceImpl
 	 */
 	@Override
 	public KaleoLog fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(KaleoLog.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						KaleoLog.class, primaryKey))) {
+
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		KaleoLog kaleoLog = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			kaleoLog = (KaleoLog)session.get(KaleoLogImpl.class, primaryKey);
-
-			if (kaleoLog != null) {
-				cacheResult(kaleoLog);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return kaleoLog;
 	}
 
 	/**
@@ -3887,90 +3872,12 @@ public class KaleoLogPersistenceImpl
 	public Map<Serializable, KaleoLog> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(KaleoLog.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(KaleoLog.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, KaleoLog> map = new HashMap<Serializable, KaleoLog>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			KaleoLog kaleoLog = fetchByPrimaryKey(primaryKey);
-
-			if (kaleoLog != null) {
-				map.put(primaryKey, kaleoLog);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (KaleoLog kaleoLog : (List<KaleoLog>)query.list()) {
-				map.put(kaleoLog.getPrimaryKeyObj(), kaleoLog);
-
-				cacheResult(kaleoLog);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

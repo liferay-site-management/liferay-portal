@@ -5,8 +5,11 @@
 
 package com.liferay.portal.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -52,7 +55,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -6697,104 +6699,98 @@ public class AddressPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {externalReferenceCode, companyId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByERC_C, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Address.class);
-
-		if (result instanceof Address) {
-			Address address = (Address)result;
-
-			if (!Objects.equals(
-					externalReferenceCode,
-					address.getExternalReferenceCode()) ||
-				(companyId != address.getCompanyId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Address.class, address.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_ADDRESS_WHERE);
-
-			boolean bindExternalReferenceCode = false;
-
-			if (externalReferenceCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindExternalReferenceCode = true;
-
-				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {externalReferenceCode, companyId};
 			}
 
-			sb.append(_FINDER_COLUMN_ERC_C_COMPANYID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByERC_C, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof Address) {
+				Address address = (Address)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(
+						externalReferenceCode,
+						address.getExternalReferenceCode()) ||
+					(companyId != address.getCompanyId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindExternalReferenceCode) {
-					queryPos.add(externalReferenceCode);
+					result = null;
 				}
+			}
 
-				queryPos.add(companyId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<Address> list = query.list();
+				sb.append(_SQL_SELECT_ADDRESS_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByERC_C, finderArgs, list);
-					}
+				boolean bindExternalReferenceCode = false;
+
+				if (externalReferenceCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_3);
 				}
 				else {
-					Address address = list.get(0);
+					bindExternalReferenceCode = true;
 
-					result = address;
+					sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(address);
+				sb.append(_FINDER_COLUMN_ERC_C_COMPANYID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindExternalReferenceCode) {
+						queryPos.add(externalReferenceCode);
+					}
+
+					queryPos.add(companyId);
+
+					List<Address> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByERC_C, finderArgs, list);
+						}
+					}
+					else {
+						Address address = list.get(0);
+
+						result = address;
+
+						cacheResult(address);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Address)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Address)result;
+			}
 		}
 	}
 
@@ -6926,19 +6922,20 @@ public class AddressPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(Address address) {
-		if (address.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					address.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				AddressImpl.class, address.getPrimaryKey(), address);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByERC_C,
+				new Object[] {
+					address.getExternalReferenceCode(), address.getCompanyId()
+				},
+				address);
 		}
-
-		EntityCacheUtil.putResult(
-			AddressImpl.class, address.getPrimaryKey(), address);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByERC_C,
-			new Object[] {
-				address.getExternalReferenceCode(), address.getCompanyId()
-			},
-			address);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -6958,14 +6955,17 @@ public class AddressPersistenceImpl
 		}
 
 		for (Address address : addresses) {
-			if (address.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(address.getCtCollectionId() != 0) &&
+						(address.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					AddressImpl.class, address.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						AddressImpl.class, address.getPrimaryKey()) == null) {
 
-				cacheResult(address);
+					cacheResult(address);
+				}
 			}
 		}
 	}
@@ -7013,15 +7013,20 @@ public class AddressPersistenceImpl
 	}
 
 	protected void cacheUniqueFindersCache(AddressModelImpl addressModelImpl) {
-		Object[] args = new Object[] {
-			addressModelImpl.getExternalReferenceCode(),
-			addressModelImpl.getCompanyId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					addressModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByERC_C, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByERC_C, args, addressModelImpl);
+			Object[] args = new Object[] {
+				addressModelImpl.getExternalReferenceCode(),
+				addressModelImpl.getCompanyId()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByERC_C, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByERC_C, args, addressModelImpl);
+		}
 	}
 
 	/**
@@ -7133,107 +7138,116 @@ public class AddressPersistenceImpl
 
 	@Override
 	public Address updateImpl(Address address) {
-		boolean isNew = address.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(address instanceof AddressModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = address.isNew();
 
-			if (ProxyUtil.isProxyClass(address.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(address);
+			if (!(address instanceof AddressModelImpl)) {
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(address.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(address);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in address proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in address proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom Address implementation " +
+						address.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom Address implementation " +
-					address.getClass());
-		}
+			AddressModelImpl addressModelImpl = (AddressModelImpl)address;
 
-		AddressModelImpl addressModelImpl = (AddressModelImpl)address;
+			if (Validator.isNull(address.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
 
-		if (Validator.isNull(address.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
+				address.setUuid(uuid);
+			}
 
-			address.setUuid(uuid);
-		}
+			if (Validator.isNull(address.getExternalReferenceCode())) {
+				address.setExternalReferenceCode(address.getUuid());
+			}
+			else {
+				Address ercAddress = fetchByERC_C(
+					address.getExternalReferenceCode(), address.getCompanyId());
 
-		if (Validator.isNull(address.getExternalReferenceCode())) {
-			address.setExternalReferenceCode(address.getUuid());
-		}
-		else {
-			Address ercAddress = fetchByERC_C(
-				address.getExternalReferenceCode(), address.getCompanyId());
+				if (isNew) {
+					if (ercAddress != null) {
+						throw new DuplicateAddressExternalReferenceCodeException(
+							"Duplicate address with external reference code " +
+								address.getExternalReferenceCode() +
+									" and company " + address.getCompanyId());
+					}
+				}
+				else {
+					if ((ercAddress != null) &&
+						(address.getAddressId() != ercAddress.getAddressId())) {
 
-			if (isNew) {
-				if (ercAddress != null) {
-					throw new DuplicateAddressExternalReferenceCodeException(
-						"Duplicate address with external reference code " +
-							address.getExternalReferenceCode() +
-								" and company " + address.getCompanyId());
+						throw new DuplicateAddressExternalReferenceCodeException(
+							"Duplicate address with external reference code " +
+								address.getExternalReferenceCode() +
+									" and company " + address.getCompanyId());
+					}
 				}
 			}
-			else {
-				if ((ercAddress != null) &&
-					(address.getAddressId() != ercAddress.getAddressId())) {
 
-					throw new DuplicateAddressExternalReferenceCodeException(
-						"Duplicate address with external reference code " +
-							address.getExternalReferenceCode() +
-								" and company " + address.getCompanyId());
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (address.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					address.setCreateDate(date);
+				}
+				else {
+					address.setCreateDate(serviceContext.getCreateDate(date));
 				}
 			}
-		}
 
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (address.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				address.setCreateDate(date);
-			}
-			else {
-				address.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!addressModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				address.setModifiedDate(date);
-			}
-			else {
-				address.setModifiedDate(serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(address)) {
-				if (!isNew) {
-					session.evict(
-						AddressImpl.class, address.getPrimaryKeyObj());
+			if (!addressModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					address.setModifiedDate(date);
 				}
-
-				session.save(address);
+				else {
+					address.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
 			}
-			else {
-				address = (Address)session.merge(address);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (address.getCtCollectionId() != 0) {
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(address)) {
+					if (!isNew) {
+						session.evict(
+							AddressImpl.class, address.getPrimaryKeyObj());
+					}
+
+					session.save(address);
+				}
+				else {
+					address = (Address)session.merge(address);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				AddressImpl.class, addressModelImpl, false, true);
+
+			cacheUniqueFindersCache(addressModelImpl);
+
 			if (isNew) {
 				address.setNew(false);
 			}
@@ -7242,19 +7256,6 @@ public class AddressPersistenceImpl
 
 			return address;
 		}
-
-		EntityCacheUtil.putResult(
-			AddressImpl.class, addressModelImpl, false, true);
-
-		cacheUniqueFindersCache(addressModelImpl);
-
-		if (isNew) {
-			address.setNew(false);
-		}
-
-		address.resetOriginalValues();
-
-		return address;
 	}
 
 	/**
@@ -7304,33 +7305,13 @@ public class AddressPersistenceImpl
 	 */
 	@Override
 	public Address fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				Address.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						Address.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		Address address = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			address = (Address)session.get(AddressImpl.class, primaryKey);
-
-			if (address != null) {
-				cacheResult(address);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return address;
 	}
 
 	/**
@@ -7348,90 +7329,12 @@ public class AddressPersistenceImpl
 	public Map<Serializable, Address> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(Address.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, Address> map = new HashMap<Serializable, Address>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			Address address = fetchByPrimaryKey(primaryKey);
-
-			if (address != null) {
-				map.put(primaryKey, address);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (Address address : (List<Address>)query.list()) {
-				map.put(address.getPrimaryKeyObj(), address);
-
-				cacheResult(address);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

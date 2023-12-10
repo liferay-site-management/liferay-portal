@@ -13,8 +13,11 @@ import com.liferay.commerce.model.impl.CPDefinitionInventoryModelImpl;
 import com.liferay.commerce.service.persistence.CPDefinitionInventoryPersistence;
 import com.liferay.commerce.service.persistence.CPDefinitionInventoryUtil;
 import com.liferay.commerce.service.persistence.impl.constants.CommercePersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -50,7 +53,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -720,104 +722,99 @@ public class CPDefinitionInventoryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPDefinitionInventory.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionInventory.class);
-
-		if (result instanceof CPDefinitionInventory) {
-			CPDefinitionInventory cpDefinitionInventory =
-				(CPDefinitionInventory)result;
-
-			if (!Objects.equals(uuid, cpDefinitionInventory.getUuid()) ||
-				(groupId != cpDefinitionInventory.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						CPDefinitionInventory.class,
-						cpDefinitionInventory.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_CPDEFINITIONINVENTORY_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof CPDefinitionInventory) {
+				CPDefinitionInventory cpDefinitionInventory =
+					(CPDefinitionInventory)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, cpDefinitionInventory.getUuid()) ||
+					(groupId != cpDefinitionInventory.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<CPDefinitionInventory> list = query.list();
+				sb.append(_SQL_SELECT_CPDEFINITIONINVENTORY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					CPDefinitionInventory cpDefinitionInventory = list.get(0);
+					bindUuid = true;
 
-					result = cpDefinitionInventory;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(cpDefinitionInventory);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<CPDefinitionInventory> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						CPDefinitionInventory cpDefinitionInventory = list.get(
+							0);
+
+						result = cpDefinitionInventory;
+
+						cacheResult(cpDefinitionInventory);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (CPDefinitionInventory)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (CPDefinitionInventory)result;
+			}
 		}
 	}
 
@@ -1588,87 +1585,85 @@ public class CPDefinitionInventoryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {CPDefinitionId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPDefinitionInventory.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByCPDefinitionId, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPDefinitionInventory.class);
-
-		if (result instanceof CPDefinitionInventory) {
-			CPDefinitionInventory cpDefinitionInventory =
-				(CPDefinitionInventory)result;
-
-			if (CPDefinitionId != cpDefinitionInventory.getCPDefinitionId()) {
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {CPDefinitionId};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						CPDefinitionInventory.class,
-						cpDefinitionInventory.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByCPDefinitionId, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(3);
+			if (result instanceof CPDefinitionInventory) {
+				CPDefinitionInventory cpDefinitionInventory =
+					(CPDefinitionInventory)result;
 
-			sb.append(_SQL_SELECT_CPDEFINITIONINVENTORY_WHERE);
+				if (CPDefinitionId !=
+						cpDefinitionInventory.getCPDefinitionId()) {
 
-			sb.append(_FINDER_COLUMN_CPDEFINITIONID_CPDEFINITIONID_2);
+					result = null;
+				}
+			}
 
-			String sql = sb.toString();
+			if (result == null) {
+				StringBundler sb = new StringBundler(3);
 
-			Session session = null;
+				sb.append(_SQL_SELECT_CPDEFINITIONINVENTORY_WHERE);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_CPDEFINITIONID_CPDEFINITIONID_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(CPDefinitionId);
+				try {
+					session = openSession();
 
-				List<CPDefinitionInventory> list = query.list();
+					Query query = session.createQuery(sql);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByCPDefinitionId, finderArgs, list);
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(CPDefinitionId);
+
+					List<CPDefinitionInventory> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByCPDefinitionId, finderArgs,
+								list);
+						}
+					}
+					else {
+						CPDefinitionInventory cpDefinitionInventory = list.get(
+							0);
+
+						result = cpDefinitionInventory;
+
+						cacheResult(cpDefinitionInventory);
 					}
 				}
-				else {
-					CPDefinitionInventory cpDefinitionInventory = list.get(0);
-
-					result = cpDefinitionInventory;
-
-					cacheResult(cpDefinitionInventory);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (CPDefinitionInventory)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (CPDefinitionInventory)result;
+			}
 		}
 	}
 
@@ -1774,26 +1769,27 @@ public class CPDefinitionInventoryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(CPDefinitionInventory cpDefinitionInventory) {
-		if (cpDefinitionInventory.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					cpDefinitionInventory.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				CPDefinitionInventoryImpl.class,
+				cpDefinitionInventory.getPrimaryKey(), cpDefinitionInventory);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					cpDefinitionInventory.getUuid(),
+					cpDefinitionInventory.getGroupId()
+				},
+				cpDefinitionInventory);
+
+			finderCache.putResult(
+				_finderPathFetchByCPDefinitionId,
+				new Object[] {cpDefinitionInventory.getCPDefinitionId()},
+				cpDefinitionInventory);
 		}
-
-		entityCache.putResult(
-			CPDefinitionInventoryImpl.class,
-			cpDefinitionInventory.getPrimaryKey(), cpDefinitionInventory);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {
-				cpDefinitionInventory.getUuid(),
-				cpDefinitionInventory.getGroupId()
-			},
-			cpDefinitionInventory);
-
-		finderCache.putResult(
-			_finderPathFetchByCPDefinitionId,
-			new Object[] {cpDefinitionInventory.getCPDefinitionId()},
-			cpDefinitionInventory);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -1818,15 +1814,18 @@ public class CPDefinitionInventoryPersistenceImpl
 		for (CPDefinitionInventory cpDefinitionInventory :
 				cpDefinitionInventories) {
 
-			if (cpDefinitionInventory.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(cpDefinitionInventory.getCtCollectionId() != 0) &&
+						(cpDefinitionInventory.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					CPDefinitionInventoryImpl.class,
-					cpDefinitionInventory.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						CPDefinitionInventoryImpl.class,
+						cpDefinitionInventory.getPrimaryKey()) == null) {
 
-				cacheResult(cpDefinitionInventory);
+					cacheResult(cpDefinitionInventory);
+				}
 			}
 		}
 	}
@@ -1883,24 +1882,30 @@ public class CPDefinitionInventoryPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		CPDefinitionInventoryModelImpl cpDefinitionInventoryModelImpl) {
 
-		Object[] args = new Object[] {
-			cpDefinitionInventoryModelImpl.getUuid(),
-			cpDefinitionInventoryModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					cpDefinitionInventoryModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, cpDefinitionInventoryModelImpl);
+			Object[] args = new Object[] {
+				cpDefinitionInventoryModelImpl.getUuid(),
+				cpDefinitionInventoryModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			cpDefinitionInventoryModelImpl.getCPDefinitionId()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, cpDefinitionInventoryModelImpl);
 
-		finderCache.putResult(
-			_finderPathCountByCPDefinitionId, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByCPDefinitionId, args,
-			cpDefinitionInventoryModelImpl);
+			args = new Object[] {
+				cpDefinitionInventoryModelImpl.getCPDefinitionId()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByCPDefinitionId, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByCPDefinitionId, args,
+				cpDefinitionInventoryModelImpl);
+		}
 	}
 
 	/**
@@ -2021,88 +2026,98 @@ public class CPDefinitionInventoryPersistenceImpl
 	public CPDefinitionInventory updateImpl(
 		CPDefinitionInventory cpDefinitionInventory) {
 
-		boolean isNew = cpDefinitionInventory.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(cpDefinitionInventory instanceof
-				CPDefinitionInventoryModelImpl)) {
+			boolean isNew = cpDefinitionInventory.isNew();
 
-			InvocationHandler invocationHandler = null;
+			if (!(cpDefinitionInventory instanceof
+					CPDefinitionInventoryModelImpl)) {
 
-			if (ProxyUtil.isProxyClass(cpDefinitionInventory.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					cpDefinitionInventory);
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in cpDefinitionInventory proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(cpDefinitionInventory.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						cpDefinitionInventory);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom CPDefinitionInventory implementation " +
-					cpDefinitionInventory.getClass());
-		}
-
-		CPDefinitionInventoryModelImpl cpDefinitionInventoryModelImpl =
-			(CPDefinitionInventoryModelImpl)cpDefinitionInventory;
-
-		if (Validator.isNull(cpDefinitionInventory.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			cpDefinitionInventory.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (cpDefinitionInventory.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				cpDefinitionInventory.setCreateDate(date);
-			}
-			else {
-				cpDefinitionInventory.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!cpDefinitionInventoryModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				cpDefinitionInventory.setModifiedDate(date);
-			}
-			else {
-				cpDefinitionInventory.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(cpDefinitionInventory)) {
-				if (!isNew) {
-					session.evict(
-						CPDefinitionInventoryImpl.class,
-						cpDefinitionInventory.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in cpDefinitionInventory proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(cpDefinitionInventory);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom CPDefinitionInventory implementation " +
+						cpDefinitionInventory.getClass());
 			}
-			else {
-				cpDefinitionInventory = (CPDefinitionInventory)session.merge(
-					cpDefinitionInventory);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (cpDefinitionInventory.getCtCollectionId() != 0) {
+			CPDefinitionInventoryModelImpl cpDefinitionInventoryModelImpl =
+				(CPDefinitionInventoryModelImpl)cpDefinitionInventory;
+
+			if (Validator.isNull(cpDefinitionInventory.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				cpDefinitionInventory.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (cpDefinitionInventory.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					cpDefinitionInventory.setCreateDate(date);
+				}
+				else {
+					cpDefinitionInventory.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!cpDefinitionInventoryModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					cpDefinitionInventory.setModifiedDate(date);
+				}
+				else {
+					cpDefinitionInventory.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(cpDefinitionInventory)) {
+					if (!isNew) {
+						session.evict(
+							CPDefinitionInventoryImpl.class,
+							cpDefinitionInventory.getPrimaryKeyObj());
+					}
+
+					session.save(cpDefinitionInventory);
+				}
+				else {
+					cpDefinitionInventory =
+						(CPDefinitionInventory)session.merge(
+							cpDefinitionInventory);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				CPDefinitionInventoryImpl.class, cpDefinitionInventoryModelImpl,
+				false, true);
+
+			cacheUniqueFindersCache(cpDefinitionInventoryModelImpl);
+
 			if (isNew) {
 				cpDefinitionInventory.setNew(false);
 			}
@@ -2111,20 +2126,6 @@ public class CPDefinitionInventoryPersistenceImpl
 
 			return cpDefinitionInventory;
 		}
-
-		entityCache.putResult(
-			CPDefinitionInventoryImpl.class, cpDefinitionInventoryModelImpl,
-			false, true);
-
-		cacheUniqueFindersCache(cpDefinitionInventoryModelImpl);
-
-		if (isNew) {
-			cpDefinitionInventory.setNew(false);
-		}
-
-		cpDefinitionInventory.resetOriginalValues();
-
-		return cpDefinitionInventory;
 	}
 
 	/**
@@ -2175,34 +2176,13 @@ public class CPDefinitionInventoryPersistenceImpl
 	 */
 	@Override
 	public CPDefinitionInventory fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				CPDefinitionInventory.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPDefinitionInventory.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		CPDefinitionInventory cpDefinitionInventory = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			cpDefinitionInventory = (CPDefinitionInventory)session.get(
-				CPDefinitionInventoryImpl.class, primaryKey);
-
-			if (cpDefinitionInventory != null) {
-				cacheResult(cpDefinitionInventory);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return cpDefinitionInventory;
 	}
 
 	/**
@@ -2222,96 +2202,13 @@ public class CPDefinitionInventoryPersistenceImpl
 	public Map<Serializable, CPDefinitionInventory> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(CPDefinitionInventory.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPDefinitionInventory.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, CPDefinitionInventory> map =
-			new HashMap<Serializable, CPDefinitionInventory>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			CPDefinitionInventory cpDefinitionInventory = fetchByPrimaryKey(
-				primaryKey);
-
-			if (cpDefinitionInventory != null) {
-				map.put(primaryKey, cpDefinitionInventory);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (CPDefinitionInventory cpDefinitionInventory :
-					(List<CPDefinitionInventory>)query.list()) {
-
-				map.put(
-					cpDefinitionInventory.getPrimaryKeyObj(),
-					cpDefinitionInventory);
-
-				cacheResult(cpDefinitionInventory);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

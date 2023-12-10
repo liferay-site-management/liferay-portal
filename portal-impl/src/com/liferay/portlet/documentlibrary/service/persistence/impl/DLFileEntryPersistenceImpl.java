@@ -11,8 +11,11 @@ import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFileEntryTable;
 import com.liferay.document.library.kernel.service.persistence.DLFileEntryPersistence;
 import com.liferay.document.library.kernel.service.persistence.DLFileEntryUtil;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -54,7 +57,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -703,102 +705,97 @@ public class DLFileEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						DLFileEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileEntry.class);
-
-		if (result instanceof DLFileEntry) {
-			DLFileEntry dlFileEntry = (DLFileEntry)result;
-
-			if (!Objects.equals(uuid, dlFileEntry.getUuid()) ||
-				(groupId != dlFileEntry.getGroupId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntry.class, dlFileEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_DLFILEENTRY_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof DLFileEntry) {
+				DLFileEntry dlFileEntry = (DLFileEntry)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, dlFileEntry.getUuid()) ||
+					(groupId != dlFileEntry.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<DLFileEntry> list = query.list();
+				sb.append(_SQL_SELECT_DLFILEENTRY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					DLFileEntry dlFileEntry = list.get(0);
+					bindUuid = true;
 
-					result = dlFileEntry;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(dlFileEntry);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<DLFileEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						DLFileEntry dlFileEntry = list.get(0);
+
+						result = dlFileEntry;
+
+						cacheResult(dlFileEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (DLFileEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (DLFileEntry)result;
+			}
 		}
 	}
 
@@ -11708,107 +11705,102 @@ public class DLFileEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, folderId, name};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						DLFileEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByG_F_N, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileEntry.class);
-
-		if (result instanceof DLFileEntry) {
-			DLFileEntry dlFileEntry = (DLFileEntry)result;
-
-			if ((groupId != dlFileEntry.getGroupId()) ||
-				(folderId != dlFileEntry.getFolderId()) ||
-				!Objects.equals(name, dlFileEntry.getName())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntry.class, dlFileEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_DLFILEENTRY_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_F_N_GROUPID_2);
-
-			sb.append(_FINDER_COLUMN_G_F_N_FOLDERID_2);
-
-			boolean bindName = false;
-
-			if (name.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_F_N_NAME_3);
-			}
-			else {
-				bindName = true;
-
-				sb.append(_FINDER_COLUMN_G_F_N_NAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, folderId, name};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByG_F_N, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof DLFileEntry) {
+				DLFileEntry dlFileEntry = (DLFileEntry)result;
 
-				Query query = session.createQuery(sql);
+				if ((groupId != dlFileEntry.getGroupId()) ||
+					(folderId != dlFileEntry.getFolderId()) ||
+					!Objects.equals(name, dlFileEntry.getName())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				queryPos.add(folderId);
-
-				if (bindName) {
-					queryPos.add(name);
+					result = null;
 				}
+			}
 
-				List<DLFileEntry> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByG_F_N, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_DLFILEENTRY_WHERE);
+
+				sb.append(_FINDER_COLUMN_G_F_N_GROUPID_2);
+
+				sb.append(_FINDER_COLUMN_G_F_N_FOLDERID_2);
+
+				boolean bindName = false;
+
+				if (name.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_F_N_NAME_3);
 				}
 				else {
-					DLFileEntry dlFileEntry = list.get(0);
+					bindName = true;
 
-					result = dlFileEntry;
+					sb.append(_FINDER_COLUMN_G_F_N_NAME_2);
+				}
 
-					cacheResult(dlFileEntry);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					queryPos.add(folderId);
+
+					if (bindName) {
+						queryPos.add(name);
+					}
+
+					List<DLFileEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByG_F_N, finderArgs, list);
+						}
+					}
+					else {
+						DLFileEntry dlFileEntry = list.get(0);
+
+						result = dlFileEntry;
+
+						cacheResult(dlFileEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (DLFileEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (DLFileEntry)result;
+			}
 		}
 	}
 
@@ -12003,107 +11995,102 @@ public class DLFileEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, folderId, fileName};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						DLFileEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByG_F_FN, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileEntry.class);
-
-		if (result instanceof DLFileEntry) {
-			DLFileEntry dlFileEntry = (DLFileEntry)result;
-
-			if ((groupId != dlFileEntry.getGroupId()) ||
-				(folderId != dlFileEntry.getFolderId()) ||
-				!Objects.equals(fileName, dlFileEntry.getFileName())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntry.class, dlFileEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_DLFILEENTRY_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_F_FN_GROUPID_2);
-
-			sb.append(_FINDER_COLUMN_G_F_FN_FOLDERID_2);
-
-			boolean bindFileName = false;
-
-			if (fileName.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_F_FN_FILENAME_3);
-			}
-			else {
-				bindFileName = true;
-
-				sb.append(_FINDER_COLUMN_G_F_FN_FILENAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, folderId, fileName};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByG_F_FN, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof DLFileEntry) {
+				DLFileEntry dlFileEntry = (DLFileEntry)result;
 
-				Query query = session.createQuery(sql);
+				if ((groupId != dlFileEntry.getGroupId()) ||
+					(folderId != dlFileEntry.getFolderId()) ||
+					!Objects.equals(fileName, dlFileEntry.getFileName())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				queryPos.add(folderId);
-
-				if (bindFileName) {
-					queryPos.add(fileName);
+					result = null;
 				}
+			}
 
-				List<DLFileEntry> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByG_F_FN, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_DLFILEENTRY_WHERE);
+
+				sb.append(_FINDER_COLUMN_G_F_FN_GROUPID_2);
+
+				sb.append(_FINDER_COLUMN_G_F_FN_FOLDERID_2);
+
+				boolean bindFileName = false;
+
+				if (fileName.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_F_FN_FILENAME_3);
 				}
 				else {
-					DLFileEntry dlFileEntry = list.get(0);
+					bindFileName = true;
 
-					result = dlFileEntry;
+					sb.append(_FINDER_COLUMN_G_F_FN_FILENAME_2);
+				}
 
-					cacheResult(dlFileEntry);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					queryPos.add(folderId);
+
+					if (bindFileName) {
+						queryPos.add(fileName);
+					}
+
+					List<DLFileEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByG_F_FN, finderArgs, list);
+						}
+					}
+					else {
+						DLFileEntry dlFileEntry = list.get(0);
+
+						result = dlFileEntry;
+
+						cacheResult(dlFileEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (DLFileEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (DLFileEntry)result;
+			}
 		}
 	}
 
@@ -12296,107 +12283,102 @@ public class DLFileEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, folderId, title};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						DLFileEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByG_F_T, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileEntry.class);
-
-		if (result instanceof DLFileEntry) {
-			DLFileEntry dlFileEntry = (DLFileEntry)result;
-
-			if ((groupId != dlFileEntry.getGroupId()) ||
-				(folderId != dlFileEntry.getFolderId()) ||
-				!Objects.equals(title, dlFileEntry.getTitle())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntry.class, dlFileEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_DLFILEENTRY_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_F_T_GROUPID_2);
-
-			sb.append(_FINDER_COLUMN_G_F_T_FOLDERID_2);
-
-			boolean bindTitle = false;
-
-			if (title.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_F_T_TITLE_3);
-			}
-			else {
-				bindTitle = true;
-
-				sb.append(_FINDER_COLUMN_G_F_T_TITLE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, folderId, title};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByG_F_T, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof DLFileEntry) {
+				DLFileEntry dlFileEntry = (DLFileEntry)result;
 
-				Query query = session.createQuery(sql);
+				if ((groupId != dlFileEntry.getGroupId()) ||
+					(folderId != dlFileEntry.getFolderId()) ||
+					!Objects.equals(title, dlFileEntry.getTitle())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				queryPos.add(folderId);
-
-				if (bindTitle) {
-					queryPos.add(title);
+					result = null;
 				}
+			}
 
-				List<DLFileEntry> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByG_F_T, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_DLFILEENTRY_WHERE);
+
+				sb.append(_FINDER_COLUMN_G_F_T_GROUPID_2);
+
+				sb.append(_FINDER_COLUMN_G_F_T_FOLDERID_2);
+
+				boolean bindTitle = false;
+
+				if (title.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_F_T_TITLE_3);
 				}
 				else {
-					DLFileEntry dlFileEntry = list.get(0);
+					bindTitle = true;
 
-					result = dlFileEntry;
+					sb.append(_FINDER_COLUMN_G_F_T_TITLE_2);
+				}
 
-					cacheResult(dlFileEntry);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					queryPos.add(folderId);
+
+					if (bindTitle) {
+						queryPos.add(title);
+					}
+
+					List<DLFileEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByG_F_T, finderArgs, list);
+						}
+					}
+					else {
+						DLFileEntry dlFileEntry = list.get(0);
+
+						result = dlFileEntry;
+
+						cacheResult(dlFileEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (DLFileEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (DLFileEntry)result;
+			}
 		}
 	}
 
@@ -14811,104 +14793,99 @@ public class DLFileEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {externalReferenceCode, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						DLFileEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByERC_G, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			DLFileEntry.class);
-
-		if (result instanceof DLFileEntry) {
-			DLFileEntry dlFileEntry = (DLFileEntry)result;
-
-			if (!Objects.equals(
-					externalReferenceCode,
-					dlFileEntry.getExternalReferenceCode()) ||
-				(groupId != dlFileEntry.getGroupId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntry.class, dlFileEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_DLFILEENTRY_WHERE);
-
-			boolean bindExternalReferenceCode = false;
-
-			if (externalReferenceCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindExternalReferenceCode = true;
-
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {externalReferenceCode, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByERC_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof DLFileEntry) {
+				DLFileEntry dlFileEntry = (DLFileEntry)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(
+						externalReferenceCode,
+						dlFileEntry.getExternalReferenceCode()) ||
+					(groupId != dlFileEntry.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindExternalReferenceCode) {
-					queryPos.add(externalReferenceCode);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<DLFileEntry> list = query.list();
+				sb.append(_SQL_SELECT_DLFILEENTRY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByERC_G, finderArgs, list);
-					}
+				boolean bindExternalReferenceCode = false;
+
+				if (externalReferenceCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
 				}
 				else {
-					DLFileEntry dlFileEntry = list.get(0);
+					bindExternalReferenceCode = true;
 
-					result = dlFileEntry;
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(dlFileEntry);
+				sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindExternalReferenceCode) {
+						queryPos.add(externalReferenceCode);
+					}
+
+					queryPos.add(groupId);
+
+					List<DLFileEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByERC_G, finderArgs, list);
+						}
+					}
+					else {
+						DLFileEntry dlFileEntry = list.get(0);
+
+						result = dlFileEntry;
+
+						cacheResult(dlFileEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (DLFileEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (DLFileEntry)result;
+			}
 		}
 	}
 
@@ -15040,48 +15017,51 @@ public class DLFileEntryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(DLFileEntry dlFileEntry) {
-		if (dlFileEntry.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					dlFileEntry.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				DLFileEntryImpl.class, dlFileEntry.getPrimaryKey(),
+				dlFileEntry);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {dlFileEntry.getUuid(), dlFileEntry.getGroupId()},
+				dlFileEntry);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_F_N,
+				new Object[] {
+					dlFileEntry.getGroupId(), dlFileEntry.getFolderId(),
+					dlFileEntry.getName()
+				},
+				dlFileEntry);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_F_FN,
+				new Object[] {
+					dlFileEntry.getGroupId(), dlFileEntry.getFolderId(),
+					dlFileEntry.getFileName()
+				},
+				dlFileEntry);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_F_T,
+				new Object[] {
+					dlFileEntry.getGroupId(), dlFileEntry.getFolderId(),
+					dlFileEntry.getTitle()
+				},
+				dlFileEntry);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByERC_G,
+				new Object[] {
+					dlFileEntry.getExternalReferenceCode(),
+					dlFileEntry.getGroupId()
+				},
+				dlFileEntry);
 		}
-
-		EntityCacheUtil.putResult(
-			DLFileEntryImpl.class, dlFileEntry.getPrimaryKey(), dlFileEntry);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {dlFileEntry.getUuid(), dlFileEntry.getGroupId()},
-			dlFileEntry);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_F_N,
-			new Object[] {
-				dlFileEntry.getGroupId(), dlFileEntry.getFolderId(),
-				dlFileEntry.getName()
-			},
-			dlFileEntry);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_F_FN,
-			new Object[] {
-				dlFileEntry.getGroupId(), dlFileEntry.getFolderId(),
-				dlFileEntry.getFileName()
-			},
-			dlFileEntry);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_F_T,
-			new Object[] {
-				dlFileEntry.getGroupId(), dlFileEntry.getFolderId(),
-				dlFileEntry.getTitle()
-			},
-			dlFileEntry);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByERC_G,
-			new Object[] {
-				dlFileEntry.getExternalReferenceCode(), dlFileEntry.getGroupId()
-			},
-			dlFileEntry);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -15101,15 +15081,18 @@ public class DLFileEntryPersistenceImpl
 		}
 
 		for (DLFileEntry dlFileEntry : dlFileEntries) {
-			if (dlFileEntry.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(dlFileEntry.getCtCollectionId() != 0) &&
+						(dlFileEntry.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					DLFileEntryImpl.class, dlFileEntry.getPrimaryKey()) ==
-						null) {
+				if (EntityCacheUtil.getResult(
+						DLFileEntryImpl.class, dlFileEntry.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(dlFileEntry);
+					cacheResult(dlFileEntry);
+				}
 			}
 		}
 	}
@@ -15159,55 +15142,63 @@ public class DLFileEntryPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		DLFileEntryModelImpl dlFileEntryModelImpl) {
 
-		Object[] args = new Object[] {
-			dlFileEntryModelImpl.getUuid(), dlFileEntryModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					dlFileEntryModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByUUID_G, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G, args, dlFileEntryModelImpl);
+			Object[] args = new Object[] {
+				dlFileEntryModelImpl.getUuid(),
+				dlFileEntryModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			dlFileEntryModelImpl.getGroupId(),
-			dlFileEntryModelImpl.getFolderId(), dlFileEntryModelImpl.getName()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G, args, dlFileEntryModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByG_F_N, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_F_N, args, dlFileEntryModelImpl);
+			args = new Object[] {
+				dlFileEntryModelImpl.getGroupId(),
+				dlFileEntryModelImpl.getFolderId(),
+				dlFileEntryModelImpl.getName()
+			};
 
-		args = new Object[] {
-			dlFileEntryModelImpl.getGroupId(),
-			dlFileEntryModelImpl.getFolderId(),
-			dlFileEntryModelImpl.getFileName()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByG_F_N, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_F_N, args, dlFileEntryModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByG_F_FN, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_F_FN, args, dlFileEntryModelImpl);
+			args = new Object[] {
+				dlFileEntryModelImpl.getGroupId(),
+				dlFileEntryModelImpl.getFolderId(),
+				dlFileEntryModelImpl.getFileName()
+			};
 
-		args = new Object[] {
-			dlFileEntryModelImpl.getGroupId(),
-			dlFileEntryModelImpl.getFolderId(), dlFileEntryModelImpl.getTitle()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByG_F_FN, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_F_FN, args, dlFileEntryModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByG_F_T, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_F_T, args, dlFileEntryModelImpl);
+			args = new Object[] {
+				dlFileEntryModelImpl.getGroupId(),
+				dlFileEntryModelImpl.getFolderId(),
+				dlFileEntryModelImpl.getTitle()
+			};
 
-		args = new Object[] {
-			dlFileEntryModelImpl.getExternalReferenceCode(),
-			dlFileEntryModelImpl.getGroupId()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByG_F_T, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_F_T, args, dlFileEntryModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByERC_G, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByERC_G, args, dlFileEntryModelImpl);
+			args = new Object[] {
+				dlFileEntryModelImpl.getExternalReferenceCode(),
+				dlFileEntryModelImpl.getGroupId()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByERC_G, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByERC_G, args, dlFileEntryModelImpl);
+		}
 	}
 
 	/**
@@ -15321,111 +15312,122 @@ public class DLFileEntryPersistenceImpl
 
 	@Override
 	public DLFileEntry updateImpl(DLFileEntry dlFileEntry) {
-		boolean isNew = dlFileEntry.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(dlFileEntry instanceof DLFileEntryModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = dlFileEntry.isNew();
 
-			if (ProxyUtil.isProxyClass(dlFileEntry.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(dlFileEntry);
+			if (!(dlFileEntry instanceof DLFileEntryModelImpl)) {
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(dlFileEntry.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						dlFileEntry);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in dlFileEntry proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in dlFileEntry proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom DLFileEntry implementation " +
+						dlFileEntry.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom DLFileEntry implementation " +
-					dlFileEntry.getClass());
-		}
+			DLFileEntryModelImpl dlFileEntryModelImpl =
+				(DLFileEntryModelImpl)dlFileEntry;
 
-		DLFileEntryModelImpl dlFileEntryModelImpl =
-			(DLFileEntryModelImpl)dlFileEntry;
+			if (Validator.isNull(dlFileEntry.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
 
-		if (Validator.isNull(dlFileEntry.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
+				dlFileEntry.setUuid(uuid);
+			}
 
-			dlFileEntry.setUuid(uuid);
-		}
+			if (Validator.isNull(dlFileEntry.getExternalReferenceCode())) {
+				dlFileEntry.setExternalReferenceCode(dlFileEntry.getUuid());
+			}
+			else {
+				DLFileEntry ercDLFileEntry = fetchByERC_G(
+					dlFileEntry.getExternalReferenceCode(),
+					dlFileEntry.getGroupId());
 
-		if (Validator.isNull(dlFileEntry.getExternalReferenceCode())) {
-			dlFileEntry.setExternalReferenceCode(dlFileEntry.getUuid());
-		}
-		else {
-			DLFileEntry ercDLFileEntry = fetchByERC_G(
-				dlFileEntry.getExternalReferenceCode(),
-				dlFileEntry.getGroupId());
+				if (isNew) {
+					if (ercDLFileEntry != null) {
+						throw new DuplicateDLFileEntryExternalReferenceCodeException(
+							"Duplicate document library file entry with external reference code " +
+								dlFileEntry.getExternalReferenceCode() +
+									" and group " + dlFileEntry.getGroupId());
+					}
+				}
+				else {
+					if ((ercDLFileEntry != null) &&
+						(dlFileEntry.getFileEntryId() !=
+							ercDLFileEntry.getFileEntryId())) {
 
-			if (isNew) {
-				if (ercDLFileEntry != null) {
-					throw new DuplicateDLFileEntryExternalReferenceCodeException(
-						"Duplicate document library file entry with external reference code " +
-							dlFileEntry.getExternalReferenceCode() +
-								" and group " + dlFileEntry.getGroupId());
+						throw new DuplicateDLFileEntryExternalReferenceCodeException(
+							"Duplicate document library file entry with external reference code " +
+								dlFileEntry.getExternalReferenceCode() +
+									" and group " + dlFileEntry.getGroupId());
+					}
 				}
 			}
-			else {
-				if ((ercDLFileEntry != null) &&
-					(dlFileEntry.getFileEntryId() !=
-						ercDLFileEntry.getFileEntryId())) {
 
-					throw new DuplicateDLFileEntryExternalReferenceCodeException(
-						"Duplicate document library file entry with external reference code " +
-							dlFileEntry.getExternalReferenceCode() +
-								" and group " + dlFileEntry.getGroupId());
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (dlFileEntry.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					dlFileEntry.setCreateDate(date);
+				}
+				else {
+					dlFileEntry.setCreateDate(
+						serviceContext.getCreateDate(date));
 				}
 			}
-		}
 
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (dlFileEntry.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				dlFileEntry.setCreateDate(date);
-			}
-			else {
-				dlFileEntry.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!dlFileEntryModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				dlFileEntry.setModifiedDate(date);
-			}
-			else {
-				dlFileEntry.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(dlFileEntry)) {
-				if (!isNew) {
-					session.evict(
-						DLFileEntryImpl.class, dlFileEntry.getPrimaryKeyObj());
+			if (!dlFileEntryModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					dlFileEntry.setModifiedDate(date);
 				}
-
-				session.save(dlFileEntry);
+				else {
+					dlFileEntry.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
 			}
-			else {
-				dlFileEntry = (DLFileEntry)session.merge(dlFileEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (dlFileEntry.getCtCollectionId() != 0) {
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(dlFileEntry)) {
+					if (!isNew) {
+						session.evict(
+							DLFileEntryImpl.class,
+							dlFileEntry.getPrimaryKeyObj());
+					}
+
+					session.save(dlFileEntry);
+				}
+				else {
+					dlFileEntry = (DLFileEntry)session.merge(dlFileEntry);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				DLFileEntryImpl.class, dlFileEntryModelImpl, false, true);
+
+			cacheUniqueFindersCache(dlFileEntryModelImpl);
+
 			if (isNew) {
 				dlFileEntry.setNew(false);
 			}
@@ -15434,19 +15436,6 @@ public class DLFileEntryPersistenceImpl
 
 			return dlFileEntry;
 		}
-
-		EntityCacheUtil.putResult(
-			DLFileEntryImpl.class, dlFileEntryModelImpl, false, true);
-
-		cacheUniqueFindersCache(dlFileEntryModelImpl);
-
-		if (isNew) {
-			dlFileEntry.setNew(false);
-		}
-
-		dlFileEntry.resetOriginalValues();
-
-		return dlFileEntry;
 	}
 
 	/**
@@ -15496,34 +15485,13 @@ public class DLFileEntryPersistenceImpl
 	 */
 	@Override
 	public DLFileEntry fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				DLFileEntry.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						DLFileEntry.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		DLFileEntry dlFileEntry = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			dlFileEntry = (DLFileEntry)session.get(
-				DLFileEntryImpl.class, primaryKey);
-
-			if (dlFileEntry != null) {
-				cacheResult(dlFileEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return dlFileEntry;
 	}
 
 	/**
@@ -15541,91 +15509,13 @@ public class DLFileEntryPersistenceImpl
 	public Map<Serializable, DLFileEntry> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(DLFileEntry.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						DLFileEntry.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, DLFileEntry> map =
-			new HashMap<Serializable, DLFileEntry>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			DLFileEntry dlFileEntry = fetchByPrimaryKey(primaryKey);
-
-			if (dlFileEntry != null) {
-				map.put(primaryKey, dlFileEntry);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (DLFileEntry dlFileEntry : (List<DLFileEntry>)query.list()) {
-				map.put(dlFileEntry.getPrimaryKeyObj(), dlFileEntry);
-
-				cacheResult(dlFileEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

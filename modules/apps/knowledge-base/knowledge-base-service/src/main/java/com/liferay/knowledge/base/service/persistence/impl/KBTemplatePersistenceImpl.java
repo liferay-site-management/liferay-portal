@@ -13,8 +13,11 @@ import com.liferay.knowledge.base.model.impl.KBTemplateModelImpl;
 import com.liferay.knowledge.base.service.persistence.KBTemplatePersistence;
 import com.liferay.knowledge.base.service.persistence.KBTemplateUtil;
 import com.liferay.knowledge.base.service.persistence.impl.constants.KBPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -58,7 +61,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -714,102 +716,96 @@ public class KBTemplatePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(KBTemplate.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			KBTemplate.class);
-
-		if (result instanceof KBTemplate) {
-			KBTemplate kbTemplate = (KBTemplate)result;
-
-			if (!Objects.equals(uuid, kbTemplate.getUuid()) ||
-				(groupId != kbTemplate.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						KBTemplate.class, kbTemplate.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_KBTEMPLATE_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof KBTemplate) {
+				KBTemplate kbTemplate = (KBTemplate)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, kbTemplate.getUuid()) ||
+					(groupId != kbTemplate.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<KBTemplate> list = query.list();
+				sb.append(_SQL_SELECT_KBTEMPLATE_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					KBTemplate kbTemplate = list.get(0);
+					bindUuid = true;
 
-					result = kbTemplate;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(kbTemplate);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<KBTemplate> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						KBTemplate kbTemplate = list.get(0);
+
+						result = kbTemplate;
+
+						cacheResult(kbTemplate);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (KBTemplate)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (KBTemplate)result;
+			}
 		}
 	}
 
@@ -2409,17 +2405,18 @@ public class KBTemplatePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(KBTemplate kbTemplate) {
-		if (kbTemplate.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					kbTemplate.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				KBTemplateImpl.class, kbTemplate.getPrimaryKey(), kbTemplate);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {kbTemplate.getUuid(), kbTemplate.getGroupId()},
+				kbTemplate);
 		}
-
-		entityCache.putResult(
-			KBTemplateImpl.class, kbTemplate.getPrimaryKey(), kbTemplate);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {kbTemplate.getUuid(), kbTemplate.getGroupId()},
-			kbTemplate);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2439,14 +2436,18 @@ public class KBTemplatePersistenceImpl
 		}
 
 		for (KBTemplate kbTemplate : kbTemplates) {
-			if (kbTemplate.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(kbTemplate.getCtCollectionId() != 0) &&
+						(kbTemplate.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					KBTemplateImpl.class, kbTemplate.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						KBTemplateImpl.class, kbTemplate.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(kbTemplate);
+					cacheResult(kbTemplate);
+				}
 			}
 		}
 	}
@@ -2496,13 +2497,19 @@ public class KBTemplatePersistenceImpl
 	protected void cacheUniqueFindersCache(
 		KBTemplateModelImpl kbTemplateModelImpl) {
 
-		Object[] args = new Object[] {
-			kbTemplateModelImpl.getUuid(), kbTemplateModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					kbTemplateModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, kbTemplateModelImpl);
+			Object[] args = new Object[] {
+				kbTemplateModelImpl.getUuid(), kbTemplateModelImpl.getGroupId()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, kbTemplateModelImpl);
+		}
 	}
 
 	/**
@@ -2614,107 +2621,119 @@ public class KBTemplatePersistenceImpl
 
 	@Override
 	public KBTemplate updateImpl(KBTemplate kbTemplate) {
-		boolean isNew = kbTemplate.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(kbTemplate instanceof KBTemplateModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = kbTemplate.isNew();
 
-			if (ProxyUtil.isProxyClass(kbTemplate.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(kbTemplate);
+			if (!(kbTemplate instanceof KBTemplateModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in kbTemplate proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(kbTemplate.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						kbTemplate);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom KBTemplate implementation " +
-					kbTemplate.getClass());
-		}
-
-		KBTemplateModelImpl kbTemplateModelImpl =
-			(KBTemplateModelImpl)kbTemplate;
-
-		if (Validator.isNull(kbTemplate.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			kbTemplate.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (kbTemplate.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				kbTemplate.setCreateDate(date);
-			}
-			else {
-				kbTemplate.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!kbTemplateModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				kbTemplate.setModifiedDate(date);
-			}
-			else {
-				kbTemplate.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
-
-		if (userId > 0) {
-			long companyId = kbTemplate.getCompanyId();
-
-			long groupId = kbTemplate.getGroupId();
-
-			long kbTemplateId = 0;
-
-			if (!isNew) {
-				kbTemplateId = kbTemplate.getPrimaryKey();
-			}
-
-			try {
-				kbTemplate.setContent(
-					SanitizerUtil.sanitize(
-						companyId, groupId, userId, KBTemplate.class.getName(),
-						kbTemplateId, ContentTypes.TEXT_HTML,
-						Sanitizer.MODE_ALL, kbTemplate.getContent(), null));
-			}
-			catch (SanitizerException sanitizerException) {
-				throw new SystemException(sanitizerException);
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(kbTemplate)) {
-				if (!isNew) {
-					session.evict(
-						KBTemplateImpl.class, kbTemplate.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in kbTemplate proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(kbTemplate);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom KBTemplate implementation " +
+						kbTemplate.getClass());
 			}
-			else {
-				kbTemplate = (KBTemplate)session.merge(kbTemplate);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (kbTemplate.getCtCollectionId() != 0) {
+			KBTemplateModelImpl kbTemplateModelImpl =
+				(KBTemplateModelImpl)kbTemplate;
+
+			if (Validator.isNull(kbTemplate.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				kbTemplate.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (kbTemplate.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					kbTemplate.setCreateDate(date);
+				}
+				else {
+					kbTemplate.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!kbTemplateModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					kbTemplate.setModifiedDate(date);
+				}
+				else {
+					kbTemplate.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
+
+			if (userId > 0) {
+				long companyId = kbTemplate.getCompanyId();
+
+				long groupId = kbTemplate.getGroupId();
+
+				long kbTemplateId = 0;
+
+				if (!isNew) {
+					kbTemplateId = kbTemplate.getPrimaryKey();
+				}
+
+				try {
+					kbTemplate.setContent(
+						SanitizerUtil.sanitize(
+							companyId, groupId, userId,
+							KBTemplate.class.getName(), kbTemplateId,
+							ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+							kbTemplate.getContent(), null));
+				}
+				catch (SanitizerException sanitizerException) {
+					throw new SystemException(sanitizerException);
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(kbTemplate)) {
+					if (!isNew) {
+						session.evict(
+							KBTemplateImpl.class,
+							kbTemplate.getPrimaryKeyObj());
+					}
+
+					session.save(kbTemplate);
+				}
+				else {
+					kbTemplate = (KBTemplate)session.merge(kbTemplate);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				KBTemplateImpl.class, kbTemplateModelImpl, false, true);
+
+			cacheUniqueFindersCache(kbTemplateModelImpl);
+
 			if (isNew) {
 				kbTemplate.setNew(false);
 			}
@@ -2723,19 +2742,6 @@ public class KBTemplatePersistenceImpl
 
 			return kbTemplate;
 		}
-
-		entityCache.putResult(
-			KBTemplateImpl.class, kbTemplateModelImpl, false, true);
-
-		cacheUniqueFindersCache(kbTemplateModelImpl);
-
-		if (isNew) {
-			kbTemplate.setNew(false);
-		}
-
-		kbTemplate.resetOriginalValues();
-
-		return kbTemplate;
 	}
 
 	/**
@@ -2785,34 +2791,13 @@ public class KBTemplatePersistenceImpl
 	 */
 	@Override
 	public KBTemplate fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				KBTemplate.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						KBTemplate.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		KBTemplate kbTemplate = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			kbTemplate = (KBTemplate)session.get(
-				KBTemplateImpl.class, primaryKey);
-
-			if (kbTemplate != null) {
-				cacheResult(kbTemplate);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return kbTemplate;
 	}
 
 	/**
@@ -2830,91 +2815,12 @@ public class KBTemplatePersistenceImpl
 	public Map<Serializable, KBTemplate> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(KBTemplate.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(KBTemplate.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, KBTemplate> map =
-			new HashMap<Serializable, KBTemplate>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			KBTemplate kbTemplate = fetchByPrimaryKey(primaryKey);
-
-			if (kbTemplate != null) {
-				map.put(primaryKey, kbTemplate);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (KBTemplate kbTemplate : (List<KBTemplate>)query.list()) {
-				map.put(kbTemplate.getPrimaryKeyObj(), kbTemplate);
-
-				cacheResult(kbTemplate);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

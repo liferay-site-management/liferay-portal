@@ -13,8 +13,11 @@ import com.liferay.change.tracking.store.model.impl.CTSContentModelImpl;
 import com.liferay.change.tracking.store.service.persistence.CTSContentPersistence;
 import com.liferay.change.tracking.store.service.persistence.CTSContentUtil;
 import com.liferay.change.tracking.store.service.persistence.impl.constants.CTSPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -46,7 +49,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -2250,141 +2252,135 @@ public class CTSContentPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {
-				companyId, repositoryId, path, version, storeType
-			};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(CTSContent.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByC_R_P_V_S, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CTSContent.class);
-
-		if (result instanceof CTSContent) {
-			CTSContent ctsContent = (CTSContent)result;
-
-			if ((companyId != ctsContent.getCompanyId()) ||
-				(repositoryId != ctsContent.getRepositoryId()) ||
-				!Objects.equals(path, ctsContent.getPath()) ||
-				!Objects.equals(version, ctsContent.getVersion()) ||
-				!Objects.equals(storeType, ctsContent.getStoreType())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						CTSContent.class, ctsContent.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(7);
-
-			sb.append(_SQL_SELECT_CTSCONTENT_WHERE);
-
-			sb.append(_FINDER_COLUMN_C_R_P_V_S_COMPANYID_2);
-
-			sb.append(_FINDER_COLUMN_C_R_P_V_S_REPOSITORYID_2);
-
-			boolean bindPath = false;
-
-			if (path.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_R_P_V_S_PATH_3);
-			}
-			else {
-				bindPath = true;
-
-				sb.append(_FINDER_COLUMN_C_R_P_V_S_PATH_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					companyId, repositoryId, path, version, storeType
+				};
 			}
 
-			boolean bindVersion = false;
+			Object result = null;
 
-			if (version.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_R_P_V_S_VERSION_3);
-			}
-			else {
-				bindVersion = true;
-
-				sb.append(_FINDER_COLUMN_C_R_P_V_S_VERSION_2);
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByC_R_P_V_S, finderArgs, this);
 			}
 
-			boolean bindStoreType = false;
+			if (result instanceof CTSContent) {
+				CTSContent ctsContent = (CTSContent)result;
 
-			if (storeType.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_R_P_V_S_STORETYPE_3);
-			}
-			else {
-				bindStoreType = true;
+				if ((companyId != ctsContent.getCompanyId()) ||
+					(repositoryId != ctsContent.getRepositoryId()) ||
+					!Objects.equals(path, ctsContent.getPath()) ||
+					!Objects.equals(version, ctsContent.getVersion()) ||
+					!Objects.equals(storeType, ctsContent.getStoreType())) {
 
-				sb.append(_FINDER_COLUMN_C_R_P_V_S_STORETYPE_2);
-			}
-
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				queryPos.add(repositoryId);
-
-				if (bindPath) {
-					queryPos.add(path);
+					result = null;
 				}
+			}
 
-				if (bindVersion) {
-					queryPos.add(version);
-				}
+			if (result == null) {
+				StringBundler sb = new StringBundler(7);
 
-				if (bindStoreType) {
-					queryPos.add(storeType);
-				}
+				sb.append(_SQL_SELECT_CTSCONTENT_WHERE);
 
-				List<CTSContent> list = query.list();
+				sb.append(_FINDER_COLUMN_C_R_P_V_S_COMPANYID_2);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByC_R_P_V_S, finderArgs, list);
-					}
+				sb.append(_FINDER_COLUMN_C_R_P_V_S_REPOSITORYID_2);
+
+				boolean bindPath = false;
+
+				if (path.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_R_P_V_S_PATH_3);
 				}
 				else {
-					CTSContent ctsContent = list.get(0);
+					bindPath = true;
 
-					result = ctsContent;
+					sb.append(_FINDER_COLUMN_C_R_P_V_S_PATH_2);
+				}
 
-					cacheResult(ctsContent);
+				boolean bindVersion = false;
+
+				if (version.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_R_P_V_S_VERSION_3);
+				}
+				else {
+					bindVersion = true;
+
+					sb.append(_FINDER_COLUMN_C_R_P_V_S_VERSION_2);
+				}
+
+				boolean bindStoreType = false;
+
+				if (storeType.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_R_P_V_S_STORETYPE_3);
+				}
+				else {
+					bindStoreType = true;
+
+					sb.append(_FINDER_COLUMN_C_R_P_V_S_STORETYPE_2);
+				}
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					queryPos.add(repositoryId);
+
+					if (bindPath) {
+						queryPos.add(path);
+					}
+
+					if (bindVersion) {
+						queryPos.add(version);
+					}
+
+					if (bindStoreType) {
+						queryPos.add(storeType);
+					}
+
+					List<CTSContent> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByC_R_P_V_S, finderArgs, list);
+						}
+					}
+					else {
+						CTSContent ctsContent = list.get(0);
+
+						result = ctsContent;
+
+						cacheResult(ctsContent);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (CTSContent)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (CTSContent)result;
+			}
 		}
 	}
 
@@ -2581,21 +2577,22 @@ public class CTSContentPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(CTSContent ctsContent) {
-		if (ctsContent.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					ctsContent.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				CTSContentImpl.class, ctsContent.getPrimaryKey(), ctsContent);
+
+			finderCache.putResult(
+				_finderPathFetchByC_R_P_V_S,
+				new Object[] {
+					ctsContent.getCompanyId(), ctsContent.getRepositoryId(),
+					ctsContent.getPath(), ctsContent.getVersion(),
+					ctsContent.getStoreType()
+				},
+				ctsContent);
 		}
-
-		entityCache.putResult(
-			CTSContentImpl.class, ctsContent.getPrimaryKey(), ctsContent);
-
-		finderCache.putResult(
-			_finderPathFetchByC_R_P_V_S,
-			new Object[] {
-				ctsContent.getCompanyId(), ctsContent.getRepositoryId(),
-				ctsContent.getPath(), ctsContent.getVersion(),
-				ctsContent.getStoreType()
-			},
-			ctsContent);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2615,14 +2612,18 @@ public class CTSContentPersistenceImpl
 		}
 
 		for (CTSContent ctsContent : ctsContents) {
-			if (ctsContent.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(ctsContent.getCtCollectionId() != 0) &&
+						(ctsContent.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					CTSContentImpl.class, ctsContent.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						CTSContentImpl.class, ctsContent.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(ctsContent);
+					cacheResult(ctsContent);
+				}
 			}
 		}
 	}
@@ -2672,17 +2673,22 @@ public class CTSContentPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		CTSContentModelImpl ctsContentModelImpl) {
 
-		Object[] args = new Object[] {
-			ctsContentModelImpl.getCompanyId(),
-			ctsContentModelImpl.getRepositoryId(),
-			ctsContentModelImpl.getPath(), ctsContentModelImpl.getVersion(),
-			ctsContentModelImpl.getStoreType()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					ctsContentModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(
-			_finderPathCountByC_R_P_V_S, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByC_R_P_V_S, args, ctsContentModelImpl);
+			Object[] args = new Object[] {
+				ctsContentModelImpl.getCompanyId(),
+				ctsContentModelImpl.getRepositoryId(),
+				ctsContentModelImpl.getPath(), ctsContentModelImpl.getVersion(),
+				ctsContentModelImpl.getStoreType()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByC_R_P_V_S, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByC_R_P_V_S, args, ctsContentModelImpl);
+		}
 	}
 
 	/**
@@ -2790,58 +2796,68 @@ public class CTSContentPersistenceImpl
 
 	@Override
 	public CTSContent updateImpl(CTSContent ctsContent) {
-		boolean isNew = ctsContent.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(ctsContent instanceof CTSContentModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = ctsContent.isNew();
 
-			if (ProxyUtil.isProxyClass(ctsContent.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(ctsContent);
+			if (!(ctsContent instanceof CTSContentModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in ctsContent proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(ctsContent.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						ctsContent);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom CTSContent implementation " +
-					ctsContent.getClass());
-		}
-
-		CTSContentModelImpl ctsContentModelImpl =
-			(CTSContentModelImpl)ctsContent;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(ctsContent)) {
-				if (!isNew) {
-					session.evict(
-						CTSContentImpl.class, ctsContent.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in ctsContent proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(ctsContent);
-			}
-			else {
-				session.evict(
-					CTSContentImpl.class, ctsContent.getPrimaryKeyObj());
-
-				session.saveOrUpdate(ctsContent);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom CTSContent implementation " +
+						ctsContent.getClass());
 			}
 
-			session.flush();
-			session.clear();
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
+			CTSContentModelImpl ctsContentModelImpl =
+				(CTSContentModelImpl)ctsContent;
 
-		if (ctsContent.getCtCollectionId() != 0) {
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(ctsContent)) {
+					if (!isNew) {
+						session.evict(
+							CTSContentImpl.class,
+							ctsContent.getPrimaryKeyObj());
+					}
+
+					session.save(ctsContent);
+				}
+				else {
+					session.evict(
+						CTSContentImpl.class, ctsContent.getPrimaryKeyObj());
+
+					session.saveOrUpdate(ctsContent);
+				}
+
+				session.flush();
+				session.clear();
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				CTSContentImpl.class, ctsContentModelImpl, false, true);
+
+			cacheUniqueFindersCache(ctsContentModelImpl);
+
 			if (isNew) {
 				ctsContent.setNew(false);
 			}
@@ -2850,19 +2866,6 @@ public class CTSContentPersistenceImpl
 
 			return ctsContent;
 		}
-
-		entityCache.putResult(
-			CTSContentImpl.class, ctsContentModelImpl, false, true);
-
-		cacheUniqueFindersCache(ctsContentModelImpl);
-
-		if (isNew) {
-			ctsContent.setNew(false);
-		}
-
-		ctsContent.resetOriginalValues();
-
-		return ctsContent;
 	}
 
 	/**
@@ -2912,34 +2915,13 @@ public class CTSContentPersistenceImpl
 	 */
 	@Override
 	public CTSContent fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				CTSContent.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CTSContent.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		CTSContent ctsContent = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			ctsContent = (CTSContent)session.get(
-				CTSContentImpl.class, primaryKey);
-
-			if (ctsContent != null) {
-				cacheResult(ctsContent);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return ctsContent;
 	}
 
 	/**
@@ -2957,91 +2939,12 @@ public class CTSContentPersistenceImpl
 	public Map<Serializable, CTSContent> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(CTSContent.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(CTSContent.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, CTSContent> map =
-			new HashMap<Serializable, CTSContent>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			CTSContent ctsContent = fetchByPrimaryKey(primaryKey);
-
-			if (ctsContent != null) {
-				map.put(primaryKey, ctsContent);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (CTSContent ctsContent : (List<CTSContent>)query.list()) {
-				map.put(ctsContent.getPrimaryKeyObj(), ctsContent);
-
-				cacheResult(ctsContent);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

@@ -5,8 +5,11 @@
 
 package com.liferay.portal.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -49,7 +52,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -4053,12 +4055,14 @@ public class EmailAddressPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(EmailAddress emailAddress) {
-		if (emailAddress.getCtCollectionId() != 0) {
-			return;
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					emailAddress.getCtCollectionId() != 0)) {
 
-		EntityCacheUtil.putResult(
-			EmailAddressImpl.class, emailAddress.getPrimaryKey(), emailAddress);
+			EntityCacheUtil.putResult(
+				EmailAddressImpl.class, emailAddress.getPrimaryKey(),
+				emailAddress);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -4078,15 +4082,18 @@ public class EmailAddressPersistenceImpl
 		}
 
 		for (EmailAddress emailAddress : emailAddresses) {
-			if (emailAddress.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(emailAddress.getCtCollectionId() != 0) &&
+						(emailAddress.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					EmailAddressImpl.class, emailAddress.getPrimaryKey()) ==
-						null) {
+				if (EntityCacheUtil.getResult(
+						EmailAddressImpl.class, emailAddress.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(emailAddress);
+					cacheResult(emailAddress);
+				}
 			}
 		}
 	}
@@ -4244,84 +4251,91 @@ public class EmailAddressPersistenceImpl
 
 	@Override
 	public EmailAddress updateImpl(EmailAddress emailAddress) {
-		boolean isNew = emailAddress.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(emailAddress instanceof EmailAddressModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = emailAddress.isNew();
 
-			if (ProxyUtil.isProxyClass(emailAddress.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					emailAddress);
+			if (!(emailAddress instanceof EmailAddressModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in emailAddress proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(emailAddress.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						emailAddress);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom EmailAddress implementation " +
-					emailAddress.getClass());
-		}
-
-		EmailAddressModelImpl emailAddressModelImpl =
-			(EmailAddressModelImpl)emailAddress;
-
-		if (Validator.isNull(emailAddress.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			emailAddress.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (emailAddress.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				emailAddress.setCreateDate(date);
-			}
-			else {
-				emailAddress.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!emailAddressModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				emailAddress.setModifiedDate(date);
-			}
-			else {
-				emailAddress.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(emailAddress)) {
-				if (!isNew) {
-					session.evict(
-						EmailAddressImpl.class,
-						emailAddress.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in emailAddress proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(emailAddress);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom EmailAddress implementation " +
+						emailAddress.getClass());
 			}
-			else {
-				emailAddress = (EmailAddress)session.merge(emailAddress);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (emailAddress.getCtCollectionId() != 0) {
+			EmailAddressModelImpl emailAddressModelImpl =
+				(EmailAddressModelImpl)emailAddress;
+
+			if (Validator.isNull(emailAddress.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				emailAddress.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (emailAddress.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					emailAddress.setCreateDate(date);
+				}
+				else {
+					emailAddress.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!emailAddressModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					emailAddress.setModifiedDate(date);
+				}
+				else {
+					emailAddress.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(emailAddress)) {
+					if (!isNew) {
+						session.evict(
+							EmailAddressImpl.class,
+							emailAddress.getPrimaryKeyObj());
+					}
+
+					session.save(emailAddress);
+				}
+				else {
+					emailAddress = (EmailAddress)session.merge(emailAddress);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				EmailAddressImpl.class, emailAddressModelImpl, false, true);
+
 			if (isNew) {
 				emailAddress.setNew(false);
 			}
@@ -4330,17 +4344,6 @@ public class EmailAddressPersistenceImpl
 
 			return emailAddress;
 		}
-
-		EntityCacheUtil.putResult(
-			EmailAddressImpl.class, emailAddressModelImpl, false, true);
-
-		if (isNew) {
-			emailAddress.setNew(false);
-		}
-
-		emailAddress.resetOriginalValues();
-
-		return emailAddress;
 	}
 
 	/**
@@ -4390,34 +4393,13 @@ public class EmailAddressPersistenceImpl
 	 */
 	@Override
 	public EmailAddress fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				EmailAddress.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						EmailAddress.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		EmailAddress emailAddress = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			emailAddress = (EmailAddress)session.get(
-				EmailAddressImpl.class, primaryKey);
-
-			if (emailAddress != null) {
-				cacheResult(emailAddress);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return emailAddress;
 	}
 
 	/**
@@ -4435,91 +4417,13 @@ public class EmailAddressPersistenceImpl
 	public Map<Serializable, EmailAddress> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(EmailAddress.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						EmailAddress.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, EmailAddress> map =
-			new HashMap<Serializable, EmailAddress>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			EmailAddress emailAddress = fetchByPrimaryKey(primaryKey);
-
-			if (emailAddress != null) {
-				map.put(primaryKey, emailAddress);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (EmailAddress emailAddress : (List<EmailAddress>)query.list()) {
-				map.put(emailAddress.getPrimaryKeyObj(), emailAddress);
-
-				cacheResult(emailAddress);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

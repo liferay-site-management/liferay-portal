@@ -14,8 +14,11 @@ import com.liferay.client.extension.model.impl.ClientExtensionEntryRelModelImpl;
 import com.liferay.client.extension.service.persistence.ClientExtensionEntryRelPersistence;
 import com.liferay.client.extension.service.persistence.ClientExtensionEntryRelUtil;
 import com.liferay.client.extension.service.persistence.impl.constants.ClientExtensionPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -51,7 +54,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -725,105 +727,99 @@ public class ClientExtensionEntryRelPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						ClientExtensionEntryRel.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			ClientExtensionEntryRel.class);
-
-		if (result instanceof ClientExtensionEntryRel) {
-			ClientExtensionEntryRel clientExtensionEntryRel =
-				(ClientExtensionEntryRel)result;
-
-			if (!Objects.equals(uuid, clientExtensionEntryRel.getUuid()) ||
-				(groupId != clientExtensionEntryRel.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class,
-						clientExtensionEntryRel.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_CLIENTEXTENSIONENTRYREL_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof ClientExtensionEntryRel) {
+				ClientExtensionEntryRel clientExtensionEntryRel =
+					(ClientExtensionEntryRel)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, clientExtensionEntryRel.getUuid()) ||
+					(groupId != clientExtensionEntryRel.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<ClientExtensionEntryRel> list = query.list();
+				sb.append(_SQL_SELECT_CLIENTEXTENSIONENTRYREL_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					ClientExtensionEntryRel clientExtensionEntryRel = list.get(
-						0);
+					bindUuid = true;
 
-					result = clientExtensionEntryRel;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(clientExtensionEntryRel);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<ClientExtensionEntryRel> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						ClientExtensionEntryRel clientExtensionEntryRel =
+							list.get(0);
+
+						result = clientExtensionEntryRel;
+
+						cacheResult(clientExtensionEntryRel);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (ClientExtensionEntryRel)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (ClientExtensionEntryRel)result;
+			}
 		}
 	}
 
@@ -3424,107 +3420,101 @@ public class ClientExtensionEntryRelPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {externalReferenceCode, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						ClientExtensionEntryRel.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByERC_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			ClientExtensionEntryRel.class);
-
-		if (result instanceof ClientExtensionEntryRel) {
-			ClientExtensionEntryRel clientExtensionEntryRel =
-				(ClientExtensionEntryRel)result;
-
-			if (!Objects.equals(
-					externalReferenceCode,
-					clientExtensionEntryRel.getExternalReferenceCode()) ||
-				(groupId != clientExtensionEntryRel.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class,
-						clientExtensionEntryRel.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_CLIENTEXTENSIONENTRYREL_WHERE);
-
-			boolean bindExternalReferenceCode = false;
-
-			if (externalReferenceCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindExternalReferenceCode = true;
-
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {externalReferenceCode, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByERC_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof ClientExtensionEntryRel) {
+				ClientExtensionEntryRel clientExtensionEntryRel =
+					(ClientExtensionEntryRel)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(
+						externalReferenceCode,
+						clientExtensionEntryRel.getExternalReferenceCode()) ||
+					(groupId != clientExtensionEntryRel.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindExternalReferenceCode) {
-					queryPos.add(externalReferenceCode);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<ClientExtensionEntryRel> list = query.list();
+				sb.append(_SQL_SELECT_CLIENTEXTENSIONENTRYREL_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByERC_G, finderArgs, list);
-					}
+				boolean bindExternalReferenceCode = false;
+
+				if (externalReferenceCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
 				}
 				else {
-					ClientExtensionEntryRel clientExtensionEntryRel = list.get(
-						0);
+					bindExternalReferenceCode = true;
 
-					result = clientExtensionEntryRel;
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(clientExtensionEntryRel);
+				sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindExternalReferenceCode) {
+						queryPos.add(externalReferenceCode);
+					}
+
+					queryPos.add(groupId);
+
+					List<ClientExtensionEntryRel> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByERC_G, finderArgs, list);
+						}
+					}
+					else {
+						ClientExtensionEntryRel clientExtensionEntryRel =
+							list.get(0);
+
+						result = clientExtensionEntryRel;
+
+						cacheResult(clientExtensionEntryRel);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (ClientExtensionEntryRel)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (ClientExtensionEntryRel)result;
+			}
 		}
 	}
 
@@ -3657,29 +3647,31 @@ public class ClientExtensionEntryRelPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(ClientExtensionEntryRel clientExtensionEntryRel) {
-		if (clientExtensionEntryRel.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					clientExtensionEntryRel.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				ClientExtensionEntryRelImpl.class,
+				clientExtensionEntryRel.getPrimaryKey(),
+				clientExtensionEntryRel);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					clientExtensionEntryRel.getUuid(),
+					clientExtensionEntryRel.getGroupId()
+				},
+				clientExtensionEntryRel);
+
+			finderCache.putResult(
+				_finderPathFetchByERC_G,
+				new Object[] {
+					clientExtensionEntryRel.getExternalReferenceCode(),
+					clientExtensionEntryRel.getGroupId()
+				},
+				clientExtensionEntryRel);
 		}
-
-		entityCache.putResult(
-			ClientExtensionEntryRelImpl.class,
-			clientExtensionEntryRel.getPrimaryKey(), clientExtensionEntryRel);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {
-				clientExtensionEntryRel.getUuid(),
-				clientExtensionEntryRel.getGroupId()
-			},
-			clientExtensionEntryRel);
-
-		finderCache.putResult(
-			_finderPathFetchByERC_G,
-			new Object[] {
-				clientExtensionEntryRel.getExternalReferenceCode(),
-				clientExtensionEntryRel.getGroupId()
-			},
-			clientExtensionEntryRel);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -3704,15 +3696,18 @@ public class ClientExtensionEntryRelPersistenceImpl
 		for (ClientExtensionEntryRel clientExtensionEntryRel :
 				clientExtensionEntryRels) {
 
-			if (clientExtensionEntryRel.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(clientExtensionEntryRel.getCtCollectionId() != 0) &&
+						(clientExtensionEntryRel.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					ClientExtensionEntryRelImpl.class,
-					clientExtensionEntryRel.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						ClientExtensionEntryRelImpl.class,
+						clientExtensionEntryRel.getPrimaryKey()) == null) {
 
-				cacheResult(clientExtensionEntryRel);
+					cacheResult(clientExtensionEntryRel);
+				}
 			}
 		}
 	}
@@ -3769,23 +3764,33 @@ public class ClientExtensionEntryRelPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		ClientExtensionEntryRelModelImpl clientExtensionEntryRelModelImpl) {
 
-		Object[] args = new Object[] {
-			clientExtensionEntryRelModelImpl.getUuid(),
-			clientExtensionEntryRelModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					clientExtensionEntryRelModelImpl.getCtCollectionId() !=
+						0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, clientExtensionEntryRelModelImpl);
+			Object[] args = new Object[] {
+				clientExtensionEntryRelModelImpl.getUuid(),
+				clientExtensionEntryRelModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			clientExtensionEntryRelModelImpl.getExternalReferenceCode(),
-			clientExtensionEntryRelModelImpl.getGroupId()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args,
+				clientExtensionEntryRelModelImpl);
 
-		finderCache.putResult(_finderPathCountByERC_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByERC_G, args, clientExtensionEntryRelModelImpl);
+			args = new Object[] {
+				clientExtensionEntryRelModelImpl.getExternalReferenceCode(),
+				clientExtensionEntryRelModelImpl.getGroupId()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByERC_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByERC_G, args,
+				clientExtensionEntryRelModelImpl);
+		}
 	}
 
 	/**
@@ -3906,124 +3911,137 @@ public class ClientExtensionEntryRelPersistenceImpl
 	public ClientExtensionEntryRel updateImpl(
 		ClientExtensionEntryRel clientExtensionEntryRel) {
 
-		boolean isNew = clientExtensionEntryRel.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(clientExtensionEntryRel instanceof
-				ClientExtensionEntryRelModelImpl)) {
+			boolean isNew = clientExtensionEntryRel.isNew();
 
-			InvocationHandler invocationHandler = null;
+			if (!(clientExtensionEntryRel instanceof
+					ClientExtensionEntryRelModelImpl)) {
 
-			if (ProxyUtil.isProxyClass(clientExtensionEntryRel.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					clientExtensionEntryRel);
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(
+						clientExtensionEntryRel.getClass())) {
+
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						clientExtensionEntryRel);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in clientExtensionEntryRel proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in clientExtensionEntryRel proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom ClientExtensionEntryRel implementation " +
+						clientExtensionEntryRel.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom ClientExtensionEntryRel implementation " +
-					clientExtensionEntryRel.getClass());
-		}
+			ClientExtensionEntryRelModelImpl clientExtensionEntryRelModelImpl =
+				(ClientExtensionEntryRelModelImpl)clientExtensionEntryRel;
 
-		ClientExtensionEntryRelModelImpl clientExtensionEntryRelModelImpl =
-			(ClientExtensionEntryRelModelImpl)clientExtensionEntryRel;
+			if (Validator.isNull(clientExtensionEntryRel.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
 
-		if (Validator.isNull(clientExtensionEntryRel.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
+				clientExtensionEntryRel.setUuid(uuid);
+			}
 
-			clientExtensionEntryRel.setUuid(uuid);
-		}
+			if (Validator.isNull(
+					clientExtensionEntryRel.getExternalReferenceCode())) {
 
-		if (Validator.isNull(
-				clientExtensionEntryRel.getExternalReferenceCode())) {
+				clientExtensionEntryRel.setExternalReferenceCode(
+					clientExtensionEntryRel.getUuid());
+			}
+			else {
+				ClientExtensionEntryRel ercClientExtensionEntryRel =
+					fetchByERC_G(
+						clientExtensionEntryRel.getExternalReferenceCode(),
+						clientExtensionEntryRel.getGroupId());
 
-			clientExtensionEntryRel.setExternalReferenceCode(
-				clientExtensionEntryRel.getUuid());
-		}
-		else {
-			ClientExtensionEntryRel ercClientExtensionEntryRel = fetchByERC_G(
-				clientExtensionEntryRel.getExternalReferenceCode(),
-				clientExtensionEntryRel.getGroupId());
+				if (isNew) {
+					if (ercClientExtensionEntryRel != null) {
+						throw new DuplicateClientExtensionEntryRelExternalReferenceCodeException(
+							"Duplicate client extension entry rel with external reference code " +
+								clientExtensionEntryRel.
+									getExternalReferenceCode() + " and group " +
+										clientExtensionEntryRel.getGroupId());
+					}
+				}
+				else {
+					if ((ercClientExtensionEntryRel != null) &&
+						(clientExtensionEntryRel.
+							getClientExtensionEntryRelId() !=
+								ercClientExtensionEntryRel.
+									getClientExtensionEntryRelId())) {
 
-			if (isNew) {
-				if (ercClientExtensionEntryRel != null) {
-					throw new DuplicateClientExtensionEntryRelExternalReferenceCodeException(
-						"Duplicate client extension entry rel with external reference code " +
-							clientExtensionEntryRel.getExternalReferenceCode() +
-								" and group " +
-									clientExtensionEntryRel.getGroupId());
+						throw new DuplicateClientExtensionEntryRelExternalReferenceCodeException(
+							"Duplicate client extension entry rel with external reference code " +
+								clientExtensionEntryRel.
+									getExternalReferenceCode() + " and group " +
+										clientExtensionEntryRel.getGroupId());
+					}
 				}
 			}
-			else {
-				if ((ercClientExtensionEntryRel != null) &&
-					(clientExtensionEntryRel.getClientExtensionEntryRelId() !=
-						ercClientExtensionEntryRel.
-							getClientExtensionEntryRelId())) {
 
-					throw new DuplicateClientExtensionEntryRelExternalReferenceCodeException(
-						"Duplicate client extension entry rel with external reference code " +
-							clientExtensionEntryRel.getExternalReferenceCode() +
-								" and group " +
-									clientExtensionEntryRel.getGroupId());
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (clientExtensionEntryRel.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					clientExtensionEntryRel.setCreateDate(date);
+				}
+				else {
+					clientExtensionEntryRel.setCreateDate(
+						serviceContext.getCreateDate(date));
 				}
 			}
-		}
 
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (clientExtensionEntryRel.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				clientExtensionEntryRel.setCreateDate(date);
-			}
-			else {
-				clientExtensionEntryRel.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!clientExtensionEntryRelModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				clientExtensionEntryRel.setModifiedDate(date);
-			}
-			else {
-				clientExtensionEntryRel.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(clientExtensionEntryRel)) {
-				if (!isNew) {
-					session.evict(
-						ClientExtensionEntryRelImpl.class,
-						clientExtensionEntryRel.getPrimaryKeyObj());
+			if (!clientExtensionEntryRelModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					clientExtensionEntryRel.setModifiedDate(date);
 				}
-
-				session.save(clientExtensionEntryRel);
+				else {
+					clientExtensionEntryRel.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
 			}
-			else {
-				clientExtensionEntryRel =
-					(ClientExtensionEntryRel)session.merge(
-						clientExtensionEntryRel);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (clientExtensionEntryRel.getCtCollectionId() != 0) {
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(clientExtensionEntryRel)) {
+					if (!isNew) {
+						session.evict(
+							ClientExtensionEntryRelImpl.class,
+							clientExtensionEntryRel.getPrimaryKeyObj());
+					}
+
+					session.save(clientExtensionEntryRel);
+				}
+				else {
+					clientExtensionEntryRel =
+						(ClientExtensionEntryRel)session.merge(
+							clientExtensionEntryRel);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				ClientExtensionEntryRelImpl.class,
+				clientExtensionEntryRelModelImpl, false, true);
+
+			cacheUniqueFindersCache(clientExtensionEntryRelModelImpl);
+
 			if (isNew) {
 				clientExtensionEntryRel.setNew(false);
 			}
@@ -4032,20 +4050,6 @@ public class ClientExtensionEntryRelPersistenceImpl
 
 			return clientExtensionEntryRel;
 		}
-
-		entityCache.putResult(
-			ClientExtensionEntryRelImpl.class, clientExtensionEntryRelModelImpl,
-			false, true);
-
-		cacheUniqueFindersCache(clientExtensionEntryRelModelImpl);
-
-		if (isNew) {
-			clientExtensionEntryRel.setNew(false);
-		}
-
-		clientExtensionEntryRel.resetOriginalValues();
-
-		return clientExtensionEntryRel;
 	}
 
 	/**
@@ -4097,34 +4101,13 @@ public class ClientExtensionEntryRelPersistenceImpl
 	 */
 	@Override
 	public ClientExtensionEntryRel fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				ClientExtensionEntryRel.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						ClientExtensionEntryRel.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		ClientExtensionEntryRel clientExtensionEntryRel = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			clientExtensionEntryRel = (ClientExtensionEntryRel)session.get(
-				ClientExtensionEntryRelImpl.class, primaryKey);
-
-			if (clientExtensionEntryRel != null) {
-				cacheResult(clientExtensionEntryRel);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return clientExtensionEntryRel;
 	}
 
 	/**
@@ -4144,98 +4127,13 @@ public class ClientExtensionEntryRelPersistenceImpl
 	public Map<Serializable, ClientExtensionEntryRel> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(
-				ClientExtensionEntryRel.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						ClientExtensionEntryRel.class))) {
 
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, ClientExtensionEntryRel> map =
-			new HashMap<Serializable, ClientExtensionEntryRel>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			ClientExtensionEntryRel clientExtensionEntryRel = fetchByPrimaryKey(
-				primaryKey);
-
-			if (clientExtensionEntryRel != null) {
-				map.put(primaryKey, clientExtensionEntryRel);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (ClientExtensionEntryRel clientExtensionEntryRel :
-					(List<ClientExtensionEntryRel>)query.list()) {
-
-				map.put(
-					clientExtensionEntryRel.getPrimaryKeyObj(),
-					clientExtensionEntryRel);
-
-				cacheResult(clientExtensionEntryRel);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

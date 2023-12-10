@@ -14,8 +14,11 @@ import com.liferay.commerce.product.model.impl.CPAttachmentFileEntryModelImpl;
 import com.liferay.commerce.product.service.persistence.CPAttachmentFileEntryPersistence;
 import com.liferay.commerce.product.service.persistence.CPAttachmentFileEntryUtil;
 import com.liferay.commerce.product.service.persistence.impl.constants.CommercePersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -53,7 +56,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -723,104 +725,99 @@ public class CPAttachmentFileEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPAttachmentFileEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPAttachmentFileEntry.class);
-
-		if (result instanceof CPAttachmentFileEntry) {
-			CPAttachmentFileEntry cpAttachmentFileEntry =
-				(CPAttachmentFileEntry)result;
-
-			if (!Objects.equals(uuid, cpAttachmentFileEntry.getUuid()) ||
-				(groupId != cpAttachmentFileEntry.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class,
-						cpAttachmentFileEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_CPATTACHMENTFILEENTRY_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof CPAttachmentFileEntry) {
+				CPAttachmentFileEntry cpAttachmentFileEntry =
+					(CPAttachmentFileEntry)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, cpAttachmentFileEntry.getUuid()) ||
+					(groupId != cpAttachmentFileEntry.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<CPAttachmentFileEntry> list = query.list();
+				sb.append(_SQL_SELECT_CPATTACHMENTFILEENTRY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					CPAttachmentFileEntry cpAttachmentFileEntry = list.get(0);
+					bindUuid = true;
 
-					result = cpAttachmentFileEntry;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(cpAttachmentFileEntry);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<CPAttachmentFileEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						CPAttachmentFileEntry cpAttachmentFileEntry = list.get(
+							0);
+
+						result = cpAttachmentFileEntry;
+
+						cacheResult(cpAttachmentFileEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (CPAttachmentFileEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (CPAttachmentFileEntry)result;
+			}
 		}
 	}
 
@@ -8401,106 +8398,101 @@ public class CPAttachmentFileEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {externalReferenceCode, companyId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPAttachmentFileEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByERC_C, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CPAttachmentFileEntry.class);
-
-		if (result instanceof CPAttachmentFileEntry) {
-			CPAttachmentFileEntry cpAttachmentFileEntry =
-				(CPAttachmentFileEntry)result;
-
-			if (!Objects.equals(
-					externalReferenceCode,
-					cpAttachmentFileEntry.getExternalReferenceCode()) ||
-				(companyId != cpAttachmentFileEntry.getCompanyId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class,
-						cpAttachmentFileEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_CPATTACHMENTFILEENTRY_WHERE);
-
-			boolean bindExternalReferenceCode = false;
-
-			if (externalReferenceCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindExternalReferenceCode = true;
-
-				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {externalReferenceCode, companyId};
 			}
 
-			sb.append(_FINDER_COLUMN_ERC_C_COMPANYID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByERC_C, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof CPAttachmentFileEntry) {
+				CPAttachmentFileEntry cpAttachmentFileEntry =
+					(CPAttachmentFileEntry)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(
+						externalReferenceCode,
+						cpAttachmentFileEntry.getExternalReferenceCode()) ||
+					(companyId != cpAttachmentFileEntry.getCompanyId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindExternalReferenceCode) {
-					queryPos.add(externalReferenceCode);
+					result = null;
 				}
+			}
 
-				queryPos.add(companyId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<CPAttachmentFileEntry> list = query.list();
+				sb.append(_SQL_SELECT_CPATTACHMENTFILEENTRY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByERC_C, finderArgs, list);
-					}
+				boolean bindExternalReferenceCode = false;
+
+				if (externalReferenceCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_3);
 				}
 				else {
-					CPAttachmentFileEntry cpAttachmentFileEntry = list.get(0);
+					bindExternalReferenceCode = true;
 
-					result = cpAttachmentFileEntry;
+					sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(cpAttachmentFileEntry);
+				sb.append(_FINDER_COLUMN_ERC_C_COMPANYID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindExternalReferenceCode) {
+						queryPos.add(externalReferenceCode);
+					}
+
+					queryPos.add(companyId);
+
+					List<CPAttachmentFileEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByERC_C, finderArgs, list);
+						}
+					}
+					else {
+						CPAttachmentFileEntry cpAttachmentFileEntry = list.get(
+							0);
+
+						result = cpAttachmentFileEntry;
+
+						cacheResult(cpAttachmentFileEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (CPAttachmentFileEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (CPAttachmentFileEntry)result;
+			}
 		}
 	}
 
@@ -8633,29 +8625,30 @@ public class CPAttachmentFileEntryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(CPAttachmentFileEntry cpAttachmentFileEntry) {
-		if (cpAttachmentFileEntry.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					cpAttachmentFileEntry.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				CPAttachmentFileEntryImpl.class,
+				cpAttachmentFileEntry.getPrimaryKey(), cpAttachmentFileEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					cpAttachmentFileEntry.getUuid(),
+					cpAttachmentFileEntry.getGroupId()
+				},
+				cpAttachmentFileEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByERC_C,
+				new Object[] {
+					cpAttachmentFileEntry.getExternalReferenceCode(),
+					cpAttachmentFileEntry.getCompanyId()
+				},
+				cpAttachmentFileEntry);
 		}
-
-		entityCache.putResult(
-			CPAttachmentFileEntryImpl.class,
-			cpAttachmentFileEntry.getPrimaryKey(), cpAttachmentFileEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {
-				cpAttachmentFileEntry.getUuid(),
-				cpAttachmentFileEntry.getGroupId()
-			},
-			cpAttachmentFileEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByERC_C,
-			new Object[] {
-				cpAttachmentFileEntry.getExternalReferenceCode(),
-				cpAttachmentFileEntry.getCompanyId()
-			},
-			cpAttachmentFileEntry);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -8680,15 +8673,18 @@ public class CPAttachmentFileEntryPersistenceImpl
 		for (CPAttachmentFileEntry cpAttachmentFileEntry :
 				cpAttachmentFileEntries) {
 
-			if (cpAttachmentFileEntry.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(cpAttachmentFileEntry.getCtCollectionId() != 0) &&
+						(cpAttachmentFileEntry.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					CPAttachmentFileEntryImpl.class,
-					cpAttachmentFileEntry.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						CPAttachmentFileEntryImpl.class,
+						cpAttachmentFileEntry.getPrimaryKey()) == null) {
 
-				cacheResult(cpAttachmentFileEntry);
+					cacheResult(cpAttachmentFileEntry);
+				}
 			}
 		}
 	}
@@ -8745,23 +8741,30 @@ public class CPAttachmentFileEntryPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		CPAttachmentFileEntryModelImpl cpAttachmentFileEntryModelImpl) {
 
-		Object[] args = new Object[] {
-			cpAttachmentFileEntryModelImpl.getUuid(),
-			cpAttachmentFileEntryModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					cpAttachmentFileEntryModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, cpAttachmentFileEntryModelImpl);
+			Object[] args = new Object[] {
+				cpAttachmentFileEntryModelImpl.getUuid(),
+				cpAttachmentFileEntryModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			cpAttachmentFileEntryModelImpl.getExternalReferenceCode(),
-			cpAttachmentFileEntryModelImpl.getCompanyId()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, cpAttachmentFileEntryModelImpl);
 
-		finderCache.putResult(_finderPathCountByERC_C, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByERC_C, args, cpAttachmentFileEntryModelImpl);
+			args = new Object[] {
+				cpAttachmentFileEntryModelImpl.getExternalReferenceCode(),
+				cpAttachmentFileEntryModelImpl.getCompanyId()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByERC_C, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByERC_C, args, cpAttachmentFileEntryModelImpl);
+		}
 	}
 
 	/**
@@ -8882,123 +8885,137 @@ public class CPAttachmentFileEntryPersistenceImpl
 	public CPAttachmentFileEntry updateImpl(
 		CPAttachmentFileEntry cpAttachmentFileEntry) {
 
-		boolean isNew = cpAttachmentFileEntry.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(cpAttachmentFileEntry instanceof
-				CPAttachmentFileEntryModelImpl)) {
+			boolean isNew = cpAttachmentFileEntry.isNew();
 
-			InvocationHandler invocationHandler = null;
+			if (!(cpAttachmentFileEntry instanceof
+					CPAttachmentFileEntryModelImpl)) {
 
-			if (ProxyUtil.isProxyClass(cpAttachmentFileEntry.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					cpAttachmentFileEntry);
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(cpAttachmentFileEntry.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						cpAttachmentFileEntry);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in cpAttachmentFileEntry proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in cpAttachmentFileEntry proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom CPAttachmentFileEntry implementation " +
+						cpAttachmentFileEntry.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom CPAttachmentFileEntry implementation " +
-					cpAttachmentFileEntry.getClass());
-		}
+			CPAttachmentFileEntryModelImpl cpAttachmentFileEntryModelImpl =
+				(CPAttachmentFileEntryModelImpl)cpAttachmentFileEntry;
 
-		CPAttachmentFileEntryModelImpl cpAttachmentFileEntryModelImpl =
-			(CPAttachmentFileEntryModelImpl)cpAttachmentFileEntry;
+			if (Validator.isNull(cpAttachmentFileEntry.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
 
-		if (Validator.isNull(cpAttachmentFileEntry.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
+				cpAttachmentFileEntry.setUuid(uuid);
+			}
 
-			cpAttachmentFileEntry.setUuid(uuid);
-		}
+			if (Validator.isNull(
+					cpAttachmentFileEntry.getExternalReferenceCode())) {
 
-		if (Validator.isNull(
-				cpAttachmentFileEntry.getExternalReferenceCode())) {
+				cpAttachmentFileEntry.setExternalReferenceCode(
+					cpAttachmentFileEntry.getUuid());
+			}
+			else {
+				CPAttachmentFileEntry ercCPAttachmentFileEntry = fetchByERC_C(
+					cpAttachmentFileEntry.getExternalReferenceCode(),
+					cpAttachmentFileEntry.getCompanyId());
 
-			cpAttachmentFileEntry.setExternalReferenceCode(
-				cpAttachmentFileEntry.getUuid());
-		}
-		else {
-			CPAttachmentFileEntry ercCPAttachmentFileEntry = fetchByERC_C(
-				cpAttachmentFileEntry.getExternalReferenceCode(),
-				cpAttachmentFileEntry.getCompanyId());
+				if (isNew) {
+					if (ercCPAttachmentFileEntry != null) {
+						throw new DuplicateCPAttachmentFileEntryExternalReferenceCodeException(
+							"Duplicate cp attachment file entry with external reference code " +
+								cpAttachmentFileEntry.
+									getExternalReferenceCode() +
+										" and company " +
+											cpAttachmentFileEntry.
+												getCompanyId());
+					}
+				}
+				else {
+					if ((ercCPAttachmentFileEntry != null) &&
+						(cpAttachmentFileEntry.getCPAttachmentFileEntryId() !=
+							ercCPAttachmentFileEntry.
+								getCPAttachmentFileEntryId())) {
 
-			if (isNew) {
-				if (ercCPAttachmentFileEntry != null) {
-					throw new DuplicateCPAttachmentFileEntryExternalReferenceCodeException(
-						"Duplicate cp attachment file entry with external reference code " +
-							cpAttachmentFileEntry.getExternalReferenceCode() +
-								" and company " +
-									cpAttachmentFileEntry.getCompanyId());
+						throw new DuplicateCPAttachmentFileEntryExternalReferenceCodeException(
+							"Duplicate cp attachment file entry with external reference code " +
+								cpAttachmentFileEntry.
+									getExternalReferenceCode() +
+										" and company " +
+											cpAttachmentFileEntry.
+												getCompanyId());
+					}
 				}
 			}
-			else {
-				if ((ercCPAttachmentFileEntry != null) &&
-					(cpAttachmentFileEntry.getCPAttachmentFileEntryId() !=
-						ercCPAttachmentFileEntry.
-							getCPAttachmentFileEntryId())) {
 
-					throw new DuplicateCPAttachmentFileEntryExternalReferenceCodeException(
-						"Duplicate cp attachment file entry with external reference code " +
-							cpAttachmentFileEntry.getExternalReferenceCode() +
-								" and company " +
-									cpAttachmentFileEntry.getCompanyId());
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (cpAttachmentFileEntry.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					cpAttachmentFileEntry.setCreateDate(date);
+				}
+				else {
+					cpAttachmentFileEntry.setCreateDate(
+						serviceContext.getCreateDate(date));
 				}
 			}
-		}
 
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (cpAttachmentFileEntry.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				cpAttachmentFileEntry.setCreateDate(date);
-			}
-			else {
-				cpAttachmentFileEntry.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!cpAttachmentFileEntryModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				cpAttachmentFileEntry.setModifiedDate(date);
-			}
-			else {
-				cpAttachmentFileEntry.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(cpAttachmentFileEntry)) {
-				if (!isNew) {
-					session.evict(
-						CPAttachmentFileEntryImpl.class,
-						cpAttachmentFileEntry.getPrimaryKeyObj());
+			if (!cpAttachmentFileEntryModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					cpAttachmentFileEntry.setModifiedDate(date);
 				}
-
-				session.save(cpAttachmentFileEntry);
+				else {
+					cpAttachmentFileEntry.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
 			}
-			else {
-				cpAttachmentFileEntry = (CPAttachmentFileEntry)session.merge(
-					cpAttachmentFileEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (cpAttachmentFileEntry.getCtCollectionId() != 0) {
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(cpAttachmentFileEntry)) {
+					if (!isNew) {
+						session.evict(
+							CPAttachmentFileEntryImpl.class,
+							cpAttachmentFileEntry.getPrimaryKeyObj());
+					}
+
+					session.save(cpAttachmentFileEntry);
+				}
+				else {
+					cpAttachmentFileEntry =
+						(CPAttachmentFileEntry)session.merge(
+							cpAttachmentFileEntry);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				CPAttachmentFileEntryImpl.class, cpAttachmentFileEntryModelImpl,
+				false, true);
+
+			cacheUniqueFindersCache(cpAttachmentFileEntryModelImpl);
+
 			if (isNew) {
 				cpAttachmentFileEntry.setNew(false);
 			}
@@ -9007,20 +9024,6 @@ public class CPAttachmentFileEntryPersistenceImpl
 
 			return cpAttachmentFileEntry;
 		}
-
-		entityCache.putResult(
-			CPAttachmentFileEntryImpl.class, cpAttachmentFileEntryModelImpl,
-			false, true);
-
-		cacheUniqueFindersCache(cpAttachmentFileEntryModelImpl);
-
-		if (isNew) {
-			cpAttachmentFileEntry.setNew(false);
-		}
-
-		cpAttachmentFileEntry.resetOriginalValues();
-
-		return cpAttachmentFileEntry;
 	}
 
 	/**
@@ -9071,34 +9074,13 @@ public class CPAttachmentFileEntryPersistenceImpl
 	 */
 	@Override
 	public CPAttachmentFileEntry fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				CPAttachmentFileEntry.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPAttachmentFileEntry.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		CPAttachmentFileEntry cpAttachmentFileEntry = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			cpAttachmentFileEntry = (CPAttachmentFileEntry)session.get(
-				CPAttachmentFileEntryImpl.class, primaryKey);
-
-			if (cpAttachmentFileEntry != null) {
-				cacheResult(cpAttachmentFileEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return cpAttachmentFileEntry;
 	}
 
 	/**
@@ -9118,96 +9100,13 @@ public class CPAttachmentFileEntryPersistenceImpl
 	public Map<Serializable, CPAttachmentFileEntry> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(CPAttachmentFileEntry.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CPAttachmentFileEntry.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, CPAttachmentFileEntry> map =
-			new HashMap<Serializable, CPAttachmentFileEntry>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			CPAttachmentFileEntry cpAttachmentFileEntry = fetchByPrimaryKey(
-				primaryKey);
-
-			if (cpAttachmentFileEntry != null) {
-				map.put(primaryKey, cpAttachmentFileEntry);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (CPAttachmentFileEntry cpAttachmentFileEntry :
-					(List<CPAttachmentFileEntry>)query.list()) {
-
-				map.put(
-					cpAttachmentFileEntry.getPrimaryKeyObj(),
-					cpAttachmentFileEntry);
-
-				cacheResult(cpAttachmentFileEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

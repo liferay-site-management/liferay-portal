@@ -5,8 +5,11 @@
 
 package com.liferay.translation.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -50,7 +53,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -712,103 +714,97 @@ public class TranslationEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						TranslationEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			TranslationEntry.class);
-
-		if (result instanceof TranslationEntry) {
-			TranslationEntry translationEntry = (TranslationEntry)result;
-
-			if (!Objects.equals(uuid, translationEntry.getUuid()) ||
-				(groupId != translationEntry.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						TranslationEntry.class,
-						translationEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_TRANSLATIONENTRY_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof TranslationEntry) {
+				TranslationEntry translationEntry = (TranslationEntry)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, translationEntry.getUuid()) ||
+					(groupId != translationEntry.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<TranslationEntry> list = query.list();
+				sb.append(_SQL_SELECT_TRANSLATIONENTRY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					TranslationEntry translationEntry = list.get(0);
+					bindUuid = true;
 
-					result = translationEntry;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(translationEntry);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<TranslationEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						TranslationEntry translationEntry = list.get(0);
+
+						result = translationEntry;
+
+						cacheResult(translationEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (TranslationEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (TranslationEntry)result;
+			}
 		}
 	}
 
@@ -2149,108 +2145,103 @@ public class TranslationEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {classNameId, classPK, languageId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						TranslationEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByC_C_L, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			TranslationEntry.class);
-
-		if (result instanceof TranslationEntry) {
-			TranslationEntry translationEntry = (TranslationEntry)result;
-
-			if ((classNameId != translationEntry.getClassNameId()) ||
-				(classPK != translationEntry.getClassPK()) ||
-				!Objects.equals(languageId, translationEntry.getLanguageId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						TranslationEntry.class,
-						translationEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_TRANSLATIONENTRY_WHERE);
-
-			sb.append(_FINDER_COLUMN_C_C_L_CLASSNAMEID_2);
-
-			sb.append(_FINDER_COLUMN_C_C_L_CLASSPK_2);
-
-			boolean bindLanguageId = false;
-
-			if (languageId.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_C_L_LANGUAGEID_3);
-			}
-			else {
-				bindLanguageId = true;
-
-				sb.append(_FINDER_COLUMN_C_C_L_LANGUAGEID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {classNameId, classPK, languageId};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByC_C_L, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof TranslationEntry) {
+				TranslationEntry translationEntry = (TranslationEntry)result;
 
-				Query query = session.createQuery(sql);
+				if ((classNameId != translationEntry.getClassNameId()) ||
+					(classPK != translationEntry.getClassPK()) ||
+					!Objects.equals(
+						languageId, translationEntry.getLanguageId())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(classNameId);
-
-				queryPos.add(classPK);
-
-				if (bindLanguageId) {
-					queryPos.add(languageId);
+					result = null;
 				}
+			}
 
-				List<TranslationEntry> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByC_C_L, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_TRANSLATIONENTRY_WHERE);
+
+				sb.append(_FINDER_COLUMN_C_C_L_CLASSNAMEID_2);
+
+				sb.append(_FINDER_COLUMN_C_C_L_CLASSPK_2);
+
+				boolean bindLanguageId = false;
+
+				if (languageId.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_C_L_LANGUAGEID_3);
 				}
 				else {
-					TranslationEntry translationEntry = list.get(0);
+					bindLanguageId = true;
 
-					result = translationEntry;
+					sb.append(_FINDER_COLUMN_C_C_L_LANGUAGEID_2);
+				}
 
-					cacheResult(translationEntry);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(classNameId);
+
+					queryPos.add(classPK);
+
+					if (bindLanguageId) {
+						queryPos.add(languageId);
+					}
+
+					List<TranslationEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByC_C_L, finderArgs, list);
+						}
+					}
+					else {
+						TranslationEntry translationEntry = list.get(0);
+
+						result = translationEntry;
+
+						cacheResult(translationEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (TranslationEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (TranslationEntry)result;
+			}
 		}
 	}
 
@@ -2391,28 +2382,30 @@ public class TranslationEntryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(TranslationEntry translationEntry) {
-		if (translationEntry.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					translationEntry.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				TranslationEntryImpl.class, translationEntry.getPrimaryKey(),
+				translationEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					translationEntry.getUuid(), translationEntry.getGroupId()
+				},
+				translationEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByC_C_L,
+				new Object[] {
+					translationEntry.getClassNameId(),
+					translationEntry.getClassPK(),
+					translationEntry.getLanguageId()
+				},
+				translationEntry);
 		}
-
-		entityCache.putResult(
-			TranslationEntryImpl.class, translationEntry.getPrimaryKey(),
-			translationEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {
-				translationEntry.getUuid(), translationEntry.getGroupId()
-			},
-			translationEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByC_C_L,
-			new Object[] {
-				translationEntry.getClassNameId(),
-				translationEntry.getClassPK(), translationEntry.getLanguageId()
-			},
-			translationEntry);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2433,15 +2426,18 @@ public class TranslationEntryPersistenceImpl
 		}
 
 		for (TranslationEntry translationEntry : translationEntries) {
-			if (translationEntry.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(translationEntry.getCtCollectionId() != 0) &&
+						(translationEntry.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					TranslationEntryImpl.class,
-					translationEntry.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						TranslationEntryImpl.class,
+						translationEntry.getPrimaryKey()) == null) {
 
-				cacheResult(translationEntry);
+					cacheResult(translationEntry);
+				}
 			}
 		}
 	}
@@ -2492,24 +2488,31 @@ public class TranslationEntryPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		TranslationEntryModelImpl translationEntryModelImpl) {
 
-		Object[] args = new Object[] {
-			translationEntryModelImpl.getUuid(),
-			translationEntryModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					translationEntryModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, translationEntryModelImpl);
+			Object[] args = new Object[] {
+				translationEntryModelImpl.getUuid(),
+				translationEntryModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			translationEntryModelImpl.getClassNameId(),
-			translationEntryModelImpl.getClassPK(),
-			translationEntryModelImpl.getLanguageId()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, translationEntryModelImpl);
 
-		finderCache.putResult(_finderPathCountByC_C_L, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByC_C_L, args, translationEntryModelImpl);
+			args = new Object[] {
+				translationEntryModelImpl.getClassNameId(),
+				translationEntryModelImpl.getClassPK(),
+				translationEntryModelImpl.getLanguageId()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByC_C_L, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByC_C_L, args, translationEntryModelImpl);
+		}
 	}
 
 	/**
@@ -2624,86 +2627,95 @@ public class TranslationEntryPersistenceImpl
 
 	@Override
 	public TranslationEntry updateImpl(TranslationEntry translationEntry) {
-		boolean isNew = translationEntry.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(translationEntry instanceof TranslationEntryModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = translationEntry.isNew();
 
-			if (ProxyUtil.isProxyClass(translationEntry.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					translationEntry);
+			if (!(translationEntry instanceof TranslationEntryModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in translationEntry proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(translationEntry.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						translationEntry);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom TranslationEntry implementation " +
-					translationEntry.getClass());
-		}
-
-		TranslationEntryModelImpl translationEntryModelImpl =
-			(TranslationEntryModelImpl)translationEntry;
-
-		if (Validator.isNull(translationEntry.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			translationEntry.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (translationEntry.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				translationEntry.setCreateDate(date);
-			}
-			else {
-				translationEntry.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!translationEntryModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				translationEntry.setModifiedDate(date);
-			}
-			else {
-				translationEntry.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(translationEntry)) {
-				if (!isNew) {
-					session.evict(
-						TranslationEntryImpl.class,
-						translationEntry.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in translationEntry proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(translationEntry);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom TranslationEntry implementation " +
+						translationEntry.getClass());
 			}
-			else {
-				translationEntry = (TranslationEntry)session.merge(
-					translationEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (translationEntry.getCtCollectionId() != 0) {
+			TranslationEntryModelImpl translationEntryModelImpl =
+				(TranslationEntryModelImpl)translationEntry;
+
+			if (Validator.isNull(translationEntry.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				translationEntry.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (translationEntry.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					translationEntry.setCreateDate(date);
+				}
+				else {
+					translationEntry.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!translationEntryModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					translationEntry.setModifiedDate(date);
+				}
+				else {
+					translationEntry.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(translationEntry)) {
+					if (!isNew) {
+						session.evict(
+							TranslationEntryImpl.class,
+							translationEntry.getPrimaryKeyObj());
+					}
+
+					session.save(translationEntry);
+				}
+				else {
+					translationEntry = (TranslationEntry)session.merge(
+						translationEntry);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				TranslationEntryImpl.class, translationEntryModelImpl, false,
+				true);
+
+			cacheUniqueFindersCache(translationEntryModelImpl);
+
 			if (isNew) {
 				translationEntry.setNew(false);
 			}
@@ -2712,19 +2724,6 @@ public class TranslationEntryPersistenceImpl
 
 			return translationEntry;
 		}
-
-		entityCache.putResult(
-			TranslationEntryImpl.class, translationEntryModelImpl, false, true);
-
-		cacheUniqueFindersCache(translationEntryModelImpl);
-
-		if (isNew) {
-			translationEntry.setNew(false);
-		}
-
-		translationEntry.resetOriginalValues();
-
-		return translationEntry;
 	}
 
 	/**
@@ -2774,34 +2773,13 @@ public class TranslationEntryPersistenceImpl
 	 */
 	@Override
 	public TranslationEntry fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				TranslationEntry.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						TranslationEntry.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		TranslationEntry translationEntry = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			translationEntry = (TranslationEntry)session.get(
-				TranslationEntryImpl.class, primaryKey);
-
-			if (translationEntry != null) {
-				cacheResult(translationEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return translationEntry;
 	}
 
 	/**
@@ -2819,93 +2797,13 @@ public class TranslationEntryPersistenceImpl
 	public Map<Serializable, TranslationEntry> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(TranslationEntry.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						TranslationEntry.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, TranslationEntry> map =
-			new HashMap<Serializable, TranslationEntry>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			TranslationEntry translationEntry = fetchByPrimaryKey(primaryKey);
-
-			if (translationEntry != null) {
-				map.put(primaryKey, translationEntry);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (TranslationEntry translationEntry :
-					(List<TranslationEntry>)query.list()) {
-
-				map.put(translationEntry.getPrimaryKeyObj(), translationEntry);
-
-				cacheResult(translationEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

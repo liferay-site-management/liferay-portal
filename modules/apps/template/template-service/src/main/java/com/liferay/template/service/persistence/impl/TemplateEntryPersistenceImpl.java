@@ -5,8 +5,11 @@
 
 package com.liferay.template.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -52,7 +55,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -711,102 +713,97 @@ public class TemplateEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						TemplateEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			TemplateEntry.class);
-
-		if (result instanceof TemplateEntry) {
-			TemplateEntry templateEntry = (TemplateEntry)result;
-
-			if (!Objects.equals(uuid, templateEntry.getUuid()) ||
-				(groupId != templateEntry.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class, templateEntry.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_TEMPLATEENTRY_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof TemplateEntry) {
+				TemplateEntry templateEntry = (TemplateEntry)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, templateEntry.getUuid()) ||
+					(groupId != templateEntry.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<TemplateEntry> list = query.list();
+				sb.append(_SQL_SELECT_TEMPLATEENTRY_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					TemplateEntry templateEntry = list.get(0);
+					bindUuid = true;
 
-					result = templateEntry;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(templateEntry);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<TemplateEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						TemplateEntry templateEntry = list.get(0);
+
+						result = templateEntry;
+
+						cacheResult(templateEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (TemplateEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (TemplateEntry)result;
+			}
 		}
 	}
 
@@ -2343,100 +2340,96 @@ public class TemplateEntryPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {ddmTemplateId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						TemplateEntry.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByDDMTemplateId, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			TemplateEntry.class);
-
-		if (result instanceof TemplateEntry) {
-			TemplateEntry templateEntry = (TemplateEntry)result;
-
-			if (ddmTemplateId != templateEntry.getDDMTemplateId()) {
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {ddmTemplateId};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class, templateEntry.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByDDMTemplateId, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(3);
+			if (result instanceof TemplateEntry) {
+				TemplateEntry templateEntry = (TemplateEntry)result;
 
-			sb.append(_SQL_SELECT_TEMPLATEENTRY_WHERE);
-
-			sb.append(_FINDER_COLUMN_DDMTEMPLATEID_DDMTEMPLATEID_2);
-
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(ddmTemplateId);
-
-				List<TemplateEntry> list = query.list();
-
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByDDMTemplateId, finderArgs, list);
-					}
+				if (ddmTemplateId != templateEntry.getDDMTemplateId()) {
+					result = null;
 				}
-				else {
-					if (list.size() > 1) {
-						Collections.sort(list, Collections.reverseOrder());
+			}
 
-						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
-								finderArgs = new Object[] {ddmTemplateId};
-							}
+			if (result == null) {
+				StringBundler sb = new StringBundler(3);
 
-							_log.warn(
-								"TemplateEntryPersistenceImpl.fetchByDDMTemplateId(long, boolean) with parameters (" +
-									StringUtil.merge(finderArgs) +
-										") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+				sb.append(_SQL_SELECT_TEMPLATEENTRY_WHERE);
+
+				sb.append(_FINDER_COLUMN_DDMTEMPLATEID_DDMTEMPLATEID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(ddmTemplateId);
+
+					List<TemplateEntry> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByDDMTemplateId, finderArgs,
+								list);
 						}
 					}
+					else {
+						if (list.size() > 1) {
+							Collections.sort(list, Collections.reverseOrder());
 
-					TemplateEntry templateEntry = list.get(0);
+							if (_log.isWarnEnabled()) {
+								if (!useFinderCache) {
+									finderArgs = new Object[] {ddmTemplateId};
+								}
 
-					result = templateEntry;
+								_log.warn(
+									"TemplateEntryPersistenceImpl.fetchByDDMTemplateId(long, boolean) with parameters (" +
+										StringUtil.merge(finderArgs) +
+											") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+							}
+						}
 
-					cacheResult(templateEntry);
+						TemplateEntry templateEntry = list.get(0);
+
+						result = templateEntry;
+
+						cacheResult(templateEntry);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (TemplateEntry)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (TemplateEntry)result;
+			}
 		}
 	}
 
@@ -4233,22 +4226,25 @@ public class TemplateEntryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(TemplateEntry templateEntry) {
-		if (templateEntry.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					templateEntry.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				TemplateEntryImpl.class, templateEntry.getPrimaryKey(),
+				templateEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					templateEntry.getUuid(), templateEntry.getGroupId()
+				},
+				templateEntry);
+
+			finderCache.putResult(
+				_finderPathFetchByDDMTemplateId,
+				new Object[] {templateEntry.getDDMTemplateId()}, templateEntry);
 		}
-
-		entityCache.putResult(
-			TemplateEntryImpl.class, templateEntry.getPrimaryKey(),
-			templateEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {templateEntry.getUuid(), templateEntry.getGroupId()},
-			templateEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByDDMTemplateId,
-			new Object[] {templateEntry.getDDMTemplateId()}, templateEntry);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -4268,15 +4264,18 @@ public class TemplateEntryPersistenceImpl
 		}
 
 		for (TemplateEntry templateEntry : templateEntries) {
-			if (templateEntry.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(templateEntry.getCtCollectionId() != 0) &&
+						(templateEntry.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					TemplateEntryImpl.class, templateEntry.getPrimaryKey()) ==
-						null) {
+				if (entityCache.getResult(
+						TemplateEntryImpl.class,
+						templateEntry.getPrimaryKey()) == null) {
 
-				cacheResult(templateEntry);
+					cacheResult(templateEntry);
+				}
 			}
 		}
 	}
@@ -4326,21 +4325,27 @@ public class TemplateEntryPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		TemplateEntryModelImpl templateEntryModelImpl) {
 
-		Object[] args = new Object[] {
-			templateEntryModelImpl.getUuid(),
-			templateEntryModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					templateEntryModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, templateEntryModelImpl);
+			Object[] args = new Object[] {
+				templateEntryModelImpl.getUuid(),
+				templateEntryModelImpl.getGroupId()
+			};
 
-		args = new Object[] {templateEntryModelImpl.getDDMTemplateId()};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, templateEntryModelImpl);
 
-		finderCache.putResult(
-			_finderPathCountByDDMTemplateId, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByDDMTemplateId, args, templateEntryModelImpl);
+			args = new Object[] {templateEntryModelImpl.getDDMTemplateId()};
+
+			finderCache.putResult(
+				_finderPathCountByDDMTemplateId, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByDDMTemplateId, args, templateEntryModelImpl);
+		}
 	}
 
 	/**
@@ -4454,84 +4459,93 @@ public class TemplateEntryPersistenceImpl
 
 	@Override
 	public TemplateEntry updateImpl(TemplateEntry templateEntry) {
-		boolean isNew = templateEntry.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(templateEntry instanceof TemplateEntryModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = templateEntry.isNew();
 
-			if (ProxyUtil.isProxyClass(templateEntry.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					templateEntry);
+			if (!(templateEntry instanceof TemplateEntryModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in templateEntry proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(templateEntry.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						templateEntry);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom TemplateEntry implementation " +
-					templateEntry.getClass());
-		}
-
-		TemplateEntryModelImpl templateEntryModelImpl =
-			(TemplateEntryModelImpl)templateEntry;
-
-		if (Validator.isNull(templateEntry.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			templateEntry.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (templateEntry.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				templateEntry.setCreateDate(date);
-			}
-			else {
-				templateEntry.setCreateDate(serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!templateEntryModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				templateEntry.setModifiedDate(date);
-			}
-			else {
-				templateEntry.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(templateEntry)) {
-				if (!isNew) {
-					session.evict(
-						TemplateEntryImpl.class,
-						templateEntry.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in templateEntry proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(templateEntry);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom TemplateEntry implementation " +
+						templateEntry.getClass());
 			}
-			else {
-				templateEntry = (TemplateEntry)session.merge(templateEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (templateEntry.getCtCollectionId() != 0) {
+			TemplateEntryModelImpl templateEntryModelImpl =
+				(TemplateEntryModelImpl)templateEntry;
+
+			if (Validator.isNull(templateEntry.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				templateEntry.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (templateEntry.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					templateEntry.setCreateDate(date);
+				}
+				else {
+					templateEntry.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!templateEntryModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					templateEntry.setModifiedDate(date);
+				}
+				else {
+					templateEntry.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(templateEntry)) {
+					if (!isNew) {
+						session.evict(
+							TemplateEntryImpl.class,
+							templateEntry.getPrimaryKeyObj());
+					}
+
+					session.save(templateEntry);
+				}
+				else {
+					templateEntry = (TemplateEntry)session.merge(templateEntry);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				TemplateEntryImpl.class, templateEntryModelImpl, false, true);
+
+			cacheUniqueFindersCache(templateEntryModelImpl);
+
 			if (isNew) {
 				templateEntry.setNew(false);
 			}
@@ -4540,19 +4554,6 @@ public class TemplateEntryPersistenceImpl
 
 			return templateEntry;
 		}
-
-		entityCache.putResult(
-			TemplateEntryImpl.class, templateEntryModelImpl, false, true);
-
-		cacheUniqueFindersCache(templateEntryModelImpl);
-
-		if (isNew) {
-			templateEntry.setNew(false);
-		}
-
-		templateEntry.resetOriginalValues();
-
-		return templateEntry;
 	}
 
 	/**
@@ -4602,34 +4603,13 @@ public class TemplateEntryPersistenceImpl
 	 */
 	@Override
 	public TemplateEntry fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				TemplateEntry.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						TemplateEntry.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		TemplateEntry templateEntry = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			templateEntry = (TemplateEntry)session.get(
-				TemplateEntryImpl.class, primaryKey);
-
-			if (templateEntry != null) {
-				cacheResult(templateEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return templateEntry;
 	}
 
 	/**
@@ -4647,93 +4627,13 @@ public class TemplateEntryPersistenceImpl
 	public Map<Serializable, TemplateEntry> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(TemplateEntry.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						TemplateEntry.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, TemplateEntry> map =
-			new HashMap<Serializable, TemplateEntry>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			TemplateEntry templateEntry = fetchByPrimaryKey(primaryKey);
-
-			if (templateEntry != null) {
-				map.put(primaryKey, templateEntry);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (TemplateEntry templateEntry :
-					(List<TemplateEntry>)query.list()) {
-
-				map.put(templateEntry.getPrimaryKeyObj(), templateEntry);
-
-				cacheResult(templateEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

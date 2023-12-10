@@ -13,8 +13,11 @@ import com.liferay.analytics.message.storage.model.impl.AnalyticsMessageModelImp
 import com.liferay.analytics.message.storage.service.persistence.AnalyticsMessagePersistence;
 import com.liferay.analytics.message.storage.service.persistence.AnalyticsMessageUtil;
 import com.liferay.analytics.message.storage.service.persistence.impl.constants.AnalyticsPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -45,9 +48,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -623,13 +624,14 @@ public class AnalyticsMessagePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(AnalyticsMessage analyticsMessage) {
-		if (analyticsMessage.getCtCollectionId() != 0) {
-			return;
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					analyticsMessage.getCtCollectionId() != 0)) {
 
-		entityCache.putResult(
-			AnalyticsMessageImpl.class, analyticsMessage.getPrimaryKey(),
-			analyticsMessage);
+			entityCache.putResult(
+				AnalyticsMessageImpl.class, analyticsMessage.getPrimaryKey(),
+				analyticsMessage);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -650,15 +652,18 @@ public class AnalyticsMessagePersistenceImpl
 		}
 
 		for (AnalyticsMessage analyticsMessage : analyticsMessages) {
-			if (analyticsMessage.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(analyticsMessage.getCtCollectionId() != 0) &&
+						(analyticsMessage.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					AnalyticsMessageImpl.class,
-					analyticsMessage.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						AnalyticsMessageImpl.class,
+						analyticsMessage.getPrimaryKey()) == null) {
 
-				cacheResult(analyticsMessage);
+					cacheResult(analyticsMessage);
+				}
 			}
 		}
 	}
@@ -814,76 +819,83 @@ public class AnalyticsMessagePersistenceImpl
 
 	@Override
 	public AnalyticsMessage updateImpl(AnalyticsMessage analyticsMessage) {
-		boolean isNew = analyticsMessage.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(analyticsMessage instanceof AnalyticsMessageModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = analyticsMessage.isNew();
 
-			if (ProxyUtil.isProxyClass(analyticsMessage.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					analyticsMessage);
+			if (!(analyticsMessage instanceof AnalyticsMessageModelImpl)) {
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(analyticsMessage.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						analyticsMessage);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in analyticsMessage proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in analyticsMessage proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom AnalyticsMessage implementation " +
+						analyticsMessage.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom AnalyticsMessage implementation " +
-					analyticsMessage.getClass());
-		}
+			AnalyticsMessageModelImpl analyticsMessageModelImpl =
+				(AnalyticsMessageModelImpl)analyticsMessage;
 
-		AnalyticsMessageModelImpl analyticsMessageModelImpl =
-			(AnalyticsMessageModelImpl)analyticsMessage;
+			if (isNew && (analyticsMessage.getCreateDate() == null)) {
+				ServiceContext serviceContext =
+					ServiceContextThreadLocal.getServiceContext();
 
-		if (isNew && (analyticsMessage.getCreateDate() == null)) {
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
+				Date date = new Date();
 
-			Date date = new Date();
-
-			if (serviceContext == null) {
-				analyticsMessage.setCreateDate(date);
+				if (serviceContext == null) {
+					analyticsMessage.setCreateDate(date);
+				}
+				else {
+					analyticsMessage.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
 			}
-			else {
-				analyticsMessage.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
 
-		Session session = null;
+			Session session = null;
 
-		try {
-			session = openSession();
+			try {
+				session = openSession();
 
-			if (ctPersistenceHelper.isInsert(analyticsMessage)) {
-				if (!isNew) {
+				if (ctPersistenceHelper.isInsert(analyticsMessage)) {
+					if (!isNew) {
+						session.evict(
+							AnalyticsMessageImpl.class,
+							analyticsMessage.getPrimaryKeyObj());
+					}
+
+					session.save(analyticsMessage);
+				}
+				else {
 					session.evict(
 						AnalyticsMessageImpl.class,
 						analyticsMessage.getPrimaryKeyObj());
+
+					session.saveOrUpdate(analyticsMessage);
 				}
 
-				session.save(analyticsMessage);
+				session.flush();
+				session.clear();
 			}
-			else {
-				session.evict(
-					AnalyticsMessageImpl.class,
-					analyticsMessage.getPrimaryKeyObj());
-
-				session.saveOrUpdate(analyticsMessage);
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
 			}
 
-			session.flush();
-			session.clear();
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
+			entityCache.putResult(
+				AnalyticsMessageImpl.class, analyticsMessageModelImpl, false,
+				true);
 
-		if (analyticsMessage.getCtCollectionId() != 0) {
 			if (isNew) {
 				analyticsMessage.setNew(false);
 			}
@@ -892,17 +904,6 @@ public class AnalyticsMessagePersistenceImpl
 
 			return analyticsMessage;
 		}
-
-		entityCache.putResult(
-			AnalyticsMessageImpl.class, analyticsMessageModelImpl, false, true);
-
-		if (isNew) {
-			analyticsMessage.setNew(false);
-		}
-
-		analyticsMessage.resetOriginalValues();
-
-		return analyticsMessage;
 	}
 
 	/**
@@ -952,34 +953,13 @@ public class AnalyticsMessagePersistenceImpl
 	 */
 	@Override
 	public AnalyticsMessage fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				AnalyticsMessage.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AnalyticsMessage.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		AnalyticsMessage analyticsMessage = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			analyticsMessage = (AnalyticsMessage)session.get(
-				AnalyticsMessageImpl.class, primaryKey);
-
-			if (analyticsMessage != null) {
-				cacheResult(analyticsMessage);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return analyticsMessage;
 	}
 
 	/**
@@ -997,93 +977,13 @@ public class AnalyticsMessagePersistenceImpl
 	public Map<Serializable, AnalyticsMessage> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(AnalyticsMessage.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AnalyticsMessage.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, AnalyticsMessage> map =
-			new HashMap<Serializable, AnalyticsMessage>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			AnalyticsMessage analyticsMessage = fetchByPrimaryKey(primaryKey);
-
-			if (analyticsMessage != null) {
-				map.put(primaryKey, analyticsMessage);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (AnalyticsMessage analyticsMessage :
-					(List<AnalyticsMessage>)query.list()) {
-
-				map.put(analyticsMessage.getPrimaryKeyObj(), analyticsMessage);
-
-				cacheResult(analyticsMessage);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

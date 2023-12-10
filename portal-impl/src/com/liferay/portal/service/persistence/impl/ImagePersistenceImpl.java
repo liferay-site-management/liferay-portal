@@ -5,8 +5,11 @@
 
 package com.liferay.portal.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -47,7 +50,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -595,12 +597,13 @@ public class ImagePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(Image image) {
-		if (image.getCtCollectionId() != 0) {
-			return;
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					image.getCtCollectionId() != 0)) {
 
-		EntityCacheUtil.putResult(
-			ImageImpl.class, image.getPrimaryKey(), image);
+			EntityCacheUtil.putResult(
+				ImageImpl.class, image.getPrimaryKey(), image);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -620,14 +623,17 @@ public class ImagePersistenceImpl
 		}
 
 		for (Image image : images) {
-			if (image.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(image.getCtCollectionId() != 0) &&
+						(image.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					ImageImpl.class, image.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						ImageImpl.class, image.getPrimaryKey()) == null) {
 
-				cacheResult(image);
+					cacheResult(image);
+				}
 			}
 		}
 	}
@@ -774,64 +780,70 @@ public class ImagePersistenceImpl
 
 	@Override
 	public Image updateImpl(Image image) {
-		boolean isNew = image.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(image instanceof ImageModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = image.isNew();
 
-			if (ProxyUtil.isProxyClass(image.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(image);
+			if (!(image instanceof ImageModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in image proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(image.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(image);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom Image implementation " +
-					image.getClass());
-		}
-
-		ImageModelImpl imageModelImpl = (ImageModelImpl)image;
-
-		if (!imageModelImpl.hasSetModifiedDate()) {
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (serviceContext == null) {
-				image.setModifiedDate(date);
-			}
-			else {
-				image.setModifiedDate(serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(image)) {
-				if (!isNew) {
-					session.evict(ImageImpl.class, image.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in image proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(image);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom Image implementation " +
+						image.getClass());
 			}
-			else {
-				image = (Image)session.merge(image);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (image.getCtCollectionId() != 0) {
+			ImageModelImpl imageModelImpl = (ImageModelImpl)image;
+
+			if (!imageModelImpl.hasSetModifiedDate()) {
+				ServiceContext serviceContext =
+					ServiceContextThreadLocal.getServiceContext();
+
+				Date date = new Date();
+
+				if (serviceContext == null) {
+					image.setModifiedDate(date);
+				}
+				else {
+					image.setModifiedDate(serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(image)) {
+					if (!isNew) {
+						session.evict(
+							ImageImpl.class, image.getPrimaryKeyObj());
+					}
+
+					session.save(image);
+				}
+				else {
+					image = (Image)session.merge(image);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(ImageImpl.class, image, false, true);
+
 			if (isNew) {
 				image.setNew(false);
 			}
@@ -840,16 +852,6 @@ public class ImagePersistenceImpl
 
 			return image;
 		}
-
-		EntityCacheUtil.putResult(ImageImpl.class, image, false, true);
-
-		if (isNew) {
-			image.setNew(false);
-		}
-
-		image.resetOriginalValues();
-
-		return image;
 	}
 
 	/**
@@ -897,31 +899,13 @@ public class ImagePersistenceImpl
 	 */
 	@Override
 	public Image fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(Image.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						Image.class, primaryKey))) {
+
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		Image image = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			image = (Image)session.get(ImageImpl.class, primaryKey);
-
-			if (image != null) {
-				cacheResult(image);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return image;
 	}
 
 	/**
@@ -939,90 +923,12 @@ public class ImagePersistenceImpl
 	public Map<Serializable, Image> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(Image.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Image.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, Image> map = new HashMap<Serializable, Image>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			Image image = fetchByPrimaryKey(primaryKey);
-
-			if (image != null) {
-				map.put(primaryKey, image);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (Image image : (List<Image>)query.list()) {
-				map.put(image.getPrimaryKeyObj(), image);
-
-				cacheResult(image);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

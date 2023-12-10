@@ -5,9 +5,12 @@
 
 package com.liferay.portal.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -60,7 +63,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -707,102 +709,96 @@ public class GroupPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Group.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Group.class);
-
-		if (result instanceof Group) {
-			Group group = (Group)result;
-
-			if (!Objects.equals(uuid, group.getUuid()) ||
-				(groupId != group.getGroupId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Group.class, group.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_GROUP__WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof Group) {
+				Group group = (Group)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, group.getUuid()) ||
+					(groupId != group.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<Group> list = query.list();
+				sb.append(_SQL_SELECT_GROUP__WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					Group group = list.get(0);
+					bindUuid = true;
 
-					result = group;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(group);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<Group> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						Group group = list.get(0);
+
+						result = group;
+
+						cacheResult(group);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Group)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Group)result;
+			}
 		}
 	}
 
@@ -2066,100 +2062,95 @@ public class GroupPersistenceImpl
 	public Group fetchByLiveGroupId(long liveGroupId, boolean useFinderCache) {
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {liveGroupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Group.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByLiveGroupId, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Group.class);
-
-		if (result instanceof Group) {
-			Group group = (Group)result;
-
-			if (liveGroupId != group.getLiveGroupId()) {
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {liveGroupId};
 			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Group.class, group.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByLiveGroupId, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(3);
+			if (result instanceof Group) {
+				Group group = (Group)result;
 
-			sb.append(_SQL_SELECT_GROUP__WHERE);
-
-			sb.append(_FINDER_COLUMN_LIVEGROUPID_LIVEGROUPID_2);
-
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(liveGroupId);
-
-				List<Group> list = query.list();
-
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByLiveGroupId, finderArgs, list);
-					}
+				if (liveGroupId != group.getLiveGroupId()) {
+					result = null;
 				}
-				else {
-					if (list.size() > 1) {
-						Collections.sort(list, Collections.reverseOrder());
+			}
 
-						if (_log.isWarnEnabled()) {
-							if (!productionMode || !useFinderCache) {
-								finderArgs = new Object[] {liveGroupId};
-							}
+			if (result == null) {
+				StringBundler sb = new StringBundler(3);
 
-							_log.warn(
-								"GroupPersistenceImpl.fetchByLiveGroupId(long, boolean) with parameters (" +
-									StringUtil.merge(finderArgs) +
-										") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+				sb.append(_SQL_SELECT_GROUP__WHERE);
+
+				sb.append(_FINDER_COLUMN_LIVEGROUPID_LIVEGROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(liveGroupId);
+
+					List<Group> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByLiveGroupId, finderArgs,
+								list);
 						}
 					}
+					else {
+						if (list.size() > 1) {
+							Collections.sort(list, Collections.reverseOrder());
 
-					Group group = list.get(0);
+							if (_log.isWarnEnabled()) {
+								if (!useFinderCache) {
+									finderArgs = new Object[] {liveGroupId};
+								}
 
-					result = group;
+								_log.warn(
+									"GroupPersistenceImpl.fetchByLiveGroupId(long, boolean) with parameters (" +
+										StringUtil.merge(finderArgs) +
+											") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+							}
+						}
 
-					cacheResult(group);
+						Group group = list.get(0);
+
+						result = group;
+
+						cacheResult(group);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Group)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Group)result;
+			}
 		}
 	}
 
@@ -3646,102 +3637,96 @@ public class GroupPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, groupKey};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Group.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_GK, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Group.class);
-
-		if (result instanceof Group) {
-			Group group = (Group)result;
-
-			if ((companyId != group.getCompanyId()) ||
-				!Objects.equals(groupKey, group.getGroupKey())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Group.class, group.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_GROUP__WHERE);
-
-			sb.append(_FINDER_COLUMN_C_GK_COMPANYID_2);
-
-			boolean bindGroupKey = false;
-
-			if (groupKey.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_GK_GROUPKEY_3);
-			}
-			else {
-				bindGroupKey = true;
-
-				sb.append(_FINDER_COLUMN_C_GK_GROUPKEY_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {companyId, groupKey};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_GK, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof Group) {
+				Group group = (Group)result;
 
-				Query query = session.createQuery(sql);
+				if ((companyId != group.getCompanyId()) ||
+					!Objects.equals(groupKey, group.getGroupKey())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				if (bindGroupKey) {
-					queryPos.add(groupKey);
+					result = null;
 				}
+			}
 
-				List<Group> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_GK, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_GROUP__WHERE);
+
+				sb.append(_FINDER_COLUMN_C_GK_COMPANYID_2);
+
+				boolean bindGroupKey = false;
+
+				if (groupKey.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_GK_GROUPKEY_3);
 				}
 				else {
-					Group group = list.get(0);
+					bindGroupKey = true;
 
-					result = group;
+					sb.append(_FINDER_COLUMN_C_GK_GROUPKEY_2);
+				}
 
-					cacheResult(group);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					if (bindGroupKey) {
+						queryPos.add(groupKey);
+					}
+
+					List<Group> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_GK, finderArgs, list);
+						}
+					}
+					else {
+						Group group = list.get(0);
+
+						result = group;
+
+						cacheResult(group);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Group)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Group)result;
+			}
 		}
 	}
 
@@ -4021,102 +4006,96 @@ public class GroupPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, friendlyURL};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Group.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_F, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Group.class);
-
-		if (result instanceof Group) {
-			Group group = (Group)result;
-
-			if ((companyId != group.getCompanyId()) ||
-				!Objects.equals(friendlyURL, group.getFriendlyURL())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Group.class, group.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_GROUP__WHERE);
-
-			sb.append(_FINDER_COLUMN_C_F_COMPANYID_2);
-
-			boolean bindFriendlyURL = false;
-
-			if (friendlyURL.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_F_FRIENDLYURL_3);
-			}
-			else {
-				bindFriendlyURL = true;
-
-				sb.append(_FINDER_COLUMN_C_F_FRIENDLYURL_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {companyId, friendlyURL};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_F, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof Group) {
+				Group group = (Group)result;
 
-				Query query = session.createQuery(sql);
+				if ((companyId != group.getCompanyId()) ||
+					!Objects.equals(friendlyURL, group.getFriendlyURL())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				if (bindFriendlyURL) {
-					queryPos.add(friendlyURL);
+					result = null;
 				}
+			}
 
-				List<Group> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_F, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_GROUP__WHERE);
+
+				sb.append(_FINDER_COLUMN_C_F_COMPANYID_2);
+
+				boolean bindFriendlyURL = false;
+
+				if (friendlyURL.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_F_FRIENDLYURL_3);
 				}
 				else {
-					Group group = list.get(0);
+					bindFriendlyURL = true;
 
-					result = group;
+					sb.append(_FINDER_COLUMN_C_F_FRIENDLYURL_2);
+				}
 
-					cacheResult(group);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					if (bindFriendlyURL) {
+						queryPos.add(friendlyURL);
+					}
+
+					List<Group> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_F, finderArgs, list);
+						}
+					}
+					else {
+						Group group = list.get(0);
+
+						result = group;
+
+						cacheResult(group);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Group)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Group)result;
+			}
 		}
 	}
 
@@ -6909,96 +6888,90 @@ public class GroupPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, classNameId, classPK};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Group.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_C_C, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Group.class);
-
-		if (result instanceof Group) {
-			Group group = (Group)result;
-
-			if ((companyId != group.getCompanyId()) ||
-				(classNameId != group.getClassNameId()) ||
-				(classPK != group.getClassPK())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {companyId, classNameId, classPK};
 			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Group.class, group.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_C_C, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
+			if (result instanceof Group) {
+				Group group = (Group)result;
 
-			sb.append(_SQL_SELECT_GROUP__WHERE);
+				if ((companyId != group.getCompanyId()) ||
+					(classNameId != group.getClassNameId()) ||
+					(classPK != group.getClassPK())) {
 
-			sb.append(_FINDER_COLUMN_C_C_C_COMPANYID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_C_C_C_CLASSNAMEID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-			sb.append(_FINDER_COLUMN_C_C_C_CLASSPK_2);
+				sb.append(_SQL_SELECT_GROUP__WHERE);
 
-			String sql = sb.toString();
+				sb.append(_FINDER_COLUMN_C_C_C_COMPANYID_2);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_C_C_C_CLASSNAMEID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_C_C_C_CLASSPK_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(companyId);
+				try {
+					session = openSession();
 
-				queryPos.add(classNameId);
+					Query query = session.createQuery(sql);
 
-				queryPos.add(classPK);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				List<Group> list = query.list();
+					queryPos.add(companyId);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_C_C, finderArgs, list);
+					queryPos.add(classNameId);
+
+					queryPos.add(classPK);
+
+					List<Group> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_C_C, finderArgs, list);
+						}
+					}
+					else {
+						Group group = list.get(0);
+
+						result = group;
+
+						cacheResult(group);
 					}
 				}
-				else {
-					Group group = list.get(0);
-
-					result = group;
-
-					cacheResult(group);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Group)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Group)result;
+			}
 		}
 	}
 
@@ -8961,107 +8934,101 @@ public class GroupPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {companyId, liveGroupId, groupKey};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Group.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_L_GK, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Group.class);
-
-		if (result instanceof Group) {
-			Group group = (Group)result;
-
-			if ((companyId != group.getCompanyId()) ||
-				(liveGroupId != group.getLiveGroupId()) ||
-				!Objects.equals(groupKey, group.getGroupKey())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Group.class, group.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
-
-			sb.append(_SQL_SELECT_GROUP__WHERE);
-
-			sb.append(_FINDER_COLUMN_C_L_GK_COMPANYID_2);
-
-			sb.append(_FINDER_COLUMN_C_L_GK_LIVEGROUPID_2);
-
-			boolean bindGroupKey = false;
-
-			if (groupKey.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_L_GK_GROUPKEY_3);
-			}
-			else {
-				bindGroupKey = true;
-
-				sb.append(_FINDER_COLUMN_C_L_GK_GROUPKEY_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {companyId, liveGroupId, groupKey};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_L_GK, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof Group) {
+				Group group = (Group)result;
 
-				Query query = session.createQuery(sql);
+				if ((companyId != group.getCompanyId()) ||
+					(liveGroupId != group.getLiveGroupId()) ||
+					!Objects.equals(groupKey, group.getGroupKey())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				queryPos.add(liveGroupId);
-
-				if (bindGroupKey) {
-					queryPos.add(groupKey);
+					result = null;
 				}
+			}
 
-				List<Group> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_L_GK, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_GROUP__WHERE);
+
+				sb.append(_FINDER_COLUMN_C_L_GK_COMPANYID_2);
+
+				sb.append(_FINDER_COLUMN_C_L_GK_LIVEGROUPID_2);
+
+				boolean bindGroupKey = false;
+
+				if (groupKey.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_L_GK_GROUPKEY_3);
 				}
 				else {
-					Group group = list.get(0);
+					bindGroupKey = true;
 
-					result = group;
+					sb.append(_FINDER_COLUMN_C_L_GK_GROUPKEY_2);
+				}
 
-					cacheResult(group);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					queryPos.add(liveGroupId);
+
+					if (bindGroupKey) {
+						queryPos.add(groupKey);
+					}
+
+					List<Group> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_L_GK, finderArgs, list);
+						}
+					}
+					else {
+						Group group = list.get(0);
+
+						result = group;
+
+						cacheResult(group);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Group)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Group)result;
+			}
 		}
 	}
 
@@ -12014,114 +11981,108 @@ public class GroupPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {
-				companyId, classNameId, liveGroupId, groupKey
-			};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Group.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_C_L_GK, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Group.class);
-
-		if (result instanceof Group) {
-			Group group = (Group)result;
-
-			if ((companyId != group.getCompanyId()) ||
-				(classNameId != group.getClassNameId()) ||
-				(liveGroupId != group.getLiveGroupId()) ||
-				!Objects.equals(groupKey, group.getGroupKey())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Group.class, group.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(6);
-
-			sb.append(_SQL_SELECT_GROUP__WHERE);
-
-			sb.append(_FINDER_COLUMN_C_C_L_GK_COMPANYID_2);
-
-			sb.append(_FINDER_COLUMN_C_C_L_GK_CLASSNAMEID_2);
-
-			sb.append(_FINDER_COLUMN_C_C_L_GK_LIVEGROUPID_2);
-
-			boolean bindGroupKey = false;
-
-			if (groupKey.isEmpty()) {
-				sb.append(_FINDER_COLUMN_C_C_L_GK_GROUPKEY_3);
-			}
-			else {
-				bindGroupKey = true;
-
-				sb.append(_FINDER_COLUMN_C_C_L_GK_GROUPKEY_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					companyId, classNameId, liveGroupId, groupKey
+				};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_C_L_GK, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof Group) {
+				Group group = (Group)result;
 
-				Query query = session.createQuery(sql);
+				if ((companyId != group.getCompanyId()) ||
+					(classNameId != group.getClassNameId()) ||
+					(liveGroupId != group.getLiveGroupId()) ||
+					!Objects.equals(groupKey, group.getGroupKey())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(companyId);
-
-				queryPos.add(classNameId);
-
-				queryPos.add(liveGroupId);
-
-				if (bindGroupKey) {
-					queryPos.add(groupKey);
+					result = null;
 				}
+			}
 
-				List<Group> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(6);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_C_L_GK, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_GROUP__WHERE);
+
+				sb.append(_FINDER_COLUMN_C_C_L_GK_COMPANYID_2);
+
+				sb.append(_FINDER_COLUMN_C_C_L_GK_CLASSNAMEID_2);
+
+				sb.append(_FINDER_COLUMN_C_C_L_GK_LIVEGROUPID_2);
+
+				boolean bindGroupKey = false;
+
+				if (groupKey.isEmpty()) {
+					sb.append(_FINDER_COLUMN_C_C_L_GK_GROUPKEY_3);
 				}
 				else {
-					Group group = list.get(0);
+					bindGroupKey = true;
 
-					result = group;
+					sb.append(_FINDER_COLUMN_C_C_L_GK_GROUPKEY_2);
+				}
 
-					cacheResult(group);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(companyId);
+
+					queryPos.add(classNameId);
+
+					queryPos.add(liveGroupId);
+
+					if (bindGroupKey) {
+						queryPos.add(groupKey);
+					}
+
+					List<Group> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_C_L_GK, finderArgs, list);
+						}
+					}
+					else {
+						Group group = list.get(0);
+
+						result = group;
+
+						cacheResult(group);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Group)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Group)result;
+			}
 		}
 	}
 
@@ -13629,103 +13590,98 @@ public class GroupPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {externalReferenceCode, companyId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Group.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByERC_C, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			Group.class);
-
-		if (result instanceof Group) {
-			Group group = (Group)result;
-
-			if (!Objects.equals(
-					externalReferenceCode, group.getExternalReferenceCode()) ||
-				(companyId != group.getCompanyId())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						Group.class, group.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_GROUP__WHERE);
-
-			boolean bindExternalReferenceCode = false;
-
-			if (externalReferenceCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindExternalReferenceCode = true;
-
-				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {externalReferenceCode, companyId};
 			}
 
-			sb.append(_FINDER_COLUMN_ERC_C_COMPANYID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByERC_C, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof Group) {
+				Group group = (Group)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(
+						externalReferenceCode,
+						group.getExternalReferenceCode()) ||
+					(companyId != group.getCompanyId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindExternalReferenceCode) {
-					queryPos.add(externalReferenceCode);
+					result = null;
 				}
+			}
 
-				queryPos.add(companyId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<Group> list = query.list();
+				sb.append(_SQL_SELECT_GROUP__WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByERC_C, finderArgs, list);
-					}
+				boolean bindExternalReferenceCode = false;
+
+				if (externalReferenceCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_3);
 				}
 				else {
-					Group group = list.get(0);
+					bindExternalReferenceCode = true;
 
-					result = group;
+					sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(group);
+				sb.append(_FINDER_COLUMN_ERC_C_COMPANYID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindExternalReferenceCode) {
+						queryPos.add(externalReferenceCode);
+					}
+
+					queryPos.add(companyId);
+
+					List<Group> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByERC_C, finderArgs, list);
+						}
+					}
+					else {
+						Group group = list.get(0);
+
+						result = group;
+
+						cacheResult(group);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (Group)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (Group)result;
+			}
 		}
 	}
 
@@ -13858,58 +13814,62 @@ public class GroupPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(Group group) {
-		if (group.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					group.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				GroupImpl.class, group.getPrimaryKey(), group);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {group.getUuid(), group.getGroupId()}, group);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByLiveGroupId,
+				new Object[] {group.getLiveGroupId()}, group);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_GK,
+				new Object[] {group.getCompanyId(), group.getGroupKey()},
+				group);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_F,
+				new Object[] {group.getCompanyId(), group.getFriendlyURL()},
+				group);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_C_C,
+				new Object[] {
+					group.getCompanyId(), group.getClassNameId(),
+					group.getClassPK()
+				},
+				group);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_L_GK,
+				new Object[] {
+					group.getCompanyId(), group.getLiveGroupId(),
+					group.getGroupKey()
+				},
+				group);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_C_L_GK,
+				new Object[] {
+					group.getCompanyId(), group.getClassNameId(),
+					group.getLiveGroupId(), group.getGroupKey()
+				},
+				group);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByERC_C,
+				new Object[] {
+					group.getExternalReferenceCode(), group.getCompanyId()
+				},
+				group);
 		}
-
-		EntityCacheUtil.putResult(
-			GroupImpl.class, group.getPrimaryKey(), group);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {group.getUuid(), group.getGroupId()}, group);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByLiveGroupId,
-			new Object[] {group.getLiveGroupId()}, group);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_GK,
-			new Object[] {group.getCompanyId(), group.getGroupKey()}, group);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_F,
-			new Object[] {group.getCompanyId(), group.getFriendlyURL()}, group);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_C_C,
-			new Object[] {
-				group.getCompanyId(), group.getClassNameId(), group.getClassPK()
-			},
-			group);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_L_GK,
-			new Object[] {
-				group.getCompanyId(), group.getLiveGroupId(),
-				group.getGroupKey()
-			},
-			group);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_C_L_GK,
-			new Object[] {
-				group.getCompanyId(), group.getClassNameId(),
-				group.getLiveGroupId(), group.getGroupKey()
-			},
-			group);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByERC_C,
-			new Object[] {
-				group.getExternalReferenceCode(), group.getCompanyId()
-			},
-			group);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -13929,14 +13889,17 @@ public class GroupPersistenceImpl
 		}
 
 		for (Group group : groups) {
-			if (group.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(group.getCtCollectionId() != 0) &&
+						(group.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					GroupImpl.class, group.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						GroupImpl.class, group.getPrimaryKey()) == null) {
 
-				cacheResult(group);
+					cacheResult(group);
+				}
 			}
 		}
 	}
@@ -13984,76 +13947,84 @@ public class GroupPersistenceImpl
 	}
 
 	protected void cacheUniqueFindersCache(GroupModelImpl groupModelImpl) {
-		Object[] args = new Object[] {
-			groupModelImpl.getUuid(), groupModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					groupModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByUUID_G, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByUUID_G, args, groupModelImpl);
+			Object[] args = new Object[] {
+				groupModelImpl.getUuid(), groupModelImpl.getGroupId()
+			};
 
-		args = new Object[] {groupModelImpl.getLiveGroupId()};
+			FinderCacheUtil.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByUUID_G, args, groupModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByLiveGroupId, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByLiveGroupId, args, groupModelImpl);
+			args = new Object[] {groupModelImpl.getLiveGroupId()};
 
-		args = new Object[] {
-			groupModelImpl.getCompanyId(), groupModelImpl.getGroupKey()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByLiveGroupId, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByLiveGroupId, args, groupModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByC_GK, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(_finderPathFetchByC_GK, args, groupModelImpl);
+			args = new Object[] {
+				groupModelImpl.getCompanyId(), groupModelImpl.getGroupKey()
+			};
 
-		args = new Object[] {
-			groupModelImpl.getCompanyId(), groupModelImpl.getFriendlyURL()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_GK, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_GK, args, groupModelImpl);
 
-		FinderCacheUtil.putResult(_finderPathCountByC_F, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(_finderPathFetchByC_F, args, groupModelImpl);
+			args = new Object[] {
+				groupModelImpl.getCompanyId(), groupModelImpl.getFriendlyURL()
+			};
 
-		args = new Object[] {
-			groupModelImpl.getCompanyId(), groupModelImpl.getClassNameId(),
-			groupModelImpl.getClassPK()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_F, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_F, args, groupModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByC_C_C, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_C_C, args, groupModelImpl);
+			args = new Object[] {
+				groupModelImpl.getCompanyId(), groupModelImpl.getClassNameId(),
+				groupModelImpl.getClassPK()
+			};
 
-		args = new Object[] {
-			groupModelImpl.getCompanyId(), groupModelImpl.getLiveGroupId(),
-			groupModelImpl.getGroupKey()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_C_C, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_C_C, args, groupModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByC_L_GK, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_L_GK, args, groupModelImpl);
+			args = new Object[] {
+				groupModelImpl.getCompanyId(), groupModelImpl.getLiveGroupId(),
+				groupModelImpl.getGroupKey()
+			};
 
-		args = new Object[] {
-			groupModelImpl.getCompanyId(), groupModelImpl.getClassNameId(),
-			groupModelImpl.getLiveGroupId(), groupModelImpl.getGroupKey()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_L_GK, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_L_GK, args, groupModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByC_C_L_GK, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_C_L_GK, args, groupModelImpl);
+			args = new Object[] {
+				groupModelImpl.getCompanyId(), groupModelImpl.getClassNameId(),
+				groupModelImpl.getLiveGroupId(), groupModelImpl.getGroupKey()
+			};
 
-		args = new Object[] {
-			groupModelImpl.getExternalReferenceCode(),
-			groupModelImpl.getCompanyId()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_C_L_GK, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_C_L_GK, args, groupModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByERC_C, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByERC_C, args, groupModelImpl);
+			args = new Object[] {
+				groupModelImpl.getExternalReferenceCode(),
+				groupModelImpl.getCompanyId()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByERC_C, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByERC_C, args, groupModelImpl);
+		}
 	}
 
 	/**
@@ -14172,97 +14143,106 @@ public class GroupPersistenceImpl
 
 	@Override
 	public Group updateImpl(Group group) {
-		boolean isNew = group.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(group instanceof GroupModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = group.isNew();
 
-			if (ProxyUtil.isProxyClass(group.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(group);
+			if (!(group instanceof GroupModelImpl)) {
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(group.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(group);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in group proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in group proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom Group implementation " +
+						group.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom Group implementation " +
-					group.getClass());
-		}
+			GroupModelImpl groupModelImpl = (GroupModelImpl)group;
 
-		GroupModelImpl groupModelImpl = (GroupModelImpl)group;
+			if (Validator.isNull(group.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
 
-		if (Validator.isNull(group.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
+				group.setUuid(uuid);
+			}
 
-			group.setUuid(uuid);
-		}
-
-		if (Validator.isNull(group.getExternalReferenceCode())) {
-			group.setExternalReferenceCode(group.getUuid());
-		}
-		else {
-			Group ercGroup = fetchByERC_C(
-				group.getExternalReferenceCode(), group.getCompanyId());
-
-			if (isNew) {
-				if (ercGroup != null) {
-					throw new DuplicateGroupExternalReferenceCodeException(
-						"Duplicate group with external reference code " +
-							group.getExternalReferenceCode() + " and company " +
-								group.getCompanyId());
-				}
+			if (Validator.isNull(group.getExternalReferenceCode())) {
+				group.setExternalReferenceCode(group.getUuid());
 			}
 			else {
-				if ((ercGroup != null) &&
-					(group.getGroupId() != ercGroup.getGroupId())) {
+				Group ercGroup = fetchByERC_C(
+					group.getExternalReferenceCode(), group.getCompanyId());
 
-					throw new DuplicateGroupExternalReferenceCodeException(
-						"Duplicate group with external reference code " +
-							group.getExternalReferenceCode() + " and company " +
-								group.getCompanyId());
+				if (isNew) {
+					if (ercGroup != null) {
+						throw new DuplicateGroupExternalReferenceCodeException(
+							"Duplicate group with external reference code " +
+								group.getExternalReferenceCode() +
+									" and company " + group.getCompanyId());
+					}
+				}
+				else {
+					if ((ercGroup != null) &&
+						(group.getGroupId() != ercGroup.getGroupId())) {
+
+						throw new DuplicateGroupExternalReferenceCodeException(
+							"Duplicate group with external reference code " +
+								group.getExternalReferenceCode() +
+									" and company " + group.getCompanyId());
+					}
 				}
 			}
-		}
 
-		if (!groupModelImpl.hasSetModifiedDate()) {
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
+			if (!groupModelImpl.hasSetModifiedDate()) {
+				ServiceContext serviceContext =
+					ServiceContextThreadLocal.getServiceContext();
 
-			Date date = new Date();
+				Date date = new Date();
 
-			if (serviceContext == null) {
-				group.setModifiedDate(date);
-			}
-			else {
-				group.setModifiedDate(serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(group)) {
-				if (!isNew) {
-					session.evict(GroupImpl.class, group.getPrimaryKeyObj());
+				if (serviceContext == null) {
+					group.setModifiedDate(date);
 				}
-
-				session.save(group);
+				else {
+					group.setModifiedDate(serviceContext.getModifiedDate(date));
+				}
 			}
-			else {
-				group = (Group)session.merge(group);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (group.getCtCollectionId() != 0) {
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(group)) {
+					if (!isNew) {
+						session.evict(
+							GroupImpl.class, group.getPrimaryKeyObj());
+					}
+
+					session.save(group);
+				}
+				else {
+					group = (Group)session.merge(group);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				GroupImpl.class, groupModelImpl, false, true);
+
+			cacheUniqueFindersCache(groupModelImpl);
+
 			if (isNew) {
 				group.setNew(false);
 			}
@@ -14271,18 +14251,6 @@ public class GroupPersistenceImpl
 
 			return group;
 		}
-
-		EntityCacheUtil.putResult(GroupImpl.class, groupModelImpl, false, true);
-
-		cacheUniqueFindersCache(groupModelImpl);
-
-		if (isNew) {
-			group.setNew(false);
-		}
-
-		group.resetOriginalValues();
-
-		return group;
 	}
 
 	/**
@@ -14330,31 +14298,13 @@ public class GroupPersistenceImpl
 	 */
 	@Override
 	public Group fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(Group.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						Group.class, primaryKey))) {
+
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		Group group = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			group = (Group)session.get(GroupImpl.class, primaryKey);
-
-			if (group != null) {
-				cacheResult(group);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return group;
 	}
 
 	/**
@@ -14372,90 +14322,12 @@ public class GroupPersistenceImpl
 	public Map<Serializable, Group> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(Group.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(Group.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, Group> map = new HashMap<Serializable, Group>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			Group group = fetchByPrimaryKey(primaryKey);
-
-			if (group != null) {
-				map.put(primaryKey, group);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (Group group : (List<Group>)query.list()) {
-				map.put(group.getPrimaryKeyObj(), group);
-
-				cacheResult(group);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

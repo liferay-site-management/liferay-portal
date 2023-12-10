@@ -14,8 +14,11 @@ import com.liferay.message.boards.model.impl.MBMessageModelImpl;
 import com.liferay.message.boards.service.persistence.MBMessagePersistence;
 import com.liferay.message.boards.service.persistence.MBMessageUtil;
 import com.liferay.message.boards.service.persistence.impl.constants.MBPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -61,7 +64,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -717,102 +719,96 @@ public class MBMessagePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBMessage.class);
-
-		if (result instanceof MBMessage) {
-			MBMessage mbMessage = (MBMessage)result;
-
-			if (!Objects.equals(uuid, mbMessage.getUuid()) ||
-				(groupId != mbMessage.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						MBMessage.class, mbMessage.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_MBMESSAGE_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof MBMessage) {
+				MBMessage mbMessage = (MBMessage)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, mbMessage.getUuid()) ||
+					(groupId != mbMessage.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<MBMessage> list = query.list();
+				sb.append(_SQL_SELECT_MBMESSAGE_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					MBMessage mbMessage = list.get(0);
+					bindUuid = true;
 
-					result = mbMessage;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(mbMessage);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<MBMessage> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						MBMessage mbMessage = list.get(0);
+
+						result = mbMessage;
+
+						cacheResult(mbMessage);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (MBMessage)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (MBMessage)result;
+			}
 		}
 	}
 
@@ -6885,102 +6881,96 @@ public class MBMessagePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, urlSubject};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_US, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBMessage.class);
-
-		if (result instanceof MBMessage) {
-			MBMessage mbMessage = (MBMessage)result;
-
-			if ((groupId != mbMessage.getGroupId()) ||
-				!Objects.equals(urlSubject, mbMessage.getUrlSubject())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						MBMessage.class, mbMessage.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_MBMESSAGE_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_US_GROUPID_2);
-
-			boolean bindUrlSubject = false;
-
-			if (urlSubject.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_US_URLSUBJECT_3);
-			}
-			else {
-				bindUrlSubject = true;
-
-				sb.append(_FINDER_COLUMN_G_US_URLSUBJECT_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, urlSubject};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_US, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof MBMessage) {
+				MBMessage mbMessage = (MBMessage)result;
 
-				Query query = session.createQuery(sql);
+				if ((groupId != mbMessage.getGroupId()) ||
+					!Objects.equals(urlSubject, mbMessage.getUrlSubject())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				if (bindUrlSubject) {
-					queryPos.add(urlSubject);
+					result = null;
 				}
+			}
 
-				List<MBMessage> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_US, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_MBMESSAGE_WHERE);
+
+				sb.append(_FINDER_COLUMN_G_US_GROUPID_2);
+
+				boolean bindUrlSubject = false;
+
+				if (urlSubject.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_US_URLSUBJECT_3);
 				}
 				else {
-					MBMessage mbMessage = list.get(0);
+					bindUrlSubject = true;
 
-					result = mbMessage;
+					sb.append(_FINDER_COLUMN_G_US_URLSUBJECT_2);
+				}
 
-					cacheResult(mbMessage);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					if (bindUrlSubject) {
+						queryPos.add(urlSubject);
+					}
+
+					List<MBMessage> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_US, finderArgs, list);
+						}
+					}
+					else {
+						MBMessage mbMessage = list.get(0);
+
+						result = mbMessage;
+
+						cacheResult(mbMessage);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (MBMessage)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (MBMessage)result;
+			}
 		}
 	}
 
@@ -21201,104 +21191,98 @@ public class MBMessagePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {externalReferenceCode, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByERC_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			MBMessage.class);
-
-		if (result instanceof MBMessage) {
-			MBMessage mbMessage = (MBMessage)result;
-
-			if (!Objects.equals(
-					externalReferenceCode,
-					mbMessage.getExternalReferenceCode()) ||
-				(groupId != mbMessage.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						MBMessage.class, mbMessage.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_MBMESSAGE_WHERE);
-
-			boolean bindExternalReferenceCode = false;
-
-			if (externalReferenceCode.isEmpty()) {
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
-			}
-			else {
-				bindExternalReferenceCode = true;
-
-				sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {externalReferenceCode, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByERC_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof MBMessage) {
+				MBMessage mbMessage = (MBMessage)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(
+						externalReferenceCode,
+						mbMessage.getExternalReferenceCode()) ||
+					(groupId != mbMessage.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindExternalReferenceCode) {
-					queryPos.add(externalReferenceCode);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<MBMessage> list = query.list();
+				sb.append(_SQL_SELECT_MBMESSAGE_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByERC_G, finderArgs, list);
-					}
+				boolean bindExternalReferenceCode = false;
+
+				if (externalReferenceCode.isEmpty()) {
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_3);
 				}
 				else {
-					MBMessage mbMessage = list.get(0);
+					bindExternalReferenceCode = true;
 
-					result = mbMessage;
+					sb.append(_FINDER_COLUMN_ERC_G_EXTERNALREFERENCECODE_2);
+				}
 
-					cacheResult(mbMessage);
+				sb.append(_FINDER_COLUMN_ERC_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindExternalReferenceCode) {
+						queryPos.add(externalReferenceCode);
+					}
+
+					queryPos.add(groupId);
+
+					List<MBMessage> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByERC_G, finderArgs, list);
+						}
+					}
+					else {
+						MBMessage mbMessage = list.get(0);
+
+						result = mbMessage;
+
+						cacheResult(mbMessage);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (MBMessage)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (MBMessage)result;
+			}
 		}
 	}
 
@@ -21428,29 +21412,32 @@ public class MBMessagePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(MBMessage mbMessage) {
-		if (mbMessage.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					mbMessage.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				MBMessageImpl.class, mbMessage.getPrimaryKey(), mbMessage);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {mbMessage.getUuid(), mbMessage.getGroupId()},
+				mbMessage);
+
+			finderCache.putResult(
+				_finderPathFetchByG_US,
+				new Object[] {
+					mbMessage.getGroupId(), mbMessage.getUrlSubject()
+				},
+				mbMessage);
+
+			finderCache.putResult(
+				_finderPathFetchByERC_G,
+				new Object[] {
+					mbMessage.getExternalReferenceCode(), mbMessage.getGroupId()
+				},
+				mbMessage);
 		}
-
-		entityCache.putResult(
-			MBMessageImpl.class, mbMessage.getPrimaryKey(), mbMessage);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {mbMessage.getUuid(), mbMessage.getGroupId()},
-			mbMessage);
-
-		finderCache.putResult(
-			_finderPathFetchByG_US,
-			new Object[] {mbMessage.getGroupId(), mbMessage.getUrlSubject()},
-			mbMessage);
-
-		finderCache.putResult(
-			_finderPathFetchByERC_G,
-			new Object[] {
-				mbMessage.getExternalReferenceCode(), mbMessage.getGroupId()
-			},
-			mbMessage);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -21470,14 +21457,18 @@ public class MBMessagePersistenceImpl
 		}
 
 		for (MBMessage mbMessage : mbMessages) {
-			if (mbMessage.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(mbMessage.getCtCollectionId() != 0) &&
+						(mbMessage.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					MBMessageImpl.class, mbMessage.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						MBMessageImpl.class, mbMessage.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(mbMessage);
+					cacheResult(mbMessage);
+				}
 			}
 		}
 	}
@@ -21527,29 +21518,39 @@ public class MBMessagePersistenceImpl
 	protected void cacheUniqueFindersCache(
 		MBMessageModelImpl mbMessageModelImpl) {
 
-		Object[] args = new Object[] {
-			mbMessageModelImpl.getUuid(), mbMessageModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					mbMessageModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, mbMessageModelImpl);
+			Object[] args = new Object[] {
+				mbMessageModelImpl.getUuid(), mbMessageModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			mbMessageModelImpl.getGroupId(), mbMessageModelImpl.getUrlSubject()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, mbMessageModelImpl);
 
-		finderCache.putResult(_finderPathCountByG_US, args, Long.valueOf(1));
-		finderCache.putResult(_finderPathFetchByG_US, args, mbMessageModelImpl);
+			args = new Object[] {
+				mbMessageModelImpl.getGroupId(),
+				mbMessageModelImpl.getUrlSubject()
+			};
 
-		args = new Object[] {
-			mbMessageModelImpl.getExternalReferenceCode(),
-			mbMessageModelImpl.getGroupId()
-		};
+			finderCache.putResult(
+				_finderPathCountByG_US, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_US, args, mbMessageModelImpl);
 
-		finderCache.putResult(_finderPathCountByERC_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByERC_G, args, mbMessageModelImpl);
+			args = new Object[] {
+				mbMessageModelImpl.getExternalReferenceCode(),
+				mbMessageModelImpl.getGroupId()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByERC_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByERC_G, args, mbMessageModelImpl);
+		}
 	}
 
 	/**
@@ -21661,132 +21662,146 @@ public class MBMessagePersistenceImpl
 
 	@Override
 	public MBMessage updateImpl(MBMessage mbMessage) {
-		boolean isNew = mbMessage.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(mbMessage instanceof MBMessageModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = mbMessage.isNew();
 
-			if (ProxyUtil.isProxyClass(mbMessage.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(mbMessage);
+			if (!(mbMessage instanceof MBMessageModelImpl)) {
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(mbMessage.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						mbMessage);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in mbMessage proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in mbMessage proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom MBMessage implementation " +
+						mbMessage.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom MBMessage implementation " +
-					mbMessage.getClass());
-		}
+			MBMessageModelImpl mbMessageModelImpl =
+				(MBMessageModelImpl)mbMessage;
 
-		MBMessageModelImpl mbMessageModelImpl = (MBMessageModelImpl)mbMessage;
+			if (Validator.isNull(mbMessage.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
 
-		if (Validator.isNull(mbMessage.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
+				mbMessage.setUuid(uuid);
+			}
 
-			mbMessage.setUuid(uuid);
-		}
+			if (Validator.isNull(mbMessage.getExternalReferenceCode())) {
+				mbMessage.setExternalReferenceCode(mbMessage.getUuid());
+			}
+			else {
+				MBMessage ercMBMessage = fetchByERC_G(
+					mbMessage.getExternalReferenceCode(),
+					mbMessage.getGroupId());
 
-		if (Validator.isNull(mbMessage.getExternalReferenceCode())) {
-			mbMessage.setExternalReferenceCode(mbMessage.getUuid());
-		}
-		else {
-			MBMessage ercMBMessage = fetchByERC_G(
-				mbMessage.getExternalReferenceCode(), mbMessage.getGroupId());
+				if (isNew) {
+					if (ercMBMessage != null) {
+						throw new DuplicateMBMessageExternalReferenceCodeException(
+							"Duplicate message-boards message with external reference code " +
+								mbMessage.getExternalReferenceCode() +
+									" and group " + mbMessage.getGroupId());
+					}
+				}
+				else {
+					if ((ercMBMessage != null) &&
+						(mbMessage.getMessageId() !=
+							ercMBMessage.getMessageId())) {
 
-			if (isNew) {
-				if (ercMBMessage != null) {
-					throw new DuplicateMBMessageExternalReferenceCodeException(
-						"Duplicate message-boards message with external reference code " +
-							mbMessage.getExternalReferenceCode() +
-								" and group " + mbMessage.getGroupId());
+						throw new DuplicateMBMessageExternalReferenceCodeException(
+							"Duplicate message-boards message with external reference code " +
+								mbMessage.getExternalReferenceCode() +
+									" and group " + mbMessage.getGroupId());
+					}
 				}
 			}
-			else {
-				if ((ercMBMessage != null) &&
-					(mbMessage.getMessageId() != ercMBMessage.getMessageId())) {
 
-					throw new DuplicateMBMessageExternalReferenceCodeException(
-						"Duplicate message-boards message with external reference code " +
-							mbMessage.getExternalReferenceCode() +
-								" and group " + mbMessage.getGroupId());
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (mbMessage.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					mbMessage.setCreateDate(date);
+				}
+				else {
+					mbMessage.setCreateDate(serviceContext.getCreateDate(date));
 				}
 			}
-		}
 
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (mbMessage.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				mbMessage.setCreateDate(date);
+			if (!mbMessageModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					mbMessage.setModifiedDate(date);
+				}
+				else {
+					mbMessage.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
 			}
-			else {
-				mbMessage.setCreateDate(serviceContext.getCreateDate(date));
+
+			long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
+
+			if (userId > 0) {
+				long companyId = mbMessage.getCompanyId();
+
+				long groupId = mbMessage.getGroupId();
+
+				long messageId = 0;
+
+				if (!isNew) {
+					messageId = mbMessage.getPrimaryKey();
+				}
+
+				try {
+					mbMessage.setSubject(
+						SanitizerUtil.sanitize(
+							companyId, groupId, userId,
+							MBMessage.class.getName(), messageId,
+							ContentTypes.TEXT_PLAIN, Sanitizer.MODE_ALL,
+							mbMessage.getSubject(), null));
+				}
+				catch (SanitizerException sanitizerException) {
+					throw new SystemException(sanitizerException);
+				}
 			}
-		}
 
-		if (!mbMessageModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				mbMessage.setModifiedDate(date);
-			}
-			else {
-				mbMessage.setModifiedDate(serviceContext.getModifiedDate(date));
-			}
-		}
-
-		long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
-
-		if (userId > 0) {
-			long companyId = mbMessage.getCompanyId();
-
-			long groupId = mbMessage.getGroupId();
-
-			long messageId = 0;
-
-			if (!isNew) {
-				messageId = mbMessage.getPrimaryKey();
-			}
+			Session session = null;
 
 			try {
-				mbMessage.setSubject(
-					SanitizerUtil.sanitize(
-						companyId, groupId, userId, MBMessage.class.getName(),
-						messageId, ContentTypes.TEXT_PLAIN, Sanitizer.MODE_ALL,
-						mbMessage.getSubject(), null));
-			}
-			catch (SanitizerException sanitizerException) {
-				throw new SystemException(sanitizerException);
-			}
-		}
+				session = openSession();
 
-		Session session = null;
+				if (ctPersistenceHelper.isInsert(mbMessage)) {
+					if (!isNew) {
+						session.evict(
+							MBMessageImpl.class, mbMessage.getPrimaryKeyObj());
+					}
 
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(mbMessage)) {
-				if (!isNew) {
-					session.evict(
-						MBMessageImpl.class, mbMessage.getPrimaryKeyObj());
+					session.save(mbMessage);
 				}
-
-				session.save(mbMessage);
+				else {
+					mbMessage = (MBMessage)session.merge(mbMessage);
+				}
 			}
-			else {
-				mbMessage = (MBMessage)session.merge(mbMessage);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
+			finally {
+				closeSession(session);
+			}
 
-		if (mbMessage.getCtCollectionId() != 0) {
+			entityCache.putResult(
+				MBMessageImpl.class, mbMessageModelImpl, false, true);
+
+			cacheUniqueFindersCache(mbMessageModelImpl);
+
 			if (isNew) {
 				mbMessage.setNew(false);
 			}
@@ -21795,19 +21810,6 @@ public class MBMessagePersistenceImpl
 
 			return mbMessage;
 		}
-
-		entityCache.putResult(
-			MBMessageImpl.class, mbMessageModelImpl, false, true);
-
-		cacheUniqueFindersCache(mbMessageModelImpl);
-
-		if (isNew) {
-			mbMessage.setNew(false);
-		}
-
-		mbMessage.resetOriginalValues();
-
-		return mbMessage;
 	}
 
 	/**
@@ -21857,31 +21859,13 @@ public class MBMessagePersistenceImpl
 	 */
 	@Override
 	public MBMessage fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(MBMessage.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						MBMessage.class, primaryKey))) {
+
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		MBMessage mbMessage = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			mbMessage = (MBMessage)session.get(MBMessageImpl.class, primaryKey);
-
-			if (mbMessage != null) {
-				cacheResult(mbMessage);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return mbMessage;
 	}
 
 	/**
@@ -21899,91 +21883,12 @@ public class MBMessagePersistenceImpl
 	public Map<Serializable, MBMessage> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(MBMessage.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, MBMessage> map =
-			new HashMap<Serializable, MBMessage>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			MBMessage mbMessage = fetchByPrimaryKey(primaryKey);
-
-			if (mbMessage != null) {
-				map.put(primaryKey, mbMessage);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (MBMessage mbMessage : (List<MBMessage>)query.list()) {
-				map.put(mbMessage.getPrimaryKeyObj(), mbMessage);
-
-				cacheResult(mbMessage);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

@@ -13,8 +13,11 @@ import com.liferay.fragment.model.impl.FragmentCompositionModelImpl;
 import com.liferay.fragment.service.persistence.FragmentCompositionPersistence;
 import com.liferay.fragment.service.persistence.FragmentCompositionUtil;
 import com.liferay.fragment.service.persistence.impl.constants.FragmentPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -51,7 +54,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -718,104 +720,98 @@ public class FragmentCompositionPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						FragmentComposition.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FragmentComposition.class);
-
-		if (result instanceof FragmentComposition) {
-			FragmentComposition fragmentComposition =
-				(FragmentComposition)result;
-
-			if (!Objects.equals(uuid, fragmentComposition.getUuid()) ||
-				(groupId != fragmentComposition.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class,
-						fragmentComposition.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_FRAGMENTCOMPOSITION_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof FragmentComposition) {
+				FragmentComposition fragmentComposition =
+					(FragmentComposition)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, fragmentComposition.getUuid()) ||
+					(groupId != fragmentComposition.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<FragmentComposition> list = query.list();
+				sb.append(_SQL_SELECT_FRAGMENTCOMPOSITION_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					FragmentComposition fragmentComposition = list.get(0);
+					bindUuid = true;
 
-					result = fragmentComposition;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(fragmentComposition);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<FragmentComposition> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						FragmentComposition fragmentComposition = list.get(0);
+
+						result = fragmentComposition;
+
+						cacheResult(fragmentComposition);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (FragmentComposition)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (FragmentComposition)result;
+			}
 		}
 	}
 
@@ -3206,106 +3202,100 @@ public class FragmentCompositionPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {groupId, fragmentCompositionKey};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						FragmentComposition.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByG_FCK, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			FragmentComposition.class);
-
-		if (result instanceof FragmentComposition) {
-			FragmentComposition fragmentComposition =
-				(FragmentComposition)result;
-
-			if ((groupId != fragmentComposition.getGroupId()) ||
-				!Objects.equals(
-					fragmentCompositionKey,
-					fragmentComposition.getFragmentCompositionKey())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class,
-						fragmentComposition.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_FRAGMENTCOMPOSITION_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_FCK_GROUPID_2);
-
-			boolean bindFragmentCompositionKey = false;
-
-			if (fragmentCompositionKey.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_FCK_FRAGMENTCOMPOSITIONKEY_3);
-			}
-			else {
-				bindFragmentCompositionKey = true;
-
-				sb.append(_FINDER_COLUMN_G_FCK_FRAGMENTCOMPOSITIONKEY_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {groupId, fragmentCompositionKey};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByG_FCK, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof FragmentComposition) {
+				FragmentComposition fragmentComposition =
+					(FragmentComposition)result;
 
-				Query query = session.createQuery(sql);
+				if ((groupId != fragmentComposition.getGroupId()) ||
+					!Objects.equals(
+						fragmentCompositionKey,
+						fragmentComposition.getFragmentCompositionKey())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				if (bindFragmentCompositionKey) {
-					queryPos.add(fragmentCompositionKey);
+					result = null;
 				}
+			}
 
-				List<FragmentComposition> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByG_FCK, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_FRAGMENTCOMPOSITION_WHERE);
+
+				sb.append(_FINDER_COLUMN_G_FCK_GROUPID_2);
+
+				boolean bindFragmentCompositionKey = false;
+
+				if (fragmentCompositionKey.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_FCK_FRAGMENTCOMPOSITIONKEY_3);
 				}
 				else {
-					FragmentComposition fragmentComposition = list.get(0);
+					bindFragmentCompositionKey = true;
 
-					result = fragmentComposition;
+					sb.append(_FINDER_COLUMN_G_FCK_FRAGMENTCOMPOSITIONKEY_2);
+				}
 
-					cacheResult(fragmentComposition);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					if (bindFragmentCompositionKey) {
+						queryPos.add(fragmentCompositionKey);
+					}
+
+					List<FragmentComposition> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByG_FCK, finderArgs, list);
+						}
+					}
+					else {
+						FragmentComposition fragmentComposition = list.get(0);
+
+						result = fragmentComposition;
+
+						cacheResult(fragmentComposition);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (FragmentComposition)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (FragmentComposition)result;
+			}
 		}
 	}
 
@@ -5358,28 +5348,30 @@ public class FragmentCompositionPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(FragmentComposition fragmentComposition) {
-		if (fragmentComposition.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					fragmentComposition.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				FragmentCompositionImpl.class,
+				fragmentComposition.getPrimaryKey(), fragmentComposition);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					fragmentComposition.getUuid(),
+					fragmentComposition.getGroupId()
+				},
+				fragmentComposition);
+
+			finderCache.putResult(
+				_finderPathFetchByG_FCK,
+				new Object[] {
+					fragmentComposition.getGroupId(),
+					fragmentComposition.getFragmentCompositionKey()
+				},
+				fragmentComposition);
 		}
-
-		entityCache.putResult(
-			FragmentCompositionImpl.class, fragmentComposition.getPrimaryKey(),
-			fragmentComposition);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {
-				fragmentComposition.getUuid(), fragmentComposition.getGroupId()
-			},
-			fragmentComposition);
-
-		finderCache.putResult(
-			_finderPathFetchByG_FCK,
-			new Object[] {
-				fragmentComposition.getGroupId(),
-				fragmentComposition.getFragmentCompositionKey()
-			},
-			fragmentComposition);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -5400,15 +5392,18 @@ public class FragmentCompositionPersistenceImpl
 		}
 
 		for (FragmentComposition fragmentComposition : fragmentCompositions) {
-			if (fragmentComposition.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(fragmentComposition.getCtCollectionId() != 0) &&
+						(fragmentComposition.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					FragmentCompositionImpl.class,
-					fragmentComposition.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						FragmentCompositionImpl.class,
+						fragmentComposition.getPrimaryKey()) == null) {
 
-				cacheResult(fragmentComposition);
+					cacheResult(fragmentComposition);
+				}
 			}
 		}
 	}
@@ -5460,23 +5455,30 @@ public class FragmentCompositionPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		FragmentCompositionModelImpl fragmentCompositionModelImpl) {
 
-		Object[] args = new Object[] {
-			fragmentCompositionModelImpl.getUuid(),
-			fragmentCompositionModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					fragmentCompositionModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, fragmentCompositionModelImpl);
+			Object[] args = new Object[] {
+				fragmentCompositionModelImpl.getUuid(),
+				fragmentCompositionModelImpl.getGroupId()
+			};
 
-		args = new Object[] {
-			fragmentCompositionModelImpl.getGroupId(),
-			fragmentCompositionModelImpl.getFragmentCompositionKey()
-		};
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, fragmentCompositionModelImpl);
 
-		finderCache.putResult(_finderPathCountByG_FCK, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByG_FCK, args, fragmentCompositionModelImpl);
+			args = new Object[] {
+				fragmentCompositionModelImpl.getGroupId(),
+				fragmentCompositionModelImpl.getFragmentCompositionKey()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByG_FCK, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByG_FCK, args, fragmentCompositionModelImpl);
+		}
 	}
 
 	/**
@@ -5596,86 +5598,97 @@ public class FragmentCompositionPersistenceImpl
 	public FragmentComposition updateImpl(
 		FragmentComposition fragmentComposition) {
 
-		boolean isNew = fragmentComposition.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(fragmentComposition instanceof FragmentCompositionModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = fragmentComposition.isNew();
 
-			if (ProxyUtil.isProxyClass(fragmentComposition.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					fragmentComposition);
+			if (!(fragmentComposition instanceof
+					FragmentCompositionModelImpl)) {
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in fragmentComposition proxy " +
-						invocationHandler.getClass());
-			}
+				InvocationHandler invocationHandler = null;
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom FragmentComposition implementation " +
-					fragmentComposition.getClass());
-		}
+				if (ProxyUtil.isProxyClass(fragmentComposition.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						fragmentComposition);
 
-		FragmentCompositionModelImpl fragmentCompositionModelImpl =
-			(FragmentCompositionModelImpl)fragmentComposition;
-
-		if (Validator.isNull(fragmentComposition.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			fragmentComposition.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (fragmentComposition.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				fragmentComposition.setCreateDate(date);
-			}
-			else {
-				fragmentComposition.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!fragmentCompositionModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				fragmentComposition.setModifiedDate(date);
-			}
-			else {
-				fragmentComposition.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(fragmentComposition)) {
-				if (!isNew) {
-					session.evict(
-						FragmentCompositionImpl.class,
-						fragmentComposition.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in fragmentComposition proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(fragmentComposition);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom FragmentComposition implementation " +
+						fragmentComposition.getClass());
 			}
-			else {
-				fragmentComposition = (FragmentComposition)session.merge(
-					fragmentComposition);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (fragmentComposition.getCtCollectionId() != 0) {
+			FragmentCompositionModelImpl fragmentCompositionModelImpl =
+				(FragmentCompositionModelImpl)fragmentComposition;
+
+			if (Validator.isNull(fragmentComposition.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				fragmentComposition.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (fragmentComposition.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					fragmentComposition.setCreateDate(date);
+				}
+				else {
+					fragmentComposition.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!fragmentCompositionModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					fragmentComposition.setModifiedDate(date);
+				}
+				else {
+					fragmentComposition.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(fragmentComposition)) {
+					if (!isNew) {
+						session.evict(
+							FragmentCompositionImpl.class,
+							fragmentComposition.getPrimaryKeyObj());
+					}
+
+					session.save(fragmentComposition);
+				}
+				else {
+					fragmentComposition = (FragmentComposition)session.merge(
+						fragmentComposition);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				FragmentCompositionImpl.class, fragmentCompositionModelImpl,
+				false, true);
+
+			cacheUniqueFindersCache(fragmentCompositionModelImpl);
+
 			if (isNew) {
 				fragmentComposition.setNew(false);
 			}
@@ -5684,20 +5697,6 @@ public class FragmentCompositionPersistenceImpl
 
 			return fragmentComposition;
 		}
-
-		entityCache.putResult(
-			FragmentCompositionImpl.class, fragmentCompositionModelImpl, false,
-			true);
-
-		cacheUniqueFindersCache(fragmentCompositionModelImpl);
-
-		if (isNew) {
-			fragmentComposition.setNew(false);
-		}
-
-		fragmentComposition.resetOriginalValues();
-
-		return fragmentComposition;
 	}
 
 	/**
@@ -5747,34 +5746,13 @@ public class FragmentCompositionPersistenceImpl
 	 */
 	@Override
 	public FragmentComposition fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				FragmentComposition.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						FragmentComposition.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		FragmentComposition fragmentComposition = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			fragmentComposition = (FragmentComposition)session.get(
-				FragmentCompositionImpl.class, primaryKey);
-
-			if (fragmentComposition != null) {
-				cacheResult(fragmentComposition);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return fragmentComposition;
 	}
 
 	/**
@@ -5792,96 +5770,13 @@ public class FragmentCompositionPersistenceImpl
 	public Map<Serializable, FragmentComposition> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(FragmentComposition.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						FragmentComposition.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, FragmentComposition> map =
-			new HashMap<Serializable, FragmentComposition>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			FragmentComposition fragmentComposition = fetchByPrimaryKey(
-				primaryKey);
-
-			if (fragmentComposition != null) {
-				map.put(primaryKey, fragmentComposition);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (FragmentComposition fragmentComposition :
-					(List<FragmentComposition>)query.list()) {
-
-				map.put(
-					fragmentComposition.getPrimaryKeyObj(),
-					fragmentComposition);
-
-				cacheResult(fragmentComposition);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

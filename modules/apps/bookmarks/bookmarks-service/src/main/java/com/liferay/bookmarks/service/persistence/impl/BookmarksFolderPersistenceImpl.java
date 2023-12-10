@@ -13,8 +13,11 @@ import com.liferay.bookmarks.model.impl.BookmarksFolderModelImpl;
 import com.liferay.bookmarks.service.persistence.BookmarksFolderPersistence;
 import com.liferay.bookmarks.service.persistence.BookmarksFolderUtil;
 import com.liferay.bookmarks.service.persistence.impl.constants.BookmarksPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -52,7 +55,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -713,103 +715,97 @@ public class BookmarksFolderPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						BookmarksFolder.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			BookmarksFolder.class);
-
-		if (result instanceof BookmarksFolder) {
-			BookmarksFolder bookmarksFolder = (BookmarksFolder)result;
-
-			if (!Objects.equals(uuid, bookmarksFolder.getUuid()) ||
-				(groupId != bookmarksFolder.getGroupId())) {
-
-				result = null;
-			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						BookmarksFolder.class,
-						bookmarksFolder.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
-
-			sb.append(_SQL_SELECT_BOOKMARKSFOLDER_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {uuid, groupId};
 			}
 
-			sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+			Object result = null;
 
-			String sql = sb.toString();
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByUUID_G, finderArgs, this);
+			}
 
-			Session session = null;
+			if (result instanceof BookmarksFolder) {
+				BookmarksFolder bookmarksFolder = (BookmarksFolder)result;
 
-			try {
-				session = openSession();
+				if (!Objects.equals(uuid, bookmarksFolder.getUuid()) ||
+					(groupId != bookmarksFolder.getGroupId())) {
 
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				if (bindUuid) {
-					queryPos.add(uuid);
+					result = null;
 				}
+			}
 
-				queryPos.add(groupId);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-				List<BookmarksFolder> list = query.list();
+				sb.append(_SQL_SELECT_BOOKMARKSFOLDER_WHERE);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
+				boolean bindUuid = false;
+
+				if (uuid.isEmpty()) {
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_3);
 				}
 				else {
-					BookmarksFolder bookmarksFolder = list.get(0);
+					bindUuid = true;
 
-					result = bookmarksFolder;
+					sb.append(_FINDER_COLUMN_UUID_G_UUID_2);
+				}
 
-					cacheResult(bookmarksFolder);
+				sb.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
+
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					if (bindUuid) {
+						queryPos.add(uuid);
+					}
+
+					queryPos.add(groupId);
+
+					List<BookmarksFolder> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByUUID_G, finderArgs, list);
+						}
+					}
+					else {
+						BookmarksFolder bookmarksFolder = list.get(0);
+
+						result = bookmarksFolder;
+
+						cacheResult(bookmarksFolder);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (BookmarksFolder)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (BookmarksFolder)result;
+			}
 		}
 	}
 
@@ -6938,20 +6934,21 @@ public class BookmarksFolderPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(BookmarksFolder bookmarksFolder) {
-		if (bookmarksFolder.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					bookmarksFolder.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				BookmarksFolderImpl.class, bookmarksFolder.getPrimaryKey(),
+				bookmarksFolder);
+
+			finderCache.putResult(
+				_finderPathFetchByUUID_G,
+				new Object[] {
+					bookmarksFolder.getUuid(), bookmarksFolder.getGroupId()
+				},
+				bookmarksFolder);
 		}
-
-		entityCache.putResult(
-			BookmarksFolderImpl.class, bookmarksFolder.getPrimaryKey(),
-			bookmarksFolder);
-
-		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {
-				bookmarksFolder.getUuid(), bookmarksFolder.getGroupId()
-			},
-			bookmarksFolder);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -6972,15 +6969,18 @@ public class BookmarksFolderPersistenceImpl
 		}
 
 		for (BookmarksFolder bookmarksFolder : bookmarksFolders) {
-			if (bookmarksFolder.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(bookmarksFolder.getCtCollectionId() != 0) &&
+						(bookmarksFolder.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (entityCache.getResult(
-					BookmarksFolderImpl.class,
-					bookmarksFolder.getPrimaryKey()) == null) {
+				if (entityCache.getResult(
+						BookmarksFolderImpl.class,
+						bookmarksFolder.getPrimaryKey()) == null) {
 
-				cacheResult(bookmarksFolder);
+					cacheResult(bookmarksFolder);
+				}
 			}
 		}
 	}
@@ -7031,14 +7031,20 @@ public class BookmarksFolderPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		BookmarksFolderModelImpl bookmarksFolderModelImpl) {
 
-		Object[] args = new Object[] {
-			bookmarksFolderModelImpl.getUuid(),
-			bookmarksFolderModelImpl.getGroupId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					bookmarksFolderModelImpl.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(_finderPathCountByUUID_G, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, bookmarksFolderModelImpl);
+			Object[] args = new Object[] {
+				bookmarksFolderModelImpl.getUuid(),
+				bookmarksFolderModelImpl.getGroupId()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByUUID_G, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByUUID_G, args, bookmarksFolderModelImpl);
+		}
 	}
 
 	/**
@@ -7151,86 +7157,95 @@ public class BookmarksFolderPersistenceImpl
 
 	@Override
 	public BookmarksFolder updateImpl(BookmarksFolder bookmarksFolder) {
-		boolean isNew = bookmarksFolder.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(bookmarksFolder instanceof BookmarksFolderModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = bookmarksFolder.isNew();
 
-			if (ProxyUtil.isProxyClass(bookmarksFolder.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					bookmarksFolder);
+			if (!(bookmarksFolder instanceof BookmarksFolderModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in bookmarksFolder proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(bookmarksFolder.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						bookmarksFolder);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom BookmarksFolder implementation " +
-					bookmarksFolder.getClass());
-		}
-
-		BookmarksFolderModelImpl bookmarksFolderModelImpl =
-			(BookmarksFolderModelImpl)bookmarksFolder;
-
-		if (Validator.isNull(bookmarksFolder.getUuid())) {
-			String uuid = PortalUUIDUtil.generate();
-
-			bookmarksFolder.setUuid(uuid);
-		}
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (bookmarksFolder.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				bookmarksFolder.setCreateDate(date);
-			}
-			else {
-				bookmarksFolder.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!bookmarksFolderModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				bookmarksFolder.setModifiedDate(date);
-			}
-			else {
-				bookmarksFolder.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(bookmarksFolder)) {
-				if (!isNew) {
-					session.evict(
-						BookmarksFolderImpl.class,
-						bookmarksFolder.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in bookmarksFolder proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(bookmarksFolder);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom BookmarksFolder implementation " +
+						bookmarksFolder.getClass());
 			}
-			else {
-				bookmarksFolder = (BookmarksFolder)session.merge(
-					bookmarksFolder);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (bookmarksFolder.getCtCollectionId() != 0) {
+			BookmarksFolderModelImpl bookmarksFolderModelImpl =
+				(BookmarksFolderModelImpl)bookmarksFolder;
+
+			if (Validator.isNull(bookmarksFolder.getUuid())) {
+				String uuid = PortalUUIDUtil.generate();
+
+				bookmarksFolder.setUuid(uuid);
+			}
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (bookmarksFolder.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					bookmarksFolder.setCreateDate(date);
+				}
+				else {
+					bookmarksFolder.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!bookmarksFolderModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					bookmarksFolder.setModifiedDate(date);
+				}
+				else {
+					bookmarksFolder.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(bookmarksFolder)) {
+					if (!isNew) {
+						session.evict(
+							BookmarksFolderImpl.class,
+							bookmarksFolder.getPrimaryKeyObj());
+					}
+
+					session.save(bookmarksFolder);
+				}
+				else {
+					bookmarksFolder = (BookmarksFolder)session.merge(
+						bookmarksFolder);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				BookmarksFolderImpl.class, bookmarksFolderModelImpl, false,
+				true);
+
+			cacheUniqueFindersCache(bookmarksFolderModelImpl);
+
 			if (isNew) {
 				bookmarksFolder.setNew(false);
 			}
@@ -7239,19 +7254,6 @@ public class BookmarksFolderPersistenceImpl
 
 			return bookmarksFolder;
 		}
-
-		entityCache.putResult(
-			BookmarksFolderImpl.class, bookmarksFolderModelImpl, false, true);
-
-		cacheUniqueFindersCache(bookmarksFolderModelImpl);
-
-		if (isNew) {
-			bookmarksFolder.setNew(false);
-		}
-
-		bookmarksFolder.resetOriginalValues();
-
-		return bookmarksFolder;
 	}
 
 	/**
@@ -7301,34 +7303,13 @@ public class BookmarksFolderPersistenceImpl
 	 */
 	@Override
 	public BookmarksFolder fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				BookmarksFolder.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						BookmarksFolder.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		BookmarksFolder bookmarksFolder = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			bookmarksFolder = (BookmarksFolder)session.get(
-				BookmarksFolderImpl.class, primaryKey);
-
-			if (bookmarksFolder != null) {
-				cacheResult(bookmarksFolder);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return bookmarksFolder;
 	}
 
 	/**
@@ -7346,93 +7327,13 @@ public class BookmarksFolderPersistenceImpl
 	public Map<Serializable, BookmarksFolder> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(BookmarksFolder.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						BookmarksFolder.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, BookmarksFolder> map =
-			new HashMap<Serializable, BookmarksFolder>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			BookmarksFolder bookmarksFolder = fetchByPrimaryKey(primaryKey);
-
-			if (bookmarksFolder != null) {
-				map.put(primaryKey, bookmarksFolder);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (BookmarksFolder bookmarksFolder :
-					(List<BookmarksFolder>)query.list()) {
-
-				map.put(bookmarksFolder.getPrimaryKeyObj(), bookmarksFolder);
-
-				cacheResult(bookmarksFolder);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

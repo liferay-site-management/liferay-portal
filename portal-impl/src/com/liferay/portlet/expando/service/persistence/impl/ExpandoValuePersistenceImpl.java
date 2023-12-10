@@ -10,8 +10,11 @@ import com.liferay.expando.kernel.model.ExpandoValue;
 import com.liferay.expando.kernel.model.ExpandoValueTable;
 import com.liferay.expando.kernel.service.persistence.ExpandoValuePersistence;
 import com.liferay.expando.kernel.service.persistence.ExpandoValueUtil;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -44,7 +47,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -3330,91 +3332,86 @@ public class ExpandoValuePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {columnId, rowId};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						ExpandoValue.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByC_R, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			ExpandoValue.class);
-
-		if (result instanceof ExpandoValue) {
-			ExpandoValue expandoValue = (ExpandoValue)result;
-
-			if ((columnId != expandoValue.getColumnId()) ||
-				(rowId != expandoValue.getRowId())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {columnId, rowId};
 			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						ExpandoValue.class, expandoValue.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByC_R, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(4);
+			if (result instanceof ExpandoValue) {
+				ExpandoValue expandoValue = (ExpandoValue)result;
 
-			sb.append(_SQL_SELECT_EXPANDOVALUE_WHERE);
+				if ((columnId != expandoValue.getColumnId()) ||
+					(rowId != expandoValue.getRowId())) {
 
-			sb.append(_FINDER_COLUMN_C_R_COLUMNID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_C_R_ROWID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(4);
 
-			String sql = sb.toString();
+				sb.append(_SQL_SELECT_EXPANDOVALUE_WHERE);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_C_R_COLUMNID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_C_R_ROWID_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(columnId);
+				try {
+					session = openSession();
 
-				queryPos.add(rowId);
+					Query query = session.createQuery(sql);
 
-				List<ExpandoValue> list = query.list();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByC_R, finderArgs, list);
+					queryPos.add(columnId);
+
+					queryPos.add(rowId);
+
+					List<ExpandoValue> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByC_R, finderArgs, list);
+						}
+					}
+					else {
+						ExpandoValue expandoValue = list.get(0);
+
+						result = expandoValue;
+
+						cacheResult(expandoValue);
 					}
 				}
-				else {
-					ExpandoValue expandoValue = list.get(0);
-
-					result = expandoValue;
-
-					cacheResult(expandoValue);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (ExpandoValue)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (ExpandoValue)result;
+			}
 		}
 	}
 
@@ -4136,96 +4133,91 @@ public class ExpandoValuePersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {tableId, columnId, classPK};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						ExpandoValue.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByT_C_C, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			ExpandoValue.class);
-
-		if (result instanceof ExpandoValue) {
-			ExpandoValue expandoValue = (ExpandoValue)result;
-
-			if ((tableId != expandoValue.getTableId()) ||
-				(columnId != expandoValue.getColumnId()) ||
-				(classPK != expandoValue.getClassPK())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {tableId, columnId, classPK};
 			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						ExpandoValue.class, expandoValue.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByT_C_C, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
+			if (result instanceof ExpandoValue) {
+				ExpandoValue expandoValue = (ExpandoValue)result;
 
-			sb.append(_SQL_SELECT_EXPANDOVALUE_WHERE);
+				if ((tableId != expandoValue.getTableId()) ||
+					(columnId != expandoValue.getColumnId()) ||
+					(classPK != expandoValue.getClassPK())) {
 
-			sb.append(_FINDER_COLUMN_T_C_C_TABLEID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_T_C_C_COLUMNID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-			sb.append(_FINDER_COLUMN_T_C_C_CLASSPK_2);
+				sb.append(_SQL_SELECT_EXPANDOVALUE_WHERE);
 
-			String sql = sb.toString();
+				sb.append(_FINDER_COLUMN_T_C_C_TABLEID_2);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_T_C_C_COLUMNID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_T_C_C_CLASSPK_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(tableId);
+				try {
+					session = openSession();
 
-				queryPos.add(columnId);
+					Query query = session.createQuery(sql);
 
-				queryPos.add(classPK);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				List<ExpandoValue> list = query.list();
+					queryPos.add(tableId);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByT_C_C, finderArgs, list);
+					queryPos.add(columnId);
+
+					queryPos.add(classPK);
+
+					List<ExpandoValue> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByT_C_C, finderArgs, list);
+						}
+					}
+					else {
+						ExpandoValue expandoValue = list.get(0);
+
+						result = expandoValue;
+
+						cacheResult(expandoValue);
 					}
 				}
-				else {
-					ExpandoValue expandoValue = list.get(0);
-
-					result = expandoValue;
-
-					cacheResult(expandoValue);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (ExpandoValue)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (ExpandoValue)result;
+			}
 		}
 	}
 
@@ -4983,25 +4975,29 @@ public class ExpandoValuePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(ExpandoValue expandoValue) {
-		if (expandoValue.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					expandoValue.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				ExpandoValueImpl.class, expandoValue.getPrimaryKey(),
+				expandoValue);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_R,
+				new Object[] {
+					expandoValue.getColumnId(), expandoValue.getRowId()
+				},
+				expandoValue);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByT_C_C,
+				new Object[] {
+					expandoValue.getTableId(), expandoValue.getColumnId(),
+					expandoValue.getClassPK()
+				},
+				expandoValue);
 		}
-
-		EntityCacheUtil.putResult(
-			ExpandoValueImpl.class, expandoValue.getPrimaryKey(), expandoValue);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_R,
-			new Object[] {expandoValue.getColumnId(), expandoValue.getRowId()},
-			expandoValue);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByT_C_C,
-			new Object[] {
-				expandoValue.getTableId(), expandoValue.getColumnId(),
-				expandoValue.getClassPK()
-			},
-			expandoValue);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -5021,15 +5017,18 @@ public class ExpandoValuePersistenceImpl
 		}
 
 		for (ExpandoValue expandoValue : expandoValues) {
-			if (expandoValue.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(expandoValue.getCtCollectionId() != 0) &&
+						(expandoValue.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					ExpandoValueImpl.class, expandoValue.getPrimaryKey()) ==
-						null) {
+				if (EntityCacheUtil.getResult(
+						ExpandoValueImpl.class, expandoValue.getPrimaryKey()) ==
+							null) {
 
-				cacheResult(expandoValue);
+					cacheResult(expandoValue);
+				}
 			}
 		}
 	}
@@ -5079,25 +5078,31 @@ public class ExpandoValuePersistenceImpl
 	protected void cacheUniqueFindersCache(
 		ExpandoValueModelImpl expandoValueModelImpl) {
 
-		Object[] args = new Object[] {
-			expandoValueModelImpl.getColumnId(),
-			expandoValueModelImpl.getRowId()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					expandoValueModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(_finderPathCountByC_R, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByC_R, args, expandoValueModelImpl);
+			Object[] args = new Object[] {
+				expandoValueModelImpl.getColumnId(),
+				expandoValueModelImpl.getRowId()
+			};
 
-		args = new Object[] {
-			expandoValueModelImpl.getTableId(),
-			expandoValueModelImpl.getColumnId(),
-			expandoValueModelImpl.getClassPK()
-		};
+			FinderCacheUtil.putResult(
+				_finderPathCountByC_R, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByC_R, args, expandoValueModelImpl);
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByT_C_C, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByT_C_C, args, expandoValueModelImpl);
+			args = new Object[] {
+				expandoValueModelImpl.getTableId(),
+				expandoValueModelImpl.getColumnId(),
+				expandoValueModelImpl.getClassPK()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByT_C_C, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByT_C_C, args, expandoValueModelImpl);
+		}
 	}
 
 	/**
@@ -5205,54 +5210,62 @@ public class ExpandoValuePersistenceImpl
 
 	@Override
 	public ExpandoValue updateImpl(ExpandoValue expandoValue) {
-		boolean isNew = expandoValue.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(expandoValue instanceof ExpandoValueModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = expandoValue.isNew();
 
-			if (ProxyUtil.isProxyClass(expandoValue.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					expandoValue);
+			if (!(expandoValue instanceof ExpandoValueModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in expandoValue proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(expandoValue.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						expandoValue);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom ExpandoValue implementation " +
-					expandoValue.getClass());
-		}
-
-		ExpandoValueModelImpl expandoValueModelImpl =
-			(ExpandoValueModelImpl)expandoValue;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(expandoValue)) {
-				if (!isNew) {
-					session.evict(
-						ExpandoValueImpl.class,
-						expandoValue.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in expandoValue proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(expandoValue);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom ExpandoValue implementation " +
+						expandoValue.getClass());
 			}
-			else {
-				expandoValue = (ExpandoValue)session.merge(expandoValue);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (expandoValue.getCtCollectionId() != 0) {
+			ExpandoValueModelImpl expandoValueModelImpl =
+				(ExpandoValueModelImpl)expandoValue;
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(expandoValue)) {
+					if (!isNew) {
+						session.evict(
+							ExpandoValueImpl.class,
+							expandoValue.getPrimaryKeyObj());
+					}
+
+					session.save(expandoValue);
+				}
+				else {
+					expandoValue = (ExpandoValue)session.merge(expandoValue);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				ExpandoValueImpl.class, expandoValueModelImpl, false, true);
+
+			cacheUniqueFindersCache(expandoValueModelImpl);
+
 			if (isNew) {
 				expandoValue.setNew(false);
 			}
@@ -5261,19 +5274,6 @@ public class ExpandoValuePersistenceImpl
 
 			return expandoValue;
 		}
-
-		EntityCacheUtil.putResult(
-			ExpandoValueImpl.class, expandoValueModelImpl, false, true);
-
-		cacheUniqueFindersCache(expandoValueModelImpl);
-
-		if (isNew) {
-			expandoValue.setNew(false);
-		}
-
-		expandoValue.resetOriginalValues();
-
-		return expandoValue;
 	}
 
 	/**
@@ -5323,34 +5323,13 @@ public class ExpandoValuePersistenceImpl
 	 */
 	@Override
 	public ExpandoValue fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				ExpandoValue.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						ExpandoValue.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		ExpandoValue expandoValue = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			expandoValue = (ExpandoValue)session.get(
-				ExpandoValueImpl.class, primaryKey);
-
-			if (expandoValue != null) {
-				cacheResult(expandoValue);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return expandoValue;
 	}
 
 	/**
@@ -5368,91 +5347,13 @@ public class ExpandoValuePersistenceImpl
 	public Map<Serializable, ExpandoValue> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(ExpandoValue.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						ExpandoValue.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, ExpandoValue> map =
-			new HashMap<Serializable, ExpandoValue>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			ExpandoValue expandoValue = fetchByPrimaryKey(primaryKey);
-
-			if (expandoValue != null) {
-				map.put(primaryKey, expandoValue);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (ExpandoValue expandoValue : (List<ExpandoValue>)query.list()) {
-				map.put(expandoValue.getPrimaryKeyObj(), expandoValue);
-
-				cacheResult(expandoValue);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

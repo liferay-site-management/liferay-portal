@@ -5,8 +5,11 @@
 
 package com.liferay.portlet.social.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -41,9 +44,7 @@ import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1772,129 +1773,124 @@ public class SocialActivityLimitPersistenceImpl
 
 		Object[] finderArgs = null;
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {
-				groupId, userId, classNameId, classPK, activityType,
-				activityCounterName
-			};
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialActivityLimit.class))) {
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = FinderCacheUtil.getResult(
-				_finderPathFetchByG_U_C_C_A_A, finderArgs, this);
-		}
-
-		boolean productionMode = CTPersistenceHelperUtil.isProductionMode(
-			SocialActivityLimit.class);
-
-		if (result instanceof SocialActivityLimit) {
-			SocialActivityLimit socialActivityLimit =
-				(SocialActivityLimit)result;
-
-			if ((groupId != socialActivityLimit.getGroupId()) ||
-				(userId != socialActivityLimit.getUserId()) ||
-				(classNameId != socialActivityLimit.getClassNameId()) ||
-				(classPK != socialActivityLimit.getClassPK()) ||
-				(activityType != socialActivityLimit.getActivityType()) ||
-				!Objects.equals(
-					activityCounterName,
-					socialActivityLimit.getActivityCounterName())) {
-
-				result = null;
-			}
-			else if (!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivityLimit.class,
-						socialActivityLimit.getPrimaryKey())) {
-
-				result = null;
-			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
-
-		if (result == null) {
-			StringBundler sb = new StringBundler(8);
-
-			sb.append(_SQL_SELECT_SOCIALACTIVITYLIMIT_WHERE);
-
-			sb.append(_FINDER_COLUMN_G_U_C_C_A_A_GROUPID_2);
-
-			sb.append(_FINDER_COLUMN_G_U_C_C_A_A_USERID_2);
-
-			sb.append(_FINDER_COLUMN_G_U_C_C_A_A_CLASSNAMEID_2);
-
-			sb.append(_FINDER_COLUMN_G_U_C_C_A_A_CLASSPK_2);
-
-			sb.append(_FINDER_COLUMN_G_U_C_C_A_A_ACTIVITYTYPE_2);
-
-			boolean bindActivityCounterName = false;
-
-			if (activityCounterName.isEmpty()) {
-				sb.append(_FINDER_COLUMN_G_U_C_C_A_A_ACTIVITYCOUNTERNAME_3);
-			}
-			else {
-				bindActivityCounterName = true;
-
-				sb.append(_FINDER_COLUMN_G_U_C_C_A_A_ACTIVITYCOUNTERNAME_2);
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					groupId, userId, classNameId, classPK, activityType,
+					activityCounterName
+				};
 			}
 
-			String sql = sb.toString();
+			Object result = null;
 
-			Session session = null;
+			if (useFinderCache) {
+				result = FinderCacheUtil.getResult(
+					_finderPathFetchByG_U_C_C_A_A, finderArgs, this);
+			}
 
-			try {
-				session = openSession();
+			if (result instanceof SocialActivityLimit) {
+				SocialActivityLimit socialActivityLimit =
+					(SocialActivityLimit)result;
 
-				Query query = session.createQuery(sql);
+				if ((groupId != socialActivityLimit.getGroupId()) ||
+					(userId != socialActivityLimit.getUserId()) ||
+					(classNameId != socialActivityLimit.getClassNameId()) ||
+					(classPK != socialActivityLimit.getClassPK()) ||
+					(activityType != socialActivityLimit.getActivityType()) ||
+					!Objects.equals(
+						activityCounterName,
+						socialActivityLimit.getActivityCounterName())) {
 
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(groupId);
-
-				queryPos.add(userId);
-
-				queryPos.add(classNameId);
-
-				queryPos.add(classPK);
-
-				queryPos.add(activityType);
-
-				if (bindActivityCounterName) {
-					queryPos.add(activityCounterName);
+					result = null;
 				}
+			}
 
-				List<SocialActivityLimit> list = query.list();
+			if (result == null) {
+				StringBundler sb = new StringBundler(8);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						FinderCacheUtil.putResult(
-							_finderPathFetchByG_U_C_C_A_A, finderArgs, list);
-					}
+				sb.append(_SQL_SELECT_SOCIALACTIVITYLIMIT_WHERE);
+
+				sb.append(_FINDER_COLUMN_G_U_C_C_A_A_GROUPID_2);
+
+				sb.append(_FINDER_COLUMN_G_U_C_C_A_A_USERID_2);
+
+				sb.append(_FINDER_COLUMN_G_U_C_C_A_A_CLASSNAMEID_2);
+
+				sb.append(_FINDER_COLUMN_G_U_C_C_A_A_CLASSPK_2);
+
+				sb.append(_FINDER_COLUMN_G_U_C_C_A_A_ACTIVITYTYPE_2);
+
+				boolean bindActivityCounterName = false;
+
+				if (activityCounterName.isEmpty()) {
+					sb.append(_FINDER_COLUMN_G_U_C_C_A_A_ACTIVITYCOUNTERNAME_3);
 				}
 				else {
-					SocialActivityLimit socialActivityLimit = list.get(0);
+					bindActivityCounterName = true;
 
-					result = socialActivityLimit;
+					sb.append(_FINDER_COLUMN_G_U_C_C_A_A_ACTIVITYCOUNTERNAME_2);
+				}
 
-					cacheResult(socialActivityLimit);
+				String sql = sb.toString();
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					QueryPos queryPos = QueryPos.getInstance(query);
+
+					queryPos.add(groupId);
+
+					queryPos.add(userId);
+
+					queryPos.add(classNameId);
+
+					queryPos.add(classPK);
+
+					queryPos.add(activityType);
+
+					if (bindActivityCounterName) {
+						queryPos.add(activityCounterName);
+					}
+
+					List<SocialActivityLimit> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							FinderCacheUtil.putResult(
+								_finderPathFetchByG_U_C_C_A_A, finderArgs,
+								list);
+						}
+					}
+					else {
+						SocialActivityLimit socialActivityLimit = list.get(0);
+
+						result = socialActivityLimit;
+
+						cacheResult(socialActivityLimit);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (SocialActivityLimit)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (SocialActivityLimit)result;
+			}
 		}
 	}
 
@@ -2067,25 +2063,26 @@ public class SocialActivityLimitPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(SocialActivityLimit socialActivityLimit) {
-		if (socialActivityLimit.getCtCollectionId() != 0) {
-			return;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					socialActivityLimit.getCtCollectionId() != 0)) {
+
+			EntityCacheUtil.putResult(
+				SocialActivityLimitImpl.class,
+				socialActivityLimit.getPrimaryKey(), socialActivityLimit);
+
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_U_C_C_A_A,
+				new Object[] {
+					socialActivityLimit.getGroupId(),
+					socialActivityLimit.getUserId(),
+					socialActivityLimit.getClassNameId(),
+					socialActivityLimit.getClassPK(),
+					socialActivityLimit.getActivityType(),
+					socialActivityLimit.getActivityCounterName()
+				},
+				socialActivityLimit);
 		}
-
-		EntityCacheUtil.putResult(
-			SocialActivityLimitImpl.class, socialActivityLimit.getPrimaryKey(),
-			socialActivityLimit);
-
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_U_C_C_A_A,
-			new Object[] {
-				socialActivityLimit.getGroupId(),
-				socialActivityLimit.getUserId(),
-				socialActivityLimit.getClassNameId(),
-				socialActivityLimit.getClassPK(),
-				socialActivityLimit.getActivityType(),
-				socialActivityLimit.getActivityCounterName()
-			},
-			socialActivityLimit);
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2106,15 +2103,18 @@ public class SocialActivityLimitPersistenceImpl
 		}
 
 		for (SocialActivityLimit socialActivityLimit : socialActivityLimits) {
-			if (socialActivityLimit.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(socialActivityLimit.getCtCollectionId() != 0) &&
+						(socialActivityLimit.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (EntityCacheUtil.getResult(
-					SocialActivityLimitImpl.class,
-					socialActivityLimit.getPrimaryKey()) == null) {
+				if (EntityCacheUtil.getResult(
+						SocialActivityLimitImpl.class,
+						socialActivityLimit.getPrimaryKey()) == null) {
 
-				cacheResult(socialActivityLimit);
+					cacheResult(socialActivityLimit);
+				}
 			}
 		}
 	}
@@ -2167,19 +2167,25 @@ public class SocialActivityLimitPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		SocialActivityLimitModelImpl socialActivityLimitModelImpl) {
 
-		Object[] args = new Object[] {
-			socialActivityLimitModelImpl.getGroupId(),
-			socialActivityLimitModelImpl.getUserId(),
-			socialActivityLimitModelImpl.getClassNameId(),
-			socialActivityLimitModelImpl.getClassPK(),
-			socialActivityLimitModelImpl.getActivityType(),
-			socialActivityLimitModelImpl.getActivityCounterName()
-		};
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					socialActivityLimitModelImpl.getCtCollectionId() != 0)) {
 
-		FinderCacheUtil.putResult(
-			_finderPathCountByG_U_C_C_A_A, args, Long.valueOf(1));
-		FinderCacheUtil.putResult(
-			_finderPathFetchByG_U_C_C_A_A, args, socialActivityLimitModelImpl);
+			Object[] args = new Object[] {
+				socialActivityLimitModelImpl.getGroupId(),
+				socialActivityLimitModelImpl.getUserId(),
+				socialActivityLimitModelImpl.getClassNameId(),
+				socialActivityLimitModelImpl.getClassPK(),
+				socialActivityLimitModelImpl.getActivityType(),
+				socialActivityLimitModelImpl.getActivityCounterName()
+			};
+
+			FinderCacheUtil.putResult(
+				_finderPathCountByG_U_C_C_A_A, args, Long.valueOf(1));
+			FinderCacheUtil.putResult(
+				_finderPathFetchByG_U_C_C_A_A, args,
+				socialActivityLimitModelImpl);
+		}
 	}
 
 	/**
@@ -2295,55 +2301,66 @@ public class SocialActivityLimitPersistenceImpl
 	public SocialActivityLimit updateImpl(
 		SocialActivityLimit socialActivityLimit) {
 
-		boolean isNew = socialActivityLimit.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(socialActivityLimit instanceof SocialActivityLimitModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = socialActivityLimit.isNew();
 
-			if (ProxyUtil.isProxyClass(socialActivityLimit.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					socialActivityLimit);
+			if (!(socialActivityLimit instanceof
+					SocialActivityLimitModelImpl)) {
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in socialActivityLimit proxy " +
-						invocationHandler.getClass());
-			}
+				InvocationHandler invocationHandler = null;
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom SocialActivityLimit implementation " +
-					socialActivityLimit.getClass());
-		}
+				if (ProxyUtil.isProxyClass(socialActivityLimit.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						socialActivityLimit);
 
-		SocialActivityLimitModelImpl socialActivityLimitModelImpl =
-			(SocialActivityLimitModelImpl)socialActivityLimit;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (CTPersistenceHelperUtil.isInsert(socialActivityLimit)) {
-				if (!isNew) {
-					session.evict(
-						SocialActivityLimitImpl.class,
-						socialActivityLimit.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in socialActivityLimit proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(socialActivityLimit);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom SocialActivityLimit implementation " +
+						socialActivityLimit.getClass());
 			}
-			else {
-				socialActivityLimit = (SocialActivityLimit)session.merge(
-					socialActivityLimit);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (socialActivityLimit.getCtCollectionId() != 0) {
+			SocialActivityLimitModelImpl socialActivityLimitModelImpl =
+				(SocialActivityLimitModelImpl)socialActivityLimit;
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (CTPersistenceHelperUtil.isInsert(socialActivityLimit)) {
+					if (!isNew) {
+						session.evict(
+							SocialActivityLimitImpl.class,
+							socialActivityLimit.getPrimaryKeyObj());
+					}
+
+					session.save(socialActivityLimit);
+				}
+				else {
+					socialActivityLimit = (SocialActivityLimit)session.merge(
+						socialActivityLimit);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			EntityCacheUtil.putResult(
+				SocialActivityLimitImpl.class, socialActivityLimitModelImpl,
+				false, true);
+
+			cacheUniqueFindersCache(socialActivityLimitModelImpl);
+
 			if (isNew) {
 				socialActivityLimit.setNew(false);
 			}
@@ -2352,20 +2369,6 @@ public class SocialActivityLimitPersistenceImpl
 
 			return socialActivityLimit;
 		}
-
-		EntityCacheUtil.putResult(
-			SocialActivityLimitImpl.class, socialActivityLimitModelImpl, false,
-			true);
-
-		cacheUniqueFindersCache(socialActivityLimitModelImpl);
-
-		if (isNew) {
-			socialActivityLimit.setNew(false);
-		}
-
-		socialActivityLimit.resetOriginalValues();
-
-		return socialActivityLimit;
 	}
 
 	/**
@@ -2415,34 +2418,13 @@ public class SocialActivityLimitPersistenceImpl
 	 */
 	@Override
 	public SocialActivityLimit fetchByPrimaryKey(Serializable primaryKey) {
-		if (CTPersistenceHelperUtil.isProductionMode(
-				SocialActivityLimit.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialActivityLimit.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		SocialActivityLimit socialActivityLimit = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			socialActivityLimit = (SocialActivityLimit)session.get(
-				SocialActivityLimitImpl.class, primaryKey);
-
-			if (socialActivityLimit != null) {
-				cacheResult(socialActivityLimit);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return socialActivityLimit;
 	}
 
 	/**
@@ -2460,98 +2442,13 @@ public class SocialActivityLimitPersistenceImpl
 	public Map<Serializable, SocialActivityLimit> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (CTPersistenceHelperUtil.isProductionMode(
-				SocialActivityLimit.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTPersistenceHelperUtil.isProductionMode(
+						SocialActivityLimit.class))) {
 
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, SocialActivityLimit> map =
-			new HashMap<Serializable, SocialActivityLimit>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			SocialActivityLimit socialActivityLimit = fetchByPrimaryKey(
-				primaryKey);
-
-			if (socialActivityLimit != null) {
-				map.put(primaryKey, socialActivityLimit);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (SocialActivityLimit socialActivityLimit :
-					(List<SocialActivityLimit>)query.list()) {
-
-				map.put(
-					socialActivityLimit.getPrimaryKeyObj(),
-					socialActivityLimit);
-
-				cacheResult(socialActivityLimit);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**

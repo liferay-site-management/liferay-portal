@@ -5,8 +5,11 @@
 
 package com.liferay.portal.tools.service.builder.test.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -35,9 +38,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -90,13 +91,14 @@ public class CacheMissEntryPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(CacheMissEntry cacheMissEntry) {
-		if (cacheMissEntry.getCtCollectionId() != 0) {
-			return;
-		}
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					cacheMissEntry.getCtCollectionId() != 0)) {
 
-		dummyEntityCache.putResult(
-			CacheMissEntryImpl.class, cacheMissEntry.getPrimaryKey(),
-			cacheMissEntry);
+			dummyEntityCache.putResult(
+				CacheMissEntryImpl.class, cacheMissEntry.getPrimaryKey(),
+				cacheMissEntry);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -117,15 +119,18 @@ public class CacheMissEntryPersistenceImpl
 		}
 
 		for (CacheMissEntry cacheMissEntry : cacheMissEntries) {
-			if (cacheMissEntry.getCtCollectionId() != 0) {
-				continue;
-			}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						(cacheMissEntry.getCtCollectionId() != 0) &&
+						(cacheMissEntry.getCtCollectionId() ==
+							CTCollectionThreadLocal.getCTCollectionId()))) {
 
-			if (dummyEntityCache.getResult(
-					CacheMissEntryImpl.class, cacheMissEntry.getPrimaryKey()) ==
-						null) {
+				if (dummyEntityCache.getResult(
+						CacheMissEntryImpl.class,
+						cacheMissEntry.getPrimaryKey()) == null) {
 
-				cacheResult(cacheMissEntry);
+					cacheResult(cacheMissEntry);
+				}
 			}
 		}
 	}
@@ -279,34 +284,41 @@ public class CacheMissEntryPersistenceImpl
 
 	@Override
 	public CacheMissEntry updateImpl(CacheMissEntry cacheMissEntry) {
-		boolean isNew = cacheMissEntry.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		Session session = null;
+			boolean isNew = cacheMissEntry.isNew();
 
-		try {
-			session = openSession();
+			Session session = null;
 
-			if (ctPersistenceHelper.isInsert(cacheMissEntry)) {
-				if (!isNew) {
-					session.evict(
-						CacheMissEntryImpl.class,
-						cacheMissEntry.getPrimaryKeyObj());
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(cacheMissEntry)) {
+					if (!isNew) {
+						session.evict(
+							CacheMissEntryImpl.class,
+							cacheMissEntry.getPrimaryKeyObj());
+					}
+
+					session.save(cacheMissEntry);
 				}
-
-				session.save(cacheMissEntry);
+				else {
+					cacheMissEntry = (CacheMissEntry)session.merge(
+						cacheMissEntry);
+				}
 			}
-			else {
-				cacheMissEntry = (CacheMissEntry)session.merge(cacheMissEntry);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
+			finally {
+				closeSession(session);
+			}
 
-		if (cacheMissEntry.getCtCollectionId() != 0) {
+			dummyEntityCache.putResult(
+				CacheMissEntryImpl.class, cacheMissEntry, false, true);
+
 			if (isNew) {
 				cacheMissEntry.setNew(false);
 			}
@@ -315,17 +327,6 @@ public class CacheMissEntryPersistenceImpl
 
 			return cacheMissEntry;
 		}
-
-		dummyEntityCache.putResult(
-			CacheMissEntryImpl.class, cacheMissEntry, false, true);
-
-		if (isNew) {
-			cacheMissEntry.setNew(false);
-		}
-
-		cacheMissEntry.resetOriginalValues();
-
-		return cacheMissEntry;
 	}
 
 	/**
@@ -375,34 +376,13 @@ public class CacheMissEntryPersistenceImpl
 	 */
 	@Override
 	public CacheMissEntry fetchByPrimaryKey(Serializable primaryKey) {
-		if (ctPersistenceHelper.isProductionMode(
-				CacheMissEntry.class, primaryKey)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CacheMissEntry.class, primaryKey))) {
 
 			return super.fetchByPrimaryKey(primaryKey);
 		}
-
-		CacheMissEntry cacheMissEntry = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			cacheMissEntry = (CacheMissEntry)session.get(
-				CacheMissEntryImpl.class, primaryKey);
-
-			if (cacheMissEntry != null) {
-				cacheResult(cacheMissEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return cacheMissEntry;
 	}
 
 	/**
@@ -420,93 +400,13 @@ public class CacheMissEntryPersistenceImpl
 	public Map<Serializable, CacheMissEntry> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
 
-		if (ctPersistenceHelper.isProductionMode(CacheMissEntry.class)) {
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CacheMissEntry.class))) {
+
 			return super.fetchByPrimaryKeys(primaryKeys);
 		}
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, CacheMissEntry> map =
-			new HashMap<Serializable, CacheMissEntry>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			CacheMissEntry cacheMissEntry = fetchByPrimaryKey(primaryKey);
-
-			if (cacheMissEntry != null) {
-				map.put(primaryKey, cacheMissEntry);
-			}
-
-			return map;
-		}
-
-		if ((databaseInMaxParameters > 0) &&
-			(primaryKeys.size() > databaseInMaxParameters)) {
-
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			while (iterator.hasNext()) {
-				Set<Serializable> page = new HashSet<>();
-
-				for (int i = 0;
-					 (i < databaseInMaxParameters) && iterator.hasNext(); i++) {
-
-					page.add(iterator.next());
-				}
-
-				map.putAll(fetchByPrimaryKeys(page));
-			}
-
-			return map;
-		}
-
-		StringBundler sb = new StringBundler((primaryKeys.size() * 2) + 1);
-
-		sb.append(getSelectSQL());
-		sb.append(" WHERE ");
-		sb.append(getPKDBName());
-		sb.append(" IN (");
-
-		for (Serializable primaryKey : primaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (CacheMissEntry cacheMissEntry :
-					(List<CacheMissEntry>)query.list()) {
-
-				map.put(cacheMissEntry.getPrimaryKeyObj(), cacheMissEntry);
-
-				cacheResult(cacheMissEntry);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
