@@ -13,8 +13,11 @@ import com.liferay.analytics.message.storage.model.impl.AnalyticsMessageModelImp
 import com.liferay.analytics.message.storage.service.persistence.AnalyticsMessagePersistence;
 import com.liferay.analytics.message.storage.service.persistence.AnalyticsMessageUtil;
 import com.liferay.analytics.message.storage.service.persistence.impl.constants.AnalyticsPersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -167,98 +170,101 @@ public class AnalyticsMessagePersistenceImpl
 		OrderByComparator<AnalyticsMessage> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AnalyticsMessage.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AnalyticsMessage.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindByCompanyId;
-				finderArgs = new Object[] {companyId};
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindByCompanyId;
+					finderArgs = new Object[] {companyId};
+				}
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindByCompanyId;
-			finderArgs = new Object[] {
-				companyId, start, end, orderByComparator
-			};
-		}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindByCompanyId;
+				finderArgs = new Object[] {
+					companyId, start, end, orderByComparator
+				};
+			}
 
-		List<AnalyticsMessage> list = null;
+			List<AnalyticsMessage> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<AnalyticsMessage>)finderCache.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list = (List<AnalyticsMessage>)finderCache.getResult(
+					finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (AnalyticsMessage analyticsMessage : list) {
-					if (companyId != analyticsMessage.getCompanyId()) {
-						list = null;
+				if ((list != null) && !list.isEmpty()) {
+					for (AnalyticsMessage analyticsMessage : list) {
+						if (companyId != analyticsMessage.getCompanyId()) {
+							list = null;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					3 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(3);
-			}
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						3 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(3);
+				}
 
-			sb.append(_SQL_SELECT_ANALYTICSMESSAGE_WHERE);
+				sb.append(_SQL_SELECT_ANALYTICSMESSAGE_WHERE);
 
-			sb.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
+				sb.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
 
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(AnalyticsMessageModelImpl.ORDER_BY_JPQL);
-			}
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(AnalyticsMessageModelImpl.ORDER_BY_JPQL);
+				}
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(companyId);
+					queryPos.add(companyId);
 
-				list = (List<AnalyticsMessage>)QueryUtil.list(
-					query, getDialect(), start, end);
+					list = (List<AnalyticsMessage>)QueryUtil.list(
+						query, getDialect(), start, end);
 
-				cacheResult(list);
+					cacheResult(list);
 
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -551,57 +557,52 @@ public class AnalyticsMessagePersistenceImpl
 	 */
 	@Override
 	public int countByCompanyId(long companyId) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AnalyticsMessage.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AnalyticsMessage.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByCompanyId;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {companyId};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByCompanyId;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {companyId};
+			if (count == null) {
+				StringBundler sb = new StringBundler(2);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_ANALYTICSMESSAGE_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(2);
+				sb.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
 
-			sb.append(_SQL_COUNT_ANALYTICSMESSAGE_WHERE);
+				String sql = sb.toString();
 
-			sb.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
+				Session session = null;
 
-			String sql = sb.toString();
+				try {
+					session = openSession();
 
-			Session session = null;
+					Query query = session.createQuery(sql);
 
-			try {
-				session = openSession();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				Query query = session.createQuery(sql);
+					queryPos.add(companyId);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					count = (Long)query.uniqueResult();
 
-				queryPos.add(companyId);
-
-				count = (Long)query.uniqueResult();
-
-				if (productionMode) {
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_COMPANYID_COMPANYID_2 =
@@ -623,13 +624,21 @@ public class AnalyticsMessagePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(AnalyticsMessage analyticsMessage) {
-		if (analyticsMessage.getCtCollectionId() != 0) {
+		if ((analyticsMessage.getCtCollectionId() != 0) &&
+			(analyticsMessage.getCtCollectionId() !=
+				CTCollectionThreadLocal.getCTCollectionId())) {
+
 			return;
 		}
 
-		entityCache.putResult(
-			AnalyticsMessageImpl.class, analyticsMessage.getPrimaryKey(),
-			analyticsMessage);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					analyticsMessage.getCtCollectionId() != 0)) {
+
+			entityCache.putResult(
+				AnalyticsMessageImpl.class, analyticsMessage.getPrimaryKey(),
+				analyticsMessage);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -650,15 +659,23 @@ public class AnalyticsMessagePersistenceImpl
 		}
 
 		for (AnalyticsMessage analyticsMessage : analyticsMessages) {
-			if (analyticsMessage.getCtCollectionId() != 0) {
+			if ((analyticsMessage.getCtCollectionId() != 0) &&
+				(analyticsMessage.getCtCollectionId() !=
+					CTCollectionThreadLocal.getCTCollectionId())) {
+
 				continue;
 			}
 
-			if (entityCache.getResult(
-					AnalyticsMessageImpl.class,
-					analyticsMessage.getPrimaryKey()) == null) {
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						analyticsMessage.getCtCollectionId() != 0)) {
 
-				cacheResult(analyticsMessage);
+				if (entityCache.getResult(
+						AnalyticsMessageImpl.class,
+						analyticsMessage.getPrimaryKey()) == null) {
+
+					cacheResult(analyticsMessage);
+				}
 			}
 		}
 	}
@@ -814,76 +831,83 @@ public class AnalyticsMessagePersistenceImpl
 
 	@Override
 	public AnalyticsMessage updateImpl(AnalyticsMessage analyticsMessage) {
-		boolean isNew = analyticsMessage.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(analyticsMessage instanceof AnalyticsMessageModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = analyticsMessage.isNew();
 
-			if (ProxyUtil.isProxyClass(analyticsMessage.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					analyticsMessage);
+			if (!(analyticsMessage instanceof AnalyticsMessageModelImpl)) {
+				InvocationHandler invocationHandler = null;
+
+				if (ProxyUtil.isProxyClass(analyticsMessage.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						analyticsMessage);
+
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in analyticsMessage proxy " +
+							invocationHandler.getClass());
+				}
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in analyticsMessage proxy " +
-						invocationHandler.getClass());
+					"Implement ModelWrapper in custom AnalyticsMessage implementation " +
+						analyticsMessage.getClass());
 			}
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom AnalyticsMessage implementation " +
-					analyticsMessage.getClass());
-		}
+			AnalyticsMessageModelImpl analyticsMessageModelImpl =
+				(AnalyticsMessageModelImpl)analyticsMessage;
 
-		AnalyticsMessageModelImpl analyticsMessageModelImpl =
-			(AnalyticsMessageModelImpl)analyticsMessage;
+			if (isNew && (analyticsMessage.getCreateDate() == null)) {
+				ServiceContext serviceContext =
+					ServiceContextThreadLocal.getServiceContext();
 
-		if (isNew && (analyticsMessage.getCreateDate() == null)) {
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
+				Date date = new Date();
 
-			Date date = new Date();
-
-			if (serviceContext == null) {
-				analyticsMessage.setCreateDate(date);
+				if (serviceContext == null) {
+					analyticsMessage.setCreateDate(date);
+				}
+				else {
+					analyticsMessage.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
 			}
-			else {
-				analyticsMessage.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
 
-		Session session = null;
+			Session session = null;
 
-		try {
-			session = openSession();
+			try {
+				session = openSession();
 
-			if (ctPersistenceHelper.isInsert(analyticsMessage)) {
-				if (!isNew) {
+				if (ctPersistenceHelper.isInsert(analyticsMessage)) {
+					if (!isNew) {
+						session.evict(
+							AnalyticsMessageImpl.class,
+							analyticsMessage.getPrimaryKeyObj());
+					}
+
+					session.save(analyticsMessage);
+				}
+				else {
 					session.evict(
 						AnalyticsMessageImpl.class,
 						analyticsMessage.getPrimaryKeyObj());
+
+					session.saveOrUpdate(analyticsMessage);
 				}
 
-				session.save(analyticsMessage);
+				session.flush();
+				session.clear();
 			}
-			else {
-				session.evict(
-					AnalyticsMessageImpl.class,
-					analyticsMessage.getPrimaryKeyObj());
-
-				session.saveOrUpdate(analyticsMessage);
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
 			}
 
-			session.flush();
-			session.clear();
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
+			entityCache.putResult(
+				AnalyticsMessageImpl.class, analyticsMessageModelImpl, false,
+				true);
 
-		if (analyticsMessage.getCtCollectionId() != 0) {
 			if (isNew) {
 				analyticsMessage.setNew(false);
 			}
@@ -892,17 +916,6 @@ public class AnalyticsMessagePersistenceImpl
 
 			return analyticsMessage;
 		}
-
-		entityCache.putResult(
-			AnalyticsMessageImpl.class, analyticsMessageModelImpl, false, true);
-
-		if (isNew) {
-			analyticsMessage.setNew(false);
-		}
-
-		analyticsMessage.resetOriginalValues();
-
-		return analyticsMessage;
 	}
 
 	/**
@@ -955,31 +968,46 @@ public class AnalyticsMessagePersistenceImpl
 		if (ctPersistenceHelper.isProductionMode(
 				AnalyticsMessage.class, primaryKey)) {
 
-			return super.fetchByPrimaryKey(primaryKey);
-		}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						false)) {
 
-		AnalyticsMessage analyticsMessage = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			analyticsMessage = (AnalyticsMessage)session.get(
-				AnalyticsMessageImpl.class, primaryKey);
-
-			if (analyticsMessage != null) {
-				cacheResult(analyticsMessage);
+				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		return analyticsMessage;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+
+			AnalyticsMessage analyticsMessage =
+				(AnalyticsMessage)entityCache.getResult(
+					AnalyticsMessageImpl.class, primaryKey);
+
+			if (analyticsMessage != null) {
+				return analyticsMessage;
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				analyticsMessage = (AnalyticsMessage)session.get(
+					AnalyticsMessageImpl.class, primaryKey);
+
+				if (analyticsMessage != null) {
+					cacheResult(analyticsMessage);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			return analyticsMessage;
+		}
 	}
 
 	/**
@@ -998,7 +1026,12 @@ public class AnalyticsMessagePersistenceImpl
 		Set<Serializable> primaryKeys) {
 
 		if (ctPersistenceHelper.isProductionMode(AnalyticsMessage.class)) {
-			return super.fetchByPrimaryKeys(primaryKeys);
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						false)) {
+
+				return super.fetchByPrimaryKeys(primaryKeys);
+			}
 		}
 
 		if (primaryKeys.isEmpty()) {
@@ -1019,6 +1052,37 @@ public class AnalyticsMessagePersistenceImpl
 				map.put(primaryKey, analyticsMessage);
 			}
 
+			return map;
+		}
+
+		Set<Serializable> uncachedPrimaryKeys = null;
+
+		EntityCache entityCache = getEntityCache();
+
+		for (Serializable primaryKey : primaryKeys) {
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						!ctPersistenceHelper.isProductionMode(
+							AnalyticsMessage.class, primaryKey))) {
+
+				AnalyticsMessage analyticsMessage =
+					(AnalyticsMessage)entityCache.getResult(
+						AnalyticsMessageImpl.class, primaryKey);
+
+				if (analyticsMessage == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<>();
+					}
+
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, analyticsMessage);
+				}
+			}
+		}
+
+		if (uncachedPrimaryKeys == null) {
 			return map;
 		}
 
@@ -1151,78 +1215,81 @@ public class AnalyticsMessagePersistenceImpl
 		OrderByComparator<AnalyticsMessage> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AnalyticsMessage.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AnalyticsMessage.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
-			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
-		}
-
-		List<AnalyticsMessage> list = null;
-
-		if (useFinderCache && productionMode) {
-			list = (List<AnalyticsMessage>)finderCache.getResult(
-				finderPath, finderArgs, this);
-		}
-
-		if (list == null) {
-			StringBundler sb = null;
-			String sql = null;
-
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					2 + (orderByComparator.getOrderByFields().length * 2));
-
-				sb.append(_SQL_SELECT_ANALYTICSMESSAGE);
-
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-
-				sql = sb.toString();
-			}
-			else {
-				sql = _SQL_SELECT_ANALYTICSMESSAGE;
-
-				sql = sql.concat(AnalyticsMessageModelImpl.ORDER_BY_JPQL);
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				list = (List<AnalyticsMessage>)QueryUtil.list(
-					query, getDialect(), start, end);
-
-				cacheResult(list);
-
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindAll;
+					finderArgs = FINDER_ARGS_EMPTY;
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindAll;
+				finderArgs = new Object[] {start, end, orderByComparator};
 			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			List<AnalyticsMessage> list = null;
+
+			if (useFinderCache) {
+				list = (List<AnalyticsMessage>)finderCache.getResult(
+					finderPath, finderArgs, this);
+			}
+
+			if (list == null) {
+				StringBundler sb = null;
+				String sql = null;
+
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						2 + (orderByComparator.getOrderByFields().length * 2));
+
+					sb.append(_SQL_SELECT_ANALYTICSMESSAGE);
+
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+
+					sql = sb.toString();
+				}
+				else {
+					sql = _SQL_SELECT_ANALYTICSMESSAGE;
+
+					sql = sql.concat(AnalyticsMessageModelImpl.ORDER_BY_JPQL);
+				}
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					list = (List<AnalyticsMessage>)QueryUtil.list(
+						query, getDialect(), start, end);
+
+					cacheResult(list);
+
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
+			}
+
+			return list;
+		}
 	}
 
 	/**
@@ -1243,40 +1310,38 @@ public class AnalyticsMessagePersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			AnalyticsMessage.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						AnalyticsMessage.class))) {
 
-		Long count = null;
-
-		if (productionMode) {
-			count = (Long)finderCache.getResult(
+			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
-		}
 
-		if (count == null) {
-			Session session = null;
+			if (count == null) {
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(_SQL_COUNT_ANALYTICSMESSAGE);
+					Query query = session.createQuery(
+						_SQL_COUNT_ANALYTICSMESSAGE);
 
-				count = (Long)query.uniqueResult();
+					count = (Long)query.uniqueResult();
 
-				if (productionMode) {
 					finderCache.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	@Override

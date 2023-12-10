@@ -5,8 +5,11 @@
 
 package com.liferay.segments.service.persistence.impl;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -168,100 +171,104 @@ public class SegmentsEntryRelPersistenceImpl
 		OrderByComparator<SegmentsEntryRel> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						SegmentsEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindBySegmentsEntryId;
-				finderArgs = new Object[] {segmentsEntryId};
+				if (useFinderCache) {
+					finderPath =
+						_finderPathWithoutPaginationFindBySegmentsEntryId;
+					finderArgs = new Object[] {segmentsEntryId};
+				}
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindBySegmentsEntryId;
-			finderArgs = new Object[] {
-				segmentsEntryId, start, end, orderByComparator
-			};
-		}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindBySegmentsEntryId;
+				finderArgs = new Object[] {
+					segmentsEntryId, start, end, orderByComparator
+				};
+			}
 
-		List<SegmentsEntryRel> list = null;
+			List<SegmentsEntryRel> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<SegmentsEntryRel>)finderCache.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list = (List<SegmentsEntryRel>)finderCache.getResult(
+					finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (SegmentsEntryRel segmentsEntryRel : list) {
-					if (segmentsEntryId !=
-							segmentsEntryRel.getSegmentsEntryId()) {
+				if ((list != null) && !list.isEmpty()) {
+					for (SegmentsEntryRel segmentsEntryRel : list) {
+						if (segmentsEntryId !=
+								segmentsEntryRel.getSegmentsEntryId()) {
 
-						list = null;
+							list = null;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					3 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(3);
-			}
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						3 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(3);
+				}
 
-			sb.append(_SQL_SELECT_SEGMENTSENTRYREL_WHERE);
+				sb.append(_SQL_SELECT_SEGMENTSENTRYREL_WHERE);
 
-			sb.append(_FINDER_COLUMN_SEGMENTSENTRYID_SEGMENTSENTRYID_2);
+				sb.append(_FINDER_COLUMN_SEGMENTSENTRYID_SEGMENTSENTRYID_2);
 
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(SegmentsEntryRelModelImpl.ORDER_BY_JPQL);
-			}
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(SegmentsEntryRelModelImpl.ORDER_BY_JPQL);
+				}
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(segmentsEntryId);
+					queryPos.add(segmentsEntryId);
 
-				list = (List<SegmentsEntryRel>)QueryUtil.list(
-					query, getDialect(), start, end);
+					list = (List<SegmentsEntryRel>)QueryUtil.list(
+						query, getDialect(), start, end);
 
-				cacheResult(list);
+					cacheResult(list);
 
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -560,57 +567,52 @@ public class SegmentsEntryRelPersistenceImpl
 	 */
 	@Override
 	public int countBySegmentsEntryId(long segmentsEntryId) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						SegmentsEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountBySegmentsEntryId;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {segmentsEntryId};
 
-		if (productionMode) {
-			finderPath = _finderPathCountBySegmentsEntryId;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {segmentsEntryId};
+			if (count == null) {
+				StringBundler sb = new StringBundler(2);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_SEGMENTSENTRYREL_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(2);
+				sb.append(_FINDER_COLUMN_SEGMENTSENTRYID_SEGMENTSENTRYID_2);
 
-			sb.append(_SQL_COUNT_SEGMENTSENTRYREL_WHERE);
+				String sql = sb.toString();
 
-			sb.append(_FINDER_COLUMN_SEGMENTSENTRYID_SEGMENTSENTRYID_2);
+				Session session = null;
 
-			String sql = sb.toString();
+				try {
+					session = openSession();
 
-			Session session = null;
+					Query query = session.createQuery(sql);
 
-			try {
-				session = openSession();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				Query query = session.createQuery(sql);
+					queryPos.add(segmentsEntryId);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					count = (Long)query.uniqueResult();
 
-				queryPos.add(segmentsEntryId);
-
-				count = (Long)query.uniqueResult();
-
-				if (productionMode) {
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String
@@ -698,104 +700,108 @@ public class SegmentsEntryRelPersistenceImpl
 		OrderByComparator<SegmentsEntryRel> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						SegmentsEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindByCN_CPK;
-				finderArgs = new Object[] {classNameId, classPK};
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindByCN_CPK;
+					finderArgs = new Object[] {classNameId, classPK};
+				}
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindByCN_CPK;
-			finderArgs = new Object[] {
-				classNameId, classPK, start, end, orderByComparator
-			};
-		}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindByCN_CPK;
+				finderArgs = new Object[] {
+					classNameId, classPK, start, end, orderByComparator
+				};
+			}
 
-		List<SegmentsEntryRel> list = null;
+			List<SegmentsEntryRel> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<SegmentsEntryRel>)finderCache.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list = (List<SegmentsEntryRel>)finderCache.getResult(
+					finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (SegmentsEntryRel segmentsEntryRel : list) {
-					if ((classNameId != segmentsEntryRel.getClassNameId()) ||
-						(classPK != segmentsEntryRel.getClassPK())) {
+				if ((list != null) && !list.isEmpty()) {
+					for (SegmentsEntryRel segmentsEntryRel : list) {
+						if ((classNameId !=
+								segmentsEntryRel.getClassNameId()) ||
+							(classPK != segmentsEntryRel.getClassPK())) {
 
-						list = null;
+							list = null;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					4 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(4);
-			}
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						4 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(4);
+				}
 
-			sb.append(_SQL_SELECT_SEGMENTSENTRYREL_WHERE);
+				sb.append(_SQL_SELECT_SEGMENTSENTRYREL_WHERE);
 
-			sb.append(_FINDER_COLUMN_CN_CPK_CLASSNAMEID_2);
+				sb.append(_FINDER_COLUMN_CN_CPK_CLASSNAMEID_2);
 
-			sb.append(_FINDER_COLUMN_CN_CPK_CLASSPK_2);
+				sb.append(_FINDER_COLUMN_CN_CPK_CLASSPK_2);
 
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(SegmentsEntryRelModelImpl.ORDER_BY_JPQL);
-			}
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(SegmentsEntryRelModelImpl.ORDER_BY_JPQL);
+				}
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(classNameId);
+					queryPos.add(classNameId);
 
-				queryPos.add(classPK);
+					queryPos.add(classPK);
 
-				list = (List<SegmentsEntryRel>)QueryUtil.list(
-					query, getDialect(), start, end);
+					list = (List<SegmentsEntryRel>)QueryUtil.list(
+						query, getDialect(), start, end);
 
-				cacheResult(list);
+					cacheResult(list);
 
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -1110,61 +1116,56 @@ public class SegmentsEntryRelPersistenceImpl
 	 */
 	@Override
 	public int countByCN_CPK(long classNameId, long classPK) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						SegmentsEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByCN_CPK;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {classNameId, classPK};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByCN_CPK;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {classNameId, classPK};
+			if (count == null) {
+				StringBundler sb = new StringBundler(3);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_SEGMENTSENTRYREL_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(3);
+				sb.append(_FINDER_COLUMN_CN_CPK_CLASSNAMEID_2);
 
-			sb.append(_SQL_COUNT_SEGMENTSENTRYREL_WHERE);
+				sb.append(_FINDER_COLUMN_CN_CPK_CLASSPK_2);
 
-			sb.append(_FINDER_COLUMN_CN_CPK_CLASSNAMEID_2);
+				String sql = sb.toString();
 
-			sb.append(_FINDER_COLUMN_CN_CPK_CLASSPK_2);
+				Session session = null;
 
-			String sql = sb.toString();
+				try {
+					session = openSession();
 
-			Session session = null;
+					Query query = session.createQuery(sql);
 
-			try {
-				session = openSession();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				Query query = session.createQuery(sql);
+					queryPos.add(classNameId);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					queryPos.add(classPK);
 
-				queryPos.add(classNameId);
+					count = (Long)query.uniqueResult();
 
-				queryPos.add(classPK);
-
-				count = (Long)query.uniqueResult();
-
-				if (productionMode) {
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_CN_CPK_CLASSNAMEID_2 =
@@ -1261,109 +1262,113 @@ public class SegmentsEntryRelPersistenceImpl
 		OrderByComparator<SegmentsEntryRel> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						SegmentsEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindByG_CN_CPK;
-				finderArgs = new Object[] {groupId, classNameId, classPK};
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindByG_CN_CPK;
+					finderArgs = new Object[] {groupId, classNameId, classPK};
+				}
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindByG_CN_CPK;
-			finderArgs = new Object[] {
-				groupId, classNameId, classPK, start, end, orderByComparator
-			};
-		}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindByG_CN_CPK;
+				finderArgs = new Object[] {
+					groupId, classNameId, classPK, start, end, orderByComparator
+				};
+			}
 
-		List<SegmentsEntryRel> list = null;
+			List<SegmentsEntryRel> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<SegmentsEntryRel>)finderCache.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list = (List<SegmentsEntryRel>)finderCache.getResult(
+					finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (SegmentsEntryRel segmentsEntryRel : list) {
-					if ((groupId != segmentsEntryRel.getGroupId()) ||
-						(classNameId != segmentsEntryRel.getClassNameId()) ||
-						(classPK != segmentsEntryRel.getClassPK())) {
+				if ((list != null) && !list.isEmpty()) {
+					for (SegmentsEntryRel segmentsEntryRel : list) {
+						if ((groupId != segmentsEntryRel.getGroupId()) ||
+							(classNameId !=
+								segmentsEntryRel.getClassNameId()) ||
+							(classPK != segmentsEntryRel.getClassPK())) {
 
-						list = null;
+							list = null;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					5 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(5);
-			}
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						5 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(5);
+				}
 
-			sb.append(_SQL_SELECT_SEGMENTSENTRYREL_WHERE);
+				sb.append(_SQL_SELECT_SEGMENTSENTRYREL_WHERE);
 
-			sb.append(_FINDER_COLUMN_G_CN_CPK_GROUPID_2);
+				sb.append(_FINDER_COLUMN_G_CN_CPK_GROUPID_2);
 
-			sb.append(_FINDER_COLUMN_G_CN_CPK_CLASSNAMEID_2);
+				sb.append(_FINDER_COLUMN_G_CN_CPK_CLASSNAMEID_2);
 
-			sb.append(_FINDER_COLUMN_G_CN_CPK_CLASSPK_2);
+				sb.append(_FINDER_COLUMN_G_CN_CPK_CLASSPK_2);
 
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(SegmentsEntryRelModelImpl.ORDER_BY_JPQL);
-			}
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(SegmentsEntryRelModelImpl.ORDER_BY_JPQL);
+				}
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(groupId);
+					queryPos.add(groupId);
 
-				queryPos.add(classNameId);
+					queryPos.add(classNameId);
 
-				queryPos.add(classPK);
+					queryPos.add(classPK);
 
-				list = (List<SegmentsEntryRel>)QueryUtil.list(
-					query, getDialect(), start, end);
+					list = (List<SegmentsEntryRel>)QueryUtil.list(
+						query, getDialect(), start, end);
 
-				cacheResult(list);
+					cacheResult(list);
 
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -1696,65 +1701,60 @@ public class SegmentsEntryRelPersistenceImpl
 	 */
 	@Override
 	public int countByG_CN_CPK(long groupId, long classNameId, long classPK) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						SegmentsEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByG_CN_CPK;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {groupId, classNameId, classPK};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByG_CN_CPK;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {groupId, classNameId, classPK};
+			if (count == null) {
+				StringBundler sb = new StringBundler(4);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_SEGMENTSENTRYREL_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(4);
+				sb.append(_FINDER_COLUMN_G_CN_CPK_GROUPID_2);
 
-			sb.append(_SQL_COUNT_SEGMENTSENTRYREL_WHERE);
+				sb.append(_FINDER_COLUMN_G_CN_CPK_CLASSNAMEID_2);
 
-			sb.append(_FINDER_COLUMN_G_CN_CPK_GROUPID_2);
+				sb.append(_FINDER_COLUMN_G_CN_CPK_CLASSPK_2);
 
-			sb.append(_FINDER_COLUMN_G_CN_CPK_CLASSNAMEID_2);
+				String sql = sb.toString();
 
-			sb.append(_FINDER_COLUMN_G_CN_CPK_CLASSPK_2);
+				Session session = null;
 
-			String sql = sb.toString();
+				try {
+					session = openSession();
 
-			Session session = null;
+					Query query = session.createQuery(sql);
 
-			try {
-				session = openSession();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				Query query = session.createQuery(sql);
+					queryPos.add(groupId);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					queryPos.add(classNameId);
 
-				queryPos.add(groupId);
+					queryPos.add(classPK);
 
-				queryPos.add(classNameId);
+					count = (Long)query.uniqueResult();
 
-				queryPos.add(classPK);
-
-				count = (Long)query.uniqueResult();
-
-				if (productionMode) {
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_G_CN_CPK_GROUPID_2 =
@@ -1841,99 +1841,96 @@ public class SegmentsEntryRelPersistenceImpl
 		long segmentsEntryId, long classNameId, long classPK,
 		boolean useFinderCache) {
 
-		Object[] finderArgs = null;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						SegmentsEntryRel.class))) {
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {segmentsEntryId, classNameId, classPK};
-		}
+			Object[] finderArgs = null;
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByS_CN_CPK, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsEntryRel.class);
-
-		if (result instanceof SegmentsEntryRel) {
-			SegmentsEntryRel segmentsEntryRel = (SegmentsEntryRel)result;
-
-			if ((segmentsEntryId != segmentsEntryRel.getSegmentsEntryId()) ||
-				(classNameId != segmentsEntryRel.getClassNameId()) ||
-				(classPK != segmentsEntryRel.getClassPK())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					segmentsEntryId, classNameId, classPK
+				};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						SegmentsEntryRel.class,
-						segmentsEntryRel.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByS_CN_CPK, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(5);
+			if (result instanceof SegmentsEntryRel) {
+				SegmentsEntryRel segmentsEntryRel = (SegmentsEntryRel)result;
 
-			sb.append(_SQL_SELECT_SEGMENTSENTRYREL_WHERE);
+				if ((segmentsEntryId !=
+						segmentsEntryRel.getSegmentsEntryId()) ||
+					(classNameId != segmentsEntryRel.getClassNameId()) ||
+					(classPK != segmentsEntryRel.getClassPK())) {
 
-			sb.append(_FINDER_COLUMN_S_CN_CPK_SEGMENTSENTRYID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_S_CN_CPK_CLASSNAMEID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(5);
 
-			sb.append(_FINDER_COLUMN_S_CN_CPK_CLASSPK_2);
+				sb.append(_SQL_SELECT_SEGMENTSENTRYREL_WHERE);
 
-			String sql = sb.toString();
+				sb.append(_FINDER_COLUMN_S_CN_CPK_SEGMENTSENTRYID_2);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_S_CN_CPK_CLASSNAMEID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_S_CN_CPK_CLASSPK_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(segmentsEntryId);
+				try {
+					session = openSession();
 
-				queryPos.add(classNameId);
+					Query query = session.createQuery(sql);
 
-				queryPos.add(classPK);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				List<SegmentsEntryRel> list = query.list();
+					queryPos.add(segmentsEntryId);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByS_CN_CPK, finderArgs, list);
+					queryPos.add(classNameId);
+
+					queryPos.add(classPK);
+
+					List<SegmentsEntryRel> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByS_CN_CPK, finderArgs, list);
+						}
+					}
+					else {
+						SegmentsEntryRel segmentsEntryRel = list.get(0);
+
+						result = segmentsEntryRel;
+
+						cacheResult(segmentsEntryRel);
 					}
 				}
-				else {
-					SegmentsEntryRel segmentsEntryRel = list.get(0);
-
-					result = segmentsEntryRel;
-
-					cacheResult(segmentsEntryRel);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (SegmentsEntryRel)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (SegmentsEntryRel)result;
+			}
 		}
 	}
 
@@ -1968,65 +1965,62 @@ public class SegmentsEntryRelPersistenceImpl
 	public int countByS_CN_CPK(
 		long segmentsEntryId, long classNameId, long classPK) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						SegmentsEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByS_CN_CPK;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {
+				segmentsEntryId, classNameId, classPK
+			};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByS_CN_CPK;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {segmentsEntryId, classNameId, classPK};
+			if (count == null) {
+				StringBundler sb = new StringBundler(4);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_SEGMENTSENTRYREL_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(4);
+				sb.append(_FINDER_COLUMN_S_CN_CPK_SEGMENTSENTRYID_2);
 
-			sb.append(_SQL_COUNT_SEGMENTSENTRYREL_WHERE);
+				sb.append(_FINDER_COLUMN_S_CN_CPK_CLASSNAMEID_2);
 
-			sb.append(_FINDER_COLUMN_S_CN_CPK_SEGMENTSENTRYID_2);
+				sb.append(_FINDER_COLUMN_S_CN_CPK_CLASSPK_2);
 
-			sb.append(_FINDER_COLUMN_S_CN_CPK_CLASSNAMEID_2);
+				String sql = sb.toString();
 
-			sb.append(_FINDER_COLUMN_S_CN_CPK_CLASSPK_2);
+				Session session = null;
 
-			String sql = sb.toString();
+				try {
+					session = openSession();
 
-			Session session = null;
+					Query query = session.createQuery(sql);
 
-			try {
-				session = openSession();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				Query query = session.createQuery(sql);
+					queryPos.add(segmentsEntryId);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					queryPos.add(classNameId);
 
-				queryPos.add(segmentsEntryId);
+					queryPos.add(classPK);
 
-				queryPos.add(classNameId);
+					count = (Long)query.uniqueResult();
 
-				queryPos.add(classPK);
-
-				count = (Long)query.uniqueResult();
-
-				if (productionMode) {
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_S_CN_CPK_SEGMENTSENTRYID_2 =
@@ -2054,21 +2048,30 @@ public class SegmentsEntryRelPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(SegmentsEntryRel segmentsEntryRel) {
-		if (segmentsEntryRel.getCtCollectionId() != 0) {
+		if ((segmentsEntryRel.getCtCollectionId() != 0) &&
+			(segmentsEntryRel.getCtCollectionId() !=
+				CTCollectionThreadLocal.getCTCollectionId())) {
+
 			return;
 		}
 
-		entityCache.putResult(
-			SegmentsEntryRelImpl.class, segmentsEntryRel.getPrimaryKey(),
-			segmentsEntryRel);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					segmentsEntryRel.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(
-			_finderPathFetchByS_CN_CPK,
-			new Object[] {
-				segmentsEntryRel.getSegmentsEntryId(),
-				segmentsEntryRel.getClassNameId(), segmentsEntryRel.getClassPK()
-			},
-			segmentsEntryRel);
+			entityCache.putResult(
+				SegmentsEntryRelImpl.class, segmentsEntryRel.getPrimaryKey(),
+				segmentsEntryRel);
+
+			finderCache.putResult(
+				_finderPathFetchByS_CN_CPK,
+				new Object[] {
+					segmentsEntryRel.getSegmentsEntryId(),
+					segmentsEntryRel.getClassNameId(),
+					segmentsEntryRel.getClassPK()
+				},
+				segmentsEntryRel);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -2089,15 +2092,23 @@ public class SegmentsEntryRelPersistenceImpl
 		}
 
 		for (SegmentsEntryRel segmentsEntryRel : segmentsEntryRels) {
-			if (segmentsEntryRel.getCtCollectionId() != 0) {
+			if ((segmentsEntryRel.getCtCollectionId() != 0) &&
+				(segmentsEntryRel.getCtCollectionId() !=
+					CTCollectionThreadLocal.getCTCollectionId())) {
+
 				continue;
 			}
 
-			if (entityCache.getResult(
-					SegmentsEntryRelImpl.class,
-					segmentsEntryRel.getPrimaryKey()) == null) {
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						segmentsEntryRel.getCtCollectionId() != 0)) {
 
-				cacheResult(segmentsEntryRel);
+				if (entityCache.getResult(
+						SegmentsEntryRelImpl.class,
+						segmentsEntryRel.getPrimaryKey()) == null) {
+
+					cacheResult(segmentsEntryRel);
+				}
 			}
 		}
 	}
@@ -2148,16 +2159,28 @@ public class SegmentsEntryRelPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		SegmentsEntryRelModelImpl segmentsEntryRelModelImpl) {
 
-		Object[] args = new Object[] {
-			segmentsEntryRelModelImpl.getSegmentsEntryId(),
-			segmentsEntryRelModelImpl.getClassNameId(),
-			segmentsEntryRelModelImpl.getClassPK()
-		};
+		if ((segmentsEntryRelModelImpl.getCtCollectionId() != 0) &&
+			(segmentsEntryRelModelImpl.getCtCollectionId() !=
+				CTCollectionThreadLocal.getCTCollectionId())) {
 
-		finderCache.putResult(
-			_finderPathCountByS_CN_CPK, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByS_CN_CPK, args, segmentsEntryRelModelImpl);
+			return;
+		}
+
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					segmentsEntryRelModelImpl.getCtCollectionId() != 0)) {
+
+			Object[] args = new Object[] {
+				segmentsEntryRelModelImpl.getSegmentsEntryId(),
+				segmentsEntryRelModelImpl.getClassNameId(),
+				segmentsEntryRelModelImpl.getClassPK()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByS_CN_CPK, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByS_CN_CPK, args, segmentsEntryRelModelImpl);
+		}
 	}
 
 	/**
@@ -2268,80 +2291,89 @@ public class SegmentsEntryRelPersistenceImpl
 
 	@Override
 	public SegmentsEntryRel updateImpl(SegmentsEntryRel segmentsEntryRel) {
-		boolean isNew = segmentsEntryRel.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(segmentsEntryRel instanceof SegmentsEntryRelModelImpl)) {
-			InvocationHandler invocationHandler = null;
+			boolean isNew = segmentsEntryRel.isNew();
 
-			if (ProxyUtil.isProxyClass(segmentsEntryRel.getClass())) {
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					segmentsEntryRel);
+			if (!(segmentsEntryRel instanceof SegmentsEntryRelModelImpl)) {
+				InvocationHandler invocationHandler = null;
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in segmentsEntryRel proxy " +
-						invocationHandler.getClass());
-			}
+				if (ProxyUtil.isProxyClass(segmentsEntryRel.getClass())) {
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						segmentsEntryRel);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom SegmentsEntryRel implementation " +
-					segmentsEntryRel.getClass());
-		}
-
-		SegmentsEntryRelModelImpl segmentsEntryRelModelImpl =
-			(SegmentsEntryRelModelImpl)segmentsEntryRel;
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (segmentsEntryRel.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				segmentsEntryRel.setCreateDate(date);
-			}
-			else {
-				segmentsEntryRel.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!segmentsEntryRelModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				segmentsEntryRel.setModifiedDate(date);
-			}
-			else {
-				segmentsEntryRel.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(segmentsEntryRel)) {
-				if (!isNew) {
-					session.evict(
-						SegmentsEntryRelImpl.class,
-						segmentsEntryRel.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in segmentsEntryRel proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(segmentsEntryRel);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom SegmentsEntryRel implementation " +
+						segmentsEntryRel.getClass());
 			}
-			else {
-				segmentsEntryRel = (SegmentsEntryRel)session.merge(
-					segmentsEntryRel);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (segmentsEntryRel.getCtCollectionId() != 0) {
+			SegmentsEntryRelModelImpl segmentsEntryRelModelImpl =
+				(SegmentsEntryRelModelImpl)segmentsEntryRel;
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew && (segmentsEntryRel.getCreateDate() == null)) {
+				if (serviceContext == null) {
+					segmentsEntryRel.setCreateDate(date);
+				}
+				else {
+					segmentsEntryRel.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!segmentsEntryRelModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					segmentsEntryRel.setModifiedDate(date);
+				}
+				else {
+					segmentsEntryRel.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(segmentsEntryRel)) {
+					if (!isNew) {
+						session.evict(
+							SegmentsEntryRelImpl.class,
+							segmentsEntryRel.getPrimaryKeyObj());
+					}
+
+					session.save(segmentsEntryRel);
+				}
+				else {
+					segmentsEntryRel = (SegmentsEntryRel)session.merge(
+						segmentsEntryRel);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				SegmentsEntryRelImpl.class, segmentsEntryRelModelImpl, false,
+				true);
+
+			cacheUniqueFindersCache(segmentsEntryRelModelImpl);
+
 			if (isNew) {
 				segmentsEntryRel.setNew(false);
 			}
@@ -2350,19 +2382,6 @@ public class SegmentsEntryRelPersistenceImpl
 
 			return segmentsEntryRel;
 		}
-
-		entityCache.putResult(
-			SegmentsEntryRelImpl.class, segmentsEntryRelModelImpl, false, true);
-
-		cacheUniqueFindersCache(segmentsEntryRelModelImpl);
-
-		if (isNew) {
-			segmentsEntryRel.setNew(false);
-		}
-
-		segmentsEntryRel.resetOriginalValues();
-
-		return segmentsEntryRel;
 	}
 
 	/**
@@ -2415,31 +2434,46 @@ public class SegmentsEntryRelPersistenceImpl
 		if (ctPersistenceHelper.isProductionMode(
 				SegmentsEntryRel.class, primaryKey)) {
 
-			return super.fetchByPrimaryKey(primaryKey);
-		}
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						false)) {
 
-		SegmentsEntryRel segmentsEntryRel = null;
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			segmentsEntryRel = (SegmentsEntryRel)session.get(
-				SegmentsEntryRelImpl.class, primaryKey);
-
-			if (segmentsEntryRel != null) {
-				cacheResult(segmentsEntryRel);
+				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		return segmentsEntryRel;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+
+			SegmentsEntryRel segmentsEntryRel =
+				(SegmentsEntryRel)entityCache.getResult(
+					SegmentsEntryRelImpl.class, primaryKey);
+
+			if (segmentsEntryRel != null) {
+				return segmentsEntryRel;
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				segmentsEntryRel = (SegmentsEntryRel)session.get(
+					SegmentsEntryRelImpl.class, primaryKey);
+
+				if (segmentsEntryRel != null) {
+					cacheResult(segmentsEntryRel);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			return segmentsEntryRel;
+		}
 	}
 
 	/**
@@ -2458,7 +2492,12 @@ public class SegmentsEntryRelPersistenceImpl
 		Set<Serializable> primaryKeys) {
 
 		if (ctPersistenceHelper.isProductionMode(SegmentsEntryRel.class)) {
-			return super.fetchByPrimaryKeys(primaryKeys);
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						false)) {
+
+				return super.fetchByPrimaryKeys(primaryKeys);
+			}
 		}
 
 		if (primaryKeys.isEmpty()) {
@@ -2479,6 +2518,37 @@ public class SegmentsEntryRelPersistenceImpl
 				map.put(primaryKey, segmentsEntryRel);
 			}
 
+			return map;
+		}
+
+		Set<Serializable> uncachedPrimaryKeys = null;
+
+		EntityCache entityCache = getEntityCache();
+
+		for (Serializable primaryKey : primaryKeys) {
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						!ctPersistenceHelper.isProductionMode(
+							SegmentsEntryRel.class, primaryKey))) {
+
+				SegmentsEntryRel segmentsEntryRel =
+					(SegmentsEntryRel)entityCache.getResult(
+						SegmentsEntryRelImpl.class, primaryKey);
+
+				if (segmentsEntryRel == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<>();
+					}
+
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, segmentsEntryRel);
+				}
+			}
+		}
+
+		if (uncachedPrimaryKeys == null) {
 			return map;
 		}
 
@@ -2611,78 +2681,81 @@ public class SegmentsEntryRelPersistenceImpl
 		OrderByComparator<SegmentsEntryRel> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						SegmentsEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
-			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
-		}
-
-		List<SegmentsEntryRel> list = null;
-
-		if (useFinderCache && productionMode) {
-			list = (List<SegmentsEntryRel>)finderCache.getResult(
-				finderPath, finderArgs, this);
-		}
-
-		if (list == null) {
-			StringBundler sb = null;
-			String sql = null;
-
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					2 + (orderByComparator.getOrderByFields().length * 2));
-
-				sb.append(_SQL_SELECT_SEGMENTSENTRYREL);
-
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-
-				sql = sb.toString();
-			}
-			else {
-				sql = _SQL_SELECT_SEGMENTSENTRYREL;
-
-				sql = sql.concat(SegmentsEntryRelModelImpl.ORDER_BY_JPQL);
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				list = (List<SegmentsEntryRel>)QueryUtil.list(
-					query, getDialect(), start, end);
-
-				cacheResult(list);
-
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindAll;
+					finderArgs = FINDER_ARGS_EMPTY;
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindAll;
+				finderArgs = new Object[] {start, end, orderByComparator};
 			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			List<SegmentsEntryRel> list = null;
+
+			if (useFinderCache) {
+				list = (List<SegmentsEntryRel>)finderCache.getResult(
+					finderPath, finderArgs, this);
+			}
+
+			if (list == null) {
+				StringBundler sb = null;
+				String sql = null;
+
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						2 + (orderByComparator.getOrderByFields().length * 2));
+
+					sb.append(_SQL_SELECT_SEGMENTSENTRYREL);
+
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+
+					sql = sb.toString();
+				}
+				else {
+					sql = _SQL_SELECT_SEGMENTSENTRYREL;
+
+					sql = sql.concat(SegmentsEntryRelModelImpl.ORDER_BY_JPQL);
+				}
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					list = (List<SegmentsEntryRel>)QueryUtil.list(
+						query, getDialect(), start, end);
+
+					cacheResult(list);
+
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
+			}
+
+			return list;
+		}
 	}
 
 	/**
@@ -2703,40 +2776,38 @@ public class SegmentsEntryRelPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			SegmentsEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						SegmentsEntryRel.class))) {
 
-		Long count = null;
-
-		if (productionMode) {
-			count = (Long)finderCache.getResult(
+			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
-		}
 
-		if (count == null) {
-			Session session = null;
+			if (count == null) {
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(_SQL_COUNT_SEGMENTSENTRYREL);
+					Query query = session.createQuery(
+						_SQL_COUNT_SEGMENTSENTRYREL);
 
-				count = (Long)query.uniqueResult();
+					count = (Long)query.uniqueResult();
 
-				if (productionMode) {
 					finderCache.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	@Override

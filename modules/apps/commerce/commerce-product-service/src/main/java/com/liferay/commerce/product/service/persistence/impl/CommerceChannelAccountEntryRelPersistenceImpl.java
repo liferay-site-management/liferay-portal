@@ -13,8 +13,11 @@ import com.liferay.commerce.product.model.impl.CommerceChannelAccountEntryRelMod
 import com.liferay.commerce.product.service.persistence.CommerceChannelAccountEntryRelPersistence;
 import com.liferay.commerce.product.service.persistence.CommerceChannelAccountEntryRelUtil;
 import com.liferay.commerce.product.service.persistence.impl.constants.CommercePersistenceConstants;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -171,104 +174,109 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		OrderByComparator<CommerceChannelAccountEntryRel> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindByAccountEntryId;
-				finderArgs = new Object[] {accountEntryId};
+				if (useFinderCache) {
+					finderPath =
+						_finderPathWithoutPaginationFindByAccountEntryId;
+					finderArgs = new Object[] {accountEntryId};
+				}
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindByAccountEntryId;
-			finderArgs = new Object[] {
-				accountEntryId, start, end, orderByComparator
-			};
-		}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindByAccountEntryId;
+				finderArgs = new Object[] {
+					accountEntryId, start, end, orderByComparator
+				};
+			}
 
-		List<CommerceChannelAccountEntryRel> list = null;
+			List<CommerceChannelAccountEntryRel> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<CommerceChannelAccountEntryRel>)finderCache.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list =
+					(List<CommerceChannelAccountEntryRel>)finderCache.getResult(
+						finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (CommerceChannelAccountEntryRel
-						commerceChannelAccountEntryRel : list) {
+				if ((list != null) && !list.isEmpty()) {
+					for (CommerceChannelAccountEntryRel
+							commerceChannelAccountEntryRel : list) {
 
-					if (accountEntryId !=
-							commerceChannelAccountEntryRel.
-								getAccountEntryId()) {
+						if (accountEntryId !=
+								commerceChannelAccountEntryRel.
+									getAccountEntryId()) {
 
-						list = null;
+							list = null;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					3 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(3);
-			}
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						3 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(3);
+				}
 
-			sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
+				sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
 
-			sb.append(_FINDER_COLUMN_ACCOUNTENTRYID_ACCOUNTENTRYID_2);
+				sb.append(_FINDER_COLUMN_ACCOUNTENTRYID_ACCOUNTENTRYID_2);
 
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(
-					CommerceChannelAccountEntryRelModelImpl.ORDER_BY_JPQL);
-			}
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(
+						CommerceChannelAccountEntryRelModelImpl.ORDER_BY_JPQL);
+				}
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(accountEntryId);
+					queryPos.add(accountEntryId);
 
-				list = (List<CommerceChannelAccountEntryRel>)QueryUtil.list(
-					query, getDialect(), start, end);
+					list = (List<CommerceChannelAccountEntryRel>)QueryUtil.list(
+						query, getDialect(), start, end);
 
-				cacheResult(list);
+					cacheResult(list);
 
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -569,57 +577,52 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	 */
 	@Override
 	public int countByAccountEntryId(long accountEntryId) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByAccountEntryId;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {accountEntryId};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByAccountEntryId;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {accountEntryId};
+			if (count == null) {
+				StringBundler sb = new StringBundler(2);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(2);
+				sb.append(_FINDER_COLUMN_ACCOUNTENTRYID_ACCOUNTENTRYID_2);
 
-			sb.append(_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
+				String sql = sb.toString();
 
-			sb.append(_FINDER_COLUMN_ACCOUNTENTRYID_ACCOUNTENTRYID_2);
+				Session session = null;
 
-			String sql = sb.toString();
+				try {
+					session = openSession();
 
-			Session session = null;
+					Query query = session.createQuery(sql);
 
-			try {
-				session = openSession();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				Query query = session.createQuery(sql);
+					queryPos.add(accountEntryId);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					count = (Long)query.uniqueResult();
 
-				queryPos.add(accountEntryId);
-
-				count = (Long)query.uniqueResult();
-
-				if (productionMode) {
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_ACCOUNTENTRYID_ACCOUNTENTRYID_2 =
@@ -704,105 +707,109 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		OrderByComparator<CommerceChannelAccountEntryRel> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath =
-					_finderPathWithoutPaginationFindByCommerceChannelId;
-				finderArgs = new Object[] {commerceChannelId};
+				if (useFinderCache) {
+					finderPath =
+						_finderPathWithoutPaginationFindByCommerceChannelId;
+					finderArgs = new Object[] {commerceChannelId};
+				}
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindByCommerceChannelId;
-			finderArgs = new Object[] {
-				commerceChannelId, start, end, orderByComparator
-			};
-		}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindByCommerceChannelId;
+				finderArgs = new Object[] {
+					commerceChannelId, start, end, orderByComparator
+				};
+			}
 
-		List<CommerceChannelAccountEntryRel> list = null;
+			List<CommerceChannelAccountEntryRel> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<CommerceChannelAccountEntryRel>)finderCache.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list =
+					(List<CommerceChannelAccountEntryRel>)finderCache.getResult(
+						finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (CommerceChannelAccountEntryRel
-						commerceChannelAccountEntryRel : list) {
+				if ((list != null) && !list.isEmpty()) {
+					for (CommerceChannelAccountEntryRel
+							commerceChannelAccountEntryRel : list) {
 
-					if (commerceChannelId !=
-							commerceChannelAccountEntryRel.
-								getCommerceChannelId()) {
+						if (commerceChannelId !=
+								commerceChannelAccountEntryRel.
+									getCommerceChannelId()) {
 
-						list = null;
+							list = null;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					3 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(3);
-			}
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						3 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(3);
+				}
 
-			sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
+				sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
 
-			sb.append(_FINDER_COLUMN_COMMERCECHANNELID_COMMERCECHANNELID_2);
+				sb.append(_FINDER_COLUMN_COMMERCECHANNELID_COMMERCECHANNELID_2);
 
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(
-					CommerceChannelAccountEntryRelModelImpl.ORDER_BY_JPQL);
-			}
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(
+						CommerceChannelAccountEntryRelModelImpl.ORDER_BY_JPQL);
+				}
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(commerceChannelId);
+					queryPos.add(commerceChannelId);
 
-				list = (List<CommerceChannelAccountEntryRel>)QueryUtil.list(
-					query, getDialect(), start, end);
+					list = (List<CommerceChannelAccountEntryRel>)QueryUtil.list(
+						query, getDialect(), start, end);
 
-				cacheResult(list);
+					cacheResult(list);
 
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -1104,57 +1111,52 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	 */
 	@Override
 	public int countByCommerceChannelId(long commerceChannelId) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByCommerceChannelId;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {commerceChannelId};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByCommerceChannelId;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {commerceChannelId};
+			if (count == null) {
+				StringBundler sb = new StringBundler(2);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(2);
+				sb.append(_FINDER_COLUMN_COMMERCECHANNELID_COMMERCECHANNELID_2);
 
-			sb.append(_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
+				String sql = sb.toString();
 
-			sb.append(_FINDER_COLUMN_COMMERCECHANNELID_COMMERCECHANNELID_2);
+				Session session = null;
 
-			String sql = sb.toString();
+				try {
+					session = openSession();
 
-			Session session = null;
+					Query query = session.createQuery(sql);
 
-			try {
-				session = openSession();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				Query query = session.createQuery(sql);
+					queryPos.add(commerceChannelId);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					count = (Long)query.uniqueResult();
 
-				queryPos.add(commerceChannelId);
-
-				count = (Long)query.uniqueResult();
-
-				if (productionMode) {
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String
@@ -1244,109 +1246,114 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		OrderByComparator<CommerceChannelAccountEntryRel> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindByA_T;
-				finderArgs = new Object[] {accountEntryId, type};
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindByA_T;
+					finderArgs = new Object[] {accountEntryId, type};
+				}
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindByA_T;
-			finderArgs = new Object[] {
-				accountEntryId, type, start, end, orderByComparator
-			};
-		}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindByA_T;
+				finderArgs = new Object[] {
+					accountEntryId, type, start, end, orderByComparator
+				};
+			}
 
-		List<CommerceChannelAccountEntryRel> list = null;
+			List<CommerceChannelAccountEntryRel> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<CommerceChannelAccountEntryRel>)finderCache.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list =
+					(List<CommerceChannelAccountEntryRel>)finderCache.getResult(
+						finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (CommerceChannelAccountEntryRel
-						commerceChannelAccountEntryRel : list) {
+				if ((list != null) && !list.isEmpty()) {
+					for (CommerceChannelAccountEntryRel
+							commerceChannelAccountEntryRel : list) {
 
-					if ((accountEntryId !=
-							commerceChannelAccountEntryRel.
-								getAccountEntryId()) ||
-						(type != commerceChannelAccountEntryRel.getType())) {
+						if ((accountEntryId !=
+								commerceChannelAccountEntryRel.
+									getAccountEntryId()) ||
+							(type !=
+								commerceChannelAccountEntryRel.getType())) {
 
-						list = null;
+							list = null;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					4 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(4);
-			}
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						4 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(4);
+				}
 
-			sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
+				sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
 
-			sb.append(_FINDER_COLUMN_A_T_ACCOUNTENTRYID_2);
+				sb.append(_FINDER_COLUMN_A_T_ACCOUNTENTRYID_2);
 
-			sb.append(_FINDER_COLUMN_A_T_TYPE_2);
+				sb.append(_FINDER_COLUMN_A_T_TYPE_2);
 
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(
-					CommerceChannelAccountEntryRelModelImpl.ORDER_BY_JPQL);
-			}
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(
+						CommerceChannelAccountEntryRelModelImpl.ORDER_BY_JPQL);
+				}
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(accountEntryId);
+					queryPos.add(accountEntryId);
 
-				queryPos.add(type);
+					queryPos.add(type);
 
-				list = (List<CommerceChannelAccountEntryRel>)QueryUtil.list(
-					query, getDialect(), start, end);
+					list = (List<CommerceChannelAccountEntryRel>)QueryUtil.list(
+						query, getDialect(), start, end);
 
-				cacheResult(list);
+					cacheResult(list);
 
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -1665,61 +1672,56 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	 */
 	@Override
 	public int countByA_T(long accountEntryId, int type) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByA_T;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {accountEntryId, type};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByA_T;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {accountEntryId, type};
+			if (count == null) {
+				StringBundler sb = new StringBundler(3);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(3);
+				sb.append(_FINDER_COLUMN_A_T_ACCOUNTENTRYID_2);
 
-			sb.append(_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
+				sb.append(_FINDER_COLUMN_A_T_TYPE_2);
 
-			sb.append(_FINDER_COLUMN_A_T_ACCOUNTENTRYID_2);
+				String sql = sb.toString();
 
-			sb.append(_FINDER_COLUMN_A_T_TYPE_2);
+				Session session = null;
 
-			String sql = sb.toString();
+				try {
+					session = openSession();
 
-			Session session = null;
+					Query query = session.createQuery(sql);
 
-			try {
-				session = openSession();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				Query query = session.createQuery(sql);
+					queryPos.add(accountEntryId);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					queryPos.add(type);
 
-				queryPos.add(accountEntryId);
+					count = (Long)query.uniqueResult();
 
-				queryPos.add(type);
-
-				count = (Long)query.uniqueResult();
-
-				if (productionMode) {
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_A_T_ACCOUNTENTRYID_2 =
@@ -1811,109 +1813,114 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		OrderByComparator<CommerceChannelAccountEntryRel> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindByC_C;
-				finderArgs = new Object[] {classNameId, classPK};
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindByC_C;
+					finderArgs = new Object[] {classNameId, classPK};
+				}
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindByC_C;
-			finderArgs = new Object[] {
-				classNameId, classPK, start, end, orderByComparator
-			};
-		}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindByC_C;
+				finderArgs = new Object[] {
+					classNameId, classPK, start, end, orderByComparator
+				};
+			}
 
-		List<CommerceChannelAccountEntryRel> list = null;
+			List<CommerceChannelAccountEntryRel> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<CommerceChannelAccountEntryRel>)finderCache.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list =
+					(List<CommerceChannelAccountEntryRel>)finderCache.getResult(
+						finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (CommerceChannelAccountEntryRel
-						commerceChannelAccountEntryRel : list) {
+				if ((list != null) && !list.isEmpty()) {
+					for (CommerceChannelAccountEntryRel
+							commerceChannelAccountEntryRel : list) {
 
-					if ((classNameId !=
-							commerceChannelAccountEntryRel.getClassNameId()) ||
-						(classPK !=
-							commerceChannelAccountEntryRel.getClassPK())) {
+						if ((classNameId !=
+								commerceChannelAccountEntryRel.
+									getClassNameId()) ||
+							(classPK !=
+								commerceChannelAccountEntryRel.getClassPK())) {
 
-						list = null;
+							list = null;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					4 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(4);
-			}
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						4 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(4);
+				}
 
-			sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
+				sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
 
-			sb.append(_FINDER_COLUMN_C_C_CLASSNAMEID_2);
+				sb.append(_FINDER_COLUMN_C_C_CLASSNAMEID_2);
 
-			sb.append(_FINDER_COLUMN_C_C_CLASSPK_2);
+				sb.append(_FINDER_COLUMN_C_C_CLASSPK_2);
 
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(
-					CommerceChannelAccountEntryRelModelImpl.ORDER_BY_JPQL);
-			}
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(
+						CommerceChannelAccountEntryRelModelImpl.ORDER_BY_JPQL);
+				}
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(classNameId);
+					queryPos.add(classNameId);
 
-				queryPos.add(classPK);
+					queryPos.add(classPK);
 
-				list = (List<CommerceChannelAccountEntryRel>)QueryUtil.list(
-					query, getDialect(), start, end);
+					list = (List<CommerceChannelAccountEntryRel>)QueryUtil.list(
+						query, getDialect(), start, end);
 
-				cacheResult(list);
+					cacheResult(list);
 
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -2232,61 +2239,56 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	 */
 	@Override
 	public int countByC_C(long classNameId, long classPK) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByC_C;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {classNameId, classPK};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByC_C;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {classNameId, classPK};
+			if (count == null) {
+				StringBundler sb = new StringBundler(3);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(3);
+				sb.append(_FINDER_COLUMN_C_C_CLASSNAMEID_2);
 
-			sb.append(_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
+				sb.append(_FINDER_COLUMN_C_C_CLASSPK_2);
 
-			sb.append(_FINDER_COLUMN_C_C_CLASSNAMEID_2);
+				String sql = sb.toString();
 
-			sb.append(_FINDER_COLUMN_C_C_CLASSPK_2);
+				Session session = null;
 
-			String sql = sb.toString();
+				try {
+					session = openSession();
 
-			Session session = null;
+					Query query = session.createQuery(sql);
 
-			try {
-				session = openSession();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				Query query = session.createQuery(sql);
+					queryPos.add(classNameId);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					queryPos.add(classPK);
 
-				queryPos.add(classNameId);
+					count = (Long)query.uniqueResult();
 
-				queryPos.add(classPK);
-
-				count = (Long)query.uniqueResult();
-
-				if (productionMode) {
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_C_C_CLASSNAMEID_2 =
@@ -2379,109 +2381,114 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		OrderByComparator<CommerceChannelAccountEntryRel> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindByC_T;
-				finderArgs = new Object[] {commerceChannelId, type};
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindByC_T;
+					finderArgs = new Object[] {commerceChannelId, type};
+				}
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindByC_T;
-			finderArgs = new Object[] {
-				commerceChannelId, type, start, end, orderByComparator
-			};
-		}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindByC_T;
+				finderArgs = new Object[] {
+					commerceChannelId, type, start, end, orderByComparator
+				};
+			}
 
-		List<CommerceChannelAccountEntryRel> list = null;
+			List<CommerceChannelAccountEntryRel> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<CommerceChannelAccountEntryRel>)finderCache.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list =
+					(List<CommerceChannelAccountEntryRel>)finderCache.getResult(
+						finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (CommerceChannelAccountEntryRel
-						commerceChannelAccountEntryRel : list) {
+				if ((list != null) && !list.isEmpty()) {
+					for (CommerceChannelAccountEntryRel
+							commerceChannelAccountEntryRel : list) {
 
-					if ((commerceChannelId !=
-							commerceChannelAccountEntryRel.
-								getCommerceChannelId()) ||
-						(type != commerceChannelAccountEntryRel.getType())) {
+						if ((commerceChannelId !=
+								commerceChannelAccountEntryRel.
+									getCommerceChannelId()) ||
+							(type !=
+								commerceChannelAccountEntryRel.getType())) {
 
-						list = null;
+							list = null;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					4 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(4);
-			}
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						4 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(4);
+				}
 
-			sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
+				sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
 
-			sb.append(_FINDER_COLUMN_C_T_COMMERCECHANNELID_2);
+				sb.append(_FINDER_COLUMN_C_T_COMMERCECHANNELID_2);
 
-			sb.append(_FINDER_COLUMN_C_T_TYPE_2);
+				sb.append(_FINDER_COLUMN_C_T_TYPE_2);
 
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(
-					CommerceChannelAccountEntryRelModelImpl.ORDER_BY_JPQL);
-			}
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(
+						CommerceChannelAccountEntryRelModelImpl.ORDER_BY_JPQL);
+				}
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(commerceChannelId);
+					queryPos.add(commerceChannelId);
 
-				queryPos.add(type);
+					queryPos.add(type);
 
-				list = (List<CommerceChannelAccountEntryRel>)QueryUtil.list(
-					query, getDialect(), start, end);
+					list = (List<CommerceChannelAccountEntryRel>)QueryUtil.list(
+						query, getDialect(), start, end);
 
-				cacheResult(list);
+					cacheResult(list);
 
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -2800,61 +2807,56 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	 */
 	@Override
 	public int countByC_T(long commerceChannelId, int type) {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByC_T;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {commerceChannelId, type};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByC_T;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {commerceChannelId, type};
+			if (count == null) {
+				StringBundler sb = new StringBundler(3);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(3);
+				sb.append(_FINDER_COLUMN_C_T_COMMERCECHANNELID_2);
 
-			sb.append(_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
+				sb.append(_FINDER_COLUMN_C_T_TYPE_2);
 
-			sb.append(_FINDER_COLUMN_C_T_COMMERCECHANNELID_2);
+				String sql = sb.toString();
 
-			sb.append(_FINDER_COLUMN_C_T_TYPE_2);
+				Session session = null;
 
-			String sql = sb.toString();
+				try {
+					session = openSession();
 
-			Session session = null;
+					Query query = session.createQuery(sql);
 
-			try {
-				session = openSession();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				Query query = session.createQuery(sql);
+					queryPos.add(commerceChannelId);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					queryPos.add(type);
 
-				queryPos.add(commerceChannelId);
+					count = (Long)query.uniqueResult();
 
-				queryPos.add(type);
-
-				count = (Long)query.uniqueResult();
-
-				if (productionMode) {
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_C_T_COMMERCECHANNELID_2 =
@@ -2956,119 +2958,124 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		OrderByComparator<CommerceChannelAccountEntryRel> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindByA_C_T;
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindByA_C_T;
+					finderArgs = new Object[] {
+						accountEntryId, commerceChannelId, type
+					};
+				}
+			}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindByA_C_T;
 				finderArgs = new Object[] {
-					accountEntryId, commerceChannelId, type
+					accountEntryId, commerceChannelId, type, start, end,
+					orderByComparator
 				};
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindByA_C_T;
-			finderArgs = new Object[] {
-				accountEntryId, commerceChannelId, type, start, end,
-				orderByComparator
-			};
-		}
 
-		List<CommerceChannelAccountEntryRel> list = null;
+			List<CommerceChannelAccountEntryRel> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<CommerceChannelAccountEntryRel>)finderCache.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list =
+					(List<CommerceChannelAccountEntryRel>)finderCache.getResult(
+						finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (CommerceChannelAccountEntryRel
-						commerceChannelAccountEntryRel : list) {
+				if ((list != null) && !list.isEmpty()) {
+					for (CommerceChannelAccountEntryRel
+							commerceChannelAccountEntryRel : list) {
 
-					if ((accountEntryId !=
-							commerceChannelAccountEntryRel.
-								getAccountEntryId()) ||
-						(commerceChannelId !=
-							commerceChannelAccountEntryRel.
-								getCommerceChannelId()) ||
-						(type != commerceChannelAccountEntryRel.getType())) {
+						if ((accountEntryId !=
+								commerceChannelAccountEntryRel.
+									getAccountEntryId()) ||
+							(commerceChannelId !=
+								commerceChannelAccountEntryRel.
+									getCommerceChannelId()) ||
+							(type !=
+								commerceChannelAccountEntryRel.getType())) {
 
-						list = null;
+							list = null;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					5 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(5);
-			}
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						5 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(5);
+				}
 
-			sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
+				sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
 
-			sb.append(_FINDER_COLUMN_A_C_T_ACCOUNTENTRYID_2);
+				sb.append(_FINDER_COLUMN_A_C_T_ACCOUNTENTRYID_2);
 
-			sb.append(_FINDER_COLUMN_A_C_T_COMMERCECHANNELID_2);
+				sb.append(_FINDER_COLUMN_A_C_T_COMMERCECHANNELID_2);
 
-			sb.append(_FINDER_COLUMN_A_C_T_TYPE_2);
+				sb.append(_FINDER_COLUMN_A_C_T_TYPE_2);
 
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(
-					CommerceChannelAccountEntryRelModelImpl.ORDER_BY_JPQL);
-			}
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(
+						CommerceChannelAccountEntryRelModelImpl.ORDER_BY_JPQL);
+				}
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(accountEntryId);
+					queryPos.add(accountEntryId);
 
-				queryPos.add(commerceChannelId);
+					queryPos.add(commerceChannelId);
 
-				queryPos.add(type);
+					queryPos.add(type);
 
-				list = (List<CommerceChannelAccountEntryRel>)QueryUtil.list(
-					query, getDialect(), start, end);
+					list = (List<CommerceChannelAccountEntryRel>)QueryUtil.list(
+						query, getDialect(), start, end);
 
-				cacheResult(list);
+					cacheResult(list);
 
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -3411,65 +3418,62 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	public int countByA_C_T(
 		long accountEntryId, long commerceChannelId, int type) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByA_C_T;
 
-		Long count = null;
+			Object[] finderArgs = new Object[] {
+				accountEntryId, commerceChannelId, type
+			};
 
-		if (productionMode) {
-			finderPath = _finderPathCountByA_C_T;
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-			finderArgs = new Object[] {accountEntryId, commerceChannelId, type};
+			if (count == null) {
+				StringBundler sb = new StringBundler(4);
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+				sb.append(_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(4);
+				sb.append(_FINDER_COLUMN_A_C_T_ACCOUNTENTRYID_2);
 
-			sb.append(_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
+				sb.append(_FINDER_COLUMN_A_C_T_COMMERCECHANNELID_2);
 
-			sb.append(_FINDER_COLUMN_A_C_T_ACCOUNTENTRYID_2);
+				sb.append(_FINDER_COLUMN_A_C_T_TYPE_2);
 
-			sb.append(_FINDER_COLUMN_A_C_T_COMMERCECHANNELID_2);
+				String sql = sb.toString();
 
-			sb.append(_FINDER_COLUMN_A_C_T_TYPE_2);
+				Session session = null;
 
-			String sql = sb.toString();
+				try {
+					session = openSession();
 
-			Session session = null;
+					Query query = session.createQuery(sql);
 
-			try {
-				session = openSession();
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				Query query = session.createQuery(sql);
+					queryPos.add(accountEntryId);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					queryPos.add(commerceChannelId);
 
-				queryPos.add(accountEntryId);
+					queryPos.add(type);
 
-				queryPos.add(commerceChannelId);
+					count = (Long)query.uniqueResult();
 
-				queryPos.add(type);
-
-				count = (Long)query.uniqueResult();
-
-				if (productionMode) {
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_A_C_T_ACCOUNTENTRYID_2 =
@@ -3578,124 +3582,130 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		OrderByComparator<CommerceChannelAccountEntryRel> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindByC_C_C_T;
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindByC_C_C_T;
+					finderArgs = new Object[] {
+						classNameId, classPK, commerceChannelId, type
+					};
+				}
+			}
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindByC_C_C_T;
 				finderArgs = new Object[] {
-					classNameId, classPK, commerceChannelId, type
+					classNameId, classPK, commerceChannelId, type, start, end,
+					orderByComparator
 				};
 			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindByC_C_C_T;
-			finderArgs = new Object[] {
-				classNameId, classPK, commerceChannelId, type, start, end,
-				orderByComparator
-			};
-		}
 
-		List<CommerceChannelAccountEntryRel> list = null;
+			List<CommerceChannelAccountEntryRel> list = null;
 
-		if (useFinderCache && productionMode) {
-			list = (List<CommerceChannelAccountEntryRel>)finderCache.getResult(
-				finderPath, finderArgs, this);
+			if (useFinderCache) {
+				list =
+					(List<CommerceChannelAccountEntryRel>)finderCache.getResult(
+						finderPath, finderArgs, this);
 
-			if ((list != null) && !list.isEmpty()) {
-				for (CommerceChannelAccountEntryRel
-						commerceChannelAccountEntryRel : list) {
+				if ((list != null) && !list.isEmpty()) {
+					for (CommerceChannelAccountEntryRel
+							commerceChannelAccountEntryRel : list) {
 
-					if ((classNameId !=
-							commerceChannelAccountEntryRel.getClassNameId()) ||
-						(classPK !=
-							commerceChannelAccountEntryRel.getClassPK()) ||
-						(commerceChannelId !=
-							commerceChannelAccountEntryRel.
-								getCommerceChannelId()) ||
-						(type != commerceChannelAccountEntryRel.getType())) {
+						if ((classNameId !=
+								commerceChannelAccountEntryRel.
+									getClassNameId()) ||
+							(classPK !=
+								commerceChannelAccountEntryRel.getClassPK()) ||
+							(commerceChannelId !=
+								commerceChannelAccountEntryRel.
+									getCommerceChannelId()) ||
+							(type !=
+								commerceChannelAccountEntryRel.getType())) {
 
-						list = null;
+							list = null;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if (list == null) {
-			StringBundler sb = null;
+			if (list == null) {
+				StringBundler sb = null;
 
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					6 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(6);
-			}
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						6 + (orderByComparator.getOrderByFields().length * 2));
+				}
+				else {
+					sb = new StringBundler(6);
+				}
 
-			sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
+				sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
 
-			sb.append(_FINDER_COLUMN_C_C_C_T_CLASSNAMEID_2);
+				sb.append(_FINDER_COLUMN_C_C_C_T_CLASSNAMEID_2);
 
-			sb.append(_FINDER_COLUMN_C_C_C_T_CLASSPK_2);
+				sb.append(_FINDER_COLUMN_C_C_C_T_CLASSPK_2);
 
-			sb.append(_FINDER_COLUMN_C_C_C_T_COMMERCECHANNELID_2);
+				sb.append(_FINDER_COLUMN_C_C_C_T_COMMERCECHANNELID_2);
 
-			sb.append(_FINDER_COLUMN_C_C_C_T_TYPE_2);
+				sb.append(_FINDER_COLUMN_C_C_C_T_TYPE_2);
 
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(
-					CommerceChannelAccountEntryRelModelImpl.ORDER_BY_JPQL);
-			}
+				if (orderByComparator != null) {
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+				}
+				else {
+					sb.append(
+						CommerceChannelAccountEntryRelModelImpl.ORDER_BY_JPQL);
+				}
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(classNameId);
+					queryPos.add(classNameId);
 
-				queryPos.add(classPK);
+					queryPos.add(classPK);
 
-				queryPos.add(commerceChannelId);
+					queryPos.add(commerceChannelId);
 
-				queryPos.add(type);
+					queryPos.add(type);
 
-				list = (List<CommerceChannelAccountEntryRel>)QueryUtil.list(
-					query, getDialect(), start, end);
+					list = (List<CommerceChannelAccountEntryRel>)QueryUtil.list(
+						query, getDialect(), start, end);
 
-				cacheResult(list);
+					cacheResult(list);
 
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			return list;
+		}
 	}
 
 	/**
@@ -4059,71 +4069,66 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	public int countByC_C_C_T(
 		long classNameId, long classPK, long commerceChannelId, int type) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByC_C_C_T;
 
-		Long count = null;
-
-		if (productionMode) {
-			finderPath = _finderPathCountByC_C_C_T;
-
-			finderArgs = new Object[] {
+			Object[] finderArgs = new Object[] {
 				classNameId, classPK, commerceChannelId, type
 			};
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(5);
+			if (count == null) {
+				StringBundler sb = new StringBundler(5);
 
-			sb.append(_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
+				sb.append(_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
 
-			sb.append(_FINDER_COLUMN_C_C_C_T_CLASSNAMEID_2);
+				sb.append(_FINDER_COLUMN_C_C_C_T_CLASSNAMEID_2);
 
-			sb.append(_FINDER_COLUMN_C_C_C_T_CLASSPK_2);
+				sb.append(_FINDER_COLUMN_C_C_C_T_CLASSPK_2);
 
-			sb.append(_FINDER_COLUMN_C_C_C_T_COMMERCECHANNELID_2);
+				sb.append(_FINDER_COLUMN_C_C_C_T_COMMERCECHANNELID_2);
 
-			sb.append(_FINDER_COLUMN_C_C_C_T_TYPE_2);
+				sb.append(_FINDER_COLUMN_C_C_C_T_TYPE_2);
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(classNameId);
+					queryPos.add(classNameId);
 
-				queryPos.add(classPK);
+					queryPos.add(classPK);
 
-				queryPos.add(commerceChannelId);
+					queryPos.add(commerceChannelId);
 
-				queryPos.add(type);
+					queryPos.add(type);
 
-				count = (Long)query.uniqueResult();
+					count = (Long)query.uniqueResult();
 
-				if (productionMode) {
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_C_C_C_T_CLASSNAMEID_2 =
@@ -4230,116 +4235,112 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		long accountEntryId, long classNameId, long classPK,
 		long commerceChannelId, int type, boolean useFinderCache) {
 
-		Object[] finderArgs = null;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		if (useFinderCache) {
-			finderArgs = new Object[] {
-				accountEntryId, classNameId, classPK, commerceChannelId, type
-			};
-		}
+			Object[] finderArgs = null;
 
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByA_C_C_C_T, finderArgs, this);
-		}
-
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
-
-		if (result instanceof CommerceChannelAccountEntryRel) {
-			CommerceChannelAccountEntryRel commerceChannelAccountEntryRel =
-				(CommerceChannelAccountEntryRel)result;
-
-			if ((accountEntryId !=
-					commerceChannelAccountEntryRel.getAccountEntryId()) ||
-				(classNameId !=
-					commerceChannelAccountEntryRel.getClassNameId()) ||
-				(classPK != commerceChannelAccountEntryRel.getClassPK()) ||
-				(commerceChannelId !=
-					commerceChannelAccountEntryRel.getCommerceChannelId()) ||
-				(type != commerceChannelAccountEntryRel.getType())) {
-
-				result = null;
+			if (useFinderCache) {
+				finderArgs = new Object[] {
+					accountEntryId, classNameId, classPK, commerceChannelId,
+					type
+				};
 			}
-			else if (!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class,
-						commerceChannelAccountEntryRel.getPrimaryKey())) {
 
-				result = null;
+			Object result = null;
+
+			if (useFinderCache) {
+				result = finderCache.getResult(
+					_finderPathFetchByA_C_C_C_T, finderArgs, this);
 			}
-		}
-		else if (!productionMode && (result instanceof List<?>)) {
-			result = null;
-		}
 
-		if (result == null) {
-			StringBundler sb = new StringBundler(7);
+			if (result instanceof CommerceChannelAccountEntryRel) {
+				CommerceChannelAccountEntryRel commerceChannelAccountEntryRel =
+					(CommerceChannelAccountEntryRel)result;
 
-			sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
+				if ((accountEntryId !=
+						commerceChannelAccountEntryRel.getAccountEntryId()) ||
+					(classNameId !=
+						commerceChannelAccountEntryRel.getClassNameId()) ||
+					(classPK != commerceChannelAccountEntryRel.getClassPK()) ||
+					(commerceChannelId !=
+						commerceChannelAccountEntryRel.
+							getCommerceChannelId()) ||
+					(type != commerceChannelAccountEntryRel.getType())) {
 
-			sb.append(_FINDER_COLUMN_A_C_C_C_T_ACCOUNTENTRYID_2);
+					result = null;
+				}
+			}
 
-			sb.append(_FINDER_COLUMN_A_C_C_C_T_CLASSNAMEID_2);
+			if (result == null) {
+				StringBundler sb = new StringBundler(7);
 
-			sb.append(_FINDER_COLUMN_A_C_C_C_T_CLASSPK_2);
+				sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
 
-			sb.append(_FINDER_COLUMN_A_C_C_C_T_COMMERCECHANNELID_2);
+				sb.append(_FINDER_COLUMN_A_C_C_C_T_ACCOUNTENTRYID_2);
 
-			sb.append(_FINDER_COLUMN_A_C_C_C_T_TYPE_2);
+				sb.append(_FINDER_COLUMN_A_C_C_C_T_CLASSNAMEID_2);
 
-			String sql = sb.toString();
+				sb.append(_FINDER_COLUMN_A_C_C_C_T_CLASSPK_2);
 
-			Session session = null;
+				sb.append(_FINDER_COLUMN_A_C_C_C_T_COMMERCECHANNELID_2);
 
-			try {
-				session = openSession();
+				sb.append(_FINDER_COLUMN_A_C_C_C_T_TYPE_2);
 
-				Query query = session.createQuery(sql);
+				String sql = sb.toString();
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+				Session session = null;
 
-				queryPos.add(accountEntryId);
+				try {
+					session = openSession();
 
-				queryPos.add(classNameId);
+					Query query = session.createQuery(sql);
 
-				queryPos.add(classPK);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(commerceChannelId);
+					queryPos.add(accountEntryId);
 
-				queryPos.add(type);
+					queryPos.add(classNameId);
 
-				List<CommerceChannelAccountEntryRel> list = query.list();
+					queryPos.add(classPK);
 
-				if (list.isEmpty()) {
-					if (useFinderCache && productionMode) {
-						finderCache.putResult(
-							_finderPathFetchByA_C_C_C_T, finderArgs, list);
+					queryPos.add(commerceChannelId);
+
+					queryPos.add(type);
+
+					List<CommerceChannelAccountEntryRel> list = query.list();
+
+					if (list.isEmpty()) {
+						if (useFinderCache) {
+							finderCache.putResult(
+								_finderPathFetchByA_C_C_C_T, finderArgs, list);
+						}
+					}
+					else {
+						CommerceChannelAccountEntryRel
+							commerceChannelAccountEntryRel = list.get(0);
+
+						result = commerceChannelAccountEntryRel;
+
+						cacheResult(commerceChannelAccountEntryRel);
 					}
 				}
-				else {
-					CommerceChannelAccountEntryRel
-						commerceChannelAccountEntryRel = list.get(0);
-
-					result = commerceChannelAccountEntryRel;
-
-					cacheResult(commerceChannelAccountEntryRel);
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (CommerceChannelAccountEntryRel)result;
+			if (result instanceof List<?>) {
+				return null;
+			}
+			else {
+				return (CommerceChannelAccountEntryRel)result;
+			}
 		}
 	}
 
@@ -4381,75 +4382,70 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		long accountEntryId, long classNameId, long classPK,
 		long commerceChannelId, int type) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = _finderPathCountByA_C_C_C_T;
 
-		Long count = null;
-
-		if (productionMode) {
-			finderPath = _finderPathCountByA_C_C_C_T;
-
-			finderArgs = new Object[] {
+			Object[] finderArgs = new Object[] {
 				accountEntryId, classNameId, classPK, commerceChannelId, type
 			};
 
-			count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-		}
+			Long count = (Long)finderCache.getResult(
+				finderPath, finderArgs, this);
 
-		if (count == null) {
-			StringBundler sb = new StringBundler(6);
+			if (count == null) {
+				StringBundler sb = new StringBundler(6);
 
-			sb.append(_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
+				sb.append(_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL_WHERE);
 
-			sb.append(_FINDER_COLUMN_A_C_C_C_T_ACCOUNTENTRYID_2);
+				sb.append(_FINDER_COLUMN_A_C_C_C_T_ACCOUNTENTRYID_2);
 
-			sb.append(_FINDER_COLUMN_A_C_C_C_T_CLASSNAMEID_2);
+				sb.append(_FINDER_COLUMN_A_C_C_C_T_CLASSNAMEID_2);
 
-			sb.append(_FINDER_COLUMN_A_C_C_C_T_CLASSPK_2);
+				sb.append(_FINDER_COLUMN_A_C_C_C_T_CLASSPK_2);
 
-			sb.append(_FINDER_COLUMN_A_C_C_C_T_COMMERCECHANNELID_2);
+				sb.append(_FINDER_COLUMN_A_C_C_C_T_COMMERCECHANNELID_2);
 
-			sb.append(_FINDER_COLUMN_A_C_C_C_T_TYPE_2);
+				sb.append(_FINDER_COLUMN_A_C_C_C_T_TYPE_2);
 
-			String sql = sb.toString();
+				String sql = sb.toString();
 
-			Session session = null;
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(sql);
+					Query query = session.createQuery(sql);
 
-				QueryPos queryPos = QueryPos.getInstance(query);
+					QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(accountEntryId);
+					queryPos.add(accountEntryId);
 
-				queryPos.add(classNameId);
+					queryPos.add(classNameId);
 
-				queryPos.add(classPK);
+					queryPos.add(classPK);
 
-				queryPos.add(commerceChannelId);
+					queryPos.add(commerceChannelId);
 
-				queryPos.add(type);
+					queryPos.add(type);
 
-				count = (Long)query.uniqueResult();
+					count = (Long)query.uniqueResult();
 
-				if (productionMode) {
 					finderCache.putResult(finderPath, finderArgs, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	private static final String _FINDER_COLUMN_A_C_C_C_T_ACCOUNTENTRYID_2 =
@@ -4493,25 +4489,33 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	public void cacheResult(
 		CommerceChannelAccountEntryRel commerceChannelAccountEntryRel) {
 
-		if (commerceChannelAccountEntryRel.getCtCollectionId() != 0) {
+		if ((commerceChannelAccountEntryRel.getCtCollectionId() != 0) &&
+			(commerceChannelAccountEntryRel.getCtCollectionId() !=
+				CTCollectionThreadLocal.getCTCollectionId())) {
+
 			return;
 		}
 
-		entityCache.putResult(
-			CommerceChannelAccountEntryRelImpl.class,
-			commerceChannelAccountEntryRel.getPrimaryKey(),
-			commerceChannelAccountEntryRel);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					commerceChannelAccountEntryRel.getCtCollectionId() != 0)) {
 
-		finderCache.putResult(
-			_finderPathFetchByA_C_C_C_T,
-			new Object[] {
-				commerceChannelAccountEntryRel.getAccountEntryId(),
-				commerceChannelAccountEntryRel.getClassNameId(),
-				commerceChannelAccountEntryRel.getClassPK(),
-				commerceChannelAccountEntryRel.getCommerceChannelId(),
-				commerceChannelAccountEntryRel.getType()
-			},
-			commerceChannelAccountEntryRel);
+			entityCache.putResult(
+				CommerceChannelAccountEntryRelImpl.class,
+				commerceChannelAccountEntryRel.getPrimaryKey(),
+				commerceChannelAccountEntryRel);
+
+			finderCache.putResult(
+				_finderPathFetchByA_C_C_C_T,
+				new Object[] {
+					commerceChannelAccountEntryRel.getAccountEntryId(),
+					commerceChannelAccountEntryRel.getClassNameId(),
+					commerceChannelAccountEntryRel.getClassPK(),
+					commerceChannelAccountEntryRel.getCommerceChannelId(),
+					commerceChannelAccountEntryRel.getType()
+				},
+				commerceChannelAccountEntryRel);
+		}
 	}
 
 	private int _valueObjectFinderCacheListThreshold;
@@ -4536,15 +4540,25 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		for (CommerceChannelAccountEntryRel commerceChannelAccountEntryRel :
 				commerceChannelAccountEntryRels) {
 
-			if (commerceChannelAccountEntryRel.getCtCollectionId() != 0) {
+			if ((commerceChannelAccountEntryRel.getCtCollectionId() != 0) &&
+				(commerceChannelAccountEntryRel.getCtCollectionId() !=
+					CTCollectionThreadLocal.getCTCollectionId())) {
+
 				continue;
 			}
 
-			if (entityCache.getResult(
-					CommerceChannelAccountEntryRelImpl.class,
-					commerceChannelAccountEntryRel.getPrimaryKey()) == null) {
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						commerceChannelAccountEntryRel.getCtCollectionId() !=
+							0)) {
 
-				cacheResult(commerceChannelAccountEntryRel);
+				if (entityCache.getResult(
+						CommerceChannelAccountEntryRelImpl.class,
+						commerceChannelAccountEntryRel.getPrimaryKey()) ==
+							null) {
+
+					cacheResult(commerceChannelAccountEntryRel);
+				}
 			}
 		}
 	}
@@ -4606,19 +4620,33 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		CommerceChannelAccountEntryRelModelImpl
 			commerceChannelAccountEntryRelModelImpl) {
 
-		Object[] args = new Object[] {
-			commerceChannelAccountEntryRelModelImpl.getAccountEntryId(),
-			commerceChannelAccountEntryRelModelImpl.getClassNameId(),
-			commerceChannelAccountEntryRelModelImpl.getClassPK(),
-			commerceChannelAccountEntryRelModelImpl.getCommerceChannelId(),
-			commerceChannelAccountEntryRelModelImpl.getType()
-		};
+		if ((commerceChannelAccountEntryRelModelImpl.getCtCollectionId() !=
+				0) &&
+			(commerceChannelAccountEntryRelModelImpl.getCtCollectionId() !=
+				CTCollectionThreadLocal.getCTCollectionId())) {
 
-		finderCache.putResult(
-			_finderPathCountByA_C_C_C_T, args, Long.valueOf(1));
-		finderCache.putResult(
-			_finderPathFetchByA_C_C_C_T, args,
-			commerceChannelAccountEntryRelModelImpl);
+			return;
+		}
+
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					commerceChannelAccountEntryRelModelImpl.
+						getCtCollectionId() != 0)) {
+
+			Object[] args = new Object[] {
+				commerceChannelAccountEntryRelModelImpl.getAccountEntryId(),
+				commerceChannelAccountEntryRelModelImpl.getClassNameId(),
+				commerceChannelAccountEntryRelModelImpl.getClassPK(),
+				commerceChannelAccountEntryRelModelImpl.getCommerceChannelId(),
+				commerceChannelAccountEntryRelModelImpl.getType()
+			};
+
+			finderCache.putResult(
+				_finderPathCountByA_C_C_C_T, args, Long.valueOf(1));
+			finderCache.putResult(
+				_finderPathFetchByA_C_C_C_T, args,
+				commerceChannelAccountEntryRelModelImpl);
+		}
 	}
 
 	/**
@@ -4741,87 +4769,100 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	public CommerceChannelAccountEntryRel updateImpl(
 		CommerceChannelAccountEntryRel commerceChannelAccountEntryRel) {
 
-		boolean isNew = commerceChannelAccountEntryRel.isNew();
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!CTCollectionThreadLocal.isProductionMode())) {
 
-		if (!(commerceChannelAccountEntryRel instanceof
-				CommerceChannelAccountEntryRelModelImpl)) {
+			boolean isNew = commerceChannelAccountEntryRel.isNew();
 
-			InvocationHandler invocationHandler = null;
+			if (!(commerceChannelAccountEntryRel instanceof
+					CommerceChannelAccountEntryRelModelImpl)) {
 
-			if (ProxyUtil.isProxyClass(
-					commerceChannelAccountEntryRel.getClass())) {
+				InvocationHandler invocationHandler = null;
 
-				invocationHandler = ProxyUtil.getInvocationHandler(
-					commerceChannelAccountEntryRel);
+				if (ProxyUtil.isProxyClass(
+						commerceChannelAccountEntryRel.getClass())) {
 
-				throw new IllegalArgumentException(
-					"Implement ModelWrapper in commerceChannelAccountEntryRel proxy " +
-						invocationHandler.getClass());
-			}
+					invocationHandler = ProxyUtil.getInvocationHandler(
+						commerceChannelAccountEntryRel);
 
-			throw new IllegalArgumentException(
-				"Implement ModelWrapper in custom CommerceChannelAccountEntryRel implementation " +
-					commerceChannelAccountEntryRel.getClass());
-		}
-
-		CommerceChannelAccountEntryRelModelImpl
-			commerceChannelAccountEntryRelModelImpl =
-				(CommerceChannelAccountEntryRelModelImpl)
-					commerceChannelAccountEntryRel;
-
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		Date date = new Date();
-
-		if (isNew && (commerceChannelAccountEntryRel.getCreateDate() == null)) {
-			if (serviceContext == null) {
-				commerceChannelAccountEntryRel.setCreateDate(date);
-			}
-			else {
-				commerceChannelAccountEntryRel.setCreateDate(
-					serviceContext.getCreateDate(date));
-			}
-		}
-
-		if (!commerceChannelAccountEntryRelModelImpl.hasSetModifiedDate()) {
-			if (serviceContext == null) {
-				commerceChannelAccountEntryRel.setModifiedDate(date);
-			}
-			else {
-				commerceChannelAccountEntryRel.setModifiedDate(
-					serviceContext.getModifiedDate(date));
-			}
-		}
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			if (ctPersistenceHelper.isInsert(commerceChannelAccountEntryRel)) {
-				if (!isNew) {
-					session.evict(
-						CommerceChannelAccountEntryRelImpl.class,
-						commerceChannelAccountEntryRel.getPrimaryKeyObj());
+					throw new IllegalArgumentException(
+						"Implement ModelWrapper in commerceChannelAccountEntryRel proxy " +
+							invocationHandler.getClass());
 				}
 
-				session.save(commerceChannelAccountEntryRel);
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in custom CommerceChannelAccountEntryRel implementation " +
+						commerceChannelAccountEntryRel.getClass());
 			}
-			else {
-				commerceChannelAccountEntryRel =
-					(CommerceChannelAccountEntryRel)session.merge(
-						commerceChannelAccountEntryRel);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		if (commerceChannelAccountEntryRel.getCtCollectionId() != 0) {
+			CommerceChannelAccountEntryRelModelImpl
+				commerceChannelAccountEntryRelModelImpl =
+					(CommerceChannelAccountEntryRelModelImpl)
+						commerceChannelAccountEntryRel;
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (isNew &&
+				(commerceChannelAccountEntryRel.getCreateDate() == null)) {
+
+				if (serviceContext == null) {
+					commerceChannelAccountEntryRel.setCreateDate(date);
+				}
+				else {
+					commerceChannelAccountEntryRel.setCreateDate(
+						serviceContext.getCreateDate(date));
+				}
+			}
+
+			if (!commerceChannelAccountEntryRelModelImpl.hasSetModifiedDate()) {
+				if (serviceContext == null) {
+					commerceChannelAccountEntryRel.setModifiedDate(date);
+				}
+				else {
+					commerceChannelAccountEntryRel.setModifiedDate(
+						serviceContext.getModifiedDate(date));
+				}
+			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				if (ctPersistenceHelper.isInsert(
+						commerceChannelAccountEntryRel)) {
+
+					if (!isNew) {
+						session.evict(
+							CommerceChannelAccountEntryRelImpl.class,
+							commerceChannelAccountEntryRel.getPrimaryKeyObj());
+					}
+
+					session.save(commerceChannelAccountEntryRel);
+				}
+				else {
+					commerceChannelAccountEntryRel =
+						(CommerceChannelAccountEntryRel)session.merge(
+							commerceChannelAccountEntryRel);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			entityCache.putResult(
+				CommerceChannelAccountEntryRelImpl.class,
+				commerceChannelAccountEntryRelModelImpl, false, true);
+
+			cacheUniqueFindersCache(commerceChannelAccountEntryRelModelImpl);
+
 			if (isNew) {
 				commerceChannelAccountEntryRel.setNew(false);
 			}
@@ -4830,20 +4871,6 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 
 			return commerceChannelAccountEntryRel;
 		}
-
-		entityCache.putResult(
-			CommerceChannelAccountEntryRelImpl.class,
-			commerceChannelAccountEntryRelModelImpl, false, true);
-
-		cacheUniqueFindersCache(commerceChannelAccountEntryRelModelImpl);
-
-		if (isNew) {
-			commerceChannelAccountEntryRel.setNew(false);
-		}
-
-		commerceChannelAccountEntryRel.resetOriginalValues();
-
-		return commerceChannelAccountEntryRel;
 	}
 
 	/**
@@ -4901,32 +4928,47 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		if (ctPersistenceHelper.isProductionMode(
 				CommerceChannelAccountEntryRel.class, primaryKey)) {
 
-			return super.fetchByPrimaryKey(primaryKey);
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						false)) {
+
+				return super.fetchByPrimaryKey(primaryKey);
+			}
 		}
 
-		CommerceChannelAccountEntryRel commerceChannelAccountEntryRel = null;
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
 
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			commerceChannelAccountEntryRel =
-				(CommerceChannelAccountEntryRel)session.get(
+			CommerceChannelAccountEntryRel commerceChannelAccountEntryRel =
+				(CommerceChannelAccountEntryRel)entityCache.getResult(
 					CommerceChannelAccountEntryRelImpl.class, primaryKey);
 
 			if (commerceChannelAccountEntryRel != null) {
-				cacheResult(commerceChannelAccountEntryRel);
+				return commerceChannelAccountEntryRel;
 			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
 
-		return commerceChannelAccountEntryRel;
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				commerceChannelAccountEntryRel =
+					(CommerceChannelAccountEntryRel)session.get(
+						CommerceChannelAccountEntryRelImpl.class, primaryKey);
+
+				if (commerceChannelAccountEntryRel != null) {
+					cacheResult(commerceChannelAccountEntryRel);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			return commerceChannelAccountEntryRel;
+		}
 	}
 
 	/**
@@ -4950,7 +4992,12 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		if (ctPersistenceHelper.isProductionMode(
 				CommerceChannelAccountEntryRel.class)) {
 
-			return super.fetchByPrimaryKeys(primaryKeys);
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						false)) {
+
+				return super.fetchByPrimaryKeys(primaryKeys);
+			}
 		}
 
 		if (primaryKeys.isEmpty()) {
@@ -4972,6 +5019,38 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 				map.put(primaryKey, commerceChannelAccountEntryRel);
 			}
 
+			return map;
+		}
+
+		Set<Serializable> uncachedPrimaryKeys = null;
+
+		EntityCache entityCache = getEntityCache();
+
+		for (Serializable primaryKey : primaryKeys) {
+			try (SafeCloseable safeCloseable =
+					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+						!ctPersistenceHelper.isProductionMode(
+							CommerceChannelAccountEntryRel.class,
+							primaryKey))) {
+
+				CommerceChannelAccountEntryRel commerceChannelAccountEntryRel =
+					(CommerceChannelAccountEntryRel)entityCache.getResult(
+						CommerceChannelAccountEntryRelImpl.class, primaryKey);
+
+				if (commerceChannelAccountEntryRel == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<>();
+					}
+
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, commerceChannelAccountEntryRel);
+				}
+			}
+		}
+
+		if (uncachedPrimaryKeys == null) {
 			return map;
 		}
 
@@ -5106,79 +5185,83 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		OrderByComparator<CommerceChannelAccountEntryRel> orderByComparator,
 		boolean useFinderCache) {
 
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
+			FinderPath finderPath = null;
+			Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
+			if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
 
-			if (useFinderCache && productionMode) {
-				finderPath = _finderPathWithoutPaginationFindAll;
-				finderArgs = FINDER_ARGS_EMPTY;
-			}
-		}
-		else if (useFinderCache && productionMode) {
-			finderPath = _finderPathWithPaginationFindAll;
-			finderArgs = new Object[] {start, end, orderByComparator};
-		}
-
-		List<CommerceChannelAccountEntryRel> list = null;
-
-		if (useFinderCache && productionMode) {
-			list = (List<CommerceChannelAccountEntryRel>)finderCache.getResult(
-				finderPath, finderArgs, this);
-		}
-
-		if (list == null) {
-			StringBundler sb = null;
-			String sql = null;
-
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					2 + (orderByComparator.getOrderByFields().length * 2));
-
-				sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL);
-
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-
-				sql = sb.toString();
-			}
-			else {
-				sql = _SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL;
-
-				sql = sql.concat(
-					CommerceChannelAccountEntryRelModelImpl.ORDER_BY_JPQL);
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				list = (List<CommerceChannelAccountEntryRel>)QueryUtil.list(
-					query, getDialect(), start, end);
-
-				cacheResult(list);
-
-				if (useFinderCache && productionMode) {
-					finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderPath = _finderPathWithoutPaginationFindAll;
+					finderArgs = FINDER_ARGS_EMPTY;
 				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
+			else if (useFinderCache) {
+				finderPath = _finderPathWithPaginationFindAll;
+				finderArgs = new Object[] {start, end, orderByComparator};
 			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return list;
+			List<CommerceChannelAccountEntryRel> list = null;
+
+			if (useFinderCache) {
+				list =
+					(List<CommerceChannelAccountEntryRel>)finderCache.getResult(
+						finderPath, finderArgs, this);
+			}
+
+			if (list == null) {
+				StringBundler sb = null;
+				String sql = null;
+
+				if (orderByComparator != null) {
+					sb = new StringBundler(
+						2 + (orderByComparator.getOrderByFields().length * 2));
+
+					sb.append(_SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL);
+
+					appendOrderByComparator(
+						sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+
+					sql = sb.toString();
+				}
+				else {
+					sql = _SQL_SELECT_COMMERCECHANNELACCOUNTENTRYREL;
+
+					sql = sql.concat(
+						CommerceChannelAccountEntryRelModelImpl.ORDER_BY_JPQL);
+				}
+
+				Session session = null;
+
+				try {
+					session = openSession();
+
+					Query query = session.createQuery(sql);
+
+					list = (List<CommerceChannelAccountEntryRel>)QueryUtil.list(
+						query, getDialect(), start, end);
+
+					cacheResult(list);
+
+					if (useFinderCache) {
+						finderCache.putResult(finderPath, finderArgs, list);
+					}
+				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
+			}
+
+			return list;
+		}
 	}
 
 	/**
@@ -5201,41 +5284,38 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		boolean productionMode = ctPersistenceHelper.isProductionMode(
-			CommerceChannelAccountEntryRel.class);
+		try (SafeCloseable safeCloseable =
+				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+					!ctPersistenceHelper.isProductionMode(
+						CommerceChannelAccountEntryRel.class))) {
 
-		Long count = null;
-
-		if (productionMode) {
-			count = (Long)finderCache.getResult(
+			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
-		}
 
-		if (count == null) {
-			Session session = null;
+			if (count == null) {
+				Session session = null;
 
-			try {
-				session = openSession();
+				try {
+					session = openSession();
 
-				Query query = session.createQuery(
-					_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL);
+					Query query = session.createQuery(
+						_SQL_COUNT_COMMERCECHANNELACCOUNTENTRYREL);
 
-				count = (Long)query.uniqueResult();
+					count = (Long)query.uniqueResult();
 
-				if (productionMode) {
 					finderCache.putResult(
 						_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 				}
+				catch (Exception exception) {
+					throw processException(exception);
+				}
+				finally {
+					closeSession(session);
+				}
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
 
-		return count.intValue();
+			return count.intValue();
+		}
 	}
 
 	@Override
