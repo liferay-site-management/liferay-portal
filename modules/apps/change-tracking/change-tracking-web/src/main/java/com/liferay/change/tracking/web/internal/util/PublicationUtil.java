@@ -8,6 +8,9 @@ package com.liferay.change.tracking.web.internal.util;
 import com.liferay.change.tracking.web.internal.configuration.CTConfiguration;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProviderUtil;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
+import com.liferay.portal.kernel.settings.LocalizedValuesMap;
+
+import java.util.Locale;
 
 /**
  * @author Cheryl Tang
@@ -21,12 +24,15 @@ public class PublicationUtil {
 			CTConfiguration.class, companyId);
 	}
 
-	public static String getCustomProductionName(long companyId)
+	public static String getCustomProductionName(long companyId, Locale locale)
 		throws ConfigurationException {
 
-		return getCTConfiguration(
-			companyId
-		).customProductionName();
+		CTConfiguration ctConfiguration = getCTConfiguration(companyId);
+
+		LocalizedValuesMap localizedValuesMap =
+			ctConfiguration.customProductionName();
+
+		return localizedValuesMap.get(locale);
 	}
 
 }

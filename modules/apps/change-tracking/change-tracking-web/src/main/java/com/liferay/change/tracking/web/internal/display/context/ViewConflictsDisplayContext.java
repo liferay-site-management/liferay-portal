@@ -115,7 +115,7 @@ public class ViewConflictsDisplayContext {
 			_language.get(
 				_themeDisplay.getLocale(),
 				PublicationUtil.getCustomProductionName(
-					_themeDisplay.getCompanyId()))
+					_themeDisplay.getCompanyId(), _themeDisplay.getLocale()))
 		).put(
 			"hasUnapprovedChanges", _hasUnapprovedChanges
 		).put(
@@ -328,7 +328,8 @@ public class ViewConflictsDisplayContext {
 
 				String customProductionName =
 					PublicationUtil.getCustomProductionName(
-						_themeDisplay.getCompanyId());
+						_themeDisplay.getCompanyId(),
+						_themeDisplay.getLocale());
 
 				if (!conflictDescription.equals(
 						LanguageUtil.get(

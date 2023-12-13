@@ -8,6 +8,7 @@ package com.liferay.change.tracking.web.internal.configuration;
 import aQute.bnd.annotation.metatype.Meta;
 
 import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClassDefinition;
+import com.liferay.portal.kernel.settings.LocalizedValuesMap;
 
 /**
  * @author Tomas Polesovsky
@@ -48,6 +49,6 @@ public interface CTConfiguration {
 		description = "replaces-usages-of-the-term-production-with-a-custom-name",
 		name = "custom-production-name", required = false
 	)
-	public String customProductionName();
+	public LocalizedValuesMap customProductionName();
 
 }

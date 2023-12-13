@@ -54,6 +54,7 @@ import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.permission.PortletPermissionUtil;
 import com.liferay.portal.kernel.servlet.taglib.BaseDynamicInclude;
 import com.liferay.portal.kernel.servlet.taglib.DynamicInclude;
+import com.liferay.portal.kernel.settings.LocalizedValuesMap;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.FastDateFormatFactory;
@@ -202,10 +203,15 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 			}
 
 			if (ctCollection == null) {
+				LocalizedValuesMap localizedValuesMap =
+					ctConfiguration.customProductionName();
+
+				String customProductionName = localizedValuesMap.get(
+					themeDisplay.getLocale());
+
 				writer.write(
 					_language.get(
-						themeDisplay.getLocale(),
-						ctConfiguration.customProductionName()));
+						themeDisplay.getLocale(), customProductionName));
 			}
 			else {
 				writer.write(HtmlUtil.escape(ctCollection.getName()));
@@ -423,9 +429,14 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 
 		long ctCollectionId = CTConstants.CT_COLLECTION_ID_PRODUCTION;
 
-		String customProductionName = _getCTConfiguration(
-			themeDisplay.getCompanyId()
-		).customProductionName();
+		CTConfiguration ctConfiguration = _getCTConfiguration(
+			themeDisplay.getCompanyId());
+
+		LocalizedValuesMap localizedValuesMap =
+			ctConfiguration.customProductionName();
+
+		String customProductionName = localizedValuesMap.get(
+			themeDisplay.getLocale());
 
 		if (ctCollection != null) {
 			ctCollectionId = ctCollection.getCtCollectionId();

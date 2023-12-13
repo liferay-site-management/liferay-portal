@@ -95,7 +95,8 @@ public class GetEntryRenderDataMVCResourceCommand
 
 		try {
 			_customProductionName = PublicationUtil.getCustomProductionName(
-				_portal.getCompanyId(resourceRequest));
+				_portal.getCompanyId(resourceRequest),
+				resourceRequest.getLocale());
 
 			long ctEntryId = ParamUtil.getLong(resourceRequest, "ctEntryId");
 

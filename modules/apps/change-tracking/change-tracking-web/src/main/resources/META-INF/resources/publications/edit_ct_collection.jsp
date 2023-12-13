@@ -74,7 +74,7 @@ portletDisplay.setURLBack(redirect);
 			).put(
 				"ctRemoteId", (ctRemote != null) ? ctRemote.getCtRemoteId() : null
 			).put(
-				"customProductionName", LanguageUtil.get(request, PublicationUtil.getCustomProductionName(themeDisplay.getCompanyId()))
+				"customProductionName", LanguageUtil.get(request, PublicationUtil.getCustomProductionName(themeDisplay.getCompanyId(), themeDisplay.getLocale()))
 			).put(
 				"defaultCTCollectionTemplateId", request.getAttribute(CTWebKeys.DEFAULT_CT_COLLECTION_TEMPLATE_ID)
 			).put(
