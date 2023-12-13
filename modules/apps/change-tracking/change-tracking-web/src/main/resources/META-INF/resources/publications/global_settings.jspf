@@ -71,7 +71,7 @@
 
 		<clay:alert
 			displayType="info"
-			message="using-a-custom-production-name-requires-you-to-set-your-chosen-replacement-term-in-the-publications-instance-settings-page-and-to-optionally-create-translations-for-the-replacement-term-in-the-language-override-portlet-these-configuration-pages-are-linked-below"
+			message="using-a-custom-production-name-requires-you-to-set-your-chosen-replacement-term-and-its-translations-in-the-publications-instance-settings-page"
 		/>
 
 		<div class="sheet-text"><liferay-ui:message key="replaces-usages-of-the-term-production-with-a-custom-name" /></div>
@@ -95,21 +95,6 @@
 				name="publicationsInstanceSettingsLink"
 				target="_blank"
 				value='<%= LanguageUtil.get(request, "go-to-publications-instance-settings") %>'
-			>
-			</aui:button>
-
-			<aui:button
-				href='<%=
-					PortletURLBuilder.create(
-						PortalUtil.getControlPanelPortletURL(request, "com_liferay_portal_language_override_web_internal_portlet_PLOPortlet", PortletRequest.RENDER_PHASE)
-					).setRedirect(
-						ParamUtil.getString(request, "backURL", currentURL)
-					).buildString()
-				%>'
-				icon="icon-new-window"
-				name="languagePortletLink"
-				target="_blank"
-				value='<%= LanguageUtil.get(request, "go-to-language-override-portlet") %>'
 			>
 			</aui:button>
 		</div>
