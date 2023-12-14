@@ -437,7 +437,9 @@ public class DLFileEntryLocalServiceImpl
 
 		latestDLFileVersion.setChangeLog(changeLog);
 		latestDLFileVersion.setVersion(
-			_getNextVersion(dlFileEntry, computedDLVersionNumberIncrease));
+			_getNextVersion(
+				dlFileEntry, lastDLFileVersion,
+				computedDLVersionNumberIncrease));
 		latestDLFileVersion.setStoreUUID(String.valueOf(UUID.randomUUID()));
 
 		latestDLFileVersion = _dlFileVersionPersistence.update(
@@ -2841,15 +2843,11 @@ public class DLFileEntryLocalServiceImpl
 	}
 
 	private String _getNextVersion(
-			DLFileEntry dlFileEntry,
+			DLFileEntry dlFileEntry, DLFileVersion dlFileVersion,
 			DLVersionNumberIncrease dlVersionNumberIncrease)
 		throws InvalidFileVersionException {
 
 		String version = dlFileEntry.getVersion();
-
-		DLFileVersion dlFileVersion =
-			_dlFileVersionLocalService.fetchLatestFileVersion(
-				dlFileEntry.getFileEntryId(), true);
 
 		if (dlFileVersion != null) {
 			version = dlFileVersion.getVersion();
