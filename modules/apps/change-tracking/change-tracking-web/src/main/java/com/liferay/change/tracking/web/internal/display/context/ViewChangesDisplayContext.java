@@ -296,8 +296,7 @@ public class ViewChangesDisplayContext {
 			try {
 				if (!_user.isOnDemandUser()) {
 					ctClosure = _ctClosureFactory.create(
-						_ctCollection.getCtCollectionId(),
-						_portal.getClassNameId(Group.class));
+						_ctCollection.getCtCollectionId());
 				}
 				else {
 					ctClosure = _ctClosureFactory.create(
