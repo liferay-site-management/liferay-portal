@@ -319,13 +319,16 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 					_language.get(themeDisplay.getLocale(), "production"));
 
 			if (!conflictInfoMap.isEmpty()) {
+				CTConfiguration ctConfiguration = _getCTConfiguration(
+					themeDisplay.getCompanyId());
+
 				data.put(
 					"conflictIconClass",
 					"change-tracking-conflict-icon-danger");
 				data.put(
 					"conflictIconLabel",
-					_language.get(
-						themeDisplay.getLocale(), "conflict-detected-help"));
+					_language.format(
+						themeDisplay.getLocale(), "conflict-detected-help-x", ctConfiguration.customProductionName(), true));
 				data.put("conflictIconName", "warning-full");
 			}
 			else if (possibleConflictCollection != null) {
@@ -449,17 +452,17 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 					"title",
 					StringBundler.concat(
 						ctCollection.getName(), " (",
-						_language.get(
-							themeDisplay.getLocale(), "production-only-title"),
+						_language.format(
+							themeDisplay.getLocale(), "x-only-title", customProductionName, true),
 						")"));
 				data.put(
 					"warningHeader",
-					_language.get(
-						themeDisplay.getLocale(), "production-only-title"));
+					_language.format(
+						themeDisplay.getLocale(), "x-only-title", customProductionName, true));
 				data.put(
 					"warningBody",
-					_language.get(
-						themeDisplay.getLocale(), "production-only-message"));
+					_language.format(
+						themeDisplay.getLocale(), "x-only-message", customProductionName, true));
 				data.put("warningLearnLink", null);
 				data.put("warningButton", false);
 			}
@@ -479,9 +482,9 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 						"unsupported-application-title"));
 				data.put(
 					"warningBody",
-					_language.get(
+					_language.format(
 						themeDisplay.getLocale(),
-						"unsupported-application-message"));
+						"unsupported-application-message-x", customProductionName, true));
 				data.put("warningLearnLink", null);
 				data.put("warningButton", true);
 			}
