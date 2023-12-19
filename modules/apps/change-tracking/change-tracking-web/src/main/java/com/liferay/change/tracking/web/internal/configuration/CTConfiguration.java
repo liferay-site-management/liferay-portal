@@ -25,6 +25,13 @@ import com.liferay.portal.kernel.settings.LocalizedValuesMap;
 public interface CTConfiguration {
 
 	@Meta.AD(
+		deflt = "production",
+		description = "replaces-usages-of-the-term-production-with-a-custom-name",
+		name = "custom-production-name", required = false
+	)
+	public LocalizedValuesMap customProductionName();
+
+	@Meta.AD(
 		description = "hidden-applications-help", name = "hidden-applications",
 		required = false
 	)
@@ -43,12 +50,5 @@ public interface CTConfiguration {
 		name = "unsupported-application", required = false
 	)
 	public String[] unsupportedApplication();
-
-	@Meta.AD(
-		deflt = "production",
-		description = "replaces-usages-of-the-term-production-with-a-custom-name",
-		name = "custom-production-name", required = false
-	)
-	public LocalizedValuesMap customProductionName();
 
 }
