@@ -200,12 +200,7 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 				LocalizedValuesMap localizedValuesMap =
 					ctConfiguration.customProductionName();
 
-				String customProductionName = localizedValuesMap.get(
-					themeDisplay.getLocale());
-
-				writer.write(
-					_language.get(
-						themeDisplay.getLocale(), customProductionName));
+				writer.write(localizedValuesMap.get(themeDisplay.getLocale()));
 			}
 			else {
 				writer.write(HtmlUtil.escape(ctCollection.getName()));
@@ -306,10 +301,6 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 					_language.get(themeDisplay.getLocale(), "production"));
 
 			if (!conflictInfoMap.isEmpty()) {
-				CTConfiguration ctConfiguration =
-					PublicationUtil.getCTConfiguration(
-						themeDisplay.getCompanyId());
-
 				data.put(
 					"conflictIconClass",
 					"change-tracking-conflict-icon-danger");
@@ -317,7 +308,10 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 					"conflictIconLabel",
 					_language.format(
 						themeDisplay.getLocale(), "conflict-detected-help-x",
-						ctConfiguration.customProductionName(), true));
+						PublicationUtil.getCustomProductionName(
+							themeDisplay.getCompanyId(),
+							themeDisplay.getLocale()),
+						false));
 				data.put("conflictIconName", "warning-full");
 			}
 			else if (possibleConflictCollection != null) {
@@ -426,18 +420,18 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 						ctCollection.getName(), " (",
 						_language.format(
 							themeDisplay.getLocale(), "x-only-title",
-							customProductionName, true),
+							customProductionName, false),
 						")"));
 				data.put(
 					"warningHeader",
 					_language.format(
 						themeDisplay.getLocale(), "x-only-title",
-						customProductionName, true));
+						customProductionName, false));
 				data.put(
 					"warningBody",
 					_language.format(
 						themeDisplay.getLocale(), "x-only-message",
-						customProductionName, true));
+						customProductionName, false));
 				data.put("warningLearnLink", null);
 				data.put("warningButton", false);
 			}
@@ -460,7 +454,7 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 					_language.format(
 						themeDisplay.getLocale(),
 						"unsupported-application-message-x",
-						customProductionName, true));
+						customProductionName, false));
 				data.put("warningLearnLink", null);
 				data.put("warningButton", true);
 			}
@@ -471,9 +465,7 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 		else {
 			data.put("iconClass", "change-tracking-indicator-icon-production");
 			data.put("iconName", "simple-circle");
-			data.put(
-				"title",
-				_language.get(themeDisplay.getLocale(), customProductionName));
+			data.put("title", customProductionName);
 		}
 
 		if (ctPreferences != null) {
@@ -524,14 +516,14 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 								themeDisplay.getLocale(),
 								"any-changes-made-in-x-will-immediately-be-" +
 									"live.-continue-to-x",
-								customProductionName, true)
+								customProductionName, false)
 						).put(
 							"href", checkoutURL.toString()
 						).put(
 							"label",
 							_language.format(
 								themeDisplay.getLocale(), "work-on-x",
-								customProductionName, true)
+								customProductionName, false)
 						).put(
 							"symbolLeft", "simple-circle"
 						));

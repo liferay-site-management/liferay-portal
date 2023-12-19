@@ -324,16 +324,12 @@ public class GetEntryRenderDataMVCResourceCommand
 						leftModel);
 
 					if (Validator.isNull(leftVersionName)) {
-						leftTitle = _language.get(
-							httpServletRequest, _customProductionName);
+						leftTitle = _customProductionName;
 					}
 					else {
 						leftTitle = StringBundler.concat(
 							_language.get(httpServletRequest, "version"), ": ",
-							leftVersionName, " (",
-							_language.get(
-								httpServletRequest, _customProductionName),
-							")");
+							leftVersionName, " (", _customProductionName, ")");
 					}
 
 					rightTitle = StringBundler.concat(
@@ -372,8 +368,7 @@ public class GetEntryRenderDataMVCResourceCommand
 		else if (ctEntry.getChangeType() !=
 					CTConstants.CT_CHANGE_TYPE_ADDITION) {
 
-			leftTitle = _language.get(
-				httpServletRequest, _customProductionName);
+			leftTitle = _customProductionName;
 
 			leftModel = _ctDisplayRendererRegistry.fetchCTModel(
 				leftCtCollectionId, leftCTSQLMode,
@@ -863,8 +858,7 @@ public class GetEntryRenderDataMVCResourceCommand
 				0, CTSQLModeThreadLocal.CTSQLMode.DEFAULT,
 				themeDisplay.getLocale(), model, CTConstants.TYPE_BEFORE)
 		).put(
-			"leftTitle",
-			_language.get(httpServletRequest, _customProductionName)
+			"leftTitle", _customProductionName
 		);
 	}
 

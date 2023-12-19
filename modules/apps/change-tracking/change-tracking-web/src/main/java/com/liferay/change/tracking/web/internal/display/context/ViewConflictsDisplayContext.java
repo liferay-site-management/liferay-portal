@@ -112,10 +112,8 @@ public class ViewConflictsDisplayContext {
 
 		return HashMapBuilder.<String, Object>put(
 			"customProductionName",
-			_language.get(
-				_themeDisplay.getLocale(),
-				PublicationUtil.getCustomProductionName(
-					_themeDisplay.getCompanyId(), _themeDisplay.getLocale()))
+			PublicationUtil.getCustomProductionName(
+				_themeDisplay.getCompanyId(), _themeDisplay.getLocale())
 		).put(
 			"hasUnapprovedChanges", _hasUnapprovedChanges
 		).put(
