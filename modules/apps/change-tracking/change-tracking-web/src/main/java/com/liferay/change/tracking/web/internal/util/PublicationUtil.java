@@ -6,10 +6,14 @@
 package com.liferay.change.tracking.web.internal.util;
 
 import com.liferay.change.tracking.web.internal.configuration.CTConfiguration;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProviderUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.settings.LocalizedValuesMap;
 
+import java.util.Collections;
 import java.util.Locale;
 
 /**
@@ -20,8 +24,16 @@ public class PublicationUtil {
 	public static CTConfiguration getCTConfiguration(long companyId)
 		throws ConfigurationException {
 
-		return ConfigurationProviderUtil.getCompanyConfiguration(
-			CTConfiguration.class, companyId);
+		try {
+			return ConfigurationProviderUtil.getCompanyConfiguration(
+				CTConfiguration.class, companyId);
+		}
+		catch (ConfigurationException configurationException) {
+			_log.error(configurationException);
+		}
+
+		return ConfigurableUtil.createConfigurable(
+			CTConfiguration.class, Collections.emptyMap());
 	}
 
 	public static String getCustomProductionName(long companyId, Locale locale)
@@ -34,5 +46,8 @@ public class PublicationUtil {
 
 		return localizedValuesMap.get(locale);
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		PublicationUtil.class);
 
 }

@@ -34,7 +34,6 @@ import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -45,7 +44,6 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.portlet.PortalPreferences;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
@@ -91,16 +89,12 @@ import javax.servlet.jsp.JspException;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Samuel Trong Tran
  */
-@Component(
-	configurationPid = "com.liferay.change.tracking.web.internal.configuration.CTConfiguration",
-	service = DynamicInclude.class
-)
+@Component(service = DynamicInclude.class)
 public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 
 	@Override
@@ -178,8 +172,8 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 					ctPreferences.getCtCollectionId());
 			}
 
-			CTConfiguration ctConfiguration = _getCTConfiguration(
-				themeDisplay.getCompanyId());
+			CTConfiguration ctConfiguration =
+				PublicationUtil.getCTConfiguration(themeDisplay.getCompanyId());
 
 			String portletId = ParamUtil.getString(
 				httpServletRequest, "p_p_id");
@@ -275,13 +269,6 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 			new DefaultCTCollectionHistoryProvider<>();
 	}
 
-	@Activate
-	@Modified
-	protected void activate(Map<String, Object> properties) {
-		_defaultCTConfiguration = ConfigurableUtil.createConfigurable(
-			CTConfiguration.class, properties);
-	}
-
 	private void _getConflictIconData(
 			long classNameId, long classPK, CTCollection currentCTCollection,
 			Map<String, Object> data, CTCollection possibleConflictCollection,
@@ -319,8 +306,9 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 					_language.get(themeDisplay.getLocale(), "production"));
 
 			if (!conflictInfoMap.isEmpty()) {
-				CTConfiguration ctConfiguration = _getCTConfiguration(
-					themeDisplay.getCompanyId());
+				CTConfiguration ctConfiguration =
+					PublicationUtil.getCTConfiguration(
+						themeDisplay.getCompanyId());
 
 				data.put(
 					"conflictIconClass",
@@ -328,7 +316,8 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 				data.put(
 					"conflictIconLabel",
 					_language.format(
-						themeDisplay.getLocale(), "conflict-detected-help-x", ctConfiguration.customProductionName(), true));
+						themeDisplay.getLocale(), "conflict-detected-help-x",
+						ctConfiguration.customProductionName(), true));
 				data.put("conflictIconName", "warning-full");
 			}
 			else if (possibleConflictCollection != null) {
@@ -352,17 +341,6 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 					themeDisplay.getLocale(), "no-modifications-help"));
 			data.put("conflictIconName", "check");
 		}
-	}
-
-	private CTConfiguration _getCTConfiguration(long companyId) {
-		try {
-			return PublicationUtil.getCTConfiguration(companyId);
-		}
-		catch (ConfigurationException configurationException) {
-			_log.error(configurationException);
-		}
-
-		return _defaultCTConfiguration;
 	}
 
 	private Map<String, Object> _getReactData(
@@ -432,14 +410,8 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 
 		long ctCollectionId = CTConstants.CT_COLLECTION_ID_PRODUCTION;
 
-		CTConfiguration ctConfiguration = _getCTConfiguration(
-			themeDisplay.getCompanyId());
-
-		LocalizedValuesMap localizedValuesMap =
-			ctConfiguration.customProductionName();
-
-		String customProductionName = localizedValuesMap.get(
-			themeDisplay.getLocale());
+		String customProductionName = PublicationUtil.getCustomProductionName(
+			themeDisplay.getCompanyId(), themeDisplay.getLocale());
 
 		if (ctCollection != null) {
 			ctCollectionId = ctCollection.getCtCollectionId();
@@ -453,16 +425,19 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 					StringBundler.concat(
 						ctCollection.getName(), " (",
 						_language.format(
-							themeDisplay.getLocale(), "x-only-title", customProductionName, true),
+							themeDisplay.getLocale(), "x-only-title",
+							customProductionName, true),
 						")"));
 				data.put(
 					"warningHeader",
 					_language.format(
-						themeDisplay.getLocale(), "x-only-title", customProductionName, true));
+						themeDisplay.getLocale(), "x-only-title",
+						customProductionName, true));
 				data.put(
 					"warningBody",
 					_language.format(
-						themeDisplay.getLocale(), "x-only-message", customProductionName, true));
+						themeDisplay.getLocale(), "x-only-message",
+						customProductionName, true));
 				data.put("warningLearnLink", null);
 				data.put("warningButton", false);
 			}
@@ -484,7 +459,8 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 					"warningBody",
 					_language.format(
 						themeDisplay.getLocale(),
-						"unsupported-application-message-x", customProductionName, true));
+						"unsupported-application-message-x",
+						customProductionName, true));
 				data.put("warningLearnLink", null);
 				data.put("warningButton", true);
 			}
@@ -820,7 +796,6 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 	private CTSettingsConfigurationHelper _ctSettingsConfigurationHelper;
 
 	private CTCollectionHistoryProvider<?> _defaultCTCollectionHistoryProvider;
-	private volatile CTConfiguration _defaultCTConfiguration;
 
 	@Reference
 	private FastDateFormatFactory _fastDateFormatFactory;
