@@ -22,7 +22,6 @@ import com.liferay.portal.kernel.cache.PortalCacheManagerListener;
 import com.liferay.portal.kernel.cache.key.CacheKeyGenerator;
 import com.liferay.portal.kernel.cache.key.CacheKeyGeneratorUtil;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheKey;
 import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.cluster.ClusterExecutor;
 import com.liferay.portal.kernel.cluster.ClusterInvokeThreadLocal;
@@ -153,14 +152,16 @@ public class FinderCacheImpl
 		Serializable cacheValue = null;
 
 		if (_isCTCacheEnabled()) {
-			CTCacheKey ctCacheKey = new CTCacheKey(
-				finderPath.getCacheName(),
-				CTCollectionThreadLocal.getCTCollectionId(), cacheKey);
-
 			PortalCache<Serializable, Serializable> ctPortalCache =
 				_getCTPortalCache(finderPath.getCacheName());
 
-			cacheValue = ctPortalCache.get(ctCacheKey);
+			ConcurrentHashMap<Serializable, Serializable> cacheValues =
+				(ConcurrentHashMap)ctPortalCache.get(cacheKey);
+
+			if (cacheValues != null) {
+				cacheValue = cacheValues.get(
+					CTCollectionThreadLocal.getCTCollectionId());
+			}
 		}
 
 		Map<LocalCacheKey, Serializable> localCache = null;
@@ -348,13 +349,22 @@ public class FinderCacheImpl
 		Serializable cacheKey = _encodeCacheKey(finderPath, args);
 
 		if (_isCTCacheEnabled()) {
-			CTCacheKey ctCacheKey = new CTCacheKey(
-				finderPath.getCacheName(),
-				CTCollectionThreadLocal.getCTCollectionId(), cacheKey);
+			PortalCache<Serializable, Serializable> ctPortalCache =
+				_getCTPortalCache(finderPath.getCacheName());
+
+			ConcurrentHashMap<Serializable, Serializable> cacheValues =
+				(ConcurrentHashMap)ctPortalCache.get(cacheKey);
+
+			if (cacheValues == null) {
+				cacheValues = new ConcurrentHashMap<>();
+			}
+
+			cacheValues.put(
+				CTCollectionThreadLocal.getCTCollectionId(), cacheValue);
 
 			PortalCacheHelperUtil.putWithoutReplicator(
-				_getCTPortalCache(finderPath.getCacheName()), ctCacheKey,
-				cacheValue);
+				_getCTPortalCache(finderPath.getCacheName()), cacheKey,
+				cacheValues);
 
 			return;
 		}
@@ -825,7 +835,12 @@ public class FinderCacheImpl
 		PortalCache<Serializable, Serializable> ctPortalCache =
 			_getCTPortalCache(finderPath.getCacheName());
 
-		ctPortalCache.removeAll();
+		ConcurrentHashMap<Serializable, Serializable> cacheValues =
+			(ConcurrentHashMap)ctPortalCache.get(cacheKey);
+
+		if (cacheValues != null) {
+			cacheValues.clear();
+		}
 
 		if (_isLocalCacheEnabled()) {
 			Map<LocalCacheKey, Serializable> localCache = _localCache.get();

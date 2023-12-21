@@ -6,13 +6,14 @@
 package com.liferay.portal.dao.orm.hibernate.event;
 
 import com.liferay.portal.kernel.cache.PortalCache;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheKey;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.MVCCModel;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
 
 import java.io.Serializable;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.event.spi.PostUpdateEvent;
 import org.hibernate.event.spi.PostUpdateEventListener;
@@ -53,10 +54,16 @@ public class MVCCSynchronizerPostUpdateEventListener
 						return;
 					}
 
-					Serializable ctEntityCacheResult = ctPortalCache.get(
-						new CTCacheKey(
-							modelClass.getName(), ctModel.getCtCollectionId(),
-							primaryKeyObj));
+					ConcurrentHashMap<Serializable, Serializable>
+						ctEntityCacheResults =
+							(ConcurrentHashMap)ctPortalCache.get(primaryKeyObj);
+
+					if (ctEntityCacheResults == null) {
+						return;
+					}
+
+					Serializable ctEntityCacheResult = ctEntityCacheResults.get(
+						ctModel.getCtCollectionId());
 
 					if (ctEntityCacheResult != null) {
 						MVCCModel ctEntityCacheMVCCModel =

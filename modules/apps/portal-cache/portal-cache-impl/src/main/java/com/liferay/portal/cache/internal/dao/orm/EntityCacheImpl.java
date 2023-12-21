@@ -17,7 +17,6 @@ import com.liferay.portal.kernel.cache.PortalCacheHelperUtil;
 import com.liferay.portal.kernel.cache.PortalCacheManager;
 import com.liferay.portal.kernel.cache.PortalCacheManagerListener;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheKey;
 import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.cluster.ClusterExecutor;
 import com.liferay.portal.kernel.cluster.ClusterInvokeThreadLocal;
@@ -123,7 +122,7 @@ public class EntityCacheImpl
 		ctPortalCache =
 			(PortalCache<Serializable, Serializable>)
 				_multiVMPool.getPortalCache(
-					groupKey, true, DBPartition.isPartitionedModel(clazz));
+					groupKey, false, DBPartition.isPartitionedModel(clazz));
 
 		PortalCache<Serializable, Serializable> previousCTPortalCache =
 			_ctPortalCaches.putIfAbsent(className, ctPortalCache);
@@ -198,14 +197,16 @@ public class EntityCacheImpl
 		Serializable result = null;
 
 		if (_isCTCacheEnabled()) {
-			CTCacheKey ctCacheKey = new CTCacheKey(
-				clazz.getName(), CTCollectionThreadLocal.getCTCollectionId(),
-				primaryKey);
-
 			PortalCache<Serializable, Serializable> ctPortalCache =
 				getCTPortalCache(clazz);
 
-			result = ctPortalCache.get(ctCacheKey);
+			ConcurrentHashMap<Serializable, Serializable> results =
+				(ConcurrentHashMap)ctPortalCache.get(primaryKey);
+
+			if (results != null) {
+				result = results.get(
+					CTCollectionThreadLocal.getCTCollectionId());
+			}
 
 			if (result == null) {
 				result = StringPool.BLANK;
@@ -455,18 +456,26 @@ public class EntityCacheImpl
 			CTModel<?> ctModel = (CTModel<?>)baseModel;
 
 			if (ctModel.getCtCollectionId() != 0) {
-				CTCacheKey ctCacheKey = new CTCacheKey(
-					clazz.getName(), ctModel.getCtCollectionId(), primaryKey);
-
 				PortalCache<Serializable, Serializable> ctPortalCache =
 					getCTPortalCache(clazz);
 
+				ConcurrentHashMap<Serializable, Serializable> results =
+					(ConcurrentHashMap)ctPortalCache.get(primaryKey);
+
+				if (results == null) {
+					results = new ConcurrentHashMap<>();
+
+					ctPortalCache.put(primaryKey, results);
+				}
+
+				results.put(ctModel.getCtCollectionId(), result);
+
 				if (quiet) {
 					PortalCacheHelperUtil.putWithoutReplicator(
-						ctPortalCache, ctCacheKey, result);
+						ctPortalCache, primaryKey, results);
 				}
 				else {
-					ctPortalCache.put(ctCacheKey, result);
+					ctPortalCache.put(primaryKey, results);
 				}
 
 				return;
@@ -509,7 +518,12 @@ public class EntityCacheImpl
 			PortalCache<Serializable, Serializable> ctPortalCache =
 				getCTPortalCache(clazz);
 
-			ctPortalCache.removeAll();
+			ConcurrentHashMap<Serializable, Serializable> results =
+				(ConcurrentHashMap)ctPortalCache.get(primaryKey);
+
+			if (results != null) {
+				results.clear();
+			}
 		}
 
 		if (_isLocalCacheEnabled()) {
