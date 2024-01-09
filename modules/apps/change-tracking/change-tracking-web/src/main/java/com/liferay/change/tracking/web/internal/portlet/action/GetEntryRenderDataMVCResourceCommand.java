@@ -189,28 +189,22 @@ public class GetEntryRenderDataMVCResourceCommand
 				ctEntry.getModelClassPK());
 
 			if (rightModel != null) {
-				if ((ctCollection.getStatus() ==
-						WorkflowConstants.STATUS_DRAFT) ||
-					(ctCollection.getStatus() ==
-						WorkflowConstants.STATUS_PENDING)) {
+				String editURL = _ctDisplayRendererRegistry.getEditURL(
+					ctCollectionId, ctSQLMode, httpServletRequest, rightModel,
+					ctEntry.getModelClassNameId());
 
-					String editURL = _ctDisplayRendererRegistry.getEditURL(
-						ctCollectionId, ctSQLMode, httpServletRequest,
-						rightModel, ctEntry.getModelClassNameId());
-
-					if (Validator.isNotNull(editURL)) {
-						editInPublicationJSONObject = _getEditJSONObject(
-							_language.format(
-								httpServletRequest,
-								"you-are-currently-working-on-production.-" +
-									"work-on-x",
-								new Object[] {ctCollection.getName()}, false),
-							ctCollection.getCtCollectionId(), editURL,
-							_language.format(
-								httpServletRequest, "edit-in-x",
-								new Object[] {ctCollection.getName()}, false),
-							resourceRequest, resourceResponse);
-					}
+				if (Validator.isNotNull(editURL)) {
+					editInPublicationJSONObject = _getEditJSONObject(
+						_language.format(
+							httpServletRequest,
+							"you-are-currently-working-on-production.-work-" +
+								"on-x",
+							new Object[] {ctCollection.getName()}, false),
+						ctCollection.getCtCollectionId(), editURL,
+						_language.format(
+							httpServletRequest, "edit-in-x",
+							new Object[] {ctCollection.getName()}, false),
+						resourceRequest, resourceResponse);
 				}
 
 				if (localize) {

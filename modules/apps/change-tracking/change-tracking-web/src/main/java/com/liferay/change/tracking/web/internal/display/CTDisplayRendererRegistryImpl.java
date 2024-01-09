@@ -8,6 +8,7 @@ package com.liferay.change.tracking.web.internal.display;
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
+import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.spi.display.CTDisplayRenderer;
 import com.liferay.change.tracking.spi.display.CTDisplayRendererRegistry;
@@ -285,6 +286,19 @@ public class CTDisplayRendererRegistryImpl
 			return null;
 		}
 
+		if (ctCollectionId != CTConstants.CT_COLLECTION_ID_PRODUCTION) {
+			CTCollection ctCollection =
+				_ctCollectionLocalService.fetchCTCollection(ctCollectionId);
+
+			if ((ctCollection == null) ||
+				((ctCollection.getStatus() != WorkflowConstants.STATUS_DRAFT) &&
+				 (ctCollection.getStatus() !=
+					 WorkflowConstants.STATUS_PENDING))) {
+
+				return null;
+			}
+		}
+
 		try (SafeCloseable safeCloseable1 =
 				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
 					ctCollectionId);
@@ -498,6 +512,9 @@ public class CTDisplayRendererRegistryImpl
 
 	@Reference
 	private ClassNameLocalService _classNameLocalService;
+
+	@Reference
+	private CTCollectionLocalService _ctCollectionLocalService;
 
 	private ServiceTrackerMap<Long, CTDisplayRenderer<?>>
 		_ctDisplayServiceTrackerMap;
