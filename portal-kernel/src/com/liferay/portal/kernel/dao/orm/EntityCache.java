@@ -24,9 +24,6 @@ public interface EntityCache {
 
 	public void clearLocalCache();
 
-	public PortalCache<Serializable, Serializable> getCTPortalCache(
-		Class<?> clazz);
-
 	public Serializable getLocalCacheResult(
 		Class<?> clazz, Serializable primaryKey);
 
