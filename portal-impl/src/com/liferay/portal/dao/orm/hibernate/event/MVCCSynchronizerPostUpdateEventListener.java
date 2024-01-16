@@ -9,11 +9,8 @@ import com.liferay.portal.kernel.cache.PortalCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.MVCCModel;
-import com.liferay.portal.kernel.model.change.tracking.CTModel;
 
 import java.io.Serializable;
-
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.event.spi.PostUpdateEvent;
 import org.hibernate.event.spi.PostUpdateEventListener;
@@ -42,39 +39,6 @@ public class MVCCSynchronizerPostUpdateEventListener
 			BaseModel<?> baseModel = (BaseModel<?>)entity;
 
 			Serializable primaryKeyObj = baseModel.getPrimaryKeyObj();
-
-			if (entity instanceof CTModel) {
-				CTModel<?> ctModel = (CTModel<?>)entity;
-
-				if (ctModel.getCtCollectionId() != 0) {
-					PortalCache<Serializable, Serializable> ctPortalCache =
-						EntityCacheUtil.getCTPortalCache(modelClass);
-
-					if (ctPortalCache == null) {
-						return;
-					}
-
-					ConcurrentHashMap<Serializable, Serializable>
-						ctEntityCacheResults =
-							(ConcurrentHashMap)ctPortalCache.get(primaryKeyObj);
-
-					if (ctEntityCacheResults == null) {
-						return;
-					}
-
-					Serializable ctEntityCacheResult = ctEntityCacheResults.get(
-						ctModel.getCtCollectionId());
-
-					if (ctEntityCacheResult != null) {
-						MVCCModel ctEntityCacheMVCCModel =
-							(MVCCModel)ctEntityCacheResult;
-
-						ctEntityCacheMVCCModel.setMvccVersion(mvccVersion);
-					}
-
-					return;
-				}
-			}
 
 			Serializable localCacheResult = EntityCacheUtil.getLocalCacheResult(
 				modelClass, primaryKeyObj);

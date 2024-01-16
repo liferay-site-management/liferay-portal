@@ -10,7 +10,6 @@ import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory
 import com.liferay.petra.concurrent.DCLSingleton;
 import com.liferay.petra.lang.CentralizedThreadLocal;
 import com.liferay.petra.lang.HashUtil;
-import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.cache.CacheRegistryItem;
 import com.liferay.portal.kernel.cache.CacheRegistryUtil;
@@ -21,7 +20,6 @@ import com.liferay.portal.kernel.cache.PortalCacheManager;
 import com.liferay.portal.kernel.cache.PortalCacheManagerListener;
 import com.liferay.portal.kernel.cache.key.CacheKeyGenerator;
 import com.liferay.portal.kernel.cache.key.CacheKeyGeneratorUtil;
-import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.cluster.ClusterExecutor;
 import com.liferay.portal.kernel.cluster.ClusterInvokeThreadLocal;
@@ -87,10 +85,6 @@ public class FinderCacheImpl
 
 	@Override
 	public void clearCache() {
-		for (PortalCache<?, ?> ctPortalCache : _ctPortalCaches.values()) {
-			ctPortalCache.removeAll();
-		}
-
 		clearLocalCache();
 
 		for (PortalCache<?, ?> portalCache : _portalCaches.values()) {
@@ -150,24 +144,10 @@ public class FinderCacheImpl
 
 		Serializable cacheKey = _encodeCacheKey(finderPath, args);
 		Serializable cacheValue = null;
-
-		if (_isCTCacheEnabled()) {
-			PortalCache<Serializable, Serializable> ctPortalCache =
-				_getCTPortalCache(finderPath.getCacheName());
-
-			ConcurrentHashMap<Serializable, Serializable> cacheValues =
-				(ConcurrentHashMap)ctPortalCache.get(cacheKey);
-
-			if (cacheValues != null) {
-				cacheValue = cacheValues.get(
-					CTCollectionThreadLocal.getCTCollectionId());
-			}
-		}
-
 		Map<LocalCacheKey, Serializable> localCache = null;
 		LocalCacheKey localCacheKey = null;
 
-		if (_isLocalCacheEnabled() && !_isCTCacheEnabled()) {
+		if (_isLocalCacheEnabled()) {
 			localCache = _localCache.get();
 
 			localCacheKey = new LocalCacheKey(
@@ -176,7 +156,7 @@ public class FinderCacheImpl
 			cacheValue = localCache.get(localCacheKey);
 		}
 
-		if ((cacheValue == null) && !_isCTCacheEnabled()) {
+		if (cacheValue == null) {
 			PortalCache<Serializable, Serializable> portalCache =
 				_getPortalCache(finderPath.getCacheName());
 
@@ -250,9 +230,6 @@ public class FinderCacheImpl
 	@Override
 	public void notifyPortalCacheRemoved(String portalCacheName) {
 		if (portalCacheName.startsWith(_GROUP_KEY_PREFIX)) {
-			_ctPortalCaches.remove(
-				portalCacheName.substring(_GROUP_KEY_PREFIX.length() + 3));
-
 			_portalCaches.remove(
 				portalCacheName.substring(_GROUP_KEY_PREFIX.length()));
 		}
@@ -348,27 +325,6 @@ public class FinderCacheImpl
 
 		Serializable cacheKey = _encodeCacheKey(finderPath, args);
 
-		if (_isCTCacheEnabled()) {
-			PortalCache<Serializable, Serializable> ctPortalCache =
-				_getCTPortalCache(finderPath.getCacheName());
-
-			ConcurrentHashMap<Serializable, Serializable> cacheValues =
-				(ConcurrentHashMap)ctPortalCache.get(cacheKey);
-
-			if (cacheValues == null) {
-				cacheValues = new ConcurrentHashMap<>();
-			}
-
-			cacheValues.put(
-				CTCollectionThreadLocal.getCTCollectionId(), cacheValue);
-
-			PortalCacheHelperUtil.putWithoutReplicator(
-				_getCTPortalCache(finderPath.getCacheName()), cacheKey,
-				cacheValues);
-
-			return;
-		}
-
 		if (_isLocalCacheEnabled()) {
 			Map<LocalCacheKey, Serializable> localCache = _localCache.get();
 
@@ -415,13 +371,10 @@ public class FinderCacheImpl
 
 	@Override
 	public void removeCache(String className) {
-		_ctPortalCaches.remove(className);
+		CTAwarePortalCache ctAwarePortalCache =
+			(CTAwarePortalCache)_portalCaches.remove(className);
 
-		_portalCaches.remove(className);
-
-		String groupKey = _GROUP_KEY_PREFIX.concat(className);
-
-		_multiVMPool.removePortalCache(groupKey);
+		ctAwarePortalCache.destroy();
 
 		_finderPathsMap.remove(className);
 	}
@@ -579,10 +532,6 @@ public class FinderCacheImpl
 	}
 
 	private void _clearCache(String cacheName) {
-		PortalCache<?, ?> ctPortalCache = _getCTPortalCache(cacheName);
-
-		ctPortalCache.removeAll();
-
 		PortalCache<?, ?> portalCache = _getPortalCache(cacheName);
 
 		portalCache.removeAll();
@@ -668,74 +617,6 @@ public class FinderCacheImpl
 		return cacheName.concat(".List1");
 	}
 
-	private PortalCache<Serializable, Serializable> _getCTPortalCache(
-		String className) {
-
-		PortalCache<Serializable, Serializable> ctPortalCache =
-			_ctPortalCaches.get(className);
-
-		if (ctPortalCache != null) {
-			return ctPortalCache;
-		}
-
-		boolean sharded = false;
-
-		if (DBPartition.isPartitionEnabled()) {
-			String modleImplClassName = className;
-
-			if (className.endsWith(".List1") || className.endsWith(".List2")) {
-				modleImplClassName = className.substring(
-					0, className.length() - 6);
-			}
-
-			ArgumentsResolverHolder argumentsResolverHolder =
-				_serviceTrackerMap.getService(modleImplClassName);
-
-			if (argumentsResolverHolder != null) {
-				ArgumentsResolver argumentsResolver =
-					argumentsResolverHolder.getArgumentsResolver();
-
-				if (!Objects.equals(
-						argumentsResolver.getClassName(),
-						argumentsResolver.getTableName())) {
-
-					Class<?> clazz = argumentsResolver.getClass();
-
-					ClassLoader classLoader = clazz.getClassLoader();
-
-					try {
-						Class<?> modelImplClass = classLoader.loadClass(
-							argumentsResolver.getClassName());
-
-						sharded = DBPartition.isPartitionedModel(
-							modelImplClass);
-					}
-					catch (ClassNotFoundException classNotFoundException) {
-						if (_log.isWarnEnabled()) {
-							_log.warn(classNotFoundException);
-						}
-					}
-				}
-			}
-		}
-
-		String groupKey = StringBundler.concat(
-			"CT#", _GROUP_KEY_PREFIX, className);
-
-		ctPortalCache =
-			(PortalCache<Serializable, Serializable>)
-				_multiVMPool.getPortalCache(groupKey, false, sharded);
-
-		PortalCache<Serializable, Serializable> previousCTPortalCache =
-			_ctPortalCaches.putIfAbsent(className, ctPortalCache);
-
-		if (previousCTPortalCache != null) {
-			return previousCTPortalCache;
-		}
-
-		return ctPortalCache;
-	}
-
 	private Collection<FinderPath> _getFinderPaths(String cacheName) {
 		Map<String, FinderPath> finderPaths = _finderPathsMap.get(cacheName);
 
@@ -799,9 +680,8 @@ public class FinderCacheImpl
 
 		String groupKey = _GROUP_KEY_PREFIX.concat(className);
 
-		portalCache =
-			(PortalCache<Serializable, Serializable>)
-				_multiVMPool.getPortalCache(groupKey, false, sharded);
+		portalCache = new CTAwarePortalCache(
+			_multiVMPool, groupKey, false, sharded);
 
 		PortalCache<Serializable, Serializable> previousPortalCache =
 			_portalCaches.putIfAbsent(className, portalCache);
@@ -813,16 +693,18 @@ public class FinderCacheImpl
 		return portalCache;
 	}
 
-	private boolean _isCTCacheEnabled() {
-		return CTCacheThreadLocal.isCTCacheEnabled();
-	}
-
 	private boolean _isLocalCacheEnabled() {
 		if (_localCache == null) {
 			return false;
 		}
 
-		return ThreadLocalFilterThreadLocal.isFilterInvoked();
+		if (ThreadLocalFilterThreadLocal.isFilterInvoked() &&
+			!CTCacheThreadLocal.isCTCacheEnabled()) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private void _removeResult(FinderPath finderPath, Object[] args) {
@@ -831,11 +713,6 @@ public class FinderCacheImpl
 		}
 
 		Serializable cacheKey = _encodeCacheKey(finderPath, args);
-
-		PortalCache<Serializable, Serializable> ctPortalCache =
-			_getCTPortalCache(finderPath.getCacheName());
-
-		ctPortalCache.remove(cacheKey);
 
 		if (_isLocalCacheEnabled()) {
 			Map<LocalCacheKey, Serializable> localCache = _localCache.get();
@@ -866,8 +743,6 @@ public class FinderCacheImpl
 	@Reference
 	private ClusterExecutor _clusterExecutor;
 
-	private final ConcurrentMap<String, PortalCache<Serializable, Serializable>>
-		_ctPortalCaches = new ConcurrentHashMap<>();
 	private final Map<String, Set<String>> _dslQueryCacheNamesMap =
 		new ConcurrentHashMap<>();
 	private final Map<String, Map<String, FinderPath>> _finderPathsMap =
