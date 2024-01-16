@@ -7,7 +7,6 @@ package com.liferay.portal.cache.internal.dao.orm;
 
 import com.liferay.petra.lang.CentralizedThreadLocal;
 import com.liferay.petra.lang.SafeCloseable;
-import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.cache.CacheRegistryItem;
 import com.liferay.portal.kernel.cache.CacheRegistryUtil;
@@ -16,7 +15,6 @@ import com.liferay.portal.kernel.cache.PortalCache;
 import com.liferay.portal.kernel.cache.PortalCacheHelperUtil;
 import com.liferay.portal.kernel.cache.PortalCacheManager;
 import com.liferay.portal.kernel.cache.PortalCacheManagerListener;
-import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.cluster.ClusterExecutor;
 import com.liferay.portal.kernel.cluster.ClusterInvokeThreadLocal;
@@ -67,10 +65,6 @@ public class EntityCacheImpl
 
 		clearLocalCache();
 
-		for (PortalCache<?, ?> ctPortalCache : _ctPortalCaches.values()) {
-			ctPortalCache.removeAll();
-		}
-
 		for (PortalCache<?, ?> portalCache : _portalCaches.values()) {
 			portalCache.removeAll();
 		}
@@ -81,10 +75,6 @@ public class EntityCacheImpl
 		_notifyFinderCache(clazz.getName(), null, false);
 
 		clearLocalCache();
-
-		PortalCache<?, ?> ctPortalCache = getCTPortalCache(clazz);
-
-		ctPortalCache.removeAll();
 
 		PortalCache<?, ?> portalCache = getPortalCache(clazz);
 
@@ -101,37 +91,6 @@ public class EntityCacheImpl
 	@Override
 	public void dispose() {
 		_portalCaches.clear();
-	}
-
-	@Override
-	public PortalCache<Serializable, Serializable> getCTPortalCache(
-		Class<?> clazz) {
-
-		String className = clazz.getName();
-
-		PortalCache<Serializable, Serializable> ctPortalCache =
-			_ctPortalCaches.get(className);
-
-		if (ctPortalCache != null) {
-			return ctPortalCache;
-		}
-
-		String groupKey = StringBundler.concat(
-			"CT#", _GROUP_KEY_PREFIX, className);
-
-		ctPortalCache =
-			(PortalCache<Serializable, Serializable>)
-				_multiVMPool.getPortalCache(
-					groupKey, false, DBPartition.isPartitionedModel(clazz));
-
-		PortalCache<Serializable, Serializable> previousCTPortalCache =
-			_ctPortalCaches.putIfAbsent(className, ctPortalCache);
-
-		if (previousCTPortalCache != null) {
-			return previousCTPortalCache;
-		}
-
-		return ctPortalCache;
 	}
 
 	@Override
@@ -173,10 +132,17 @@ public class EntityCacheImpl
 			mvcc = true;
 		}
 
-		portalCache =
-			(PortalCache<Serializable, Serializable>)
-				_multiVMPool.getPortalCache(
-					groupKey, mvcc, DBPartition.isPartitionedModel(clazz));
+		if (CTModel.class.isAssignableFrom(clazz)) {
+			portalCache = new CTAwarePortalCache(
+				_multiVMPool, groupKey, mvcc,
+				DBPartition.isPartitionedModel(clazz));
+		}
+		else {
+			portalCache =
+				(PortalCache<Serializable, Serializable>)
+					_multiVMPool.getPortalCache(
+						groupKey, mvcc, DBPartition.isPartitionedModel(clazz));
+		}
 
 		PortalCache<Serializable, Serializable> previousPortalCache =
 			_portalCaches.putIfAbsent(className, portalCache);
@@ -195,25 +161,6 @@ public class EntityCacheImpl
 		}
 
 		Serializable result = null;
-
-		if (_isCTCacheEnabled()) {
-			PortalCache<Serializable, Serializable> ctPortalCache =
-				getCTPortalCache(clazz);
-
-			ConcurrentHashMap<Serializable, Serializable> results =
-				(ConcurrentHashMap)ctPortalCache.get(primaryKey);
-
-			if (results != null) {
-				result = results.get(
-					CTCollectionThreadLocal.getCTCollectionId());
-			}
-
-			if (result == null) {
-				result = StringPool.BLANK;
-			}
-
-			return _toEntityModel(result);
-		}
 
 		Map<Serializable, Serializable> localCache = null;
 
@@ -296,11 +243,20 @@ public class EntityCacheImpl
 
 		finderCacheImpl.removeCacheByEntityCache(className);
 
-		_portalCaches.remove(className);
+		PortalCache<Serializable, Serializable> portalCache =
+			_portalCaches.remove(className);
 
-		String groupKey = _GROUP_KEY_PREFIX.concat(className);
+		if (portalCache instanceof CTAwarePortalCache) {
+			CTAwarePortalCache ctAwarePortalCache =
+				(CTAwarePortalCache)portalCache;
 
-		_multiVMPool.removePortalCache(groupKey);
+			ctAwarePortalCache.destroy();
+		}
+		else {
+			String groupKey = _GROUP_KEY_PREFIX.concat(className);
+
+			_multiVMPool.removePortalCache(groupKey);
+		}
 	}
 
 	@Override
@@ -360,16 +316,18 @@ public class EntityCacheImpl
 		}
 	}
 
-	private boolean _isCTCacheEnabled() {
-		return CTCacheThreadLocal.isCTCacheEnabled();
-	}
-
 	private boolean _isLocalCacheEnabled() {
 		if (_localCache == null) {
 			return false;
 		}
 
-		return ThreadLocalFilterThreadLocal.isFilterInvoked();
+		if (ThreadLocalFilterThreadLocal.isFilterInvoked() &&
+			!CTCacheThreadLocal.isCTCacheEnabled()) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private void _notify(
@@ -453,36 +411,6 @@ public class EntityCacheImpl
 
 		CacheModel<?> result = baseModel.toCacheModel();
 
-		if (_isCTCacheEnabled() && (baseModel instanceof CTModel)) {
-			CTModel<?> ctModel = (CTModel<?>)baseModel;
-
-			if (ctModel.getCtCollectionId() != 0) {
-				PortalCache<Serializable, Serializable> ctPortalCache =
-					getCTPortalCache(clazz);
-
-				ConcurrentHashMap<Serializable, Serializable> results =
-					(ConcurrentHashMap)ctPortalCache.get(primaryKey);
-
-				if (results == null) {
-					results = new ConcurrentHashMap<>();
-
-					ctPortalCache.put(primaryKey, results);
-				}
-
-				results.put(ctModel.getCtCollectionId(), result);
-
-				if (quiet) {
-					PortalCacheHelperUtil.putWithoutReplicator(
-						ctPortalCache, primaryKey, results);
-				}
-				else {
-					ctPortalCache.put(primaryKey, results);
-				}
-
-				return;
-			}
-		}
-
 		if (_isLocalCacheEnabled()) {
 			Map<Serializable, Serializable> localCache = _localCache.get();
 
@@ -494,6 +422,17 @@ public class EntityCacheImpl
 
 		PortalCache<Serializable, Serializable> portalCache = getPortalCache(
 			clazz);
+
+		if (baseModel instanceof CTModel) {
+			CTModel<?> ctModel = (CTModel<?>)baseModel;
+
+			if (ctModel.getCtCollectionId() == 0) {
+				CTAwarePortalCache ctAwarePortalCache =
+					(CTAwarePortalCache)portalCache;
+
+				portalCache = ctAwarePortalCache.getProductionPortalCache();
+			}
+		}
 
 		if (quiet) {
 			PortalCacheHelperUtil.putWithoutReplicator(
@@ -513,13 +452,6 @@ public class EntityCacheImpl
 
 		if (baseModel != null) {
 			_notifyFinderCache(clazz.getName(), baseModel, false);
-		}
-
-		if (CTModel.class.isAssignableFrom(clazz)) {
-			PortalCache<Serializable, Serializable> ctPortalCache =
-				getCTPortalCache(clazz);
-
-			ctPortalCache.remove(primaryKey);
 		}
 
 		if (_isLocalCacheEnabled()) {
@@ -566,8 +498,6 @@ public class EntityCacheImpl
 	@Reference
 	private ClusterExecutor _clusterExecutor;
 
-	private final ConcurrentMap<String, PortalCache<Serializable, Serializable>>
-		_ctPortalCaches = new ConcurrentHashMap<>();
 	private ThreadLocal<LRUMap<Serializable, Serializable>> _localCache;
 
 	@Reference
