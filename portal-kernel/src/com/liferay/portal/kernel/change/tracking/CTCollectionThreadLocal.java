@@ -7,6 +7,7 @@ package com.liferay.portal.kernel.change.tracking;
 
 import com.liferay.petra.lang.CentralizedThreadLocal;
 import com.liferay.petra.lang.SafeCloseable;
+import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.module.service.Snapshot;
 
 /**
@@ -35,7 +36,18 @@ public class CTCollectionThreadLocal {
 	public static SafeCloseable setCTCollectionIdWithSafeCloseable(
 		long ctCollectionId) {
 
-		return _ctCollectionId.setWithSafeCloseable(ctCollectionId);
+		SafeCloseable ctCacheSafeCloseable =
+			CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+				ctCollectionId != CT_COLLECTION_ID_PRODUCTION);
+
+		SafeCloseable ctCollectionIdSafeCloseable =
+			_ctCollectionId.setWithSafeCloseable(ctCollectionId);
+
+		return () -> {
+			ctCacheSafeCloseable.close();
+
+			ctCollectionIdSafeCloseable.close();
+		};
 	}
 
 	public static SafeCloseable setProductionModeWithSafeCloseable() {
