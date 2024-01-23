@@ -31,6 +31,7 @@ import com.liferay.portal.kernel.cache.MultiVMPool;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.UserNotificationDeliveryConstants;
 import com.liferay.portal.kernel.service.UserNotificationEventLocalService;
@@ -247,30 +248,33 @@ public class CTPublishBackgroundTaskExecutor
 	public String handleException(
 		BackgroundTask backgroundTask, Exception exception) {
 
-		long fromCTCollectionId = MapUtil.getLong(
-			backgroundTask.getTaskContextMap(), "fromCTCollectionId");
+		if (FeatureFlagManagerUtil.isEnabled("LPD-8012")) {
+			long fromCTCollectionId = MapUtil.getLong(
+				backgroundTask.getTaskContextMap(), "fromCTCollectionId");
 
-		boolean showConflicts = false;
+			boolean showConflicts = false;
 
-		try {
-			if (exception instanceof CTPublishConflictException) {
-				showConflicts = true;
+			try {
+				if (exception instanceof CTPublishConflictException) {
+					showConflicts = true;
+				}
+
+				CTCollection fromCTCollection =
+					_ctCollectionLocalService.getCTCollection(
+						fromCTCollectionId);
+
+				_userNotificationEventLocalService.sendUserNotificationEvents(
+					backgroundTask.getUserId(), CTPortletKeys.PUBLICATIONS,
+					UserNotificationDeliveryConstants.TYPE_WEBSITE, false,
+					JSONUtil.put(
+						"ctCollectionName", fromCTCollection.getName()
+					).put(
+						"showConflicts", showConflicts
+					));
 			}
-
-			CTCollection fromCTCollection =
-				_ctCollectionLocalService.getCTCollection(fromCTCollectionId);
-
-			_userNotificationEventLocalService.sendUserNotificationEvents(
-				backgroundTask.getUserId(), CTPortletKeys.PUBLICATIONS,
-				UserNotificationDeliveryConstants.TYPE_WEBSITE, false,
-				JSONUtil.put(
-					"ctCollectionName", fromCTCollection.getName()
-				).put(
-					"showConflicts", showConflicts
-				));
-		}
-		catch (PortalException portalException) {
-			throw new RuntimeException(portalException);
+			catch (PortalException portalException) {
+				throw new RuntimeException(portalException);
+			}
 		}
 
 		return StringPool.BLANK;
