@@ -423,17 +423,6 @@ public class EntityCacheImpl
 		PortalCache<Serializable, Serializable> portalCache = getPortalCache(
 			clazz);
 
-		if (baseModel instanceof CTModel) {
-			CTModel<?> ctModel = (CTModel<?>)baseModel;
-
-			if (ctModel.getCtCollectionId() == 0) {
-				CTAwarePortalCache ctAwarePortalCache =
-					(CTAwarePortalCache)portalCache;
-
-				portalCache = ctAwarePortalCache.getProductionPortalCache();
-			}
-		}
-
 		if (quiet) {
 			PortalCacheHelperUtil.putWithoutReplicator(
 				portalCache, primaryKey, result);
