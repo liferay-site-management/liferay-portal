@@ -10,12 +10,14 @@ import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
+import com.liferay.portal.kernel.change.tracking.CTRequiredModelException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.persistence.change.tracking.helper.CTPersistenceHelper;
+import com.liferay.portal.util.PropsValues;
 
 import java.io.Serializable;
 
@@ -123,14 +125,26 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 
 		long ctCollectionId = CTCollectionThreadLocal.getCTCollectionId();
 
-		if (ctCollectionId == CTConstants.CT_COLLECTION_ID_PRODUCTION) {
-			return true;
-		}
-
 		long modelClassNameId = _classNameLocalService.getClassNameId(
 			ctModel.getModelClass());
 
 		long modelClassPK = ctModel.getPrimaryKey();
+
+		if (PropsValues.CHANGE_TRACKING_DELETION_PROTECTION_ENABLED &&
+			_ctEntryLocalService.hasCTEntries(
+				ctCollectionId, modelClassNameId, modelClassPK,
+				CTConstants.CT_CHANGE_TYPE_MODIFICATION)) {
+
+			throw new CTRequiredModelException(
+				String.format(
+					"Model %s %s cannot be deleted because it is currently " +
+						"being modified in other publication(s)",
+					ctModel.getModelClassName(), modelClassPK));
+		}
+
+		if (ctCollectionId == CTConstants.CT_COLLECTION_ID_PRODUCTION) {
+			return true;
+		}
 
 		CTEntry ctEntry = _ctEntryLocalService.fetchCTEntry(
 			ctCollectionId, modelClassNameId, modelClassPK);
