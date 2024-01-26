@@ -325,6 +325,11 @@ public class PropsValues {
 	public static final String CDN_HOST_HTTPS = PropsUtil.get(
 		PropsKeys.CDN_HOST_HTTPS);
 
+	public static final boolean CHANGE_TRACKING_DELETION_PROTECTION_ENABLED =
+		GetterUtil.getBoolean(
+			PropsUtil.get(
+				PropsKeys.CHANGE_TRACKING_DELETION_PROTECTION_ENABLED));
+
 	public static final boolean CLUSTER_LINK_ENABLED = GetterUtil.getBoolean(
 		PropsUtil.get(PropsKeys.CLUSTER_LINK_ENABLED));
 
