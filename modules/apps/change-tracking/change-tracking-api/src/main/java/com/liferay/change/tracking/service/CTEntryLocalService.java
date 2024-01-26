@@ -319,6 +319,9 @@ public interface CTEntryLocalService
 	public boolean hasCTEntries(long ctCollectionId, long modelClassNameId);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public boolean hasCTEntry(long modelClassNameId, long modelClassPK);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public boolean hasCTEntry(
 		long ctCollectionId, long modelClassNameId, long modelClassPK);
 
