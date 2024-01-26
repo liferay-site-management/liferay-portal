@@ -3370,6 +3370,628 @@ public class CTEntryPersistenceImpl
 	private static final String _FINDER_COLUMN_NOTC_MCNI_MCPK_MODELCLASSPK_7 =
 		"ctEntry.modelClassPK IN (";
 
+	private FinderPath _finderPathWithPaginationFindByNotC_MCNI_MCPK_CT;
+	private FinderPath _finderPathWithPaginationCountByNotC_MCNI_MCPK_CT;
+
+	/**
+	 * Returns all the ct entries where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @return the matching ct entries
+	 */
+	@Override
+	public List<CTEntry> findByNotC_MCNI_MCPK_CT(
+		long ctCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType) {
+
+		return findByNotC_MCNI_MCPK_CT(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType,
+			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the ct entries where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @return the range of matching ct entries
+	 */
+	@Override
+	public List<CTEntry> findByNotC_MCNI_MCPK_CT(
+		long ctCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType, int start, int end) {
+
+		return findByNotC_MCNI_MCPK_CT(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType, start,
+			end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the ct entries where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching ct entries
+	 */
+	@Override
+	public List<CTEntry> findByNotC_MCNI_MCPK_CT(
+		long ctCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType, int start, int end,
+		OrderByComparator<CTEntry> orderByComparator) {
+
+		return findByNotC_MCNI_MCPK_CT(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType, start,
+			end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the ct entries where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the ordered range of matching ct entries
+	 */
+	@Override
+	public List<CTEntry> findByNotC_MCNI_MCPK_CT(
+		long ctCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType, int start, int end,
+		OrderByComparator<CTEntry> orderByComparator, boolean useFinderCache) {
+
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
+
+		finderPath = _finderPathWithPaginationFindByNotC_MCNI_MCPK_CT;
+		finderArgs = new Object[] {
+			ctCollectionId, modelClassNameId, modelClassPK, changeType, start,
+			end, orderByComparator
+		};
+
+		List<CTEntry> list = null;
+
+		if (useFinderCache) {
+			list = (List<CTEntry>)finderCache.getResult(
+				finderPath, finderArgs, this);
+
+			if ((list != null) && !list.isEmpty()) {
+				for (CTEntry ctEntry : list) {
+					if ((ctCollectionId == ctEntry.getCtCollectionId()) ||
+						(modelClassNameId != ctEntry.getModelClassNameId()) ||
+						(modelClassPK != ctEntry.getModelClassPK()) ||
+						(changeType != ctEntry.getChangeType())) {
+
+						list = null;
+
+						break;
+					}
+				}
+			}
+		}
+
+		if (list == null) {
+			StringBundler sb = null;
+
+			if (orderByComparator != null) {
+				sb = new StringBundler(
+					6 + (orderByComparator.getOrderByFields().length * 2));
+			}
+			else {
+				sb = new StringBundler(6);
+			}
+
+			sb.append(_SQL_SELECT_CTENTRY_WHERE);
+
+			sb.append(_FINDER_COLUMN_NOTC_MCNI_MCPK_CT_CTCOLLECTIONID_2);
+
+			sb.append(_FINDER_COLUMN_NOTC_MCNI_MCPK_CT_MODELCLASSNAMEID_2);
+
+			sb.append(_FINDER_COLUMN_NOTC_MCNI_MCPK_CT_MODELCLASSPK_2);
+
+			sb.append(_FINDER_COLUMN_NOTC_MCNI_MCPK_CT_CHANGETYPE_2);
+
+			if (orderByComparator != null) {
+				appendOrderByComparator(
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+			}
+			else {
+				sb.append(CTEntryModelImpl.ORDER_BY_JPQL);
+			}
+
+			String sql = sb.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query query = session.createQuery(sql);
+
+				QueryPos queryPos = QueryPos.getInstance(query);
+
+				queryPos.add(ctCollectionId);
+
+				queryPos.add(modelClassNameId);
+
+				queryPos.add(modelClassPK);
+
+				queryPos.add(changeType);
+
+				list = (List<CTEntry>)QueryUtil.list(
+					query, getDialect(), start, end);
+
+				cacheResult(list);
+
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * Returns the first ct entry in the ordered set where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching ct entry
+	 * @throws NoSuchEntryException if a matching ct entry could not be found
+	 */
+	@Override
+	public CTEntry findByNotC_MCNI_MCPK_CT_First(
+			long ctCollectionId, long modelClassNameId, long modelClassPK,
+			int changeType, OrderByComparator<CTEntry> orderByComparator)
+		throws NoSuchEntryException {
+
+		CTEntry ctEntry = fetchByNotC_MCNI_MCPK_CT_First(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType,
+			orderByComparator);
+
+		if (ctEntry != null) {
+			return ctEntry;
+		}
+
+		StringBundler sb = new StringBundler(10);
+
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		sb.append("ctCollectionId!=");
+		sb.append(ctCollectionId);
+
+		sb.append(", modelClassNameId=");
+		sb.append(modelClassNameId);
+
+		sb.append(", modelClassPK=");
+		sb.append(modelClassPK);
+
+		sb.append(", changeType=");
+		sb.append(changeType);
+
+		sb.append("}");
+
+		throw new NoSuchEntryException(sb.toString());
+	}
+
+	/**
+	 * Returns the first ct entry in the ordered set where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching ct entry, or <code>null</code> if a matching ct entry could not be found
+	 */
+	@Override
+	public CTEntry fetchByNotC_MCNI_MCPK_CT_First(
+		long ctCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType, OrderByComparator<CTEntry> orderByComparator) {
+
+		List<CTEntry> list = findByNotC_MCNI_MCPK_CT(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType, 0, 1,
+			orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the last ct entry in the ordered set where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching ct entry
+	 * @throws NoSuchEntryException if a matching ct entry could not be found
+	 */
+	@Override
+	public CTEntry findByNotC_MCNI_MCPK_CT_Last(
+			long ctCollectionId, long modelClassNameId, long modelClassPK,
+			int changeType, OrderByComparator<CTEntry> orderByComparator)
+		throws NoSuchEntryException {
+
+		CTEntry ctEntry = fetchByNotC_MCNI_MCPK_CT_Last(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType,
+			orderByComparator);
+
+		if (ctEntry != null) {
+			return ctEntry;
+		}
+
+		StringBundler sb = new StringBundler(10);
+
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		sb.append("ctCollectionId!=");
+		sb.append(ctCollectionId);
+
+		sb.append(", modelClassNameId=");
+		sb.append(modelClassNameId);
+
+		sb.append(", modelClassPK=");
+		sb.append(modelClassPK);
+
+		sb.append(", changeType=");
+		sb.append(changeType);
+
+		sb.append("}");
+
+		throw new NoSuchEntryException(sb.toString());
+	}
+
+	/**
+	 * Returns the last ct entry in the ordered set where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching ct entry, or <code>null</code> if a matching ct entry could not be found
+	 */
+	@Override
+	public CTEntry fetchByNotC_MCNI_MCPK_CT_Last(
+		long ctCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType, OrderByComparator<CTEntry> orderByComparator) {
+
+		int count = countByNotC_MCNI_MCPK_CT(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType);
+
+		if (count == 0) {
+			return null;
+		}
+
+		List<CTEntry> list = findByNotC_MCNI_MCPK_CT(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType,
+			count - 1, count, orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the ct entries before and after the current ct entry in the ordered set where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * @param ctEntryId the primary key of the current ct entry
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next ct entry
+	 * @throws NoSuchEntryException if a ct entry with the primary key could not be found
+	 */
+	@Override
+	public CTEntry[] findByNotC_MCNI_MCPK_CT_PrevAndNext(
+			long ctEntryId, long ctCollectionId, long modelClassNameId,
+			long modelClassPK, int changeType,
+			OrderByComparator<CTEntry> orderByComparator)
+		throws NoSuchEntryException {
+
+		CTEntry ctEntry = findByPrimaryKey(ctEntryId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			CTEntry[] array = new CTEntryImpl[3];
+
+			array[0] = getByNotC_MCNI_MCPK_CT_PrevAndNext(
+				session, ctEntry, ctCollectionId, modelClassNameId,
+				modelClassPK, changeType, orderByComparator, true);
+
+			array[1] = ctEntry;
+
+			array[2] = getByNotC_MCNI_MCPK_CT_PrevAndNext(
+				session, ctEntry, ctCollectionId, modelClassNameId,
+				modelClassPK, changeType, orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected CTEntry getByNotC_MCNI_MCPK_CT_PrevAndNext(
+		Session session, CTEntry ctEntry, long ctCollectionId,
+		long modelClassNameId, long modelClassPK, int changeType,
+		OrderByComparator<CTEntry> orderByComparator, boolean previous) {
+
+		StringBundler sb = null;
+
+		if (orderByComparator != null) {
+			sb = new StringBundler(
+				7 + (orderByComparator.getOrderByConditionFields().length * 3) +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			sb = new StringBundler(6);
+		}
+
+		sb.append(_SQL_SELECT_CTENTRY_WHERE);
+
+		sb.append(_FINDER_COLUMN_NOTC_MCNI_MCPK_CT_CTCOLLECTIONID_2);
+
+		sb.append(_FINDER_COLUMN_NOTC_MCNI_MCPK_CT_MODELCLASSNAMEID_2);
+
+		sb.append(_FINDER_COLUMN_NOTC_MCNI_MCPK_CT_MODELCLASSPK_2);
+
+		sb.append(_FINDER_COLUMN_NOTC_MCNI_MCPK_CT_CHANGETYPE_2);
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields =
+				orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				sb.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						sb.append(WHERE_GREATER_THAN);
+					}
+					else {
+						sb.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			sb.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						sb.append(ORDER_BY_ASC);
+					}
+					else {
+						sb.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+		else {
+			sb.append(CTEntryModelImpl.ORDER_BY_JPQL);
+		}
+
+		String sql = sb.toString();
+
+		Query query = session.createQuery(sql);
+
+		query.setFirstResult(0);
+		query.setMaxResults(2);
+
+		QueryPos queryPos = QueryPos.getInstance(query);
+
+		queryPos.add(ctCollectionId);
+
+		queryPos.add(modelClassNameId);
+
+		queryPos.add(modelClassPK);
+
+		queryPos.add(changeType);
+
+		if (orderByComparator != null) {
+			for (Object orderByConditionValue :
+					orderByComparator.getOrderByConditionValues(ctEntry)) {
+
+				queryPos.add(orderByConditionValue);
+			}
+		}
+
+		List<CTEntry> list = query.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Removes all the ct entries where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63; from the database.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 */
+	@Override
+	public void removeByNotC_MCNI_MCPK_CT(
+		long ctCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType) {
+
+		for (CTEntry ctEntry :
+				findByNotC_MCNI_MCPK_CT(
+					ctCollectionId, modelClassNameId, modelClassPK, changeType,
+					QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
+
+			remove(ctEntry);
+		}
+	}
+
+	/**
+	 * Returns the number of ct entries where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @return the number of matching ct entries
+	 */
+	@Override
+	public int countByNotC_MCNI_MCPK_CT(
+		long ctCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType) {
+
+		FinderPath finderPath =
+			_finderPathWithPaginationCountByNotC_MCNI_MCPK_CT;
+
+		Object[] finderArgs = new Object[] {
+			ctCollectionId, modelClassNameId, modelClassPK, changeType
+		};
+
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+
+		if (count == null) {
+			StringBundler sb = new StringBundler(5);
+
+			sb.append(_SQL_COUNT_CTENTRY_WHERE);
+
+			sb.append(_FINDER_COLUMN_NOTC_MCNI_MCPK_CT_CTCOLLECTIONID_2);
+
+			sb.append(_FINDER_COLUMN_NOTC_MCNI_MCPK_CT_MODELCLASSNAMEID_2);
+
+			sb.append(_FINDER_COLUMN_NOTC_MCNI_MCPK_CT_MODELCLASSPK_2);
+
+			sb.append(_FINDER_COLUMN_NOTC_MCNI_MCPK_CT_CHANGETYPE_2);
+
+			String sql = sb.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query query = session.createQuery(sql);
+
+				QueryPos queryPos = QueryPos.getInstance(query);
+
+				queryPos.add(ctCollectionId);
+
+				queryPos.add(modelClassNameId);
+
+				queryPos.add(modelClassPK);
+
+				queryPos.add(changeType);
+
+				count = (Long)query.uniqueResult();
+
+				finderCache.putResult(finderPath, finderArgs, count);
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return count.intValue();
+	}
+
+	private static final String
+		_FINDER_COLUMN_NOTC_MCNI_MCPK_CT_CTCOLLECTIONID_2 =
+			"ctEntry.ctCollectionId != ? AND ";
+
+	private static final String
+		_FINDER_COLUMN_NOTC_MCNI_MCPK_CT_MODELCLASSNAMEID_2 =
+			"ctEntry.modelClassNameId = ? AND ";
+
+	private static final String
+		_FINDER_COLUMN_NOTC_MCNI_MCPK_CT_MODELCLASSPK_2 =
+			"ctEntry.modelClassPK = ? AND ";
+
+	private static final String _FINDER_COLUMN_NOTC_MCNI_MCPK_CT_CHANGETYPE_2 =
+		"ctEntry.changeType = ?";
+
 	private FinderPath _finderPathFetchByERC_C;
 	private FinderPath _finderPathCountByERC_C;
 
@@ -4375,6 +4997,32 @@ public class CTEntryPersistenceImpl
 				Long.class.getName(), Long.class.getName(), Long.class.getName()
 			},
 			new String[] {"ctCollectionId", "modelClassNameId", "modelClassPK"},
+			false);
+
+		_finderPathWithPaginationFindByNotC_MCNI_MCPK_CT = new FinderPath(
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByNotC_MCNI_MCPK_CT",
+			new String[] {
+				Long.class.getName(), Long.class.getName(),
+				Long.class.getName(), Integer.class.getName(),
+				Integer.class.getName(), Integer.class.getName(),
+				OrderByComparator.class.getName()
+			},
+			new String[] {
+				"ctCollectionId", "modelClassNameId", "modelClassPK",
+				"changeType"
+			},
+			true);
+
+		_finderPathWithPaginationCountByNotC_MCNI_MCPK_CT = new FinderPath(
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "countByNotC_MCNI_MCPK_CT",
+			new String[] {
+				Long.class.getName(), Long.class.getName(),
+				Long.class.getName(), Integer.class.getName()
+			},
+			new String[] {
+				"ctCollectionId", "modelClassNameId", "modelClassPK",
+				"changeType"
+			},
 			false);
 
 		_finderPathFetchByERC_C = new FinderPath(

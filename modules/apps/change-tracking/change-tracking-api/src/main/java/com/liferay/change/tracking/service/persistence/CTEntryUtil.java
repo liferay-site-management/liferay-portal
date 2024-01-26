@@ -1210,6 +1210,236 @@ public class CTEntryUtil {
 	}
 
 	/**
+	 * Returns all the ct entries where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @return the matching ct entries
+	 */
+	public static List<CTEntry> findByNotC_MCNI_MCPK_CT(
+		long ctCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType) {
+
+		return getPersistence().findByNotC_MCNI_MCPK_CT(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType);
+	}
+
+	/**
+	 * Returns a range of all the ct entries where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @return the range of matching ct entries
+	 */
+	public static List<CTEntry> findByNotC_MCNI_MCPK_CT(
+		long ctCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType, int start, int end) {
+
+		return getPersistence().findByNotC_MCNI_MCPK_CT(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType, start,
+			end);
+	}
+
+	/**
+	 * Returns an ordered range of all the ct entries where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching ct entries
+	 */
+	public static List<CTEntry> findByNotC_MCNI_MCPK_CT(
+		long ctCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType, int start, int end,
+		OrderByComparator<CTEntry> orderByComparator) {
+
+		return getPersistence().findByNotC_MCNI_MCPK_CT(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType, start,
+			end, orderByComparator);
+	}
+
+	/**
+	 * Returns an ordered range of all the ct entries where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the ordered range of matching ct entries
+	 */
+	public static List<CTEntry> findByNotC_MCNI_MCPK_CT(
+		long ctCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType, int start, int end,
+		OrderByComparator<CTEntry> orderByComparator, boolean useFinderCache) {
+
+		return getPersistence().findByNotC_MCNI_MCPK_CT(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType, start,
+			end, orderByComparator, useFinderCache);
+	}
+
+	/**
+	 * Returns the first ct entry in the ordered set where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching ct entry
+	 * @throws NoSuchEntryException if a matching ct entry could not be found
+	 */
+	public static CTEntry findByNotC_MCNI_MCPK_CT_First(
+			long ctCollectionId, long modelClassNameId, long modelClassPK,
+			int changeType, OrderByComparator<CTEntry> orderByComparator)
+		throws com.liferay.change.tracking.exception.NoSuchEntryException {
+
+		return getPersistence().findByNotC_MCNI_MCPK_CT_First(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType,
+			orderByComparator);
+	}
+
+	/**
+	 * Returns the first ct entry in the ordered set where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching ct entry, or <code>null</code> if a matching ct entry could not be found
+	 */
+	public static CTEntry fetchByNotC_MCNI_MCPK_CT_First(
+		long ctCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType, OrderByComparator<CTEntry> orderByComparator) {
+
+		return getPersistence().fetchByNotC_MCNI_MCPK_CT_First(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType,
+			orderByComparator);
+	}
+
+	/**
+	 * Returns the last ct entry in the ordered set where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching ct entry
+	 * @throws NoSuchEntryException if a matching ct entry could not be found
+	 */
+	public static CTEntry findByNotC_MCNI_MCPK_CT_Last(
+			long ctCollectionId, long modelClassNameId, long modelClassPK,
+			int changeType, OrderByComparator<CTEntry> orderByComparator)
+		throws com.liferay.change.tracking.exception.NoSuchEntryException {
+
+		return getPersistence().findByNotC_MCNI_MCPK_CT_Last(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType,
+			orderByComparator);
+	}
+
+	/**
+	 * Returns the last ct entry in the ordered set where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching ct entry, or <code>null</code> if a matching ct entry could not be found
+	 */
+	public static CTEntry fetchByNotC_MCNI_MCPK_CT_Last(
+		long ctCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType, OrderByComparator<CTEntry> orderByComparator) {
+
+		return getPersistence().fetchByNotC_MCNI_MCPK_CT_Last(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType,
+			orderByComparator);
+	}
+
+	/**
+	 * Returns the ct entries before and after the current ct entry in the ordered set where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * @param ctEntryId the primary key of the current ct entry
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next ct entry
+	 * @throws NoSuchEntryException if a ct entry with the primary key could not be found
+	 */
+	public static CTEntry[] findByNotC_MCNI_MCPK_CT_PrevAndNext(
+			long ctEntryId, long ctCollectionId, long modelClassNameId,
+			long modelClassPK, int changeType,
+			OrderByComparator<CTEntry> orderByComparator)
+		throws com.liferay.change.tracking.exception.NoSuchEntryException {
+
+		return getPersistence().findByNotC_MCNI_MCPK_CT_PrevAndNext(
+			ctEntryId, ctCollectionId, modelClassNameId, modelClassPK,
+			changeType, orderByComparator);
+	}
+
+	/**
+	 * Removes all the ct entries where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63; from the database.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 */
+	public static void removeByNotC_MCNI_MCPK_CT(
+		long ctCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType) {
+
+		getPersistence().removeByNotC_MCNI_MCPK_CT(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType);
+	}
+
+	/**
+	 * Returns the number of ct entries where ctCollectionId &ne; &#63; and modelClassNameId = &#63; and modelClassPK = &#63; and changeType = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param changeType the change type
+	 * @return the number of matching ct entries
+	 */
+	public static int countByNotC_MCNI_MCPK_CT(
+		long ctCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType) {
+
+		return getPersistence().countByNotC_MCNI_MCPK_CT(
+			ctCollectionId, modelClassNameId, modelClassPK, changeType);
+	}
+
+	/**
 	 * Returns the ct entry where externalReferenceCode = &#63; and companyId = &#63; or throws a <code>NoSuchEntryException</code> if it could not be found.
 	 *
 	 * @param externalReferenceCode the external reference code

@@ -438,6 +438,15 @@ public class CTEntryLocalServiceWrapper
 	}
 
 	@Override
+	public boolean hasCTEntries(
+		long excludeCTCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType) {
+
+		return _ctEntryLocalService.hasCTEntries(
+			excludeCTCollectionId, modelClassNameId, modelClassPK, changeType);
+	}
+
+	@Override
 	public boolean hasCTEntry(
 		long ctCollectionId, long modelClassNameId, long modelClassPK) {
 

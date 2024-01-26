@@ -256,6 +256,15 @@ public class CTEntryPersistenceTest {
 	}
 
 	@Test
+	public void testCountByNotC_MCNI_MCPK_CT() throws Exception {
+		_persistence.countByNotC_MCNI_MCPK_CT(
+			RandomTestUtil.nextLong(), RandomTestUtil.nextLong(),
+			RandomTestUtil.nextLong(), RandomTestUtil.nextInt());
+
+		_persistence.countByNotC_MCNI_MCPK_CT(0L, 0L, 0L, 0);
+	}
+
+	@Test
 	public void testCountByERC_C() throws Exception {
 		_persistence.countByERC_C("", RandomTestUtil.nextLong());
 

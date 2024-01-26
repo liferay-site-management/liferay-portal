@@ -378,6 +378,14 @@ public class CTEntryLocalServiceUtil {
 		return getService().hasCTEntries(ctCollectionId, modelClassNameId);
 	}
 
+	public static boolean hasCTEntries(
+		long excludeCTCollectionId, long modelClassNameId, long modelClassPK,
+		int changeType) {
+
+		return getService().hasCTEntries(
+			excludeCTCollectionId, modelClassNameId, modelClassPK, changeType);
+	}
+
 	public static boolean hasCTEntry(
 		long ctCollectionId, long modelClassNameId, long modelClassPK) {
 
