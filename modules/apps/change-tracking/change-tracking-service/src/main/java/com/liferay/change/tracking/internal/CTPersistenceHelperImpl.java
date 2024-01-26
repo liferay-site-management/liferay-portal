@@ -6,6 +6,7 @@
 package com.liferay.change.tracking.internal;
 
 import com.liferay.change.tracking.constants.CTConstants;
+import com.liferay.change.tracking.exception.RequiredModelException;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
@@ -15,6 +16,7 @@ import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.persistence.change.tracking.helper.CTPersistenceHelper;
+import com.liferay.portal.util.PropsValues;
 
 import java.io.Serializable;
 
@@ -121,14 +123,26 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 
 		long ctCollectionId = CTCollectionThreadLocal.getCTCollectionId();
 
-		if (ctCollectionId == CTConstants.CT_COLLECTION_ID_PRODUCTION) {
-			return true;
-		}
-
 		long modelClassNameId = _classNameLocalService.getClassNameId(
 			ctModel.getModelClass());
 
 		long modelClassPK = ctModel.getPrimaryKey();
+
+		if (ctCollectionId == CTConstants.CT_COLLECTION_ID_PRODUCTION) {
+			if (PropsValues.CHANGE_TRACKING_DELETION_PROTECTION_ENABLED &&
+				_ctEntryLocalService.hasCTEntry(
+					modelClassNameId, modelClassPK)) {
+
+				throw new SystemException(
+					new RequiredModelException(
+						String.format(
+							"Model %s %s cannot be deleted because it is " +
+								"currently being modified in a publication",
+							ctModel.getModelClassName(), modelClassPK)));
+			}
+
+			return true;
+		}
 
 		CTEntry ctEntry = _ctEntryLocalService.fetchCTEntry(
 			ctCollectionId, modelClassNameId, modelClassPK);
