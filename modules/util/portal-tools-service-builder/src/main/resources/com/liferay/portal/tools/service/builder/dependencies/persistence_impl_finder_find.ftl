@@ -199,7 +199,7 @@ that may or may not be enforced with a unique index at the database level. Case
 
 	int start, int end, OrderByComparator<${entity.name}> orderByComparator, boolean useFinderCache) {
 		<#if entity.isChangeTrackingEnabled()>
-			try(SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(!${ctPersistenceHelper}.isProductionMode(${entity.name}.class))) {
+			try(SafeCloseable safeCloseable = ${ctPersistenceHelper}.setCTCollectionIdWithSafeCloseable(${entity.name}.class)) {
 		</#if>
 
 		<#list entityColumns as entityColumn>
@@ -1620,7 +1620,7 @@ that may or may not be enforced with a unique index at the database level. Case
 		}
 
 		<#if entity.isChangeTrackingEnabled()>
-			try(SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(!${ctPersistenceHelper}.isProductionMode(${entity.name}.class))) {
+			try(SafeCloseable safeCloseable = ${ctPersistenceHelper}.setCTCollectionIdWithSafeCloseable(${entity.name}.class)) {
 		</#if>
 
 		Object[] finderArgs = null;
@@ -1986,7 +1986,7 @@ that may or may not be enforced with a unique index at the database level. Case
 		}
 
 		<#if entity.isChangeTrackingEnabled()>
-			try(SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(!${ctPersistenceHelper}.isProductionMode(${entity.name}.class))) {
+			try(SafeCloseable safeCloseable = ${ctPersistenceHelper}.setCTCollectionIdWithSafeCloseable(${entity.name}.class)) {
 		</#if>
 
 		Object[] finderArgs = null;
@@ -2284,7 +2284,7 @@ that may or may not be enforced with a unique index at the database level. Case
 
 	boolean useFinderCache) {
 		<#if entity.isChangeTrackingEnabled()>
-			try (SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(!${ctPersistenceHelper}.isProductionMode(${entity.name}.class))) {
+			try (SafeCloseable safeCloseable = ${ctPersistenceHelper}.setCTCollectionIdWithSafeCloseable(${entity.name}.class)) {
 		</#if>
 
 		<#list entityColumns as entityColumn>

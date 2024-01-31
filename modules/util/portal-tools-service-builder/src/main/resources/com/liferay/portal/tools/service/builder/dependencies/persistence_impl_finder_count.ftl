@@ -24,7 +24,7 @@ public int countBy${entityFinder.name}(
 
 ) {
 	<#if entity.isChangeTrackingEnabled()>
-		try(SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(!${ctPersistenceHelper}.isProductionMode(${entity.name}.class))) {
+		try(SafeCloseable safeCloseable = ${ctPersistenceHelper}.setCTCollectionIdWithSafeCloseable(${entity.name}.class)) {
 	</#if>
 
 	<#list entityColumns as entityColumn>
@@ -159,7 +159,7 @@ public int countBy${entityFinder.name}(
 		</#list>
 
 		<#if entity.isChangeTrackingEnabled()>
-			try(SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(!${ctPersistenceHelper}.isProductionMode(${entity.name}.class))) {
+			try(SafeCloseable safeCloseable = ${ctPersistenceHelper}.setCTCollectionIdWithSafeCloseable(${entity.name}.class)) {
 		</#if>
 
 		Object[] finderArgs = new Object[] {
@@ -287,7 +287,7 @@ public int countBy${entityFinder.name}(
 		</#list>
 
 		<#if entity.isChangeTrackingEnabled()>
-			try(SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(!${ctPersistenceHelper}.isProductionMode(${entity.name}.class))) {
+			try(SafeCloseable safeCloseable = ${ctPersistenceHelper}.setCTCollectionIdWithSafeCloseable(${entity.name}.class)) {
 		</#if>
 
 		Object[] finderArgs = new Object[] {

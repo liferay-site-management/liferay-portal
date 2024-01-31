@@ -88,6 +88,8 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 		return isProductionMode(ctModelClass, null);
 	}
 
+
+	@Override
 	public <T extends CTModel<T>> boolean isProductionMode(
 		Class<T> ctModelClass, Serializable primaryKey) {
 
@@ -181,6 +183,29 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 
 			return false;
 		}
+	}
+
+	@Override
+	public <T extends CTModel<T>> SafeCloseable
+		setCTCollectionIdWithSafeCloseable(
+			Class<T> ctModelClass) {
+
+		return setCTCollectionIdWithSafeCloseable(ctModelClass, null);
+	}
+
+
+	@Override
+	public <T extends CTModel<T>> SafeCloseable
+		setCTCollectionIdWithSafeCloseable(
+			Class<T> ctModelClass, Serializable primaryKey) {
+
+		if (isProductionMode(ctModelClass, primaryKey)) {
+			return CTCollectionThreadLocal.setProductionModeWithSafeCloseable();
+		}
+
+		return CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+			CTCollectionThreadLocal.getCTCollectionId()
+		);
 	}
 
 	@Reference

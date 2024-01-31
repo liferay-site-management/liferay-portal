@@ -74,7 +74,6 @@ import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 
 <#if entity.isChangeTrackingEnabled()>
 	import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
-	import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 </#if>
 
 import com.liferay.portal.kernel.configuration.Configuration;
@@ -347,7 +346,7 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 				return;
 			}
 
-			try (SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(${entity.variableName}.getCtCollectionId() != 0)) {
+			try (SafeCloseable safeCloseable = CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(${entity.variableName}.getCtCollectionId())) {
 		</#if>
 
 		${entityCache}.putResult(
@@ -414,7 +413,7 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 					continue;
 				}
 
-				try (SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(${entity.variableName}.getCtCollectionId() != 0)) {
+				try (SafeCloseable safeCloseable = CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(${entity.variableName}.getCtCollectionId())) {
 			</#if>
 
 			<#if (cacheFields?size > 0)>
@@ -549,7 +548,7 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 					return;
 				}
 
-				try (SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(${entity.variableName}ModelImpl.getCtCollectionId() != 0)) {
+				try (SafeCloseable safeCloseable = CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(${entity.variableName}ModelImpl.getCtCollectionId())) {
 			</#if>
 
 			<#list entity.uniqueEntityFinders as uniqueEntityFinder>
@@ -814,10 +813,6 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 
 	@Override
 	public ${entity.name} updateImpl(${apiPackagePath}.model.${entity.name} ${entity.variableName}) {
-		<#if entity.isChangeTrackingEnabled()>
-			try (SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(!CTCollectionThreadLocal.isProductionMode())) {
-		</#if>
-
 		boolean isNew = ${entity.variableName}.isNew();
 
 		<#if entity.isHierarchicalTree() || (entity.collectionEntityFinders?size != 0) || (entity.uniqueEntityFinders?size &gt; 0) || entity.hasEntityColumn("createDate", "Date") || entity.hasEntityColumn("externalReferenceCode") || entity.hasEntityColumn("modifiedDate", "Date")>
@@ -1226,10 +1221,6 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 		${entity.variableName}.resetOriginalValues();
 
 		return ${entity.variableName};
-
-		<#if entity.isChangeTrackingEnabled()>
-			}
-		</#if>
 	}
 
 	/**
@@ -1326,38 +1317,36 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 			<#else>
 				if (${ctPersistenceHelper}.isProductionMode(${entity.name}.class)) {
 			</#if>
-				try (SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(false)) {
+				try (SafeCloseable safeCloseable = CTCollectionThreadLocal.setProductionModeWithSafeCloseable()) {
 					return super.fetchByPrimaryKey(primaryKey);
 				}
 			}
 
-			try (SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
-				${entity.name} ${entity.variableName} = (${entity.name})${entityCache}.getResult(${entity.name}Impl.class, primaryKey);
+			${entity.name} ${entity.variableName} = (${entity.name})${entityCache}.getResult(${entity.name}Impl.class, primaryKey);
 
-				if (${entity.variableName} != null) {
-					return ${entity.variableName};
-				}
-
-				Session session = null;
-
-				try {
-					session = openSession();
-
-					${entity.variableName} = (${entity.name})session.get(${entity.name}Impl.class, primaryKey);
-
-					if (${entity.variableName} != null) {
-						cacheResult(${entity.variableName});
-					}
-				}
-				catch (Exception exception) {
-					throw processException(exception);
-				}
-				finally {
-					closeSession(session);
-				}
-
+			if (${entity.variableName} != null) {
 				return ${entity.variableName};
 			}
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				${entity.variableName} = (${entity.name})session.get(${entity.name}Impl.class, primaryKey);
+
+				if (${entity.variableName} != null) {
+					cacheResult(${entity.variableName});
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+
+			return ${entity.variableName};
 		}
 	</#if>
 
@@ -1528,7 +1517,7 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 		@Override
 		public Map<Serializable, ${entity.name}> fetchByPrimaryKeys(Set<Serializable> primaryKeys) {
 			if (${ctPersistenceHelper}.isProductionMode(${entity.name}.class)) {
-				try (SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(false)) {
+				try (SafeCloseable safeCloseable = CTCollectionThreadLocal.setProductionModeWithSafeCloseable()) {
 					return super.fetchByPrimaryKeys(primaryKeys);
 				}
 			}
@@ -1558,8 +1547,7 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 			EntityCache entityCache = getEntityCache();
 
 			for (Serializable primaryKey : primaryKeys) {
-				try (SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!${ctPersistenceHelper}.isProductionMode(${entity.name}.class, primaryKey))) {
+				try (SafeCloseable safeCloseable = ${ctPersistenceHelper}.setCTCollectionIdWithSafeCloseable(${entity.name}.class, primaryKey)) {
 
 					${entity.name} ${entity.variableName} = (${entity.name})${entityCache}.getResult(${entity.name}Impl.class, primaryKey);
 
@@ -1698,7 +1686,7 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 	@Override
 	public List<${entity.name}> findAll(int start, int end, OrderByComparator<${entity.name}> orderByComparator, boolean useFinderCache) {
 		<#if entity.isChangeTrackingEnabled()>
-			try(SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(!${ctPersistenceHelper}.isProductionMode(${entity.name}.class))) {
+			try(SafeCloseable safeCloseable = ${ctPersistenceHelper}.setCTCollectionIdWithSafeCloseable(${entity.name}.class)) {
 		</#if>
 
 		FinderPath finderPath = null;
@@ -1795,7 +1783,7 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 	@Override
 	public int countAll() {
 		<#if entity.isChangeTrackingEnabled()>
-			try(SafeCloseable safeCloseable = CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(!${ctPersistenceHelper}.isProductionMode(${entity.name}.class))) {
+			try(SafeCloseable safeCloseable = ${ctPersistenceHelper}.setCTCollectionIdWithSafeCloseable(${entity.name}.class)) {
 		</#if>
 
 		Long count = (Long)${finderCache}.getResult(_finderPathCountAll, FINDER_ARGS_EMPTY, this);

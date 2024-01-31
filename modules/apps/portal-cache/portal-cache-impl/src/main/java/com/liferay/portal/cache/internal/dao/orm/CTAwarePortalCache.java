@@ -58,15 +58,8 @@ public class CTAwarePortalCache
 
 	@Override
 	public Serializable get(Serializable key) {
-		long ctCollectionId = CTCollectionThreadLocal.getCTCollectionId();
-
-		if (!CTCacheThreadLocal.isCTCacheEnabled()) {
-			ctCollectionId =
-				CTCollectionThreadLocal.CT_COLLECTION_ID_PRODUCTION;
-		}
-
-		PortalCache<Serializable, Serializable> portalCache = _getCTPortalCache(
-			ctCollectionId);
+		PortalCache<Serializable, Serializable> portalCache =
+			_getCTPortalCache();
 
 		return portalCache.get(key);
 	}
@@ -125,13 +118,13 @@ public class CTAwarePortalCache
 				CTModel<?> ctModel = (CTModel<?>)baseModel;
 
 				if (ctCollectionId != ctModel.getCtCollectionId()) {
-					ctCollectionId = ctModel.getCtCollectionId();
+					System.out.println("fix this");
 				}
 			}
 		}
 
-		PortalCache<Serializable, Serializable> portalCache = _getCTPortalCache(
-			ctCollectionId);
+		PortalCache<Serializable, Serializable> portalCache =
+			_getCTPortalCache();
 
 		portalCache.put(key, value, timeToLive);
 	}
@@ -153,21 +146,12 @@ public class CTAwarePortalCache
 
 	@Override
 	public void remove(Serializable key) {
-		long ctCollectionId = CTCollectionThreadLocal.getCTCollectionId();
-
-		if (!CTCacheThreadLocal.isCTCacheEnabled()) {
-			ctCollectionId =
-				CTCollectionThreadLocal.CT_COLLECTION_ID_PRODUCTION;
-		}
-
-		PortalCache<Serializable, Serializable> portalCache = _getCTPortalCache(
-			ctCollectionId);
+		PortalCache<Serializable, Serializable> portalCache =
+			_getCTPortalCache();
 
 		portalCache.remove(key);
 
-		if (ctCollectionId ==
-				CTCollectionThreadLocal.CT_COLLECTION_ID_PRODUCTION) {
-
+		if (CTCollectionThreadLocal.isProductionMode()) {
 			for (PortalCache<Serializable, Serializable> ctPortalCache :
 					_ctPortalCaches.values()) {
 
@@ -178,21 +162,12 @@ public class CTAwarePortalCache
 
 	@Override
 	public void removeAll() {
-		long ctCollectionId = CTCollectionThreadLocal.getCTCollectionId();
-
-		if (!CTCacheThreadLocal.isCTCacheEnabled()) {
-			ctCollectionId =
-				CTCollectionThreadLocal.CT_COLLECTION_ID_PRODUCTION;
-		}
-
-		PortalCache<Serializable, Serializable> portalCache = _getCTPortalCache(
-			ctCollectionId);
+		PortalCache<Serializable, Serializable> portalCache =
+			_getCTPortalCache();
 
 		portalCache.removeAll();
 
-		if (ctCollectionId ==
-				CTCollectionThreadLocal.CT_COLLECTION_ID_PRODUCTION) {
-
+		if (CTCollectionThreadLocal.isProductionMode()) {
 			for (PortalCache<Serializable, Serializable> ctPortalCache :
 					_ctPortalCaches.values()) {
 
@@ -213,8 +188,8 @@ public class CTAwarePortalCache
 		throw new UnsupportedOperationException();
 	}
 
-	private PortalCache<Serializable, Serializable> _getCTPortalCache(
-		long ctCollectionId) {
+	private PortalCache<Serializable, Serializable> _getCTPortalCache() {
+		long ctCollectionId = CTCollectionThreadLocal.getCTCollectionId();
 
 		if (ctCollectionId ==
 				CTCollectionThreadLocal.CT_COLLECTION_ID_PRODUCTION) {

@@ -221,14 +221,8 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 
 		Object[] arguments = _getArguments(defaultASTNodeListener);
 
-		Object cacheResult = null;
-
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
-
-			cacheResult = finderCache.getResult(finderPath, arguments, this);
-		}
+		Object cacheResult = finderCache.getResult(
+			finderPath, arguments, this);
 
 		if (cacheResult != null) {
 			return (R)cacheResult;
