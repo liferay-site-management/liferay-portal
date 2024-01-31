@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -174,9 +173,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -595,9 +593,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -727,9 +724,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -854,9 +850,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1011,9 +1006,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1459,9 +1453,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1609,9 +1602,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2007,9 +1999,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2134,9 +2125,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2532,9 +2522,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2665,9 +2654,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3074,9 +3062,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 	@Override
 	public int countByCPDefinitionOptionRelId(long CPDefinitionOptionRelId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByCPDefinitionOptionRelId;
 
@@ -3206,9 +3193,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			CPInstanceUuid = Objects.toString(CPInstanceUuid, "");
 
@@ -3633,9 +3619,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 	@Override
 	public int countByCPInstanceUuid(String CPInstanceUuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			CPInstanceUuid = Objects.toString(CPInstanceUuid, "");
 
@@ -3775,9 +3760,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			key = Objects.toString(key, "");
 
@@ -4194,9 +4178,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 	@Override
 	public int countByKey(String key) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			key = Objects.toString(key, "");
 
@@ -4329,9 +4312,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 		long CPDefinitionOptionRelId, String key, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			key = Objects.toString(key, "");
 
@@ -4458,9 +4440,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 	@Override
 	public int countByC_K(long CPDefinitionOptionRelId, String key) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			key = Objects.toString(key, "");
 
@@ -4618,9 +4599,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5052,9 +5032,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 		long CPDefinitionOptionRelId, boolean preselected) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByCDORI_P;
 
@@ -5145,8 +5124,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cpDefinitionOptionValueRel.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cpDefinitionOptionValueRel.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CPDefinitionOptionValueRelImpl.class,
@@ -5201,8 +5180,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						cpDefinitionOptionValueRel.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						cpDefinitionOptionValueRel.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CPDefinitionOptionValueRelImpl.class,
@@ -5278,9 +5257,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cpDefinitionOptionValueRelModelImpl.getCtCollectionId() !=
-						0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cpDefinitionOptionValueRelModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				cpDefinitionOptionValueRelModelImpl.getUuid(),
@@ -5430,110 +5408,102 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 	public CPDefinitionOptionValueRel updateImpl(
 		CPDefinitionOptionValueRel cpDefinitionOptionValueRel) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = cpDefinitionOptionValueRel.isNew();
 
-			boolean isNew = cpDefinitionOptionValueRel.isNew();
+		if (!(cpDefinitionOptionValueRel instanceof
+				CPDefinitionOptionValueRelModelImpl)) {
 
-			if (!(cpDefinitionOptionValueRel instanceof
-					CPDefinitionOptionValueRelModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(
-						cpDefinitionOptionValueRel.getClass())) {
-
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						cpDefinitionOptionValueRel);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in cpDefinitionOptionValueRel proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(cpDefinitionOptionValueRel.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					cpDefinitionOptionValueRel);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CPDefinitionOptionValueRel implementation " +
-						cpDefinitionOptionValueRel.getClass());
+					"Implement ModelWrapper in cpDefinitionOptionValueRel proxy " +
+						invocationHandler.getClass());
 			}
 
-			CPDefinitionOptionValueRelModelImpl
-				cpDefinitionOptionValueRelModelImpl =
-					(CPDefinitionOptionValueRelModelImpl)
-						cpDefinitionOptionValueRel;
-
-			if (Validator.isNull(cpDefinitionOptionValueRel.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				cpDefinitionOptionValueRel.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (cpDefinitionOptionValueRel.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					cpDefinitionOptionValueRel.setCreateDate(date);
-				}
-				else {
-					cpDefinitionOptionValueRel.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!cpDefinitionOptionValueRelModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					cpDefinitionOptionValueRel.setModifiedDate(date);
-				}
-				else {
-					cpDefinitionOptionValueRel.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(cpDefinitionOptionValueRel)) {
-					if (!isNew) {
-						session.evict(
-							CPDefinitionOptionValueRelImpl.class,
-							cpDefinitionOptionValueRel.getPrimaryKeyObj());
-					}
-
-					session.save(cpDefinitionOptionValueRel);
-				}
-				else {
-					cpDefinitionOptionValueRel =
-						(CPDefinitionOptionValueRel)session.merge(
-							cpDefinitionOptionValueRel);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				CPDefinitionOptionValueRelImpl.class,
-				cpDefinitionOptionValueRelModelImpl, false, true);
-
-			cacheUniqueFindersCache(cpDefinitionOptionValueRelModelImpl);
-
-			if (isNew) {
-				cpDefinitionOptionValueRel.setNew(false);
-			}
-
-			cpDefinitionOptionValueRel.resetOriginalValues();
-
-			return cpDefinitionOptionValueRel;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CPDefinitionOptionValueRel implementation " +
+					cpDefinitionOptionValueRel.getClass());
 		}
+
+		CPDefinitionOptionValueRelModelImpl
+			cpDefinitionOptionValueRelModelImpl =
+				(CPDefinitionOptionValueRelModelImpl)cpDefinitionOptionValueRel;
+
+		if (Validator.isNull(cpDefinitionOptionValueRel.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			cpDefinitionOptionValueRel.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (cpDefinitionOptionValueRel.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				cpDefinitionOptionValueRel.setCreateDate(date);
+			}
+			else {
+				cpDefinitionOptionValueRel.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!cpDefinitionOptionValueRelModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				cpDefinitionOptionValueRel.setModifiedDate(date);
+			}
+			else {
+				cpDefinitionOptionValueRel.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(cpDefinitionOptionValueRel)) {
+				if (!isNew) {
+					session.evict(
+						CPDefinitionOptionValueRelImpl.class,
+						cpDefinitionOptionValueRel.getPrimaryKeyObj());
+				}
+
+				session.save(cpDefinitionOptionValueRel);
+			}
+			else {
+				cpDefinitionOptionValueRel =
+					(CPDefinitionOptionValueRel)session.merge(
+						cpDefinitionOptionValueRel);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CPDefinitionOptionValueRelImpl.class,
+			cpDefinitionOptionValueRelModelImpl, false, true);
+
+		cacheUniqueFindersCache(cpDefinitionOptionValueRelModelImpl);
+
+		if (isNew) {
+			cpDefinitionOptionValueRel.setNew(false);
+		}
+
+		cpDefinitionOptionValueRel.resetOriginalValues();
+
+		return cpDefinitionOptionValueRel;
 	}
 
 	/**
@@ -5591,46 +5561,42 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 				CPDefinitionOptionValueRel.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CPDefinitionOptionValueRel cpDefinitionOptionValueRel =
+			(CPDefinitionOptionValueRel)entityCache.getResult(
+				CPDefinitionOptionValueRelImpl.class, primaryKey);
 
-			CPDefinitionOptionValueRel cpDefinitionOptionValueRel =
-				(CPDefinitionOptionValueRel)entityCache.getResult(
+		if (cpDefinitionOptionValueRel != null) {
+			return cpDefinitionOptionValueRel;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			cpDefinitionOptionValueRel =
+				(CPDefinitionOptionValueRel)session.get(
 					CPDefinitionOptionValueRelImpl.class, primaryKey);
 
 			if (cpDefinitionOptionValueRel != null) {
-				return cpDefinitionOptionValueRel;
+				cacheResult(cpDefinitionOptionValueRel);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				cpDefinitionOptionValueRel =
-					(CPDefinitionOptionValueRel)session.get(
-						CPDefinitionOptionValueRelImpl.class, primaryKey);
-
-				if (cpDefinitionOptionValueRel != null) {
-					cacheResult(cpDefinitionOptionValueRel);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return cpDefinitionOptionValueRel;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return cpDefinitionOptionValueRel;
 	}
 
 	/**
@@ -5654,8 +5620,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 				CPDefinitionOptionValueRel.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -5689,9 +5655,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CPDefinitionOptionValueRel.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CPDefinitionOptionValueRel.class, primaryKey)) {
 
 				CPDefinitionOptionValueRel cpDefinitionOptionValueRel =
 					(CPDefinitionOptionValueRel)entityCache.getResult(
@@ -5846,9 +5811,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5944,9 +5908,8 @@ public class CPDefinitionOptionValueRelPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionOptionValueRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionOptionValueRel.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -175,9 +174,8 @@ public class JSONStorageEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JSONStorageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JSONStorageEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -591,9 +589,8 @@ public class JSONStorageEntryPersistenceImpl
 	@Override
 	public int countByCN_CPK(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JSONStorageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JSONStorageEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByCN_CPK;
 
@@ -750,9 +747,8 @@ public class JSONStorageEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JSONStorageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JSONStorageEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1246,9 +1242,8 @@ public class JSONStorageEntryPersistenceImpl
 		long companyId, long classNameId, int index, int type, long valueLong) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JSONStorageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JSONStorageEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_CN_I_T_VL;
 
@@ -1429,9 +1424,8 @@ public class JSONStorageEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JSONStorageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JSONStorageEntry.class)) {
 
 			key = Objects.toString(key, "");
 
@@ -1953,9 +1947,8 @@ public class JSONStorageEntryPersistenceImpl
 		long valueLong) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JSONStorageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JSONStorageEntry.class)) {
 
 			key = Objects.toString(key, "");
 
@@ -2140,9 +2133,8 @@ public class JSONStorageEntryPersistenceImpl
 		int index, String key, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JSONStorageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JSONStorageEntry.class)) {
 
 			key = Objects.toString(key, "");
 
@@ -2295,9 +2287,8 @@ public class JSONStorageEntryPersistenceImpl
 		int index, String key) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JSONStorageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JSONStorageEntry.class)) {
 
 			key = Objects.toString(key, "");
 
@@ -2425,8 +2416,8 @@ public class JSONStorageEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					jsonStorageEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					jsonStorageEntry.getCtCollectionId())) {
 
 			entityCache.putResult(
 				JSONStorageEntryImpl.class, jsonStorageEntry.getPrimaryKey(),
@@ -2470,8 +2461,8 @@ public class JSONStorageEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						jsonStorageEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						jsonStorageEntry.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						JSONStorageEntryImpl.class,
@@ -2537,8 +2528,8 @@ public class JSONStorageEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					jsonStorageEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					jsonStorageEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				jsonStorageEntryModelImpl.getClassNameId(),
@@ -2664,72 +2655,66 @@ public class JSONStorageEntryPersistenceImpl
 
 	@Override
 	public JSONStorageEntry updateImpl(JSONStorageEntry jsonStorageEntry) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = jsonStorageEntry.isNew();
 
-			boolean isNew = jsonStorageEntry.isNew();
+		if (!(jsonStorageEntry instanceof JSONStorageEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(jsonStorageEntry instanceof JSONStorageEntryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(jsonStorageEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						jsonStorageEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in jsonStorageEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(jsonStorageEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					jsonStorageEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom JSONStorageEntry implementation " +
-						jsonStorageEntry.getClass());
+					"Implement ModelWrapper in jsonStorageEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			JSONStorageEntryModelImpl jsonStorageEntryModelImpl =
-				(JSONStorageEntryModelImpl)jsonStorageEntry;
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(jsonStorageEntry)) {
-					if (!isNew) {
-						session.evict(
-							JSONStorageEntryImpl.class,
-							jsonStorageEntry.getPrimaryKeyObj());
-					}
-
-					session.save(jsonStorageEntry);
-				}
-				else {
-					jsonStorageEntry = (JSONStorageEntry)session.merge(
-						jsonStorageEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				JSONStorageEntryImpl.class, jsonStorageEntryModelImpl, false,
-				true);
-
-			cacheUniqueFindersCache(jsonStorageEntryModelImpl);
-
-			if (isNew) {
-				jsonStorageEntry.setNew(false);
-			}
-
-			jsonStorageEntry.resetOriginalValues();
-
-			return jsonStorageEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom JSONStorageEntry implementation " +
+					jsonStorageEntry.getClass());
 		}
+
+		JSONStorageEntryModelImpl jsonStorageEntryModelImpl =
+			(JSONStorageEntryModelImpl)jsonStorageEntry;
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(jsonStorageEntry)) {
+				if (!isNew) {
+					session.evict(
+						JSONStorageEntryImpl.class,
+						jsonStorageEntry.getPrimaryKeyObj());
+				}
+
+				session.save(jsonStorageEntry);
+			}
+			else {
+				jsonStorageEntry = (JSONStorageEntry)session.merge(
+					jsonStorageEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			JSONStorageEntryImpl.class, jsonStorageEntryModelImpl, false, true);
+
+		cacheUniqueFindersCache(jsonStorageEntryModelImpl);
+
+		if (isNew) {
+			jsonStorageEntry.setNew(false);
+		}
+
+		jsonStorageEntry.resetOriginalValues();
+
+		return jsonStorageEntry;
 	}
 
 	/**
@@ -2783,45 +2768,41 @@ public class JSONStorageEntryPersistenceImpl
 				JSONStorageEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		JSONStorageEntry jsonStorageEntry =
+			(JSONStorageEntry)entityCache.getResult(
+				JSONStorageEntryImpl.class, primaryKey);
 
-			JSONStorageEntry jsonStorageEntry =
-				(JSONStorageEntry)entityCache.getResult(
-					JSONStorageEntryImpl.class, primaryKey);
-
-			if (jsonStorageEntry != null) {
-				return jsonStorageEntry;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				jsonStorageEntry = (JSONStorageEntry)session.get(
-					JSONStorageEntryImpl.class, primaryKey);
-
-				if (jsonStorageEntry != null) {
-					cacheResult(jsonStorageEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (jsonStorageEntry != null) {
 			return jsonStorageEntry;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			jsonStorageEntry = (JSONStorageEntry)session.get(
+				JSONStorageEntryImpl.class, primaryKey);
+
+			if (jsonStorageEntry != null) {
+				cacheResult(jsonStorageEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return jsonStorageEntry;
 	}
 
 	/**
@@ -2841,8 +2822,8 @@ public class JSONStorageEntryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(JSONStorageEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2875,9 +2856,8 @@ public class JSONStorageEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							JSONStorageEntry.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						JSONStorageEntry.class, primaryKey)) {
 
 				JSONStorageEntry jsonStorageEntry =
 					(JSONStorageEntry)entityCache.getResult(
@@ -3030,9 +3010,8 @@ public class JSONStorageEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JSONStorageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JSONStorageEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3125,9 +3104,8 @@ public class JSONStorageEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JSONStorageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JSONStorageEntry.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

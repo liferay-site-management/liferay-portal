@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -171,9 +170,8 @@ public class SubscriptionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						Subscription.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					Subscription.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -553,9 +551,8 @@ public class SubscriptionPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						Subscription.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					Subscription.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -677,9 +674,8 @@ public class SubscriptionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						Subscription.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					Subscription.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1058,9 +1054,8 @@ public class SubscriptionPersistenceImpl
 	@Override
 	public int countByUserId(long userId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						Subscription.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					Subscription.class)) {
 
 			FinderPath finderPath = _finderPathCountByUserId;
 
@@ -1189,9 +1184,8 @@ public class SubscriptionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						Subscription.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					Subscription.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1601,9 +1595,8 @@ public class SubscriptionPersistenceImpl
 	@Override
 	public int countByG_U(long groupId, long userId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						Subscription.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					Subscription.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_U;
 
@@ -1740,9 +1733,8 @@ public class SubscriptionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						Subscription.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					Subscription.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2153,9 +2145,8 @@ public class SubscriptionPersistenceImpl
 	@Override
 	public int countByU_C(long userId, long classNameId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						Subscription.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					Subscription.class)) {
 
 			FinderPath finderPath = _finderPathCountByU_C;
 
@@ -2300,9 +2291,8 @@ public class SubscriptionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						Subscription.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					Subscription.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2737,9 +2727,8 @@ public class SubscriptionPersistenceImpl
 	@Override
 	public int countByC_C_C(long companyId, long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						Subscription.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					Subscription.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_C;
 
@@ -2928,9 +2917,8 @@ public class SubscriptionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						Subscription.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					Subscription.class)) {
 
 			Object[] finderArgs = null;
 
@@ -3127,9 +3115,8 @@ public class SubscriptionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						Subscription.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					Subscription.class)) {
 
 			Object[] finderArgs = null;
 
@@ -3257,9 +3244,8 @@ public class SubscriptionPersistenceImpl
 		long companyId, long userId, long classNameId, long classPK) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						Subscription.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					Subscription.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_U_C_C;
 
@@ -3339,9 +3325,8 @@ public class SubscriptionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						Subscription.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					Subscription.class)) {
 
 			Object[] finderArgs = new Object[] {
 				companyId, userId, classNameId, StringUtil.merge(classPKs)
@@ -3451,8 +3436,8 @@ public class SubscriptionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					subscription.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					subscription.getCtCollectionId())) {
 
 			entityCache.putResult(
 				SubscriptionImpl.class, subscription.getPrimaryKey(),
@@ -3493,8 +3478,8 @@ public class SubscriptionPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						subscription.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						subscription.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						SubscriptionImpl.class, subscription.getPrimaryKey()) ==
@@ -3559,8 +3544,8 @@ public class SubscriptionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					subscriptionModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					subscriptionModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				subscriptionModelImpl.getCompanyId(),
@@ -3683,95 +3668,89 @@ public class SubscriptionPersistenceImpl
 
 	@Override
 	public Subscription updateImpl(Subscription subscription) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = subscription.isNew();
 
-			boolean isNew = subscription.isNew();
+		if (!(subscription instanceof SubscriptionModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(subscription instanceof SubscriptionModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(subscription.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						subscription);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in subscription proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(subscription.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					subscription);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom Subscription implementation " +
-						subscription.getClass());
+					"Implement ModelWrapper in subscription proxy " +
+						invocationHandler.getClass());
 			}
 
-			SubscriptionModelImpl subscriptionModelImpl =
-				(SubscriptionModelImpl)subscription;
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (subscription.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					subscription.setCreateDate(date);
-				}
-				else {
-					subscription.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!subscriptionModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					subscription.setModifiedDate(date);
-				}
-				else {
-					subscription.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(subscription)) {
-					if (!isNew) {
-						session.evict(
-							SubscriptionImpl.class,
-							subscription.getPrimaryKeyObj());
-					}
-
-					session.save(subscription);
-				}
-				else {
-					subscription = (Subscription)session.merge(subscription);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				SubscriptionImpl.class, subscriptionModelImpl, false, true);
-
-			cacheUniqueFindersCache(subscriptionModelImpl);
-
-			if (isNew) {
-				subscription.setNew(false);
-			}
-
-			subscription.resetOriginalValues();
-
-			return subscription;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom Subscription implementation " +
+					subscription.getClass());
 		}
+
+		SubscriptionModelImpl subscriptionModelImpl =
+			(SubscriptionModelImpl)subscription;
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (subscription.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				subscription.setCreateDate(date);
+			}
+			else {
+				subscription.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!subscriptionModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				subscription.setModifiedDate(date);
+			}
+			else {
+				subscription.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(subscription)) {
+				if (!isNew) {
+					session.evict(
+						SubscriptionImpl.class,
+						subscription.getPrimaryKeyObj());
+				}
+
+				session.save(subscription);
+			}
+			else {
+				subscription = (Subscription)session.merge(subscription);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			SubscriptionImpl.class, subscriptionModelImpl, false, true);
+
+		cacheUniqueFindersCache(subscriptionModelImpl);
+
+		if (isNew) {
+			subscription.setNew(false);
+		}
+
+		subscription.resetOriginalValues();
+
+		return subscription;
 	}
 
 	/**
@@ -3825,44 +3804,40 @@ public class SubscriptionPersistenceImpl
 				Subscription.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		Subscription subscription = (Subscription)entityCache.getResult(
+			SubscriptionImpl.class, primaryKey);
 
-			Subscription subscription = (Subscription)entityCache.getResult(
+		if (subscription != null) {
+			return subscription;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			subscription = (Subscription)session.get(
 				SubscriptionImpl.class, primaryKey);
 
 			if (subscription != null) {
-				return subscription;
+				cacheResult(subscription);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				subscription = (Subscription)session.get(
-					SubscriptionImpl.class, primaryKey);
-
-				if (subscription != null) {
-					cacheResult(subscription);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return subscription;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return subscription;
 	}
 
 	/**
@@ -3882,8 +3857,8 @@ public class SubscriptionPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(Subscription.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3916,9 +3891,8 @@ public class SubscriptionPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							Subscription.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						Subscription.class, primaryKey)) {
 
 				Subscription subscription = (Subscription)entityCache.getResult(
 					SubscriptionImpl.class, primaryKey);
@@ -4066,9 +4040,8 @@ public class SubscriptionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						Subscription.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					Subscription.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4161,9 +4134,8 @@ public class SubscriptionPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						Subscription.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					Subscription.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

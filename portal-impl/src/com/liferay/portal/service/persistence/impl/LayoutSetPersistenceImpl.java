@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -162,9 +161,8 @@ public class LayoutSetPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutSet.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutSet.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -541,9 +539,8 @@ public class LayoutSetPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutSet.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutSet.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -672,9 +669,8 @@ public class LayoutSetPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutSet.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutSet.class)) {
 
 			layoutSetPrototypeUuid = Objects.toString(
 				layoutSetPrototypeUuid, "");
@@ -1096,9 +1092,8 @@ public class LayoutSetPersistenceImpl
 	@Override
 	public int countByLayoutSetPrototypeUuid(String layoutSetPrototypeUuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutSet.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutSet.class)) {
 
 			layoutSetPrototypeUuid = Objects.toString(
 				layoutSetPrototypeUuid, "");
@@ -1232,9 +1227,8 @@ public class LayoutSetPersistenceImpl
 		long groupId, boolean privateLayout, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutSet.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutSet.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1342,9 +1336,8 @@ public class LayoutSetPersistenceImpl
 	@Override
 	public int countByG_P(long groupId, boolean privateLayout) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutSet.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutSet.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P;
 
@@ -1485,9 +1478,8 @@ public class LayoutSetPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutSet.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutSet.class)) {
 
 			layoutSetPrototypeUuid = Objects.toString(
 				layoutSetPrototypeUuid, "");
@@ -1930,9 +1922,8 @@ public class LayoutSetPersistenceImpl
 	@Override
 	public int countByC_L(long companyId, String layoutSetPrototypeUuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutSet.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutSet.class)) {
 
 			layoutSetPrototypeUuid = Objects.toString(
 				layoutSetPrototypeUuid, "");
@@ -2071,9 +2062,8 @@ public class LayoutSetPersistenceImpl
 		boolean privateLayout, long logoId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutSet.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutSet.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2198,9 +2188,8 @@ public class LayoutSetPersistenceImpl
 	@Override
 	public int countByP_L(boolean privateLayout, long logoId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutSet.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutSet.class)) {
 
 			FinderPath finderPath = _finderPathCountByP_L;
 
@@ -2285,8 +2274,8 @@ public class LayoutSetPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					layoutSet.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					layoutSet.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				LayoutSetImpl.class, layoutSet.getPrimaryKey(), layoutSet);
@@ -2332,8 +2321,8 @@ public class LayoutSetPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						layoutSet.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						layoutSet.getCtCollectionId())) {
 
 				LayoutSet cachedLayoutSet =
 					(LayoutSet)EntityCacheUtil.getResult(
@@ -2412,8 +2401,8 @@ public class LayoutSetPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					layoutSetModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					layoutSetModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				layoutSetModelImpl.getGroupId(),
@@ -2542,93 +2531,85 @@ public class LayoutSetPersistenceImpl
 
 	@Override
 	public LayoutSet updateImpl(LayoutSet layoutSet) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = layoutSet.isNew();
 
-			boolean isNew = layoutSet.isNew();
+		if (!(layoutSet instanceof LayoutSetModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(layoutSet instanceof LayoutSetModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(layoutSet.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						layoutSet);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in layoutSet proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(layoutSet.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(layoutSet);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom LayoutSet implementation " +
-						layoutSet.getClass());
+					"Implement ModelWrapper in layoutSet proxy " +
+						invocationHandler.getClass());
 			}
 
-			LayoutSetModelImpl layoutSetModelImpl =
-				(LayoutSetModelImpl)layoutSet;
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (layoutSet.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					layoutSet.setCreateDate(date);
-				}
-				else {
-					layoutSet.setCreateDate(serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!layoutSetModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					layoutSet.setModifiedDate(date);
-				}
-				else {
-					layoutSet.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(layoutSet)) {
-					if (!isNew) {
-						session.evict(
-							LayoutSetImpl.class, layoutSet.getPrimaryKeyObj());
-					}
-
-					session.save(layoutSet);
-				}
-				else {
-					layoutSet = (LayoutSet)session.merge(layoutSet);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				LayoutSetImpl.class, layoutSetModelImpl, false, true);
-
-			cacheUniqueFindersCache(layoutSetModelImpl);
-
-			if (isNew) {
-				layoutSet.setNew(false);
-			}
-
-			layoutSet.resetOriginalValues();
-
-			return layoutSet;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom LayoutSet implementation " +
+					layoutSet.getClass());
 		}
+
+		LayoutSetModelImpl layoutSetModelImpl = (LayoutSetModelImpl)layoutSet;
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (layoutSet.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				layoutSet.setCreateDate(date);
+			}
+			else {
+				layoutSet.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!layoutSetModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				layoutSet.setModifiedDate(date);
+			}
+			else {
+				layoutSet.setModifiedDate(serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(layoutSet)) {
+				if (!isNew) {
+					session.evict(
+						LayoutSetImpl.class, layoutSet.getPrimaryKeyObj());
+				}
+
+				session.save(layoutSet);
+			}
+			else {
+				layoutSet = (LayoutSet)session.merge(layoutSet);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			LayoutSetImpl.class, layoutSetModelImpl, false, true);
+
+		cacheUniqueFindersCache(layoutSetModelImpl);
+
+		if (isNew) {
+			layoutSet.setNew(false);
+		}
+
+		layoutSet.resetOriginalValues();
+
+		return layoutSet;
 	}
 
 	/**
@@ -2682,44 +2663,39 @@ public class LayoutSetPersistenceImpl
 				LayoutSet.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		LayoutSet layoutSet = (LayoutSet)EntityCacheUtil.getResult(
+			LayoutSetImpl.class, primaryKey);
 
-			LayoutSet layoutSet = (LayoutSet)EntityCacheUtil.getResult(
-				LayoutSetImpl.class, primaryKey);
-
-			if (layoutSet != null) {
-				return layoutSet;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				layoutSet = (LayoutSet)session.get(
-					LayoutSetImpl.class, primaryKey);
-
-				if (layoutSet != null) {
-					cacheResult(layoutSet);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (layoutSet != null) {
 			return layoutSet;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			layoutSet = (LayoutSet)session.get(LayoutSetImpl.class, primaryKey);
+
+			if (layoutSet != null) {
+				cacheResult(layoutSet);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return layoutSet;
 	}
 
 	/**
@@ -2739,8 +2715,8 @@ public class LayoutSetPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(LayoutSet.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2773,9 +2749,8 @@ public class LayoutSetPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							LayoutSet.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						LayoutSet.class, primaryKey)) {
 
 				LayoutSet layoutSet = (LayoutSet)EntityCacheUtil.getResult(
 					LayoutSetImpl.class, primaryKey);
@@ -2923,9 +2898,8 @@ public class LayoutSetPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutSet.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutSet.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3018,9 +2992,8 @@ public class LayoutSetPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutSet.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutSet.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

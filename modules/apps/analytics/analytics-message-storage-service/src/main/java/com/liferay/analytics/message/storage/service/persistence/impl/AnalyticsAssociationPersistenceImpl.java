@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -183,9 +182,8 @@ public class AnalyticsAssociationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AnalyticsAssociation.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AnalyticsAssociation.class)) {
 
 			associationClassName = Objects.toString(associationClassName, "");
 
@@ -631,9 +629,8 @@ public class AnalyticsAssociationPersistenceImpl
 	@Override
 	public int countByC_A(long companyId, String associationClassName) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AnalyticsAssociation.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AnalyticsAssociation.class)) {
 
 			associationClassName = Objects.toString(associationClassName, "");
 
@@ -799,9 +796,8 @@ public class AnalyticsAssociationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AnalyticsAssociation.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AnalyticsAssociation.class)) {
 
 			associationClassName = Objects.toString(associationClassName, "");
 
@@ -1289,9 +1285,8 @@ public class AnalyticsAssociationPersistenceImpl
 		long companyId, Date modifiedDate, String associationClassName) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AnalyticsAssociation.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AnalyticsAssociation.class)) {
 
 			associationClassName = Objects.toString(associationClassName, "");
 
@@ -1480,9 +1475,8 @@ public class AnalyticsAssociationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AnalyticsAssociation.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AnalyticsAssociation.class)) {
 
 			associationClassName = Objects.toString(associationClassName, "");
 
@@ -1963,9 +1957,8 @@ public class AnalyticsAssociationPersistenceImpl
 		long companyId, String associationClassName, long associationClassPK) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AnalyticsAssociation.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AnalyticsAssociation.class)) {
 
 			associationClassName = Objects.toString(associationClassName, "");
 
@@ -2069,8 +2062,8 @@ public class AnalyticsAssociationPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					analyticsAssociation.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					analyticsAssociation.getCtCollectionId())) {
 
 			entityCache.putResult(
 				AnalyticsAssociationImpl.class,
@@ -2106,8 +2099,8 @@ public class AnalyticsAssociationPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						analyticsAssociation.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						analyticsAssociation.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						AnalyticsAssociationImpl.class,
@@ -2280,97 +2273,90 @@ public class AnalyticsAssociationPersistenceImpl
 	public AnalyticsAssociation updateImpl(
 		AnalyticsAssociation analyticsAssociation) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = analyticsAssociation.isNew();
 
-			boolean isNew = analyticsAssociation.isNew();
+		if (!(analyticsAssociation instanceof AnalyticsAssociationModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(analyticsAssociation instanceof
-					AnalyticsAssociationModelImpl)) {
-
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(analyticsAssociation.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						analyticsAssociation);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in analyticsAssociation proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(analyticsAssociation.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					analyticsAssociation);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom AnalyticsAssociation implementation " +
-						analyticsAssociation.getClass());
+					"Implement ModelWrapper in analyticsAssociation proxy " +
+						invocationHandler.getClass());
 			}
 
-			AnalyticsAssociationModelImpl analyticsAssociationModelImpl =
-				(AnalyticsAssociationModelImpl)analyticsAssociation;
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (analyticsAssociation.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					analyticsAssociation.setCreateDate(date);
-				}
-				else {
-					analyticsAssociation.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!analyticsAssociationModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					analyticsAssociation.setModifiedDate(date);
-				}
-				else {
-					analyticsAssociation.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(analyticsAssociation)) {
-					if (!isNew) {
-						session.evict(
-							AnalyticsAssociationImpl.class,
-							analyticsAssociation.getPrimaryKeyObj());
-					}
-
-					session.save(analyticsAssociation);
-				}
-				else {
-					analyticsAssociation = (AnalyticsAssociation)session.merge(
-						analyticsAssociation);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				AnalyticsAssociationImpl.class, analyticsAssociationModelImpl,
-				false, true);
-
-			if (isNew) {
-				analyticsAssociation.setNew(false);
-			}
-
-			analyticsAssociation.resetOriginalValues();
-
-			return analyticsAssociation;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom AnalyticsAssociation implementation " +
+					analyticsAssociation.getClass());
 		}
+
+		AnalyticsAssociationModelImpl analyticsAssociationModelImpl =
+			(AnalyticsAssociationModelImpl)analyticsAssociation;
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (analyticsAssociation.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				analyticsAssociation.setCreateDate(date);
+			}
+			else {
+				analyticsAssociation.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!analyticsAssociationModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				analyticsAssociation.setModifiedDate(date);
+			}
+			else {
+				analyticsAssociation.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(analyticsAssociation)) {
+				if (!isNew) {
+					session.evict(
+						AnalyticsAssociationImpl.class,
+						analyticsAssociation.getPrimaryKeyObj());
+				}
+
+				session.save(analyticsAssociation);
+			}
+			else {
+				analyticsAssociation = (AnalyticsAssociation)session.merge(
+					analyticsAssociation);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			AnalyticsAssociationImpl.class, analyticsAssociationModelImpl,
+			false, true);
+
+		if (isNew) {
+			analyticsAssociation.setNew(false);
+		}
+
+		analyticsAssociation.resetOriginalValues();
+
+		return analyticsAssociation;
 	}
 
 	/**
@@ -2425,45 +2411,41 @@ public class AnalyticsAssociationPersistenceImpl
 				AnalyticsAssociation.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		AnalyticsAssociation analyticsAssociation =
+			(AnalyticsAssociation)entityCache.getResult(
+				AnalyticsAssociationImpl.class, primaryKey);
 
-			AnalyticsAssociation analyticsAssociation =
-				(AnalyticsAssociation)entityCache.getResult(
-					AnalyticsAssociationImpl.class, primaryKey);
-
-			if (analyticsAssociation != null) {
-				return analyticsAssociation;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				analyticsAssociation = (AnalyticsAssociation)session.get(
-					AnalyticsAssociationImpl.class, primaryKey);
-
-				if (analyticsAssociation != null) {
-					cacheResult(analyticsAssociation);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (analyticsAssociation != null) {
 			return analyticsAssociation;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			analyticsAssociation = (AnalyticsAssociation)session.get(
+				AnalyticsAssociationImpl.class, primaryKey);
+
+			if (analyticsAssociation != null) {
+				cacheResult(analyticsAssociation);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return analyticsAssociation;
 	}
 
 	/**
@@ -2483,8 +2465,8 @@ public class AnalyticsAssociationPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(AnalyticsAssociation.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2518,9 +2500,8 @@ public class AnalyticsAssociationPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							AnalyticsAssociation.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						AnalyticsAssociation.class, primaryKey)) {
 
 				AnalyticsAssociation analyticsAssociation =
 					(AnalyticsAssociation)entityCache.getResult(
@@ -2675,9 +2656,8 @@ public class AnalyticsAssociationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AnalyticsAssociation.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AnalyticsAssociation.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2771,9 +2751,8 @@ public class AnalyticsAssociationPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AnalyticsAssociation.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AnalyticsAssociation.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

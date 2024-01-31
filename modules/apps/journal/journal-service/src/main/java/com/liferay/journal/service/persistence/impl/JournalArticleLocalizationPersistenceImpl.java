@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -170,9 +169,8 @@ public class JournalArticleLocalizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalArticleLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalArticleLocalization.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -568,9 +566,8 @@ public class JournalArticleLocalizationPersistenceImpl
 	@Override
 	public int countByArticlePK(long articlePK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalArticleLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalArticleLocalization.class)) {
 
 			FinderPath finderPath = _finderPathCountByArticlePK;
 
@@ -686,9 +683,8 @@ public class JournalArticleLocalizationPersistenceImpl
 		long companyId, long articlePK, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalArticleLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalArticleLocalization.class)) {
 
 			Object[] finderArgs = null;
 
@@ -817,9 +813,8 @@ public class JournalArticleLocalizationPersistenceImpl
 	@Override
 	public int countByC_A(long companyId, long articlePK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalArticleLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalArticleLocalization.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_A;
 
@@ -943,9 +938,8 @@ public class JournalArticleLocalizationPersistenceImpl
 		long articlePK, String languageId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalArticleLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalArticleLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -1072,9 +1066,8 @@ public class JournalArticleLocalizationPersistenceImpl
 	@Override
 	public int countByA_L(long articlePK, String languageId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalArticleLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalArticleLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -1221,9 +1214,8 @@ public class JournalArticleLocalizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalArticleLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalArticleLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -1357,9 +1349,8 @@ public class JournalArticleLocalizationPersistenceImpl
 	@Override
 	public int countByC_A_L(long companyId, long articlePK, String languageId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalArticleLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalArticleLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -1521,9 +1512,8 @@ public class JournalArticleLocalizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalArticleLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalArticleLocalization.class)) {
 
 			title = Objects.toString(title, "");
 			languageId = Objects.toString(languageId, "");
@@ -1681,9 +1671,8 @@ public class JournalArticleLocalizationPersistenceImpl
 		long companyId, long articlePK, String title, String languageId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalArticleLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalArticleLocalization.class)) {
 
 			title = Objects.toString(title, "");
 			languageId = Objects.toString(languageId, "");
@@ -1811,8 +1800,8 @@ public class JournalArticleLocalizationPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					journalArticleLocalization.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					journalArticleLocalization.getCtCollectionId())) {
 
 			entityCache.putResult(
 				JournalArticleLocalizationImpl.class,
@@ -1886,8 +1875,8 @@ public class JournalArticleLocalizationPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						journalArticleLocalization.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						journalArticleLocalization.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						JournalArticleLocalizationImpl.class,
@@ -1963,9 +1952,8 @@ public class JournalArticleLocalizationPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					journalArticleLocalizationModelImpl.getCtCollectionId() !=
-						0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					journalArticleLocalizationModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				journalArticleLocalizationModelImpl.getCompanyId(),
@@ -2130,79 +2118,71 @@ public class JournalArticleLocalizationPersistenceImpl
 	public JournalArticleLocalization updateImpl(
 		JournalArticleLocalization journalArticleLocalization) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = journalArticleLocalization.isNew();
 
-			boolean isNew = journalArticleLocalization.isNew();
+		if (!(journalArticleLocalization instanceof
+				JournalArticleLocalizationModelImpl)) {
 
-			if (!(journalArticleLocalization instanceof
-					JournalArticleLocalizationModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(
-						journalArticleLocalization.getClass())) {
-
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						journalArticleLocalization);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in journalArticleLocalization proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(journalArticleLocalization.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					journalArticleLocalization);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom JournalArticleLocalization implementation " +
-						journalArticleLocalization.getClass());
+					"Implement ModelWrapper in journalArticleLocalization proxy " +
+						invocationHandler.getClass());
 			}
 
-			JournalArticleLocalizationModelImpl
-				journalArticleLocalizationModelImpl =
-					(JournalArticleLocalizationModelImpl)
-						journalArticleLocalization;
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(journalArticleLocalization)) {
-					if (!isNew) {
-						session.evict(
-							JournalArticleLocalizationImpl.class,
-							journalArticleLocalization.getPrimaryKeyObj());
-					}
-
-					session.save(journalArticleLocalization);
-				}
-				else {
-					journalArticleLocalization =
-						(JournalArticleLocalization)session.merge(
-							journalArticleLocalization);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				JournalArticleLocalizationImpl.class,
-				journalArticleLocalizationModelImpl, false, true);
-
-			cacheUniqueFindersCache(journalArticleLocalizationModelImpl);
-
-			if (isNew) {
-				journalArticleLocalization.setNew(false);
-			}
-
-			journalArticleLocalization.resetOriginalValues();
-
-			return journalArticleLocalization;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom JournalArticleLocalization implementation " +
+					journalArticleLocalization.getClass());
 		}
+
+		JournalArticleLocalizationModelImpl
+			journalArticleLocalizationModelImpl =
+				(JournalArticleLocalizationModelImpl)journalArticleLocalization;
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(journalArticleLocalization)) {
+				if (!isNew) {
+					session.evict(
+						JournalArticleLocalizationImpl.class,
+						journalArticleLocalization.getPrimaryKeyObj());
+				}
+
+				session.save(journalArticleLocalization);
+			}
+			else {
+				journalArticleLocalization =
+					(JournalArticleLocalization)session.merge(
+						journalArticleLocalization);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			JournalArticleLocalizationImpl.class,
+			journalArticleLocalizationModelImpl, false, true);
+
+		cacheUniqueFindersCache(journalArticleLocalizationModelImpl);
+
+		if (isNew) {
+			journalArticleLocalization.setNew(false);
+		}
+
+		journalArticleLocalization.resetOriginalValues();
+
+		return journalArticleLocalization;
 	}
 
 	/**
@@ -2260,46 +2240,42 @@ public class JournalArticleLocalizationPersistenceImpl
 				JournalArticleLocalization.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		JournalArticleLocalization journalArticleLocalization =
+			(JournalArticleLocalization)entityCache.getResult(
+				JournalArticleLocalizationImpl.class, primaryKey);
 
-			JournalArticleLocalization journalArticleLocalization =
-				(JournalArticleLocalization)entityCache.getResult(
+		if (journalArticleLocalization != null) {
+			return journalArticleLocalization;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			journalArticleLocalization =
+				(JournalArticleLocalization)session.get(
 					JournalArticleLocalizationImpl.class, primaryKey);
 
 			if (journalArticleLocalization != null) {
-				return journalArticleLocalization;
+				cacheResult(journalArticleLocalization);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				journalArticleLocalization =
-					(JournalArticleLocalization)session.get(
-						JournalArticleLocalizationImpl.class, primaryKey);
-
-				if (journalArticleLocalization != null) {
-					cacheResult(journalArticleLocalization);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return journalArticleLocalization;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return journalArticleLocalization;
 	}
 
 	/**
@@ -2323,8 +2299,8 @@ public class JournalArticleLocalizationPersistenceImpl
 				JournalArticleLocalization.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2358,9 +2334,8 @@ public class JournalArticleLocalizationPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							JournalArticleLocalization.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						JournalArticleLocalization.class, primaryKey)) {
 
 				JournalArticleLocalization journalArticleLocalization =
 					(JournalArticleLocalization)entityCache.getResult(
@@ -2515,9 +2490,8 @@ public class JournalArticleLocalizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalArticleLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalArticleLocalization.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2613,9 +2587,8 @@ public class JournalArticleLocalizationPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalArticleLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalArticleLocalization.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

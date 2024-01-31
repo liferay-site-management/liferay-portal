@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -161,9 +160,8 @@ public class PortletPreferencesPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -548,9 +546,8 @@ public class PortletPreferencesPersistenceImpl
 	@Override
 	public int countByOwnerId(long ownerId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			FinderPath finderPath = _finderPathCountByOwnerId;
 
@@ -672,9 +669,8 @@ public class PortletPreferencesPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1054,9 +1050,8 @@ public class PortletPreferencesPersistenceImpl
 	@Override
 	public int countByPlid(long plid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			FinderPath finderPath = _finderPathCountByPlid;
 
@@ -1181,9 +1176,8 @@ public class PortletPreferencesPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -1601,9 +1595,8 @@ public class PortletPreferencesPersistenceImpl
 	@Override
 	public int countByPortletId(String portletId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -1749,9 +1742,8 @@ public class PortletPreferencesPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -2192,9 +2184,8 @@ public class PortletPreferencesPersistenceImpl
 	@Override
 	public int countByO_P(int ownerType, String portletId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -2346,9 +2337,8 @@ public class PortletPreferencesPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -2789,9 +2779,8 @@ public class PortletPreferencesPersistenceImpl
 	@Override
 	public int countByP_P(long plid, String portletId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -2951,9 +2940,8 @@ public class PortletPreferencesPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3389,9 +3377,8 @@ public class PortletPreferencesPersistenceImpl
 	@Override
 	public int countByO_O_P(long ownerId, int ownerType, long plid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			FinderPath finderPath = _finderPathCountByO_O_P;
 
@@ -3542,9 +3529,8 @@ public class PortletPreferencesPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -4008,9 +3994,8 @@ public class PortletPreferencesPersistenceImpl
 	@Override
 	public int countByO_O_PI(long ownerId, int ownerType, String portletId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -4177,9 +4162,8 @@ public class PortletPreferencesPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -4643,9 +4627,8 @@ public class PortletPreferencesPersistenceImpl
 	@Override
 	public int countByO_P_P(int ownerType, long plid, String portletId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -4820,9 +4803,8 @@ public class PortletPreferencesPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -5306,9 +5288,8 @@ public class PortletPreferencesPersistenceImpl
 		long companyId, long ownerId, int ownerType, String portletId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -5477,9 +5458,8 @@ public class PortletPreferencesPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -5620,9 +5600,8 @@ public class PortletPreferencesPersistenceImpl
 		long ownerId, int ownerType, long plid, String portletId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -5733,8 +5712,8 @@ public class PortletPreferencesPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					portletPreferences.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					portletPreferences.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				PortletPreferencesImpl.class,
@@ -5778,8 +5757,8 @@ public class PortletPreferencesPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						portletPreferences.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						portletPreferences.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						PortletPreferencesImpl.class,
@@ -5847,8 +5826,8 @@ public class PortletPreferencesPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					portletPreferencesModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					portletPreferencesModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				portletPreferencesModelImpl.getOwnerId(),
@@ -5977,72 +5956,67 @@ public class PortletPreferencesPersistenceImpl
 	public PortletPreferences updateImpl(
 		PortletPreferences portletPreferences) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = portletPreferences.isNew();
 
-			boolean isNew = portletPreferences.isNew();
+		if (!(portletPreferences instanceof PortletPreferencesModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(portletPreferences instanceof PortletPreferencesModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(portletPreferences.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						portletPreferences);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in portletPreferences proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(portletPreferences.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					portletPreferences);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom PortletPreferences implementation " +
-						portletPreferences.getClass());
+					"Implement ModelWrapper in portletPreferences proxy " +
+						invocationHandler.getClass());
 			}
 
-			PortletPreferencesModelImpl portletPreferencesModelImpl =
-				(PortletPreferencesModelImpl)portletPreferences;
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(portletPreferences)) {
-					if (!isNew) {
-						session.evict(
-							PortletPreferencesImpl.class,
-							portletPreferences.getPrimaryKeyObj());
-					}
-
-					session.save(portletPreferences);
-				}
-				else {
-					portletPreferences = (PortletPreferences)session.merge(
-						portletPreferences);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				PortletPreferencesImpl.class, portletPreferencesModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(portletPreferencesModelImpl);
-
-			if (isNew) {
-				portletPreferences.setNew(false);
-			}
-
-			portletPreferences.resetOriginalValues();
-
-			return portletPreferences;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom PortletPreferences implementation " +
+					portletPreferences.getClass());
 		}
+
+		PortletPreferencesModelImpl portletPreferencesModelImpl =
+			(PortletPreferencesModelImpl)portletPreferences;
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(portletPreferences)) {
+				if (!isNew) {
+					session.evict(
+						PortletPreferencesImpl.class,
+						portletPreferences.getPrimaryKeyObj());
+				}
+
+				session.save(portletPreferences);
+			}
+			else {
+				portletPreferences = (PortletPreferences)session.merge(
+					portletPreferences);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			PortletPreferencesImpl.class, portletPreferencesModelImpl, false,
+			true);
+
+		cacheUniqueFindersCache(portletPreferencesModelImpl);
+
+		if (isNew) {
+			portletPreferences.setNew(false);
+		}
+
+		portletPreferences.resetOriginalValues();
+
+		return portletPreferences;
 	}
 
 	/**
@@ -6096,45 +6070,41 @@ public class PortletPreferencesPersistenceImpl
 				PortletPreferences.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		PortletPreferences portletPreferences =
+			(PortletPreferences)EntityCacheUtil.getResult(
+				PortletPreferencesImpl.class, primaryKey);
 
-			PortletPreferences portletPreferences =
-				(PortletPreferences)EntityCacheUtil.getResult(
-					PortletPreferencesImpl.class, primaryKey);
-
-			if (portletPreferences != null) {
-				return portletPreferences;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				portletPreferences = (PortletPreferences)session.get(
-					PortletPreferencesImpl.class, primaryKey);
-
-				if (portletPreferences != null) {
-					cacheResult(portletPreferences);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (portletPreferences != null) {
 			return portletPreferences;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			portletPreferences = (PortletPreferences)session.get(
+				PortletPreferencesImpl.class, primaryKey);
+
+			if (portletPreferences != null) {
+				cacheResult(portletPreferences);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return portletPreferences;
 	}
 
 	/**
@@ -6156,8 +6126,8 @@ public class PortletPreferencesPersistenceImpl
 				PortletPreferences.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -6191,9 +6161,8 @@ public class PortletPreferencesPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							PortletPreferences.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						PortletPreferences.class, primaryKey)) {
 
 				PortletPreferences portletPreferences =
 					(PortletPreferences)EntityCacheUtil.getResult(
@@ -6347,9 +6316,8 @@ public class PortletPreferencesPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6442,9 +6410,8 @@ public class PortletPreferencesPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						PortletPreferences.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					PortletPreferences.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

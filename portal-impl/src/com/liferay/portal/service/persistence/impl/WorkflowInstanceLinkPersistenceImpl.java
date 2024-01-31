@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -175,9 +174,8 @@ public class WorkflowInstanceLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						WorkflowInstanceLink.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					WorkflowInstanceLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -618,9 +616,8 @@ public class WorkflowInstanceLinkPersistenceImpl
 	@Override
 	public int countByG_C_C(long groupId, long companyId, long classNameId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						WorkflowInstanceLink.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					WorkflowInstanceLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_C;
 
@@ -780,9 +777,8 @@ public class WorkflowInstanceLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						WorkflowInstanceLink.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					WorkflowInstanceLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1251,9 +1247,8 @@ public class WorkflowInstanceLinkPersistenceImpl
 		long groupId, long companyId, long classNameId, long classPK) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						WorkflowInstanceLink.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					WorkflowInstanceLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_C_C;
 
@@ -1348,8 +1343,8 @@ public class WorkflowInstanceLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					workflowInstanceLink.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					workflowInstanceLink.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				WorkflowInstanceLinkImpl.class,
@@ -1385,8 +1380,8 @@ public class WorkflowInstanceLinkPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						workflowInstanceLink.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						workflowInstanceLink.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						WorkflowInstanceLinkImpl.class,
@@ -1559,97 +1554,90 @@ public class WorkflowInstanceLinkPersistenceImpl
 	public WorkflowInstanceLink updateImpl(
 		WorkflowInstanceLink workflowInstanceLink) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = workflowInstanceLink.isNew();
 
-			boolean isNew = workflowInstanceLink.isNew();
+		if (!(workflowInstanceLink instanceof WorkflowInstanceLinkModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(workflowInstanceLink instanceof
-					WorkflowInstanceLinkModelImpl)) {
-
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(workflowInstanceLink.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						workflowInstanceLink);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in workflowInstanceLink proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(workflowInstanceLink.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					workflowInstanceLink);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom WorkflowInstanceLink implementation " +
-						workflowInstanceLink.getClass());
+					"Implement ModelWrapper in workflowInstanceLink proxy " +
+						invocationHandler.getClass());
 			}
 
-			WorkflowInstanceLinkModelImpl workflowInstanceLinkModelImpl =
-				(WorkflowInstanceLinkModelImpl)workflowInstanceLink;
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (workflowInstanceLink.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					workflowInstanceLink.setCreateDate(date);
-				}
-				else {
-					workflowInstanceLink.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!workflowInstanceLinkModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					workflowInstanceLink.setModifiedDate(date);
-				}
-				else {
-					workflowInstanceLink.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(workflowInstanceLink)) {
-					if (!isNew) {
-						session.evict(
-							WorkflowInstanceLinkImpl.class,
-							workflowInstanceLink.getPrimaryKeyObj());
-					}
-
-					session.save(workflowInstanceLink);
-				}
-				else {
-					workflowInstanceLink = (WorkflowInstanceLink)session.merge(
-						workflowInstanceLink);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				WorkflowInstanceLinkImpl.class, workflowInstanceLinkModelImpl,
-				false, true);
-
-			if (isNew) {
-				workflowInstanceLink.setNew(false);
-			}
-
-			workflowInstanceLink.resetOriginalValues();
-
-			return workflowInstanceLink;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom WorkflowInstanceLink implementation " +
+					workflowInstanceLink.getClass());
 		}
+
+		WorkflowInstanceLinkModelImpl workflowInstanceLinkModelImpl =
+			(WorkflowInstanceLinkModelImpl)workflowInstanceLink;
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (workflowInstanceLink.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				workflowInstanceLink.setCreateDate(date);
+			}
+			else {
+				workflowInstanceLink.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!workflowInstanceLinkModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				workflowInstanceLink.setModifiedDate(date);
+			}
+			else {
+				workflowInstanceLink.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(workflowInstanceLink)) {
+				if (!isNew) {
+					session.evict(
+						WorkflowInstanceLinkImpl.class,
+						workflowInstanceLink.getPrimaryKeyObj());
+				}
+
+				session.save(workflowInstanceLink);
+			}
+			else {
+				workflowInstanceLink = (WorkflowInstanceLink)session.merge(
+					workflowInstanceLink);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			WorkflowInstanceLinkImpl.class, workflowInstanceLinkModelImpl,
+			false, true);
+
+		if (isNew) {
+			workflowInstanceLink.setNew(false);
+		}
+
+		workflowInstanceLink.resetOriginalValues();
+
+		return workflowInstanceLink;
 	}
 
 	/**
@@ -1704,45 +1692,41 @@ public class WorkflowInstanceLinkPersistenceImpl
 				WorkflowInstanceLink.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		WorkflowInstanceLink workflowInstanceLink =
+			(WorkflowInstanceLink)EntityCacheUtil.getResult(
+				WorkflowInstanceLinkImpl.class, primaryKey);
 
-			WorkflowInstanceLink workflowInstanceLink =
-				(WorkflowInstanceLink)EntityCacheUtil.getResult(
-					WorkflowInstanceLinkImpl.class, primaryKey);
-
-			if (workflowInstanceLink != null) {
-				return workflowInstanceLink;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				workflowInstanceLink = (WorkflowInstanceLink)session.get(
-					WorkflowInstanceLinkImpl.class, primaryKey);
-
-				if (workflowInstanceLink != null) {
-					cacheResult(workflowInstanceLink);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (workflowInstanceLink != null) {
 			return workflowInstanceLink;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			workflowInstanceLink = (WorkflowInstanceLink)session.get(
+				WorkflowInstanceLinkImpl.class, primaryKey);
+
+			if (workflowInstanceLink != null) {
+				cacheResult(workflowInstanceLink);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return workflowInstanceLink;
 	}
 
 	/**
@@ -1764,8 +1748,8 @@ public class WorkflowInstanceLinkPersistenceImpl
 				WorkflowInstanceLink.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -1799,9 +1783,8 @@ public class WorkflowInstanceLinkPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							WorkflowInstanceLink.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						WorkflowInstanceLink.class, primaryKey)) {
 
 				WorkflowInstanceLink workflowInstanceLink =
 					(WorkflowInstanceLink)EntityCacheUtil.getResult(
@@ -1956,9 +1939,8 @@ public class WorkflowInstanceLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						WorkflowInstanceLink.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					WorkflowInstanceLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2052,9 +2034,8 @@ public class WorkflowInstanceLinkPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						WorkflowInstanceLink.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					WorkflowInstanceLink.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

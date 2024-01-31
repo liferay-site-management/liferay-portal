@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -172,9 +171,8 @@ public class MBThreadFlagPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBThreadFlag.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBThreadFlag.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -574,9 +572,8 @@ public class MBThreadFlagPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBThreadFlag.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBThreadFlag.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -705,9 +702,8 @@ public class MBThreadFlagPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBThreadFlag.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBThreadFlag.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -828,9 +824,8 @@ public class MBThreadFlagPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBThreadFlag.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBThreadFlag.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -983,9 +978,8 @@ public class MBThreadFlagPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBThreadFlag.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBThreadFlag.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1421,9 +1415,8 @@ public class MBThreadFlagPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBThreadFlag.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBThreadFlag.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1568,9 +1561,8 @@ public class MBThreadFlagPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBThreadFlag.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBThreadFlag.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1949,9 +1941,8 @@ public class MBThreadFlagPersistenceImpl
 	@Override
 	public int countByUserId(long userId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBThreadFlag.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBThreadFlag.class)) {
 
 			FinderPath finderPath = _finderPathCountByUserId;
 
@@ -2076,9 +2067,8 @@ public class MBThreadFlagPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBThreadFlag.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBThreadFlag.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2458,9 +2448,8 @@ public class MBThreadFlagPersistenceImpl
 	@Override
 	public int countByThreadId(long threadId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBThreadFlag.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBThreadFlag.class)) {
 
 			FinderPath finderPath = _finderPathCountByThreadId;
 
@@ -2573,9 +2562,8 @@ public class MBThreadFlagPersistenceImpl
 		long userId, long threadId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBThreadFlag.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBThreadFlag.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2683,9 +2671,8 @@ public class MBThreadFlagPersistenceImpl
 	@Override
 	public int countByU_T(long userId, long threadId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBThreadFlag.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBThreadFlag.class)) {
 
 			FinderPath finderPath = _finderPathCountByU_T;
 
@@ -2770,8 +2757,8 @@ public class MBThreadFlagPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					mbThreadFlag.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					mbThreadFlag.getCtCollectionId())) {
 
 			entityCache.putResult(
 				MBThreadFlagImpl.class, mbThreadFlag.getPrimaryKey(),
@@ -2818,8 +2805,8 @@ public class MBThreadFlagPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						mbThreadFlag.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						mbThreadFlag.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						MBThreadFlagImpl.class, mbThreadFlag.getPrimaryKey()) ==
@@ -2884,8 +2871,8 @@ public class MBThreadFlagPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					mbThreadFlagModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					mbThreadFlagModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				mbThreadFlagModelImpl.getUuid(),
@@ -3019,101 +3006,95 @@ public class MBThreadFlagPersistenceImpl
 
 	@Override
 	public MBThreadFlag updateImpl(MBThreadFlag mbThreadFlag) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = mbThreadFlag.isNew();
 
-			boolean isNew = mbThreadFlag.isNew();
+		if (!(mbThreadFlag instanceof MBThreadFlagModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(mbThreadFlag instanceof MBThreadFlagModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(mbThreadFlag.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						mbThreadFlag);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in mbThreadFlag proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(mbThreadFlag.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					mbThreadFlag);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom MBThreadFlag implementation " +
-						mbThreadFlag.getClass());
+					"Implement ModelWrapper in mbThreadFlag proxy " +
+						invocationHandler.getClass());
 			}
 
-			MBThreadFlagModelImpl mbThreadFlagModelImpl =
-				(MBThreadFlagModelImpl)mbThreadFlag;
-
-			if (Validator.isNull(mbThreadFlag.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				mbThreadFlag.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (mbThreadFlag.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					mbThreadFlag.setCreateDate(date);
-				}
-				else {
-					mbThreadFlag.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!mbThreadFlagModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					mbThreadFlag.setModifiedDate(date);
-				}
-				else {
-					mbThreadFlag.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(mbThreadFlag)) {
-					if (!isNew) {
-						session.evict(
-							MBThreadFlagImpl.class,
-							mbThreadFlag.getPrimaryKeyObj());
-					}
-
-					session.save(mbThreadFlag);
-				}
-				else {
-					mbThreadFlag = (MBThreadFlag)session.merge(mbThreadFlag);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				MBThreadFlagImpl.class, mbThreadFlagModelImpl, false, true);
-
-			cacheUniqueFindersCache(mbThreadFlagModelImpl);
-
-			if (isNew) {
-				mbThreadFlag.setNew(false);
-			}
-
-			mbThreadFlag.resetOriginalValues();
-
-			return mbThreadFlag;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom MBThreadFlag implementation " +
+					mbThreadFlag.getClass());
 		}
+
+		MBThreadFlagModelImpl mbThreadFlagModelImpl =
+			(MBThreadFlagModelImpl)mbThreadFlag;
+
+		if (Validator.isNull(mbThreadFlag.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			mbThreadFlag.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (mbThreadFlag.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				mbThreadFlag.setCreateDate(date);
+			}
+			else {
+				mbThreadFlag.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!mbThreadFlagModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				mbThreadFlag.setModifiedDate(date);
+			}
+			else {
+				mbThreadFlag.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(mbThreadFlag)) {
+				if (!isNew) {
+					session.evict(
+						MBThreadFlagImpl.class,
+						mbThreadFlag.getPrimaryKeyObj());
+				}
+
+				session.save(mbThreadFlag);
+			}
+			else {
+				mbThreadFlag = (MBThreadFlag)session.merge(mbThreadFlag);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			MBThreadFlagImpl.class, mbThreadFlagModelImpl, false, true);
+
+		cacheUniqueFindersCache(mbThreadFlagModelImpl);
+
+		if (isNew) {
+			mbThreadFlag.setNew(false);
+		}
+
+		mbThreadFlag.resetOriginalValues();
+
+		return mbThreadFlag;
 	}
 
 	/**
@@ -3167,44 +3148,40 @@ public class MBThreadFlagPersistenceImpl
 				MBThreadFlag.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		MBThreadFlag mbThreadFlag = (MBThreadFlag)entityCache.getResult(
+			MBThreadFlagImpl.class, primaryKey);
 
-			MBThreadFlag mbThreadFlag = (MBThreadFlag)entityCache.getResult(
+		if (mbThreadFlag != null) {
+			return mbThreadFlag;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			mbThreadFlag = (MBThreadFlag)session.get(
 				MBThreadFlagImpl.class, primaryKey);
 
 			if (mbThreadFlag != null) {
-				return mbThreadFlag;
+				cacheResult(mbThreadFlag);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				mbThreadFlag = (MBThreadFlag)session.get(
-					MBThreadFlagImpl.class, primaryKey);
-
-				if (mbThreadFlag != null) {
-					cacheResult(mbThreadFlag);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return mbThreadFlag;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return mbThreadFlag;
 	}
 
 	/**
@@ -3224,8 +3201,8 @@ public class MBThreadFlagPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(MBThreadFlag.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3258,9 +3235,8 @@ public class MBThreadFlagPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							MBThreadFlag.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						MBThreadFlag.class, primaryKey)) {
 
 				MBThreadFlag mbThreadFlag = (MBThreadFlag)entityCache.getResult(
 					MBThreadFlagImpl.class, primaryKey);
@@ -3408,9 +3384,8 @@ public class MBThreadFlagPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBThreadFlag.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBThreadFlag.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3503,9 +3478,8 @@ public class MBThreadFlagPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBThreadFlag.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBThreadFlag.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

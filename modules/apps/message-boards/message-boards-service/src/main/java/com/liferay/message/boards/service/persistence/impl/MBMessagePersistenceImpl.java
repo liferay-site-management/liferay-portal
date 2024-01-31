@@ -18,7 +18,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -182,8 +181,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -583,8 +582,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -713,8 +712,8 @@ public class MBMessagePersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -835,8 +834,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -989,8 +988,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1424,8 +1423,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1571,8 +1570,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2273,8 +2272,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2445,8 +2444,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2826,8 +2825,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2949,8 +2948,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3327,8 +3326,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByUserId(long userId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByUserId;
 
@@ -3451,8 +3450,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3831,8 +3830,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByThreadId(long threadId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByThreadId;
 
@@ -3958,8 +3957,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4340,8 +4339,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByThreadIdReplies(long threadId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByThreadIdReplies;
 
@@ -4467,8 +4466,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4852,8 +4851,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByParentMessageId(long parentMessageId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByParentMessageId;
 
@@ -4983,8 +4982,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5728,8 +5727,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByG_U(long groupId, long userId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_U;
 
@@ -5919,8 +5918,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6669,8 +6668,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByG_C(long groupId, long categoryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C;
 
@@ -6843,8 +6842,8 @@ public class MBMessagePersistenceImpl
 		long groupId, String urlSubject, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			urlSubject = Objects.toString(urlSubject, "");
 
@@ -6965,8 +6964,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByG_US(long groupId, String urlSubject) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			urlSubject = Objects.toString(urlSubject, "");
 
@@ -7118,8 +7117,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7863,8 +7862,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByG_S(long groupId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_S;
 
@@ -8054,8 +8053,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -8464,8 +8463,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByC_S(long companyId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_S;
 
@@ -8603,8 +8602,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -9081,8 +9080,8 @@ public class MBMessagePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			Object[] finderArgs = null;
 
@@ -9216,8 +9215,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByU_C(long userId, long classNameId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByU_C;
 
@@ -9283,8 +9282,8 @@ public class MBMessagePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			Object[] finderArgs = new Object[] {
 				userId, StringUtil.merge(classNameIds)
@@ -9437,8 +9436,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -9848,8 +9847,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByC_C(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -9987,8 +9986,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -10400,8 +10399,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByT_P(long threadId, long parentMessageId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByT_P;
 
@@ -10537,8 +10536,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -10946,8 +10945,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByT_A(long threadId, boolean answer) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByT_A;
 
@@ -11083,8 +11082,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -11492,8 +11491,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByT_S(long threadId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByT_S;
 
@@ -11629,8 +11628,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -12028,8 +12027,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByT_NotS(long threadId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByT_NotS;
 
@@ -12166,8 +12165,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -12575,8 +12574,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByTR_S(long threadId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByTR_S;
 
@@ -12714,8 +12713,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -13126,8 +13125,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByP_S(long parentMessageId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByP_S;
 
@@ -13269,8 +13268,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -14058,8 +14057,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByG_U_S(long groupId, long userId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_U_S;
 
@@ -14268,8 +14267,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -15058,8 +15057,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByG_C_T(long groupId, long categoryId, long threadId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_T;
 
@@ -15270,8 +15269,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -16059,8 +16058,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByG_C_S(long groupId, long categoryId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_S;
 
@@ -16269,8 +16268,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -16703,8 +16702,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByU_C_C(long userId, long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByU_C_C;
 
@@ -16856,8 +16855,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -17362,8 +17361,8 @@ public class MBMessagePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			Object[] finderArgs = null;
 
@@ -17506,8 +17505,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByU_C_S(long userId, long classNameId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByU_C_S;
 
@@ -17578,8 +17577,8 @@ public class MBMessagePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			Object[] finderArgs = new Object[] {
 				userId, StringUtil.merge(classNameIds), status
@@ -17749,8 +17748,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -18183,8 +18182,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByC_C_S(long classNameId, long classPK, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_S;
 
@@ -18342,8 +18341,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -19177,8 +19176,8 @@ public class MBMessagePersistenceImpl
 		long groupId, long categoryId, long threadId, boolean answer) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_T_A;
 
@@ -19410,8 +19409,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -20245,8 +20244,8 @@ public class MBMessagePersistenceImpl
 		long groupId, long categoryId, long threadId, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_T_S;
 
@@ -20478,8 +20477,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -20942,8 +20941,8 @@ public class MBMessagePersistenceImpl
 		long userId, long classNameId, long classPK, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByU_C_C_S;
 
@@ -21079,8 +21078,8 @@ public class MBMessagePersistenceImpl
 		String externalReferenceCode, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -21203,8 +21202,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countByERC_G(String externalReferenceCode, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -21305,8 +21304,8 @@ public class MBMessagePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					mbMessage.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					mbMessage.getCtCollectionId())) {
 
 			entityCache.putResult(
 				MBMessageImpl.class, mbMessage.getPrimaryKey(), mbMessage);
@@ -21357,8 +21356,8 @@ public class MBMessagePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						mbMessage.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						mbMessage.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						MBMessageImpl.class, mbMessage.getPrimaryKey()) ==
@@ -21423,8 +21422,8 @@ public class MBMessagePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					mbMessageModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					mbMessageModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				mbMessageModelImpl.getUuid(), mbMessageModelImpl.getGroupId()
@@ -21566,188 +21565,176 @@ public class MBMessagePersistenceImpl
 
 	@Override
 	public MBMessage updateImpl(MBMessage mbMessage) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = mbMessage.isNew();
 
-			boolean isNew = mbMessage.isNew();
+		if (!(mbMessage instanceof MBMessageModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(mbMessage instanceof MBMessageModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(mbMessage.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						mbMessage);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in mbMessage proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(mbMessage.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(mbMessage);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom MBMessage implementation " +
-						mbMessage.getClass());
+					"Implement ModelWrapper in mbMessage proxy " +
+						invocationHandler.getClass());
 			}
 
-			MBMessageModelImpl mbMessageModelImpl =
-				(MBMessageModelImpl)mbMessage;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom MBMessage implementation " +
+					mbMessage.getClass());
+		}
 
-			if (Validator.isNull(mbMessage.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		MBMessageModelImpl mbMessageModelImpl = (MBMessageModelImpl)mbMessage;
 
-				mbMessage.setUuid(uuid);
-			}
+		if (Validator.isNull(mbMessage.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
 
-			if (Validator.isNull(mbMessage.getExternalReferenceCode())) {
-				mbMessage.setExternalReferenceCode(mbMessage.getUuid());
-			}
-			else {
-				if (!Objects.equals(
-						mbMessageModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						mbMessage.getExternalReferenceCode())) {
+			mbMessage.setUuid(uuid);
+		}
 
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
+		if (Validator.isNull(mbMessage.getExternalReferenceCode())) {
+			mbMessage.setExternalReferenceCode(mbMessage.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					mbMessageModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
+					mbMessage.getExternalReferenceCode())) {
 
-					if (userId > 0) {
-						long companyId = mbMessage.getCompanyId();
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
 
-						long groupId = mbMessage.getGroupId();
+				if (userId > 0) {
+					long companyId = mbMessage.getCompanyId();
 
-						long classPK = 0;
+					long groupId = mbMessage.getGroupId();
 
-						if (!isNew) {
-							classPK = mbMessage.getPrimaryKey();
-						}
+					long classPK = 0;
 
-						try {
-							mbMessage.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									MBMessage.class.getName(), classPK,
-									ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-									mbMessage.getExternalReferenceCode(),
-									null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
-
-				MBMessage ercMBMessage = fetchByERC_G(
-					mbMessage.getExternalReferenceCode(),
-					mbMessage.getGroupId());
-
-				if (isNew) {
-					if (ercMBMessage != null) {
-						throw new DuplicateMBMessageExternalReferenceCodeException(
-							"Duplicate message-boards message with external reference code " +
-								mbMessage.getExternalReferenceCode() +
-									" and group " + mbMessage.getGroupId());
-					}
-				}
-				else {
-					if ((ercMBMessage != null) &&
-						(mbMessage.getMessageId() !=
-							ercMBMessage.getMessageId())) {
-
-						throw new DuplicateMBMessageExternalReferenceCodeException(
-							"Duplicate message-boards message with external reference code " +
-								mbMessage.getExternalReferenceCode() +
-									" and group " + mbMessage.getGroupId());
-					}
-				}
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (mbMessage.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					mbMessage.setCreateDate(date);
-				}
-				else {
-					mbMessage.setCreateDate(serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!mbMessageModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					mbMessage.setModifiedDate(date);
-				}
-				else {
-					mbMessage.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
-
-			if (userId > 0) {
-				long companyId = mbMessage.getCompanyId();
-
-				long groupId = mbMessage.getGroupId();
-
-				long messageId = 0;
-
-				if (!isNew) {
-					messageId = mbMessage.getPrimaryKey();
-				}
-
-				try {
-					mbMessage.setSubject(
-						SanitizerUtil.sanitize(
-							companyId, groupId, userId,
-							MBMessage.class.getName(), messageId,
-							ContentTypes.TEXT_PLAIN, Sanitizer.MODE_ALL,
-							mbMessage.getSubject(), null));
-				}
-				catch (SanitizerException sanitizerException) {
-					throw new SystemException(sanitizerException);
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(mbMessage)) {
 					if (!isNew) {
-						session.evict(
-							MBMessageImpl.class, mbMessage.getPrimaryKeyObj());
+						classPK = mbMessage.getPrimaryKey();
 					}
 
-					session.save(mbMessage);
+					try {
+						mbMessage.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								MBMessage.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								mbMessage.getExternalReferenceCode(), null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
 				}
-				else {
-					mbMessage = (MBMessage)session.merge(mbMessage);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
 			}
 
-			entityCache.putResult(
-				MBMessageImpl.class, mbMessageModelImpl, false, true);
-
-			cacheUniqueFindersCache(mbMessageModelImpl);
+			MBMessage ercMBMessage = fetchByERC_G(
+				mbMessage.getExternalReferenceCode(), mbMessage.getGroupId());
 
 			if (isNew) {
-				mbMessage.setNew(false);
+				if (ercMBMessage != null) {
+					throw new DuplicateMBMessageExternalReferenceCodeException(
+						"Duplicate message-boards message with external reference code " +
+							mbMessage.getExternalReferenceCode() +
+								" and group " + mbMessage.getGroupId());
+				}
+			}
+			else {
+				if ((ercMBMessage != null) &&
+					(mbMessage.getMessageId() != ercMBMessage.getMessageId())) {
+
+					throw new DuplicateMBMessageExternalReferenceCodeException(
+						"Duplicate message-boards message with external reference code " +
+							mbMessage.getExternalReferenceCode() +
+								" and group " + mbMessage.getGroupId());
+				}
+			}
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (mbMessage.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				mbMessage.setCreateDate(date);
+			}
+			else {
+				mbMessage.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!mbMessageModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				mbMessage.setModifiedDate(date);
+			}
+			else {
+				mbMessage.setModifiedDate(serviceContext.getModifiedDate(date));
+			}
+		}
+
+		long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
+
+		if (userId > 0) {
+			long companyId = mbMessage.getCompanyId();
+
+			long groupId = mbMessage.getGroupId();
+
+			long messageId = 0;
+
+			if (!isNew) {
+				messageId = mbMessage.getPrimaryKey();
 			}
 
-			mbMessage.resetOriginalValues();
-
-			return mbMessage;
+			try {
+				mbMessage.setSubject(
+					SanitizerUtil.sanitize(
+						companyId, groupId, userId, MBMessage.class.getName(),
+						messageId, ContentTypes.TEXT_PLAIN, Sanitizer.MODE_ALL,
+						mbMessage.getSubject(), null));
+			}
+			catch (SanitizerException sanitizerException) {
+				throw new SystemException(sanitizerException);
+			}
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(mbMessage)) {
+				if (!isNew) {
+					session.evict(
+						MBMessageImpl.class, mbMessage.getPrimaryKeyObj());
+				}
+
+				session.save(mbMessage);
+			}
+			else {
+				mbMessage = (MBMessage)session.merge(mbMessage);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			MBMessageImpl.class, mbMessageModelImpl, false, true);
+
+		cacheUniqueFindersCache(mbMessageModelImpl);
+
+		if (isNew) {
+			mbMessage.setNew(false);
+		}
+
+		mbMessage.resetOriginalValues();
+
+		return mbMessage;
 	}
 
 	/**
@@ -21799,44 +21786,39 @@ public class MBMessagePersistenceImpl
 	public MBMessage fetchByPrimaryKey(Serializable primaryKey) {
 		if (ctPersistenceHelper.isProductionMode(MBMessage.class, primaryKey)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		MBMessage mbMessage = (MBMessage)entityCache.getResult(
+			MBMessageImpl.class, primaryKey);
 
-			MBMessage mbMessage = (MBMessage)entityCache.getResult(
-				MBMessageImpl.class, primaryKey);
-
-			if (mbMessage != null) {
-				return mbMessage;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				mbMessage = (MBMessage)session.get(
-					MBMessageImpl.class, primaryKey);
-
-				if (mbMessage != null) {
-					cacheResult(mbMessage);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (mbMessage != null) {
 			return mbMessage;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			mbMessage = (MBMessage)session.get(MBMessageImpl.class, primaryKey);
+
+			if (mbMessage != null) {
+				cacheResult(mbMessage);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return mbMessage;
 	}
 
 	/**
@@ -21856,8 +21838,8 @@ public class MBMessagePersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(MBMessage.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -21890,9 +21872,8 @@ public class MBMessagePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							MBMessage.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						MBMessage.class, primaryKey)) {
 
 				MBMessage mbMessage = (MBMessage)entityCache.getResult(
 					MBMessageImpl.class, primaryKey);
@@ -22040,8 +22021,8 @@ public class MBMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -22134,8 +22115,8 @@ public class MBMessagePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMessage.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

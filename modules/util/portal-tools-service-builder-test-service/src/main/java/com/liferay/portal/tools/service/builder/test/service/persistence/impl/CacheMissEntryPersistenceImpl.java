@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -101,8 +100,8 @@ public class CacheMissEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cacheMissEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cacheMissEntry.getCtCollectionId())) {
 
 			dummyEntityCache.putResult(
 				CacheMissEntryImpl.class, cacheMissEntry.getPrimaryKey(),
@@ -136,8 +135,8 @@ public class CacheMissEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						cacheMissEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						cacheMissEntry.getCtCollectionId())) {
 
 				if (dummyEntityCache.getResult(
 						CacheMissEntryImpl.class,
@@ -298,49 +297,43 @@ public class CacheMissEntryPersistenceImpl
 
 	@Override
 	public CacheMissEntry updateImpl(CacheMissEntry cacheMissEntry) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = cacheMissEntry.isNew();
 
-			boolean isNew = cacheMissEntry.isNew();
+		Session session = null;
 
-			Session session = null;
+		try {
+			session = openSession();
 
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(cacheMissEntry)) {
-					if (!isNew) {
-						session.evict(
-							CacheMissEntryImpl.class,
-							cacheMissEntry.getPrimaryKeyObj());
-					}
-
-					session.save(cacheMissEntry);
+			if (ctPersistenceHelper.isInsert(cacheMissEntry)) {
+				if (!isNew) {
+					session.evict(
+						CacheMissEntryImpl.class,
+						cacheMissEntry.getPrimaryKeyObj());
 				}
-				else {
-					cacheMissEntry = (CacheMissEntry)session.merge(
-						cacheMissEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
 
-			dummyEntityCache.putResult(
-				CacheMissEntryImpl.class, cacheMissEntry, false, true);
-
-			if (isNew) {
-				cacheMissEntry.setNew(false);
+				session.save(cacheMissEntry);
 			}
-
-			cacheMissEntry.resetOriginalValues();
-
-			return cacheMissEntry;
+			else {
+				cacheMissEntry = (CacheMissEntry)session.merge(cacheMissEntry);
+			}
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		dummyEntityCache.putResult(
+			CacheMissEntryImpl.class, cacheMissEntry, false, true);
+
+		if (isNew) {
+			cacheMissEntry.setNew(false);
+		}
+
+		cacheMissEntry.resetOriginalValues();
+
+		return cacheMissEntry;
 	}
 
 	/**
@@ -394,45 +387,41 @@ public class CacheMissEntryPersistenceImpl
 				CacheMissEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CacheMissEntry cacheMissEntry =
+			(CacheMissEntry)dummyEntityCache.getResult(
+				CacheMissEntryImpl.class, primaryKey);
 
-			CacheMissEntry cacheMissEntry =
-				(CacheMissEntry)dummyEntityCache.getResult(
-					CacheMissEntryImpl.class, primaryKey);
-
-			if (cacheMissEntry != null) {
-				return cacheMissEntry;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				cacheMissEntry = (CacheMissEntry)session.get(
-					CacheMissEntryImpl.class, primaryKey);
-
-				if (cacheMissEntry != null) {
-					cacheResult(cacheMissEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (cacheMissEntry != null) {
 			return cacheMissEntry;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			cacheMissEntry = (CacheMissEntry)session.get(
+				CacheMissEntryImpl.class, primaryKey);
+
+			if (cacheMissEntry != null) {
+				cacheResult(cacheMissEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return cacheMissEntry;
 	}
 
 	/**
@@ -452,8 +441,8 @@ public class CacheMissEntryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(CacheMissEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -486,9 +475,8 @@ public class CacheMissEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CacheMissEntry.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CacheMissEntry.class, primaryKey)) {
 
 				CacheMissEntry cacheMissEntry =
 					(CacheMissEntry)dummyEntityCache.getResult(
@@ -640,9 +628,8 @@ public class CacheMissEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CacheMissEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CacheMissEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -736,9 +723,8 @@ public class CacheMissEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CacheMissEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CacheMissEntry.class)) {
 
 			Long count = (Long)dummyFinderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

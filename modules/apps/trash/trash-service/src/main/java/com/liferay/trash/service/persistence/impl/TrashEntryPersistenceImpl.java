@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -170,8 +169,8 @@ public class TrashEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(TrashEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TrashEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -549,8 +548,8 @@ public class TrashEntryPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(TrashEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TrashEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -675,8 +674,8 @@ public class TrashEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(TrashEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TrashEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1056,8 +1055,8 @@ public class TrashEntryPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(TrashEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TrashEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -1186,8 +1185,8 @@ public class TrashEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(TrashEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TrashEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1610,8 +1609,8 @@ public class TrashEntryPersistenceImpl
 	@Override
 	public int countByG_LtCD(long groupId, Date createDate) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(TrashEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TrashEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_LtCD;
 
@@ -1762,8 +1761,8 @@ public class TrashEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(TrashEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TrashEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2173,8 +2172,8 @@ public class TrashEntryPersistenceImpl
 	@Override
 	public int countByG_C(long groupId, long classNameId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(TrashEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TrashEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C;
 
@@ -2294,8 +2293,8 @@ public class TrashEntryPersistenceImpl
 		long classNameId, long classPK, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(TrashEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TrashEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2403,8 +2402,8 @@ public class TrashEntryPersistenceImpl
 	@Override
 	public int countByC_C(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(TrashEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TrashEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -2483,8 +2482,8 @@ public class TrashEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					trashEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					trashEntry.getCtCollectionId())) {
 
 			entityCache.putResult(
 				TrashEntryImpl.class, trashEntry.getPrimaryKey(), trashEntry);
@@ -2523,8 +2522,8 @@ public class TrashEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						trashEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						trashEntry.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						TrashEntryImpl.class, trashEntry.getPrimaryKey()) ==
@@ -2589,8 +2588,8 @@ public class TrashEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					trashEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					trashEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				trashEntryModelImpl.getClassNameId(),
@@ -2708,85 +2707,77 @@ public class TrashEntryPersistenceImpl
 
 	@Override
 	public TrashEntry updateImpl(TrashEntry trashEntry) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = trashEntry.isNew();
 
-			boolean isNew = trashEntry.isNew();
+		if (!(trashEntry instanceof TrashEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(trashEntry instanceof TrashEntryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(trashEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						trashEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in trashEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(trashEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(trashEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom TrashEntry implementation " +
-						trashEntry.getClass());
+					"Implement ModelWrapper in trashEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			TrashEntryModelImpl trashEntryModelImpl =
-				(TrashEntryModelImpl)trashEntry;
-
-			if (isNew && (trashEntry.getCreateDate() == null)) {
-				ServiceContext serviceContext =
-					ServiceContextThreadLocal.getServiceContext();
-
-				Date date = new Date();
-
-				if (serviceContext == null) {
-					trashEntry.setCreateDate(date);
-				}
-				else {
-					trashEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(trashEntry)) {
-					if (!isNew) {
-						session.evict(
-							TrashEntryImpl.class,
-							trashEntry.getPrimaryKeyObj());
-					}
-
-					session.save(trashEntry);
-				}
-				else {
-					trashEntry = (TrashEntry)session.merge(trashEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				TrashEntryImpl.class, trashEntryModelImpl, false, true);
-
-			cacheUniqueFindersCache(trashEntryModelImpl);
-
-			if (isNew) {
-				trashEntry.setNew(false);
-			}
-
-			trashEntry.resetOriginalValues();
-
-			return trashEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom TrashEntry implementation " +
+					trashEntry.getClass());
 		}
+
+		TrashEntryModelImpl trashEntryModelImpl =
+			(TrashEntryModelImpl)trashEntry;
+
+		if (isNew && (trashEntry.getCreateDate() == null)) {
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (serviceContext == null) {
+				trashEntry.setCreateDate(date);
+			}
+			else {
+				trashEntry.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(trashEntry)) {
+				if (!isNew) {
+					session.evict(
+						TrashEntryImpl.class, trashEntry.getPrimaryKeyObj());
+				}
+
+				session.save(trashEntry);
+			}
+			else {
+				trashEntry = (TrashEntry)session.merge(trashEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			TrashEntryImpl.class, trashEntryModelImpl, false, true);
+
+		cacheUniqueFindersCache(trashEntryModelImpl);
+
+		if (isNew) {
+			trashEntry.setNew(false);
+		}
+
+		trashEntry.resetOriginalValues();
+
+		return trashEntry;
 	}
 
 	/**
@@ -2840,44 +2831,40 @@ public class TrashEntryPersistenceImpl
 				TrashEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		TrashEntry trashEntry = (TrashEntry)entityCache.getResult(
+			TrashEntryImpl.class, primaryKey);
 
-			TrashEntry trashEntry = (TrashEntry)entityCache.getResult(
+		if (trashEntry != null) {
+			return trashEntry;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			trashEntry = (TrashEntry)session.get(
 				TrashEntryImpl.class, primaryKey);
 
 			if (trashEntry != null) {
-				return trashEntry;
+				cacheResult(trashEntry);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				trashEntry = (TrashEntry)session.get(
-					TrashEntryImpl.class, primaryKey);
-
-				if (trashEntry != null) {
-					cacheResult(trashEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return trashEntry;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return trashEntry;
 	}
 
 	/**
@@ -2897,8 +2884,8 @@ public class TrashEntryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(TrashEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2931,9 +2918,8 @@ public class TrashEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							TrashEntry.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						TrashEntry.class, primaryKey)) {
 
 				TrashEntry trashEntry = (TrashEntry)entityCache.getResult(
 					TrashEntryImpl.class, primaryKey);
@@ -3081,8 +3067,8 @@ public class TrashEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(TrashEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TrashEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3175,8 +3161,8 @@ public class TrashEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(TrashEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TrashEntry.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

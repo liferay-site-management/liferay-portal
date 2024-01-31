@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -173,8 +172,8 @@ public class JournalFeedPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(JournalFeed.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalFeed.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -574,8 +573,8 @@ public class JournalFeedPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(JournalFeed.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalFeed.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -704,8 +703,8 @@ public class JournalFeedPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(JournalFeed.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalFeed.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -826,8 +825,8 @@ public class JournalFeedPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(JournalFeed.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalFeed.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -980,8 +979,8 @@ public class JournalFeedPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(JournalFeed.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalFeed.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1416,8 +1415,8 @@ public class JournalFeedPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(JournalFeed.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalFeed.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1563,8 +1562,8 @@ public class JournalFeedPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(JournalFeed.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalFeed.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2271,8 +2270,8 @@ public class JournalFeedPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(JournalFeed.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalFeed.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2433,8 +2432,8 @@ public class JournalFeedPersistenceImpl
 		long groupId, String feedId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(JournalFeed.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalFeed.class)) {
 
 			feedId = Objects.toString(feedId, "");
 
@@ -2555,8 +2554,8 @@ public class JournalFeedPersistenceImpl
 	@Override
 	public int countByG_F(long groupId, String feedId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(JournalFeed.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalFeed.class)) {
 
 			feedId = Objects.toString(feedId, "");
 
@@ -2658,8 +2657,8 @@ public class JournalFeedPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					journalFeed.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					journalFeed.getCtCollectionId())) {
 
 			entityCache.putResult(
 				JournalFeedImpl.class, journalFeed.getPrimaryKey(),
@@ -2704,8 +2703,8 @@ public class JournalFeedPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						journalFeed.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						journalFeed.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						JournalFeedImpl.class, journalFeed.getPrimaryKey()) ==
@@ -2770,8 +2769,8 @@ public class JournalFeedPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					journalFeedModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					journalFeedModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				journalFeedModelImpl.getUuid(),
@@ -2903,101 +2902,93 @@ public class JournalFeedPersistenceImpl
 
 	@Override
 	public JournalFeed updateImpl(JournalFeed journalFeed) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = journalFeed.isNew();
 
-			boolean isNew = journalFeed.isNew();
+		if (!(journalFeed instanceof JournalFeedModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(journalFeed instanceof JournalFeedModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(journalFeed.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						journalFeed);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in journalFeed proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(journalFeed.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(journalFeed);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom JournalFeed implementation " +
-						journalFeed.getClass());
+					"Implement ModelWrapper in journalFeed proxy " +
+						invocationHandler.getClass());
 			}
 
-			JournalFeedModelImpl journalFeedModelImpl =
-				(JournalFeedModelImpl)journalFeed;
-
-			if (Validator.isNull(journalFeed.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				journalFeed.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (journalFeed.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					journalFeed.setCreateDate(date);
-				}
-				else {
-					journalFeed.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!journalFeedModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					journalFeed.setModifiedDate(date);
-				}
-				else {
-					journalFeed.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(journalFeed)) {
-					if (!isNew) {
-						session.evict(
-							JournalFeedImpl.class,
-							journalFeed.getPrimaryKeyObj());
-					}
-
-					session.save(journalFeed);
-				}
-				else {
-					journalFeed = (JournalFeed)session.merge(journalFeed);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				JournalFeedImpl.class, journalFeedModelImpl, false, true);
-
-			cacheUniqueFindersCache(journalFeedModelImpl);
-
-			if (isNew) {
-				journalFeed.setNew(false);
-			}
-
-			journalFeed.resetOriginalValues();
-
-			return journalFeed;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom JournalFeed implementation " +
+					journalFeed.getClass());
 		}
+
+		JournalFeedModelImpl journalFeedModelImpl =
+			(JournalFeedModelImpl)journalFeed;
+
+		if (Validator.isNull(journalFeed.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			journalFeed.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (journalFeed.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				journalFeed.setCreateDate(date);
+			}
+			else {
+				journalFeed.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!journalFeedModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				journalFeed.setModifiedDate(date);
+			}
+			else {
+				journalFeed.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(journalFeed)) {
+				if (!isNew) {
+					session.evict(
+						JournalFeedImpl.class, journalFeed.getPrimaryKeyObj());
+				}
+
+				session.save(journalFeed);
+			}
+			else {
+				journalFeed = (JournalFeed)session.merge(journalFeed);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			JournalFeedImpl.class, journalFeedModelImpl, false, true);
+
+		cacheUniqueFindersCache(journalFeedModelImpl);
+
+		if (isNew) {
+			journalFeed.setNew(false);
+		}
+
+		journalFeed.resetOriginalValues();
+
+		return journalFeed;
 	}
 
 	/**
@@ -3049,44 +3040,40 @@ public class JournalFeedPersistenceImpl
 				JournalFeed.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		JournalFeed journalFeed = (JournalFeed)entityCache.getResult(
+			JournalFeedImpl.class, primaryKey);
 
-			JournalFeed journalFeed = (JournalFeed)entityCache.getResult(
+		if (journalFeed != null) {
+			return journalFeed;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			journalFeed = (JournalFeed)session.get(
 				JournalFeedImpl.class, primaryKey);
 
 			if (journalFeed != null) {
-				return journalFeed;
+				cacheResult(journalFeed);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				journalFeed = (JournalFeed)session.get(
-					JournalFeedImpl.class, primaryKey);
-
-				if (journalFeed != null) {
-					cacheResult(journalFeed);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return journalFeed;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return journalFeed;
 	}
 
 	/**
@@ -3106,8 +3093,8 @@ public class JournalFeedPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(JournalFeed.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3140,9 +3127,8 @@ public class JournalFeedPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							JournalFeed.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						JournalFeed.class, primaryKey)) {
 
 				JournalFeed journalFeed = (JournalFeed)entityCache.getResult(
 					JournalFeedImpl.class, primaryKey);
@@ -3290,8 +3276,8 @@ public class JournalFeedPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(JournalFeed.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalFeed.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3384,8 +3370,8 @@ public class JournalFeedPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(JournalFeed.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalFeed.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

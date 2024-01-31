@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -176,9 +175,8 @@ public class DDMStructurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -578,9 +576,8 @@ public class DDMStructurePersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -709,9 +706,8 @@ public class DDMStructurePersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -832,9 +828,8 @@ public class DDMStructurePersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -987,9 +982,8 @@ public class DDMStructurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1425,9 +1419,8 @@ public class DDMStructurePersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1574,9 +1567,8 @@ public class DDMStructurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2490,9 +2482,8 @@ public class DDMStructurePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2613,9 +2604,8 @@ public class DDMStructurePersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2676,9 +2666,8 @@ public class DDMStructurePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			Object[] finderArgs = new Object[] {StringUtil.merge(groupIds)};
 
@@ -2929,9 +2918,8 @@ public class DDMStructurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3321,9 +3309,8 @@ public class DDMStructurePersistenceImpl
 	@Override
 	public int countByParentStructureId(long parentStructureId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			FinderPath finderPath = _finderPathCountByParentStructureId;
 
@@ -3450,9 +3437,8 @@ public class DDMStructurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			structureKey = Objects.toString(structureKey, "");
 
@@ -3864,9 +3850,8 @@ public class DDMStructurePersistenceImpl
 	@Override
 	public int countByStructureKey(String structureKey) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			structureKey = Objects.toString(structureKey, "");
 
@@ -4013,9 +3998,8 @@ public class DDMStructurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4776,9 +4760,8 @@ public class DDMStructurePersistenceImpl
 	@Override
 	public int countByG_P(long groupId, long parentStructureId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P;
 
@@ -4969,9 +4952,8 @@ public class DDMStructurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5949,9 +5931,8 @@ public class DDMStructurePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			Object[] finderArgs = null;
 
@@ -6087,9 +6068,8 @@ public class DDMStructurePersistenceImpl
 	@Override
 	public int countByG_C(long groupId, long classNameId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C;
 
@@ -6155,9 +6135,8 @@ public class DDMStructurePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(groupIds), classNameId
@@ -6438,9 +6417,8 @@ public class DDMStructurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6851,9 +6829,8 @@ public class DDMStructurePersistenceImpl
 	@Override
 	public int countByC_C(long companyId, long classNameId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -6984,9 +6961,8 @@ public class DDMStructurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			structureKey = Objects.toString(structureKey, "");
 
@@ -7119,9 +7095,8 @@ public class DDMStructurePersistenceImpl
 		long groupId, long classNameId, String structureKey) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			structureKey = Objects.toString(structureKey, "");
 
@@ -7290,9 +7265,8 @@ public class DDMStructurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			name = Objects.toString(name, "");
 			description = Objects.toString(description, "");
@@ -8187,9 +8161,8 @@ public class DDMStructurePersistenceImpl
 	@Override
 	public int countByG_N_D(long groupId, String name, String description) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			name = Objects.toString(name, "");
 			description = Objects.toString(description, "");
@@ -8464,9 +8437,8 @@ public class DDMStructurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			name = Objects.toString(name, "");
 			description = Objects.toString(description, "");
@@ -9683,9 +9655,8 @@ public class DDMStructurePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			Object[] finderArgs = null;
 
@@ -9863,9 +9834,8 @@ public class DDMStructurePersistenceImpl
 		long groupId, long classNameId, String name, String description) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			name = Objects.toString(name, "");
 			description = Objects.toString(description, "");
@@ -9973,9 +9943,8 @@ public class DDMStructurePersistenceImpl
 		description = Objects.toString(description, "");
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(groupIds), classNameId, name, description
@@ -10322,8 +10291,8 @@ public class DDMStructurePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmStructure.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmStructure.getCtCollectionId())) {
 
 			entityCache.putResult(
 				DDMStructureImpl.class, ddmStructure.getPrimaryKey(),
@@ -10371,8 +10340,8 @@ public class DDMStructurePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						ddmStructure.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ddmStructure.getCtCollectionId())) {
 
 				DDMStructure cachedDDMStructure =
 					(DDMStructure)entityCache.getResult(
@@ -10453,8 +10422,8 @@ public class DDMStructurePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmStructureModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmStructureModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				ddmStructureModelImpl.getUuid(),
@@ -10590,101 +10559,95 @@ public class DDMStructurePersistenceImpl
 
 	@Override
 	public DDMStructure updateImpl(DDMStructure ddmStructure) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = ddmStructure.isNew();
 
-			boolean isNew = ddmStructure.isNew();
+		if (!(ddmStructure instanceof DDMStructureModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(ddmStructure instanceof DDMStructureModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(ddmStructure.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						ddmStructure);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in ddmStructure proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(ddmStructure.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					ddmStructure);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DDMStructure implementation " +
-						ddmStructure.getClass());
+					"Implement ModelWrapper in ddmStructure proxy " +
+						invocationHandler.getClass());
 			}
 
-			DDMStructureModelImpl ddmStructureModelImpl =
-				(DDMStructureModelImpl)ddmStructure;
-
-			if (Validator.isNull(ddmStructure.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				ddmStructure.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (ddmStructure.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					ddmStructure.setCreateDate(date);
-				}
-				else {
-					ddmStructure.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!ddmStructureModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					ddmStructure.setModifiedDate(date);
-				}
-				else {
-					ddmStructure.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(ddmStructure)) {
-					if (!isNew) {
-						session.evict(
-							DDMStructureImpl.class,
-							ddmStructure.getPrimaryKeyObj());
-					}
-
-					session.save(ddmStructure);
-				}
-				else {
-					ddmStructure = (DDMStructure)session.merge(ddmStructure);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				DDMStructureImpl.class, ddmStructureModelImpl, false, true);
-
-			cacheUniqueFindersCache(ddmStructureModelImpl);
-
-			if (isNew) {
-				ddmStructure.setNew(false);
-			}
-
-			ddmStructure.resetOriginalValues();
-
-			return ddmStructure;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DDMStructure implementation " +
+					ddmStructure.getClass());
 		}
+
+		DDMStructureModelImpl ddmStructureModelImpl =
+			(DDMStructureModelImpl)ddmStructure;
+
+		if (Validator.isNull(ddmStructure.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			ddmStructure.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (ddmStructure.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				ddmStructure.setCreateDate(date);
+			}
+			else {
+				ddmStructure.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!ddmStructureModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				ddmStructure.setModifiedDate(date);
+			}
+			else {
+				ddmStructure.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(ddmStructure)) {
+				if (!isNew) {
+					session.evict(
+						DDMStructureImpl.class,
+						ddmStructure.getPrimaryKeyObj());
+				}
+
+				session.save(ddmStructure);
+			}
+			else {
+				ddmStructure = (DDMStructure)session.merge(ddmStructure);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			DDMStructureImpl.class, ddmStructureModelImpl, false, true);
+
+		cacheUniqueFindersCache(ddmStructureModelImpl);
+
+		if (isNew) {
+			ddmStructure.setNew(false);
+		}
+
+		ddmStructure.resetOriginalValues();
+
+		return ddmStructure;
 	}
 
 	/**
@@ -10738,44 +10701,40 @@ public class DDMStructurePersistenceImpl
 				DDMStructure.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DDMStructure ddmStructure = (DDMStructure)entityCache.getResult(
+			DDMStructureImpl.class, primaryKey);
 
-			DDMStructure ddmStructure = (DDMStructure)entityCache.getResult(
+		if (ddmStructure != null) {
+			return ddmStructure;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			ddmStructure = (DDMStructure)session.get(
 				DDMStructureImpl.class, primaryKey);
 
 			if (ddmStructure != null) {
-				return ddmStructure;
+				cacheResult(ddmStructure);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ddmStructure = (DDMStructure)session.get(
-					DDMStructureImpl.class, primaryKey);
-
-				if (ddmStructure != null) {
-					cacheResult(ddmStructure);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return ddmStructure;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return ddmStructure;
 	}
 
 	/**
@@ -10795,8 +10754,8 @@ public class DDMStructurePersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(DDMStructure.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -10829,9 +10788,8 @@ public class DDMStructurePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							DDMStructure.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						DDMStructure.class, primaryKey)) {
 
 				DDMStructure ddmStructure = (DDMStructure)entityCache.getResult(
 					DDMStructureImpl.class, primaryKey);
@@ -10979,9 +10937,8 @@ public class DDMStructurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -11074,9 +11031,8 @@ public class DDMStructurePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructure.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

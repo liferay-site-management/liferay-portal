@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -174,9 +173,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetDisplayPageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetDisplayPageEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -586,9 +584,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetDisplayPageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetDisplayPageEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -718,9 +715,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetDisplayPageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetDisplayPageEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -844,9 +840,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetDisplayPageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetDisplayPageEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1001,9 +996,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetDisplayPageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetDisplayPageEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1444,9 +1438,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetDisplayPageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetDisplayPageEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1594,9 +1587,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetDisplayPageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetDisplayPageEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1986,9 +1978,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetDisplayPageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetDisplayPageEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2119,9 +2110,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetDisplayPageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetDisplayPageEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2525,9 +2515,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 		long layoutPageTemplateEntryId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetDisplayPageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetDisplayPageEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByLayoutPageTemplateEntryId;
 
@@ -2652,9 +2641,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 		long groupId, long classNameId, long classPK, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetDisplayPageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetDisplayPageEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2773,9 +2761,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 	@Override
 	public int countByG_C_C(long groupId, long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetDisplayPageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetDisplayPageEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_C;
 
@@ -2868,8 +2855,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					assetDisplayPageEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					assetDisplayPageEntry.getCtCollectionId())) {
 
 			entityCache.putResult(
 				AssetDisplayPageEntryImpl.class,
@@ -2924,8 +2911,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						assetDisplayPageEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						assetDisplayPageEntry.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						AssetDisplayPageEntryImpl.class,
@@ -2997,8 +2984,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					assetDisplayPageEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					assetDisplayPageEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				assetDisplayPageEntryModelImpl.getUuid(),
@@ -3141,106 +3128,100 @@ public class AssetDisplayPageEntryPersistenceImpl
 	public AssetDisplayPageEntry updateImpl(
 		AssetDisplayPageEntry assetDisplayPageEntry) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = assetDisplayPageEntry.isNew();
 
-			boolean isNew = assetDisplayPageEntry.isNew();
+		if (!(assetDisplayPageEntry instanceof
+				AssetDisplayPageEntryModelImpl)) {
 
-			if (!(assetDisplayPageEntry instanceof
-					AssetDisplayPageEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(assetDisplayPageEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						assetDisplayPageEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in assetDisplayPageEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(assetDisplayPageEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					assetDisplayPageEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom AssetDisplayPageEntry implementation " +
-						assetDisplayPageEntry.getClass());
+					"Implement ModelWrapper in assetDisplayPageEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			AssetDisplayPageEntryModelImpl assetDisplayPageEntryModelImpl =
-				(AssetDisplayPageEntryModelImpl)assetDisplayPageEntry;
-
-			if (Validator.isNull(assetDisplayPageEntry.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				assetDisplayPageEntry.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (assetDisplayPageEntry.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					assetDisplayPageEntry.setCreateDate(date);
-				}
-				else {
-					assetDisplayPageEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!assetDisplayPageEntryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					assetDisplayPageEntry.setModifiedDate(date);
-				}
-				else {
-					assetDisplayPageEntry.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(assetDisplayPageEntry)) {
-					if (!isNew) {
-						session.evict(
-							AssetDisplayPageEntryImpl.class,
-							assetDisplayPageEntry.getPrimaryKeyObj());
-					}
-
-					session.save(assetDisplayPageEntry);
-				}
-				else {
-					assetDisplayPageEntry =
-						(AssetDisplayPageEntry)session.merge(
-							assetDisplayPageEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				AssetDisplayPageEntryImpl.class, assetDisplayPageEntryModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(assetDisplayPageEntryModelImpl);
-
-			if (isNew) {
-				assetDisplayPageEntry.setNew(false);
-			}
-
-			assetDisplayPageEntry.resetOriginalValues();
-
-			return assetDisplayPageEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom AssetDisplayPageEntry implementation " +
+					assetDisplayPageEntry.getClass());
 		}
+
+		AssetDisplayPageEntryModelImpl assetDisplayPageEntryModelImpl =
+			(AssetDisplayPageEntryModelImpl)assetDisplayPageEntry;
+
+		if (Validator.isNull(assetDisplayPageEntry.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			assetDisplayPageEntry.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (assetDisplayPageEntry.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				assetDisplayPageEntry.setCreateDate(date);
+			}
+			else {
+				assetDisplayPageEntry.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!assetDisplayPageEntryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				assetDisplayPageEntry.setModifiedDate(date);
+			}
+			else {
+				assetDisplayPageEntry.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(assetDisplayPageEntry)) {
+				if (!isNew) {
+					session.evict(
+						AssetDisplayPageEntryImpl.class,
+						assetDisplayPageEntry.getPrimaryKeyObj());
+				}
+
+				session.save(assetDisplayPageEntry);
+			}
+			else {
+				assetDisplayPageEntry = (AssetDisplayPageEntry)session.merge(
+					assetDisplayPageEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			AssetDisplayPageEntryImpl.class, assetDisplayPageEntryModelImpl,
+			false, true);
+
+		cacheUniqueFindersCache(assetDisplayPageEntryModelImpl);
+
+		if (isNew) {
+			assetDisplayPageEntry.setNew(false);
+		}
+
+		assetDisplayPageEntry.resetOriginalValues();
+
+		return assetDisplayPageEntry;
 	}
 
 	/**
@@ -3295,45 +3276,41 @@ public class AssetDisplayPageEntryPersistenceImpl
 				AssetDisplayPageEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		AssetDisplayPageEntry assetDisplayPageEntry =
+			(AssetDisplayPageEntry)entityCache.getResult(
+				AssetDisplayPageEntryImpl.class, primaryKey);
 
-			AssetDisplayPageEntry assetDisplayPageEntry =
-				(AssetDisplayPageEntry)entityCache.getResult(
-					AssetDisplayPageEntryImpl.class, primaryKey);
-
-			if (assetDisplayPageEntry != null) {
-				return assetDisplayPageEntry;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				assetDisplayPageEntry = (AssetDisplayPageEntry)session.get(
-					AssetDisplayPageEntryImpl.class, primaryKey);
-
-				if (assetDisplayPageEntry != null) {
-					cacheResult(assetDisplayPageEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (assetDisplayPageEntry != null) {
 			return assetDisplayPageEntry;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			assetDisplayPageEntry = (AssetDisplayPageEntry)session.get(
+				AssetDisplayPageEntryImpl.class, primaryKey);
+
+			if (assetDisplayPageEntry != null) {
+				cacheResult(assetDisplayPageEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return assetDisplayPageEntry;
 	}
 
 	/**
@@ -3355,8 +3332,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(AssetDisplayPageEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3390,9 +3367,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							AssetDisplayPageEntry.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						AssetDisplayPageEntry.class, primaryKey)) {
 
 				AssetDisplayPageEntry assetDisplayPageEntry =
 					(AssetDisplayPageEntry)entityCache.getResult(
@@ -3547,9 +3523,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetDisplayPageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetDisplayPageEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3643,9 +3618,8 @@ public class AssetDisplayPageEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetDisplayPageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetDisplayPageEntry.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

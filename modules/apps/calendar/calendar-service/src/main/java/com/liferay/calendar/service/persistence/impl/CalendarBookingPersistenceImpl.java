@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -174,9 +173,8 @@ public class CalendarBookingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -580,9 +578,8 @@ public class CalendarBookingPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -711,9 +708,8 @@ public class CalendarBookingPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -834,9 +830,8 @@ public class CalendarBookingPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -989,9 +984,8 @@ public class CalendarBookingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1429,9 +1423,8 @@ public class CalendarBookingPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1580,9 +1573,8 @@ public class CalendarBookingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1966,9 +1958,8 @@ public class CalendarBookingPersistenceImpl
 	@Override
 	public int countByCalendarId(long calendarId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			FinderPath finderPath = _finderPathCountByCalendarId;
 
@@ -2096,9 +2087,8 @@ public class CalendarBookingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2492,9 +2482,8 @@ public class CalendarBookingPersistenceImpl
 	@Override
 	public int countByCalendarResourceId(long calendarResourceId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			FinderPath finderPath = _finderPathCountByCalendarResourceId;
 
@@ -2627,9 +2616,8 @@ public class CalendarBookingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3025,9 +3013,8 @@ public class CalendarBookingPersistenceImpl
 	@Override
 	public int countByParentCalendarBookingId(long parentCalendarBookingId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			FinderPath finderPath = _finderPathCountByParentCalendarBookingId;
 
@@ -3161,9 +3148,8 @@ public class CalendarBookingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3567,9 +3553,8 @@ public class CalendarBookingPersistenceImpl
 		long recurringCalendarBookingId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			FinderPath finderPath =
 				_finderPathCountByRecurringCalendarBookingId;
@@ -3689,9 +3674,8 @@ public class CalendarBookingPersistenceImpl
 		long calendarId, long parentCalendarBookingId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			Object[] finderArgs = null;
 
@@ -3802,9 +3786,8 @@ public class CalendarBookingPersistenceImpl
 	@Override
 	public int countByC_P(long calendarId, long parentCalendarBookingId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_P;
 
@@ -3926,9 +3909,8 @@ public class CalendarBookingPersistenceImpl
 		long calendarId, String vEventUid, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			vEventUid = Objects.toString(vEventUid, "");
 
@@ -4050,9 +4032,8 @@ public class CalendarBookingPersistenceImpl
 	@Override
 	public int countByC_V(long calendarId, String vEventUid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			vEventUid = Objects.toString(vEventUid, "");
 
@@ -4206,9 +4187,8 @@ public class CalendarBookingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4687,9 +4667,8 @@ public class CalendarBookingPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			Object[] finderArgs = null;
 
@@ -4823,9 +4802,8 @@ public class CalendarBookingPersistenceImpl
 	@Override
 	public int countByC_S(long calendarId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_S;
 
@@ -4891,9 +4869,8 @@ public class CalendarBookingPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			Object[] finderArgs = new Object[] {
 				calendarId, StringUtil.merge(statuses)
@@ -5050,9 +5027,8 @@ public class CalendarBookingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5468,9 +5444,8 @@ public class CalendarBookingPersistenceImpl
 	@Override
 	public int countByP_S(long parentCalendarBookingId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			FinderPath finderPath = _finderPathCountByP_S;
 
@@ -5557,8 +5532,8 @@ public class CalendarBookingPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					calendarBooking.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					calendarBooking.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CalendarBookingImpl.class, calendarBooking.getPrimaryKey(),
@@ -5615,8 +5590,8 @@ public class CalendarBookingPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						calendarBooking.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						calendarBooking.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CalendarBookingImpl.class,
@@ -5682,8 +5657,8 @@ public class CalendarBookingPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					calendarBookingModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					calendarBookingModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				calendarBookingModelImpl.getUuid(),
@@ -5827,103 +5802,97 @@ public class CalendarBookingPersistenceImpl
 
 	@Override
 	public CalendarBooking updateImpl(CalendarBooking calendarBooking) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = calendarBooking.isNew();
 
-			boolean isNew = calendarBooking.isNew();
+		if (!(calendarBooking instanceof CalendarBookingModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(calendarBooking instanceof CalendarBookingModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(calendarBooking.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						calendarBooking);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in calendarBooking proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(calendarBooking.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					calendarBooking);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CalendarBooking implementation " +
-						calendarBooking.getClass());
+					"Implement ModelWrapper in calendarBooking proxy " +
+						invocationHandler.getClass());
 			}
 
-			CalendarBookingModelImpl calendarBookingModelImpl =
-				(CalendarBookingModelImpl)calendarBooking;
-
-			if (Validator.isNull(calendarBooking.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				calendarBooking.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (calendarBooking.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					calendarBooking.setCreateDate(date);
-				}
-				else {
-					calendarBooking.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!calendarBookingModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					calendarBooking.setModifiedDate(date);
-				}
-				else {
-					calendarBooking.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(calendarBooking)) {
-					if (!isNew) {
-						session.evict(
-							CalendarBookingImpl.class,
-							calendarBooking.getPrimaryKeyObj());
-					}
-
-					session.save(calendarBooking);
-				}
-				else {
-					calendarBooking = (CalendarBooking)session.merge(
-						calendarBooking);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				CalendarBookingImpl.class, calendarBookingModelImpl, false,
-				true);
-
-			cacheUniqueFindersCache(calendarBookingModelImpl);
-
-			if (isNew) {
-				calendarBooking.setNew(false);
-			}
-
-			calendarBooking.resetOriginalValues();
-
-			return calendarBooking;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CalendarBooking implementation " +
+					calendarBooking.getClass());
 		}
+
+		CalendarBookingModelImpl calendarBookingModelImpl =
+			(CalendarBookingModelImpl)calendarBooking;
+
+		if (Validator.isNull(calendarBooking.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			calendarBooking.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (calendarBooking.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				calendarBooking.setCreateDate(date);
+			}
+			else {
+				calendarBooking.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!calendarBookingModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				calendarBooking.setModifiedDate(date);
+			}
+			else {
+				calendarBooking.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(calendarBooking)) {
+				if (!isNew) {
+					session.evict(
+						CalendarBookingImpl.class,
+						calendarBooking.getPrimaryKeyObj());
+				}
+
+				session.save(calendarBooking);
+			}
+			else {
+				calendarBooking = (CalendarBooking)session.merge(
+					calendarBooking);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CalendarBookingImpl.class, calendarBookingModelImpl, false, true);
+
+		cacheUniqueFindersCache(calendarBookingModelImpl);
+
+		if (isNew) {
+			calendarBooking.setNew(false);
+		}
+
+		calendarBooking.resetOriginalValues();
+
+		return calendarBooking;
 	}
 
 	/**
@@ -5977,45 +5946,41 @@ public class CalendarBookingPersistenceImpl
 				CalendarBooking.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CalendarBooking calendarBooking =
+			(CalendarBooking)entityCache.getResult(
+				CalendarBookingImpl.class, primaryKey);
 
-			CalendarBooking calendarBooking =
-				(CalendarBooking)entityCache.getResult(
-					CalendarBookingImpl.class, primaryKey);
-
-			if (calendarBooking != null) {
-				return calendarBooking;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				calendarBooking = (CalendarBooking)session.get(
-					CalendarBookingImpl.class, primaryKey);
-
-				if (calendarBooking != null) {
-					cacheResult(calendarBooking);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (calendarBooking != null) {
 			return calendarBooking;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			calendarBooking = (CalendarBooking)session.get(
+				CalendarBookingImpl.class, primaryKey);
+
+			if (calendarBooking != null) {
+				cacheResult(calendarBooking);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return calendarBooking;
 	}
 
 	/**
@@ -6035,8 +6000,8 @@ public class CalendarBookingPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(CalendarBooking.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -6069,9 +6034,8 @@ public class CalendarBookingPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CalendarBooking.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CalendarBooking.class, primaryKey)) {
 
 				CalendarBooking calendarBooking =
 					(CalendarBooking)entityCache.getResult(
@@ -6224,9 +6188,8 @@ public class CalendarBookingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6319,9 +6282,8 @@ public class CalendarBookingPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarBooking.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarBooking.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

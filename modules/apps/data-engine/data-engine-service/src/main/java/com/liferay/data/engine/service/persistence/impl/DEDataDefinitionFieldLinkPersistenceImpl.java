@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -176,9 +175,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -594,9 +592,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -726,9 +723,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -853,9 +849,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1010,9 +1005,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1456,9 +1450,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1609,9 +1602,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2008,9 +2000,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 	@Override
 	public int countByDDMStructureId(long ddmStructureId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByDDMStructureId;
 
@@ -2142,9 +2133,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2563,9 +2553,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 	@Override
 	public int countByC_C(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -2705,9 +2694,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3129,9 +3117,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 	@Override
 	public int countByC_DDMSI(long classNameId, long ddmStructureId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_DDMSI;
 
@@ -3272,9 +3259,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			fieldName = Objects.toString(fieldName, "");
 
@@ -3795,9 +3781,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			Object[] finderArgs = null;
 
@@ -3951,9 +3936,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 	@Override
 	public int countByDDMSI_F(long ddmStructureId, String fieldName) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			fieldName = Objects.toString(fieldName, "");
 
@@ -4036,9 +4020,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			Object[] finderArgs = new Object[] {
 				ddmStructureId, StringUtil.merge(fieldNames)
@@ -4219,9 +4202,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			fieldName = Objects.toString(fieldName, "");
 
@@ -4778,9 +4760,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			Object[] finderArgs = null;
 
@@ -4947,9 +4928,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		long classNameId, long ddmStructureId, String fieldName) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			fieldName = Objects.toString(fieldName, "");
 
@@ -5041,9 +5021,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			Object[] finderArgs = new Object[] {
 				classNameId, ddmStructureId, StringUtil.merge(fieldNames)
@@ -5222,9 +5201,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			fieldName = Objects.toString(fieldName, "");
 
@@ -5372,9 +5350,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		long classNameId, long classPK, long ddmStructureId, String fieldName) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			fieldName = Objects.toString(fieldName, "");
 
@@ -5472,9 +5449,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			Object[] finderArgs = new Object[] {
 				classNameId, classPK, ddmStructureId,
@@ -5608,8 +5584,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					deDataDefinitionFieldLink.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					deDataDefinitionFieldLink.getCtCollectionId())) {
 
 			entityCache.putResult(
 				DEDataDefinitionFieldLinkImpl.class,
@@ -5666,8 +5642,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						deDataDefinitionFieldLink.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						deDataDefinitionFieldLink.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						DEDataDefinitionFieldLinkImpl.class,
@@ -5741,9 +5717,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					deDataDefinitionFieldLinkModelImpl.getCtCollectionId() !=
-						0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					deDataDefinitionFieldLinkModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				deDataDefinitionFieldLinkModelImpl.getUuid(),
@@ -5891,110 +5866,101 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 	public DEDataDefinitionFieldLink updateImpl(
 		DEDataDefinitionFieldLink deDataDefinitionFieldLink) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = deDataDefinitionFieldLink.isNew();
 
-			boolean isNew = deDataDefinitionFieldLink.isNew();
+		if (!(deDataDefinitionFieldLink instanceof
+				DEDataDefinitionFieldLinkModelImpl)) {
 
-			if (!(deDataDefinitionFieldLink instanceof
-					DEDataDefinitionFieldLinkModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(
-						deDataDefinitionFieldLink.getClass())) {
-
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						deDataDefinitionFieldLink);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in deDataDefinitionFieldLink proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(deDataDefinitionFieldLink.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					deDataDefinitionFieldLink);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DEDataDefinitionFieldLink implementation " +
-						deDataDefinitionFieldLink.getClass());
+					"Implement ModelWrapper in deDataDefinitionFieldLink proxy " +
+						invocationHandler.getClass());
 			}
 
-			DEDataDefinitionFieldLinkModelImpl
-				deDataDefinitionFieldLinkModelImpl =
-					(DEDataDefinitionFieldLinkModelImpl)
-						deDataDefinitionFieldLink;
-
-			if (Validator.isNull(deDataDefinitionFieldLink.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				deDataDefinitionFieldLink.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (deDataDefinitionFieldLink.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					deDataDefinitionFieldLink.setCreateDate(date);
-				}
-				else {
-					deDataDefinitionFieldLink.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!deDataDefinitionFieldLinkModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					deDataDefinitionFieldLink.setModifiedDate(date);
-				}
-				else {
-					deDataDefinitionFieldLink.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(deDataDefinitionFieldLink)) {
-					if (!isNew) {
-						session.evict(
-							DEDataDefinitionFieldLinkImpl.class,
-							deDataDefinitionFieldLink.getPrimaryKeyObj());
-					}
-
-					session.save(deDataDefinitionFieldLink);
-				}
-				else {
-					deDataDefinitionFieldLink =
-						(DEDataDefinitionFieldLink)session.merge(
-							deDataDefinitionFieldLink);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				DEDataDefinitionFieldLinkImpl.class,
-				deDataDefinitionFieldLinkModelImpl, false, true);
-
-			cacheUniqueFindersCache(deDataDefinitionFieldLinkModelImpl);
-
-			if (isNew) {
-				deDataDefinitionFieldLink.setNew(false);
-			}
-
-			deDataDefinitionFieldLink.resetOriginalValues();
-
-			return deDataDefinitionFieldLink;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DEDataDefinitionFieldLink implementation " +
+					deDataDefinitionFieldLink.getClass());
 		}
+
+		DEDataDefinitionFieldLinkModelImpl deDataDefinitionFieldLinkModelImpl =
+			(DEDataDefinitionFieldLinkModelImpl)deDataDefinitionFieldLink;
+
+		if (Validator.isNull(deDataDefinitionFieldLink.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			deDataDefinitionFieldLink.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (deDataDefinitionFieldLink.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				deDataDefinitionFieldLink.setCreateDate(date);
+			}
+			else {
+				deDataDefinitionFieldLink.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!deDataDefinitionFieldLinkModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				deDataDefinitionFieldLink.setModifiedDate(date);
+			}
+			else {
+				deDataDefinitionFieldLink.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(deDataDefinitionFieldLink)) {
+				if (!isNew) {
+					session.evict(
+						DEDataDefinitionFieldLinkImpl.class,
+						deDataDefinitionFieldLink.getPrimaryKeyObj());
+				}
+
+				session.save(deDataDefinitionFieldLink);
+			}
+			else {
+				deDataDefinitionFieldLink =
+					(DEDataDefinitionFieldLink)session.merge(
+						deDataDefinitionFieldLink);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			DEDataDefinitionFieldLinkImpl.class,
+			deDataDefinitionFieldLinkModelImpl, false, true);
+
+		cacheUniqueFindersCache(deDataDefinitionFieldLinkModelImpl);
+
+		if (isNew) {
+			deDataDefinitionFieldLink.setNew(false);
+		}
+
+		deDataDefinitionFieldLink.resetOriginalValues();
+
+		return deDataDefinitionFieldLink;
 	}
 
 	/**
@@ -6052,46 +6018,41 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				DEDataDefinitionFieldLink.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DEDataDefinitionFieldLink deDataDefinitionFieldLink =
+			(DEDataDefinitionFieldLink)entityCache.getResult(
+				DEDataDefinitionFieldLinkImpl.class, primaryKey);
 
-			DEDataDefinitionFieldLink deDataDefinitionFieldLink =
-				(DEDataDefinitionFieldLink)entityCache.getResult(
-					DEDataDefinitionFieldLinkImpl.class, primaryKey);
-
-			if (deDataDefinitionFieldLink != null) {
-				return deDataDefinitionFieldLink;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				deDataDefinitionFieldLink =
-					(DEDataDefinitionFieldLink)session.get(
-						DEDataDefinitionFieldLinkImpl.class, primaryKey);
-
-				if (deDataDefinitionFieldLink != null) {
-					cacheResult(deDataDefinitionFieldLink);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (deDataDefinitionFieldLink != null) {
 			return deDataDefinitionFieldLink;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			deDataDefinitionFieldLink = (DEDataDefinitionFieldLink)session.get(
+				DEDataDefinitionFieldLinkImpl.class, primaryKey);
+
+			if (deDataDefinitionFieldLink != null) {
+				cacheResult(deDataDefinitionFieldLink);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return deDataDefinitionFieldLink;
 	}
 
 	/**
@@ -6115,8 +6076,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				DEDataDefinitionFieldLink.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -6150,9 +6111,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							DEDataDefinitionFieldLink.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						DEDataDefinitionFieldLink.class, primaryKey)) {
 
 				DEDataDefinitionFieldLink deDataDefinitionFieldLink =
 					(DEDataDefinitionFieldLink)entityCache.getResult(
@@ -6307,9 +6267,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6403,9 +6362,8 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataDefinitionFieldLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataDefinitionFieldLink.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

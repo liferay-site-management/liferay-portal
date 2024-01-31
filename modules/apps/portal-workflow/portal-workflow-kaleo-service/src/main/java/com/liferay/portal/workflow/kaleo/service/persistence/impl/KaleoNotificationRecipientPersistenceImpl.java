@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -171,9 +170,8 @@ public class KaleoNotificationRecipientPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						KaleoNotificationRecipient.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KaleoNotificationRecipient.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -569,9 +567,8 @@ public class KaleoNotificationRecipientPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						KaleoNotificationRecipient.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KaleoNotificationRecipient.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -702,9 +699,8 @@ public class KaleoNotificationRecipientPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						KaleoNotificationRecipient.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KaleoNotificationRecipient.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1114,9 +1110,8 @@ public class KaleoNotificationRecipientPersistenceImpl
 	@Override
 	public int countByKaleoDefinitionVersionId(long kaleoDefinitionVersionId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						KaleoNotificationRecipient.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KaleoNotificationRecipient.class)) {
 
 			FinderPath finderPath = _finderPathCountByKaleoDefinitionVersionId;
 
@@ -1246,9 +1241,8 @@ public class KaleoNotificationRecipientPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						KaleoNotificationRecipient.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KaleoNotificationRecipient.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1650,9 +1644,8 @@ public class KaleoNotificationRecipientPersistenceImpl
 	@Override
 	public int countByKaleoNotificationId(long kaleoNotificationId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						KaleoNotificationRecipient.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KaleoNotificationRecipient.class)) {
 
 			FinderPath finderPath = _finderPathCountByKaleoNotificationId;
 
@@ -1728,8 +1721,8 @@ public class KaleoNotificationRecipientPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					kaleoNotificationRecipient.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					kaleoNotificationRecipient.getCtCollectionId())) {
 
 			entityCache.putResult(
 				KaleoNotificationRecipientImpl.class,
@@ -1768,8 +1761,8 @@ public class KaleoNotificationRecipientPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						kaleoNotificationRecipient.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						kaleoNotificationRecipient.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						KaleoNotificationRecipientImpl.class,
@@ -1951,102 +1944,94 @@ public class KaleoNotificationRecipientPersistenceImpl
 	public KaleoNotificationRecipient updateImpl(
 		KaleoNotificationRecipient kaleoNotificationRecipient) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = kaleoNotificationRecipient.isNew();
 
-			boolean isNew = kaleoNotificationRecipient.isNew();
+		if (!(kaleoNotificationRecipient instanceof
+				KaleoNotificationRecipientModelImpl)) {
 
-			if (!(kaleoNotificationRecipient instanceof
-					KaleoNotificationRecipientModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(
-						kaleoNotificationRecipient.getClass())) {
-
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						kaleoNotificationRecipient);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in kaleoNotificationRecipient proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(kaleoNotificationRecipient.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					kaleoNotificationRecipient);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom KaleoNotificationRecipient implementation " +
-						kaleoNotificationRecipient.getClass());
+					"Implement ModelWrapper in kaleoNotificationRecipient proxy " +
+						invocationHandler.getClass());
 			}
 
-			KaleoNotificationRecipientModelImpl
-				kaleoNotificationRecipientModelImpl =
-					(KaleoNotificationRecipientModelImpl)
-						kaleoNotificationRecipient;
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (kaleoNotificationRecipient.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					kaleoNotificationRecipient.setCreateDate(date);
-				}
-				else {
-					kaleoNotificationRecipient.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!kaleoNotificationRecipientModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					kaleoNotificationRecipient.setModifiedDate(date);
-				}
-				else {
-					kaleoNotificationRecipient.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(kaleoNotificationRecipient)) {
-					if (!isNew) {
-						session.evict(
-							KaleoNotificationRecipientImpl.class,
-							kaleoNotificationRecipient.getPrimaryKeyObj());
-					}
-
-					session.save(kaleoNotificationRecipient);
-				}
-				else {
-					kaleoNotificationRecipient =
-						(KaleoNotificationRecipient)session.merge(
-							kaleoNotificationRecipient);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				KaleoNotificationRecipientImpl.class,
-				kaleoNotificationRecipientModelImpl, false, true);
-
-			if (isNew) {
-				kaleoNotificationRecipient.setNew(false);
-			}
-
-			kaleoNotificationRecipient.resetOriginalValues();
-
-			return kaleoNotificationRecipient;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom KaleoNotificationRecipient implementation " +
+					kaleoNotificationRecipient.getClass());
 		}
+
+		KaleoNotificationRecipientModelImpl
+			kaleoNotificationRecipientModelImpl =
+				(KaleoNotificationRecipientModelImpl)kaleoNotificationRecipient;
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (kaleoNotificationRecipient.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				kaleoNotificationRecipient.setCreateDate(date);
+			}
+			else {
+				kaleoNotificationRecipient.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!kaleoNotificationRecipientModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				kaleoNotificationRecipient.setModifiedDate(date);
+			}
+			else {
+				kaleoNotificationRecipient.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(kaleoNotificationRecipient)) {
+				if (!isNew) {
+					session.evict(
+						KaleoNotificationRecipientImpl.class,
+						kaleoNotificationRecipient.getPrimaryKeyObj());
+				}
+
+				session.save(kaleoNotificationRecipient);
+			}
+			else {
+				kaleoNotificationRecipient =
+					(KaleoNotificationRecipient)session.merge(
+						kaleoNotificationRecipient);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			KaleoNotificationRecipientImpl.class,
+			kaleoNotificationRecipientModelImpl, false, true);
+
+		if (isNew) {
+			kaleoNotificationRecipient.setNew(false);
+		}
+
+		kaleoNotificationRecipient.resetOriginalValues();
+
+		return kaleoNotificationRecipient;
 	}
 
 	/**
@@ -2104,46 +2089,42 @@ public class KaleoNotificationRecipientPersistenceImpl
 				KaleoNotificationRecipient.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		KaleoNotificationRecipient kaleoNotificationRecipient =
+			(KaleoNotificationRecipient)entityCache.getResult(
+				KaleoNotificationRecipientImpl.class, primaryKey);
 
-			KaleoNotificationRecipient kaleoNotificationRecipient =
-				(KaleoNotificationRecipient)entityCache.getResult(
+		if (kaleoNotificationRecipient != null) {
+			return kaleoNotificationRecipient;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			kaleoNotificationRecipient =
+				(KaleoNotificationRecipient)session.get(
 					KaleoNotificationRecipientImpl.class, primaryKey);
 
 			if (kaleoNotificationRecipient != null) {
-				return kaleoNotificationRecipient;
+				cacheResult(kaleoNotificationRecipient);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				kaleoNotificationRecipient =
-					(KaleoNotificationRecipient)session.get(
-						KaleoNotificationRecipientImpl.class, primaryKey);
-
-				if (kaleoNotificationRecipient != null) {
-					cacheResult(kaleoNotificationRecipient);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return kaleoNotificationRecipient;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return kaleoNotificationRecipient;
 	}
 
 	/**
@@ -2167,8 +2148,8 @@ public class KaleoNotificationRecipientPersistenceImpl
 				KaleoNotificationRecipient.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2202,9 +2183,8 @@ public class KaleoNotificationRecipientPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							KaleoNotificationRecipient.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						KaleoNotificationRecipient.class, primaryKey)) {
 
 				KaleoNotificationRecipient kaleoNotificationRecipient =
 					(KaleoNotificationRecipient)entityCache.getResult(
@@ -2359,9 +2339,8 @@ public class KaleoNotificationRecipientPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						KaleoNotificationRecipient.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KaleoNotificationRecipient.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2457,9 +2436,8 @@ public class KaleoNotificationRecipientPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						KaleoNotificationRecipient.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KaleoNotificationRecipient.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

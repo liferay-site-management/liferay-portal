@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -174,9 +173,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -592,9 +590,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -724,9 +721,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -850,9 +846,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1007,9 +1002,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1453,9 +1447,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1602,9 +1595,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1993,9 +1985,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 	@Override
 	public int countByPlid(long plid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			FinderPath finderPath = _finderPathCountByPlid;
 
@@ -2127,9 +2118,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2547,9 +2537,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 	@Override
 	public int countByCN_CPK(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			FinderPath finderPath = _finderPathCountByCN_CPK;
 
@@ -2700,9 +2689,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			classedModelExternalReferenceCode = Objects.toString(
 				classedModelExternalReferenceCode, "");
@@ -3200,9 +3188,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		String classedModelExternalReferenceCode) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			classedModelExternalReferenceCode = Objects.toString(
 				classedModelExternalReferenceCode, "");
@@ -3379,9 +3366,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3832,9 +3818,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		long companyId, long classNameId, long containerType) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_CN_CT;
 
@@ -3987,9 +3972,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4430,9 +4414,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 	@Override
 	public int countByCN_CPK_T(long classNameId, long classPK, int type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			FinderPath finderPath = _finderPathCountByCN_CPK_T;
 
@@ -4586,9 +4569,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			containerKey = Objects.toString(containerKey, "");
 
@@ -5064,9 +5046,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		String containerKey, long containerType, long plid) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			containerKey = Objects.toString(containerKey, "");
 
@@ -5247,9 +5228,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			classedModelExternalReferenceCode = Objects.toString(
 				classedModelExternalReferenceCode, "");
@@ -5771,9 +5751,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		String classedModelExternalReferenceCode, int type) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			classedModelExternalReferenceCode = Objects.toString(
 				classedModelExternalReferenceCode, "");
@@ -5968,9 +5947,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		long containerType, long plid, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			classedModelExternalReferenceCode = Objects.toString(
 				classedModelExternalReferenceCode, "");
@@ -6158,9 +6136,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		long containerType, long plid) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			classedModelExternalReferenceCode = Objects.toString(
 				classedModelExternalReferenceCode, "");
@@ -6321,8 +6298,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					layoutClassedModelUsage.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					layoutClassedModelUsage.getCtCollectionId())) {
 
 			entityCache.putResult(
 				LayoutClassedModelUsageImpl.class,
@@ -6382,8 +6359,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						layoutClassedModelUsage.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						layoutClassedModelUsage.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						LayoutClassedModelUsageImpl.class,
@@ -6455,9 +6432,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					layoutClassedModelUsageModelImpl.getCtCollectionId() !=
-						0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					layoutClassedModelUsageModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				layoutClassedModelUsageModelImpl.getUuid(),
@@ -6606,108 +6582,101 @@ public class LayoutClassedModelUsagePersistenceImpl
 	public LayoutClassedModelUsage updateImpl(
 		LayoutClassedModelUsage layoutClassedModelUsage) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = layoutClassedModelUsage.isNew();
 
-			boolean isNew = layoutClassedModelUsage.isNew();
+		if (!(layoutClassedModelUsage instanceof
+				LayoutClassedModelUsageModelImpl)) {
 
-			if (!(layoutClassedModelUsage instanceof
-					LayoutClassedModelUsageModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(
-						layoutClassedModelUsage.getClass())) {
-
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						layoutClassedModelUsage);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in layoutClassedModelUsage proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(layoutClassedModelUsage.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					layoutClassedModelUsage);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom LayoutClassedModelUsage implementation " +
-						layoutClassedModelUsage.getClass());
+					"Implement ModelWrapper in layoutClassedModelUsage proxy " +
+						invocationHandler.getClass());
 			}
 
-			LayoutClassedModelUsageModelImpl layoutClassedModelUsageModelImpl =
-				(LayoutClassedModelUsageModelImpl)layoutClassedModelUsage;
-
-			if (Validator.isNull(layoutClassedModelUsage.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				layoutClassedModelUsage.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (layoutClassedModelUsage.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					layoutClassedModelUsage.setCreateDate(date);
-				}
-				else {
-					layoutClassedModelUsage.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!layoutClassedModelUsageModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					layoutClassedModelUsage.setModifiedDate(date);
-				}
-				else {
-					layoutClassedModelUsage.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(layoutClassedModelUsage)) {
-					if (!isNew) {
-						session.evict(
-							LayoutClassedModelUsageImpl.class,
-							layoutClassedModelUsage.getPrimaryKeyObj());
-					}
-
-					session.save(layoutClassedModelUsage);
-				}
-				else {
-					layoutClassedModelUsage =
-						(LayoutClassedModelUsage)session.merge(
-							layoutClassedModelUsage);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				LayoutClassedModelUsageImpl.class,
-				layoutClassedModelUsageModelImpl, false, true);
-
-			cacheUniqueFindersCache(layoutClassedModelUsageModelImpl);
-
-			if (isNew) {
-				layoutClassedModelUsage.setNew(false);
-			}
-
-			layoutClassedModelUsage.resetOriginalValues();
-
-			return layoutClassedModelUsage;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom LayoutClassedModelUsage implementation " +
+					layoutClassedModelUsage.getClass());
 		}
+
+		LayoutClassedModelUsageModelImpl layoutClassedModelUsageModelImpl =
+			(LayoutClassedModelUsageModelImpl)layoutClassedModelUsage;
+
+		if (Validator.isNull(layoutClassedModelUsage.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			layoutClassedModelUsage.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (layoutClassedModelUsage.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				layoutClassedModelUsage.setCreateDate(date);
+			}
+			else {
+				layoutClassedModelUsage.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!layoutClassedModelUsageModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				layoutClassedModelUsage.setModifiedDate(date);
+			}
+			else {
+				layoutClassedModelUsage.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(layoutClassedModelUsage)) {
+				if (!isNew) {
+					session.evict(
+						LayoutClassedModelUsageImpl.class,
+						layoutClassedModelUsage.getPrimaryKeyObj());
+				}
+
+				session.save(layoutClassedModelUsage);
+			}
+			else {
+				layoutClassedModelUsage =
+					(LayoutClassedModelUsage)session.merge(
+						layoutClassedModelUsage);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			LayoutClassedModelUsageImpl.class, layoutClassedModelUsageModelImpl,
+			false, true);
+
+		cacheUniqueFindersCache(layoutClassedModelUsageModelImpl);
+
+		if (isNew) {
+			layoutClassedModelUsage.setNew(false);
+		}
+
+		layoutClassedModelUsage.resetOriginalValues();
+
+		return layoutClassedModelUsage;
 	}
 
 	/**
@@ -6763,45 +6732,41 @@ public class LayoutClassedModelUsagePersistenceImpl
 				LayoutClassedModelUsage.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		LayoutClassedModelUsage layoutClassedModelUsage =
+			(LayoutClassedModelUsage)entityCache.getResult(
+				LayoutClassedModelUsageImpl.class, primaryKey);
 
-			LayoutClassedModelUsage layoutClassedModelUsage =
-				(LayoutClassedModelUsage)entityCache.getResult(
-					LayoutClassedModelUsageImpl.class, primaryKey);
-
-			if (layoutClassedModelUsage != null) {
-				return layoutClassedModelUsage;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				layoutClassedModelUsage = (LayoutClassedModelUsage)session.get(
-					LayoutClassedModelUsageImpl.class, primaryKey);
-
-				if (layoutClassedModelUsage != null) {
-					cacheResult(layoutClassedModelUsage);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (layoutClassedModelUsage != null) {
 			return layoutClassedModelUsage;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			layoutClassedModelUsage = (LayoutClassedModelUsage)session.get(
+				LayoutClassedModelUsageImpl.class, primaryKey);
+
+			if (layoutClassedModelUsage != null) {
+				cacheResult(layoutClassedModelUsage);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return layoutClassedModelUsage;
 	}
 
 	/**
@@ -6825,8 +6790,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 				LayoutClassedModelUsage.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -6860,9 +6825,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							LayoutClassedModelUsage.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						LayoutClassedModelUsage.class, primaryKey)) {
 
 				LayoutClassedModelUsage layoutClassedModelUsage =
 					(LayoutClassedModelUsage)entityCache.getResult(
@@ -7017,9 +6981,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7113,9 +7076,8 @@ public class LayoutClassedModelUsagePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutClassedModelUsage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutClassedModelUsage.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

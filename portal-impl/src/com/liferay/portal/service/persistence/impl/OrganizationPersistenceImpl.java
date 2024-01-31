@@ -10,7 +10,6 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -180,9 +179,8 @@ public class OrganizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -938,9 +936,8 @@ public class OrganizationPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1153,9 +1150,8 @@ public class OrganizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1961,9 +1957,8 @@ public class OrganizationPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -2183,9 +2178,8 @@ public class OrganizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2895,9 +2889,8 @@ public class OrganizationPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -3071,9 +3064,8 @@ public class OrganizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3785,9 +3777,8 @@ public class OrganizationPersistenceImpl
 	@Override
 	public int countByCompanyIdLocations(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyIdLocations;
 
@@ -3969,9 +3960,8 @@ public class OrganizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4736,9 +4726,8 @@ public class OrganizationPersistenceImpl
 	@Override
 	public int countByC_P(long companyId, long parentOrganizationId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_P;
 
@@ -4929,9 +4918,8 @@ public class OrganizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			treePath = Objects.toString(treePath, "");
 
@@ -5734,9 +5722,8 @@ public class OrganizationPersistenceImpl
 	@Override
 	public int countByC_LikeT(long companyId, String treePath) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			treePath = Objects.toString(treePath, "");
 
@@ -5938,9 +5925,8 @@ public class OrganizationPersistenceImpl
 		long companyId, String name, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -6061,9 +6047,8 @@ public class OrganizationPersistenceImpl
 	@Override
 	public int countByC_N(long companyId, String name) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -6215,9 +6200,8 @@ public class OrganizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -7016,9 +7000,8 @@ public class OrganizationPersistenceImpl
 	@Override
 	public int countByC_LikeN(long companyId, String name) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -7246,9 +7229,8 @@ public class OrganizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7671,9 +7653,8 @@ public class OrganizationPersistenceImpl
 		long organizationId, long companyId, long parentOrganizationId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByGtO_C_P;
 
@@ -7889,9 +7870,8 @@ public class OrganizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -8740,9 +8720,8 @@ public class OrganizationPersistenceImpl
 		long companyId, long parentOrganizationId, String name) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -8965,9 +8944,8 @@ public class OrganizationPersistenceImpl
 		String externalReferenceCode, long companyId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -9092,9 +9070,8 @@ public class OrganizationPersistenceImpl
 	@Override
 	public int countByERC_C(String externalReferenceCode, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -9199,8 +9176,8 @@ public class OrganizationPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					organization.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					organization.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				OrganizationImpl.class, organization.getPrimaryKey(),
@@ -9248,8 +9225,8 @@ public class OrganizationPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						organization.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						organization.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						OrganizationImpl.class, organization.getPrimaryKey()) ==
@@ -9314,8 +9291,8 @@ public class OrganizationPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					organizationModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					organizationModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				organizationModelImpl.getCompanyId(),
@@ -9456,166 +9433,157 @@ public class OrganizationPersistenceImpl
 
 	@Override
 	public Organization updateImpl(Organization organization) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = organization.isNew();
 
-			boolean isNew = organization.isNew();
+		if (!(organization instanceof OrganizationModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(organization instanceof OrganizationModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(organization.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						organization);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in organization proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(organization.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					organization);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom Organization implementation " +
-						organization.getClass());
+					"Implement ModelWrapper in organization proxy " +
+						invocationHandler.getClass());
 			}
 
-			OrganizationModelImpl organizationModelImpl =
-				(OrganizationModelImpl)organization;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom Organization implementation " +
+					organization.getClass());
+		}
 
-			if (Validator.isNull(organization.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		OrganizationModelImpl organizationModelImpl =
+			(OrganizationModelImpl)organization;
 
-				organization.setUuid(uuid);
-			}
+		if (Validator.isNull(organization.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
 
-			if (Validator.isNull(organization.getExternalReferenceCode())) {
-				organization.setExternalReferenceCode(organization.getUuid());
-			}
-			else {
-				if (!Objects.equals(
-						organizationModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						organization.getExternalReferenceCode())) {
+			organization.setUuid(uuid);
+		}
 
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
+		if (Validator.isNull(organization.getExternalReferenceCode())) {
+			organization.setExternalReferenceCode(organization.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					organizationModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
+					organization.getExternalReferenceCode())) {
 
-					if (userId > 0) {
-						long companyId = organization.getCompanyId();
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
 
-						long groupId = 0;
+				if (userId > 0) {
+					long companyId = organization.getCompanyId();
 
-						long classPK = 0;
+					long groupId = 0;
 
-						if (!isNew) {
-							classPK = organization.getPrimaryKey();
-						}
+					long classPK = 0;
 
-						try {
-							organization.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									Organization.class.getName(), classPK,
-									ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-									organization.getExternalReferenceCode(),
-									null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
-
-				Organization ercOrganization = fetchByERC_C(
-					organization.getExternalReferenceCode(),
-					organization.getCompanyId());
-
-				if (isNew) {
-					if (ercOrganization != null) {
-						throw new DuplicateOrganizationExternalReferenceCodeException(
-							"Duplicate organization with external reference code " +
-								organization.getExternalReferenceCode() +
-									" and company " +
-										organization.getCompanyId());
-					}
-				}
-				else {
-					if ((ercOrganization != null) &&
-						(organization.getOrganizationId() !=
-							ercOrganization.getOrganizationId())) {
-
-						throw new DuplicateOrganizationExternalReferenceCodeException(
-							"Duplicate organization with external reference code " +
-								organization.getExternalReferenceCode() +
-									" and company " +
-										organization.getCompanyId());
-					}
-				}
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (organization.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					organization.setCreateDate(date);
-				}
-				else {
-					organization.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!organizationModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					organization.setModifiedDate(date);
-				}
-				else {
-					organization.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(organization)) {
 					if (!isNew) {
-						session.evict(
-							OrganizationImpl.class,
-							organization.getPrimaryKeyObj());
+						classPK = organization.getPrimaryKey();
 					}
 
-					session.save(organization);
+					try {
+						organization.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								Organization.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								organization.getExternalReferenceCode(), null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
 				}
-				else {
-					organization = (Organization)session.merge(organization);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
 			}
 
-			EntityCacheUtil.putResult(
-				OrganizationImpl.class, organizationModelImpl, false, true);
-
-			cacheUniqueFindersCache(organizationModelImpl);
+			Organization ercOrganization = fetchByERC_C(
+				organization.getExternalReferenceCode(),
+				organization.getCompanyId());
 
 			if (isNew) {
-				organization.setNew(false);
+				if (ercOrganization != null) {
+					throw new DuplicateOrganizationExternalReferenceCodeException(
+						"Duplicate organization with external reference code " +
+							organization.getExternalReferenceCode() +
+								" and company " + organization.getCompanyId());
+				}
 			}
+			else {
+				if ((ercOrganization != null) &&
+					(organization.getOrganizationId() !=
+						ercOrganization.getOrganizationId())) {
 
-			organization.resetOriginalValues();
-
-			return organization;
+					throw new DuplicateOrganizationExternalReferenceCodeException(
+						"Duplicate organization with external reference code " +
+							organization.getExternalReferenceCode() +
+								" and company " + organization.getCompanyId());
+				}
+			}
 		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (organization.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				organization.setCreateDate(date);
+			}
+			else {
+				organization.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!organizationModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				organization.setModifiedDate(date);
+			}
+			else {
+				organization.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(organization)) {
+				if (!isNew) {
+					session.evict(
+						OrganizationImpl.class,
+						organization.getPrimaryKeyObj());
+				}
+
+				session.save(organization);
+			}
+			else {
+				organization = (Organization)session.merge(organization);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			OrganizationImpl.class, organizationModelImpl, false, true);
+
+		cacheUniqueFindersCache(organizationModelImpl);
+
+		if (isNew) {
+			organization.setNew(false);
+		}
+
+		organization.resetOriginalValues();
+
+		return organization;
 	}
 
 	/**
@@ -9669,44 +9637,40 @@ public class OrganizationPersistenceImpl
 				Organization.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		Organization organization = (Organization)EntityCacheUtil.getResult(
+			OrganizationImpl.class, primaryKey);
 
-			Organization organization = (Organization)EntityCacheUtil.getResult(
+		if (organization != null) {
+			return organization;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			organization = (Organization)session.get(
 				OrganizationImpl.class, primaryKey);
 
 			if (organization != null) {
-				return organization;
+				cacheResult(organization);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				organization = (Organization)session.get(
-					OrganizationImpl.class, primaryKey);
-
-				if (organization != null) {
-					cacheResult(organization);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return organization;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return organization;
 	}
 
 	/**
@@ -9726,8 +9690,8 @@ public class OrganizationPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(Organization.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -9760,9 +9724,8 @@ public class OrganizationPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							Organization.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						Organization.class, primaryKey)) {
 
 				Organization organization =
 					(Organization)EntityCacheUtil.getResult(
@@ -9911,9 +9874,8 @@ public class OrganizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -10006,9 +9968,8 @@ public class OrganizationPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						Organization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Organization.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

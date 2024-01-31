@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -176,9 +175,8 @@ public class AssetListEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -581,9 +579,8 @@ public class AssetListEntryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -712,9 +709,8 @@ public class AssetListEntryPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -835,9 +831,8 @@ public class AssetListEntryPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -990,9 +985,8 @@ public class AssetListEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1430,9 +1424,8 @@ public class AssetListEntryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1581,9 +1574,8 @@ public class AssetListEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2499,9 +2491,8 @@ public class AssetListEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2622,9 +2613,8 @@ public class AssetListEntryPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2685,9 +2675,8 @@ public class AssetListEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			Object[] finderArgs = new Object[] {StringUtil.merge(groupIds)};
 
@@ -2928,9 +2917,8 @@ public class AssetListEntryPersistenceImpl
 		long groupId, String assetListEntryKey, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			assetListEntryKey = Objects.toString(assetListEntryKey, "");
 
@@ -3054,9 +3042,8 @@ public class AssetListEntryPersistenceImpl
 	@Override
 	public int countByG_ALEK(long groupId, String assetListEntryKey) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			assetListEntryKey = Objects.toString(assetListEntryKey, "");
 
@@ -3192,9 +3179,8 @@ public class AssetListEntryPersistenceImpl
 		long groupId, String title, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			title = Objects.toString(title, "");
 
@@ -3315,9 +3301,8 @@ public class AssetListEntryPersistenceImpl
 	@Override
 	public int countByG_T(long groupId, String title) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			title = Objects.toString(title, "");
 
@@ -3469,9 +3454,8 @@ public class AssetListEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			title = Objects.toString(title, "");
 
@@ -4511,9 +4495,8 @@ public class AssetListEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -4662,9 +4645,8 @@ public class AssetListEntryPersistenceImpl
 	@Override
 	public int countByG_LikeT(long groupId, String title) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			title = Objects.toString(title, "");
 
@@ -4745,9 +4727,8 @@ public class AssetListEntryPersistenceImpl
 		title = Objects.toString(title, "");
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(groupIds), title
@@ -5068,9 +5049,8 @@ public class AssetListEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5826,9 +5806,8 @@ public class AssetListEntryPersistenceImpl
 	@Override
 	public int countByG_TY(long groupId, int type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_TY;
 
@@ -6025,9 +6004,8 @@ public class AssetListEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			assetEntryType = Objects.toString(assetEntryType, "");
 
@@ -7112,9 +7090,8 @@ public class AssetListEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -7279,9 +7256,8 @@ public class AssetListEntryPersistenceImpl
 	@Override
 	public int countByG_AET(long groupId, String assetEntryType) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			assetEntryType = Objects.toString(assetEntryType, "");
 
@@ -7371,9 +7347,8 @@ public class AssetListEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(groupIds), StringUtil.merge(assetEntryTypes)
@@ -7738,9 +7713,8 @@ public class AssetListEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			title = Objects.toString(title, "");
 			assetEntryType = Objects.toString(assetEntryType, "");
@@ -8935,9 +8909,8 @@ public class AssetListEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -9129,9 +9102,8 @@ public class AssetListEntryPersistenceImpl
 		long groupId, String title, String assetEntryType) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			title = Objects.toString(title, "");
 			assetEntryType = Objects.toString(assetEntryType, "");
@@ -9242,9 +9214,8 @@ public class AssetListEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(groupIds), title,
@@ -9676,9 +9647,8 @@ public class AssetListEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			assetEntrySubtype = Objects.toString(assetEntrySubtype, "");
 			assetEntryType = Objects.toString(assetEntryType, "");
@@ -10860,9 +10830,8 @@ public class AssetListEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -11034,9 +11003,8 @@ public class AssetListEntryPersistenceImpl
 		long groupId, String assetEntrySubtype, String assetEntryType) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			assetEntrySubtype = Objects.toString(assetEntrySubtype, "");
 			assetEntryType = Objects.toString(assetEntryType, "");
@@ -11139,9 +11107,8 @@ public class AssetListEntryPersistenceImpl
 		assetEntryType = Objects.toString(assetEntryType, "");
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(groupIds), assetEntrySubtype, assetEntryType
@@ -11540,9 +11507,8 @@ public class AssetListEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			title = Objects.toString(title, "");
 			assetEntrySubtype = Objects.toString(assetEntrySubtype, "");
@@ -12833,9 +12799,8 @@ public class AssetListEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -13032,9 +12997,8 @@ public class AssetListEntryPersistenceImpl
 		String assetEntryType) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			title = Objects.toString(title, "");
 			assetEntrySubtype = Objects.toString(assetEntrySubtype, "");
@@ -13159,9 +13123,8 @@ public class AssetListEntryPersistenceImpl
 		assetEntryType = Objects.toString(assetEntryType, "");
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(groupIds), title, assetEntrySubtype,
@@ -13558,8 +13521,8 @@ public class AssetListEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					assetListEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					assetListEntry.getCtCollectionId())) {
 
 			entityCache.putResult(
 				AssetListEntryImpl.class, assetListEntry.getPrimaryKey(),
@@ -13615,8 +13578,8 @@ public class AssetListEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						assetListEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						assetListEntry.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						AssetListEntryImpl.class,
@@ -13681,8 +13644,8 @@ public class AssetListEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					assetListEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					assetListEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				assetListEntryModelImpl.getUuid(),
@@ -13827,102 +13790,96 @@ public class AssetListEntryPersistenceImpl
 
 	@Override
 	public AssetListEntry updateImpl(AssetListEntry assetListEntry) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = assetListEntry.isNew();
 
-			boolean isNew = assetListEntry.isNew();
+		if (!(assetListEntry instanceof AssetListEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(assetListEntry instanceof AssetListEntryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(assetListEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						assetListEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in assetListEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(assetListEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					assetListEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom AssetListEntry implementation " +
-						assetListEntry.getClass());
+					"Implement ModelWrapper in assetListEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			AssetListEntryModelImpl assetListEntryModelImpl =
-				(AssetListEntryModelImpl)assetListEntry;
-
-			if (Validator.isNull(assetListEntry.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				assetListEntry.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (assetListEntry.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					assetListEntry.setCreateDate(date);
-				}
-				else {
-					assetListEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!assetListEntryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					assetListEntry.setModifiedDate(date);
-				}
-				else {
-					assetListEntry.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(assetListEntry)) {
-					if (!isNew) {
-						session.evict(
-							AssetListEntryImpl.class,
-							assetListEntry.getPrimaryKeyObj());
-					}
-
-					session.save(assetListEntry);
-				}
-				else {
-					assetListEntry = (AssetListEntry)session.merge(
-						assetListEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				AssetListEntryImpl.class, assetListEntryModelImpl, false, true);
-
-			cacheUniqueFindersCache(assetListEntryModelImpl);
-
-			if (isNew) {
-				assetListEntry.setNew(false);
-			}
-
-			assetListEntry.resetOriginalValues();
-
-			return assetListEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom AssetListEntry implementation " +
+					assetListEntry.getClass());
 		}
+
+		AssetListEntryModelImpl assetListEntryModelImpl =
+			(AssetListEntryModelImpl)assetListEntry;
+
+		if (Validator.isNull(assetListEntry.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			assetListEntry.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (assetListEntry.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				assetListEntry.setCreateDate(date);
+			}
+			else {
+				assetListEntry.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!assetListEntryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				assetListEntry.setModifiedDate(date);
+			}
+			else {
+				assetListEntry.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(assetListEntry)) {
+				if (!isNew) {
+					session.evict(
+						AssetListEntryImpl.class,
+						assetListEntry.getPrimaryKeyObj());
+				}
+
+				session.save(assetListEntry);
+			}
+			else {
+				assetListEntry = (AssetListEntry)session.merge(assetListEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			AssetListEntryImpl.class, assetListEntryModelImpl, false, true);
+
+		cacheUniqueFindersCache(assetListEntryModelImpl);
+
+		if (isNew) {
+			assetListEntry.setNew(false);
+		}
+
+		assetListEntry.resetOriginalValues();
+
+		return assetListEntry;
 	}
 
 	/**
@@ -13976,45 +13933,40 @@ public class AssetListEntryPersistenceImpl
 				AssetListEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		AssetListEntry assetListEntry = (AssetListEntry)entityCache.getResult(
+			AssetListEntryImpl.class, primaryKey);
 
-			AssetListEntry assetListEntry =
-				(AssetListEntry)entityCache.getResult(
-					AssetListEntryImpl.class, primaryKey);
-
-			if (assetListEntry != null) {
-				return assetListEntry;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				assetListEntry = (AssetListEntry)session.get(
-					AssetListEntryImpl.class, primaryKey);
-
-				if (assetListEntry != null) {
-					cacheResult(assetListEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (assetListEntry != null) {
 			return assetListEntry;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			assetListEntry = (AssetListEntry)session.get(
+				AssetListEntryImpl.class, primaryKey);
+
+			if (assetListEntry != null) {
+				cacheResult(assetListEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return assetListEntry;
 	}
 
 	/**
@@ -14034,8 +13986,8 @@ public class AssetListEntryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(AssetListEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -14068,9 +14020,8 @@ public class AssetListEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							AssetListEntry.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						AssetListEntry.class, primaryKey)) {
 
 				AssetListEntry assetListEntry =
 					(AssetListEntry)entityCache.getResult(
@@ -14222,9 +14173,8 @@ public class AssetListEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -14317,9 +14267,8 @@ public class AssetListEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntry.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

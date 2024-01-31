@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -178,9 +177,8 @@ public class SegmentsExperiencePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -588,9 +586,8 @@ public class SegmentsExperiencePersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -719,9 +716,8 @@ public class SegmentsExperiencePersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -843,9 +839,8 @@ public class SegmentsExperiencePersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -998,9 +993,8 @@ public class SegmentsExperiencePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1439,9 +1433,8 @@ public class SegmentsExperiencePersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1589,9 +1582,8 @@ public class SegmentsExperiencePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2311,9 +2303,8 @@ public class SegmentsExperiencePersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2489,9 +2480,8 @@ public class SegmentsExperiencePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2885,9 +2875,8 @@ public class SegmentsExperiencePersistenceImpl
 	@Override
 	public int countBySegmentsEntryId(long segmentsEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = _finderPathCountBySegmentsEntryId;
 
@@ -3017,9 +3006,8 @@ public class SegmentsExperiencePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3781,9 +3769,8 @@ public class SegmentsExperiencePersistenceImpl
 	@Override
 	public int countByG_P(long groupId, long plid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P;
 
@@ -3981,9 +3968,8 @@ public class SegmentsExperiencePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4790,9 +4776,8 @@ public class SegmentsExperiencePersistenceImpl
 	@Override
 	public int countByG_S_P(long groupId, long segmentsEntryId, long plid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_S_P;
 
@@ -4990,9 +4975,8 @@ public class SegmentsExperiencePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			segmentsExperienceKey = Objects.toString(segmentsExperienceKey, "");
 
@@ -5129,9 +5113,8 @@ public class SegmentsExperiencePersistenceImpl
 		long groupId, String segmentsExperienceKey, long plid) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			segmentsExperienceKey = Objects.toString(segmentsExperienceKey, "");
 
@@ -5285,9 +5268,8 @@ public class SegmentsExperiencePersistenceImpl
 		long groupId, long plid, int priority, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			Object[] finderArgs = null;
 
@@ -5405,9 +5387,8 @@ public class SegmentsExperiencePersistenceImpl
 	@Override
 	public int countByG_P_P(long groupId, long plid, int priority) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P_P;
 
@@ -5557,9 +5538,8 @@ public class SegmentsExperiencePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6352,9 +6332,8 @@ public class SegmentsExperiencePersistenceImpl
 	@Override
 	public int countByG_P_GtP(long groupId, long plid, int priority) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_P_GtP;
 
@@ -6562,9 +6541,8 @@ public class SegmentsExperiencePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7357,9 +7335,8 @@ public class SegmentsExperiencePersistenceImpl
 	@Override
 	public int countByG_P_LtP(long groupId, long plid, int priority) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_P_LtP;
 
@@ -7567,9 +7544,8 @@ public class SegmentsExperiencePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -8370,9 +8346,8 @@ public class SegmentsExperiencePersistenceImpl
 	@Override
 	public int countByG_P_A(long groupId, long plid, boolean active) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P_A;
 
@@ -8594,9 +8569,8 @@ public class SegmentsExperiencePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -9697,9 +9671,8 @@ public class SegmentsExperiencePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			Object[] finderArgs = null;
 
@@ -9855,9 +9828,8 @@ public class SegmentsExperiencePersistenceImpl
 		long groupId, long segmentsEntryId, long plid, boolean active) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_S_P_A;
 
@@ -9937,9 +9909,8 @@ public class SegmentsExperiencePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(segmentsEntryIds), plid, active
@@ -10211,8 +10182,8 @@ public class SegmentsExperiencePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					segmentsExperience.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					segmentsExperience.getCtCollectionId())) {
 
 			entityCache.putResult(
 				SegmentsExperienceImpl.class,
@@ -10272,8 +10243,8 @@ public class SegmentsExperiencePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						segmentsExperience.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						segmentsExperience.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						SegmentsExperienceImpl.class,
@@ -10340,8 +10311,8 @@ public class SegmentsExperiencePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					segmentsExperienceModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					segmentsExperienceModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				segmentsExperienceModelImpl.getUuid(),
@@ -10494,103 +10465,98 @@ public class SegmentsExperiencePersistenceImpl
 	public SegmentsExperience updateImpl(
 		SegmentsExperience segmentsExperience) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = segmentsExperience.isNew();
 
-			boolean isNew = segmentsExperience.isNew();
+		if (!(segmentsExperience instanceof SegmentsExperienceModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(segmentsExperience instanceof SegmentsExperienceModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(segmentsExperience.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						segmentsExperience);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in segmentsExperience proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(segmentsExperience.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					segmentsExperience);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom SegmentsExperience implementation " +
-						segmentsExperience.getClass());
+					"Implement ModelWrapper in segmentsExperience proxy " +
+						invocationHandler.getClass());
 			}
 
-			SegmentsExperienceModelImpl segmentsExperienceModelImpl =
-				(SegmentsExperienceModelImpl)segmentsExperience;
-
-			if (Validator.isNull(segmentsExperience.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				segmentsExperience.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (segmentsExperience.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					segmentsExperience.setCreateDate(date);
-				}
-				else {
-					segmentsExperience.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!segmentsExperienceModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					segmentsExperience.setModifiedDate(date);
-				}
-				else {
-					segmentsExperience.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(segmentsExperience)) {
-					if (!isNew) {
-						session.evict(
-							SegmentsExperienceImpl.class,
-							segmentsExperience.getPrimaryKeyObj());
-					}
-
-					session.save(segmentsExperience);
-				}
-				else {
-					segmentsExperience = (SegmentsExperience)session.merge(
-						segmentsExperience);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				SegmentsExperienceImpl.class, segmentsExperienceModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(segmentsExperienceModelImpl);
-
-			if (isNew) {
-				segmentsExperience.setNew(false);
-			}
-
-			segmentsExperience.resetOriginalValues();
-
-			return segmentsExperience;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom SegmentsExperience implementation " +
+					segmentsExperience.getClass());
 		}
+
+		SegmentsExperienceModelImpl segmentsExperienceModelImpl =
+			(SegmentsExperienceModelImpl)segmentsExperience;
+
+		if (Validator.isNull(segmentsExperience.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			segmentsExperience.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (segmentsExperience.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				segmentsExperience.setCreateDate(date);
+			}
+			else {
+				segmentsExperience.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!segmentsExperienceModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				segmentsExperience.setModifiedDate(date);
+			}
+			else {
+				segmentsExperience.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(segmentsExperience)) {
+				if (!isNew) {
+					session.evict(
+						SegmentsExperienceImpl.class,
+						segmentsExperience.getPrimaryKeyObj());
+				}
+
+				session.save(segmentsExperience);
+			}
+			else {
+				segmentsExperience = (SegmentsExperience)session.merge(
+					segmentsExperience);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			SegmentsExperienceImpl.class, segmentsExperienceModelImpl, false,
+			true);
+
+		cacheUniqueFindersCache(segmentsExperienceModelImpl);
+
+		if (isNew) {
+			segmentsExperience.setNew(false);
+		}
+
+		segmentsExperience.resetOriginalValues();
+
+		return segmentsExperience;
 	}
 
 	/**
@@ -10644,45 +10610,41 @@ public class SegmentsExperiencePersistenceImpl
 				SegmentsExperience.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		SegmentsExperience segmentsExperience =
+			(SegmentsExperience)entityCache.getResult(
+				SegmentsExperienceImpl.class, primaryKey);
 
-			SegmentsExperience segmentsExperience =
-				(SegmentsExperience)entityCache.getResult(
-					SegmentsExperienceImpl.class, primaryKey);
-
-			if (segmentsExperience != null) {
-				return segmentsExperience;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				segmentsExperience = (SegmentsExperience)session.get(
-					SegmentsExperienceImpl.class, primaryKey);
-
-				if (segmentsExperience != null) {
-					cacheResult(segmentsExperience);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (segmentsExperience != null) {
 			return segmentsExperience;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			segmentsExperience = (SegmentsExperience)session.get(
+				SegmentsExperienceImpl.class, primaryKey);
+
+			if (segmentsExperience != null) {
+				cacheResult(segmentsExperience);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return segmentsExperience;
 	}
 
 	/**
@@ -10702,8 +10664,8 @@ public class SegmentsExperiencePersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(SegmentsExperience.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -10737,9 +10699,8 @@ public class SegmentsExperiencePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							SegmentsExperience.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						SegmentsExperience.class, primaryKey)) {
 
 				SegmentsExperience segmentsExperience =
 					(SegmentsExperience)entityCache.getResult(
@@ -10893,9 +10854,8 @@ public class SegmentsExperiencePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -10988,9 +10948,8 @@ public class SegmentsExperiencePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperience.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperience.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

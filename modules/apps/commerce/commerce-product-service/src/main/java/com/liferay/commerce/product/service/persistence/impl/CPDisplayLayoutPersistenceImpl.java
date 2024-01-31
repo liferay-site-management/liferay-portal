@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -172,9 +171,8 @@ public class CPDisplayLayoutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -578,9 +576,8 @@ public class CPDisplayLayoutPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -709,9 +706,8 @@ public class CPDisplayLayoutPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -832,9 +828,8 @@ public class CPDisplayLayoutPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -987,9 +982,8 @@ public class CPDisplayLayoutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1427,9 +1421,8 @@ public class CPDisplayLayoutPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1577,9 +1570,8 @@ public class CPDisplayLayoutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1961,9 +1953,8 @@ public class CPDisplayLayoutPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2093,9 +2084,8 @@ public class CPDisplayLayoutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2507,9 +2497,8 @@ public class CPDisplayLayoutPersistenceImpl
 	@Override
 	public int countByG_C(long groupId, long classNameId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C;
 
@@ -2651,9 +2640,8 @@ public class CPDisplayLayoutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			layoutPageTemplateEntryUuid = Objects.toString(
 				layoutPageTemplateEntryUuid, "");
@@ -3107,9 +3095,8 @@ public class CPDisplayLayoutPersistenceImpl
 		long groupId, String layoutPageTemplateEntryUuid) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			layoutPageTemplateEntryUuid = Objects.toString(
 				layoutPageTemplateEntryUuid, "");
@@ -3269,9 +3256,8 @@ public class CPDisplayLayoutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			layoutUuid = Objects.toString(layoutUuid, "");
 
@@ -3710,9 +3696,8 @@ public class CPDisplayLayoutPersistenceImpl
 	@Override
 	public int countByG_L(long groupId, String layoutUuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			layoutUuid = Objects.toString(layoutUuid, "");
 
@@ -3865,9 +3850,8 @@ public class CPDisplayLayoutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4279,9 +4263,8 @@ public class CPDisplayLayoutPersistenceImpl
 	@Override
 	public int countByC_C(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -4420,9 +4403,8 @@ public class CPDisplayLayoutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4834,9 +4816,8 @@ public class CPDisplayLayoutPersistenceImpl
 	@Override
 	public int countByC_C_LPTEU(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_LPTEU;
 
@@ -4973,9 +4954,8 @@ public class CPDisplayLayoutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5387,9 +5367,8 @@ public class CPDisplayLayoutPersistenceImpl
 	@Override
 	public int countByC_C_L(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_L;
 
@@ -5519,9 +5498,8 @@ public class CPDisplayLayoutPersistenceImpl
 		long groupId, long classNameId, long classPK, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			Object[] finderArgs = null;
 
@@ -5638,9 +5616,8 @@ public class CPDisplayLayoutPersistenceImpl
 	@Override
 	public int countByG_C_C(long groupId, long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_C;
 
@@ -5732,8 +5709,8 @@ public class CPDisplayLayoutPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cpDisplayLayout.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cpDisplayLayout.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CPDisplayLayoutImpl.class, cpDisplayLayout.getPrimaryKey(),
@@ -5783,8 +5760,8 @@ public class CPDisplayLayoutPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						cpDisplayLayout.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						cpDisplayLayout.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CPDisplayLayoutImpl.class,
@@ -5850,8 +5827,8 @@ public class CPDisplayLayoutPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cpDisplayLayoutModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cpDisplayLayoutModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				cpDisplayLayoutModelImpl.getUuid(),
@@ -5988,103 +5965,97 @@ public class CPDisplayLayoutPersistenceImpl
 
 	@Override
 	public CPDisplayLayout updateImpl(CPDisplayLayout cpDisplayLayout) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = cpDisplayLayout.isNew();
 
-			boolean isNew = cpDisplayLayout.isNew();
+		if (!(cpDisplayLayout instanceof CPDisplayLayoutModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(cpDisplayLayout instanceof CPDisplayLayoutModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(cpDisplayLayout.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						cpDisplayLayout);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in cpDisplayLayout proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(cpDisplayLayout.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					cpDisplayLayout);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CPDisplayLayout implementation " +
-						cpDisplayLayout.getClass());
+					"Implement ModelWrapper in cpDisplayLayout proxy " +
+						invocationHandler.getClass());
 			}
 
-			CPDisplayLayoutModelImpl cpDisplayLayoutModelImpl =
-				(CPDisplayLayoutModelImpl)cpDisplayLayout;
-
-			if (Validator.isNull(cpDisplayLayout.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				cpDisplayLayout.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (cpDisplayLayout.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					cpDisplayLayout.setCreateDate(date);
-				}
-				else {
-					cpDisplayLayout.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!cpDisplayLayoutModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					cpDisplayLayout.setModifiedDate(date);
-				}
-				else {
-					cpDisplayLayout.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(cpDisplayLayout)) {
-					if (!isNew) {
-						session.evict(
-							CPDisplayLayoutImpl.class,
-							cpDisplayLayout.getPrimaryKeyObj());
-					}
-
-					session.save(cpDisplayLayout);
-				}
-				else {
-					cpDisplayLayout = (CPDisplayLayout)session.merge(
-						cpDisplayLayout);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				CPDisplayLayoutImpl.class, cpDisplayLayoutModelImpl, false,
-				true);
-
-			cacheUniqueFindersCache(cpDisplayLayoutModelImpl);
-
-			if (isNew) {
-				cpDisplayLayout.setNew(false);
-			}
-
-			cpDisplayLayout.resetOriginalValues();
-
-			return cpDisplayLayout;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CPDisplayLayout implementation " +
+					cpDisplayLayout.getClass());
 		}
+
+		CPDisplayLayoutModelImpl cpDisplayLayoutModelImpl =
+			(CPDisplayLayoutModelImpl)cpDisplayLayout;
+
+		if (Validator.isNull(cpDisplayLayout.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			cpDisplayLayout.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (cpDisplayLayout.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				cpDisplayLayout.setCreateDate(date);
+			}
+			else {
+				cpDisplayLayout.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!cpDisplayLayoutModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				cpDisplayLayout.setModifiedDate(date);
+			}
+			else {
+				cpDisplayLayout.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(cpDisplayLayout)) {
+				if (!isNew) {
+					session.evict(
+						CPDisplayLayoutImpl.class,
+						cpDisplayLayout.getPrimaryKeyObj());
+				}
+
+				session.save(cpDisplayLayout);
+			}
+			else {
+				cpDisplayLayout = (CPDisplayLayout)session.merge(
+					cpDisplayLayout);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CPDisplayLayoutImpl.class, cpDisplayLayoutModelImpl, false, true);
+
+		cacheUniqueFindersCache(cpDisplayLayoutModelImpl);
+
+		if (isNew) {
+			cpDisplayLayout.setNew(false);
+		}
+
+		cpDisplayLayout.resetOriginalValues();
+
+		return cpDisplayLayout;
 	}
 
 	/**
@@ -6138,45 +6109,41 @@ public class CPDisplayLayoutPersistenceImpl
 				CPDisplayLayout.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CPDisplayLayout cpDisplayLayout =
+			(CPDisplayLayout)entityCache.getResult(
+				CPDisplayLayoutImpl.class, primaryKey);
 
-			CPDisplayLayout cpDisplayLayout =
-				(CPDisplayLayout)entityCache.getResult(
-					CPDisplayLayoutImpl.class, primaryKey);
-
-			if (cpDisplayLayout != null) {
-				return cpDisplayLayout;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				cpDisplayLayout = (CPDisplayLayout)session.get(
-					CPDisplayLayoutImpl.class, primaryKey);
-
-				if (cpDisplayLayout != null) {
-					cacheResult(cpDisplayLayout);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (cpDisplayLayout != null) {
 			return cpDisplayLayout;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			cpDisplayLayout = (CPDisplayLayout)session.get(
+				CPDisplayLayoutImpl.class, primaryKey);
+
+			if (cpDisplayLayout != null) {
+				cacheResult(cpDisplayLayout);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return cpDisplayLayout;
 	}
 
 	/**
@@ -6196,8 +6163,8 @@ public class CPDisplayLayoutPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(CPDisplayLayout.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -6230,9 +6197,8 @@ public class CPDisplayLayoutPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CPDisplayLayout.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CPDisplayLayout.class, primaryKey)) {
 
 				CPDisplayLayout cpDisplayLayout =
 					(CPDisplayLayout)entityCache.getResult(
@@ -6385,9 +6351,8 @@ public class CPDisplayLayoutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6480,9 +6445,8 @@ public class CPDisplayLayoutPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDisplayLayout.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDisplayLayout.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

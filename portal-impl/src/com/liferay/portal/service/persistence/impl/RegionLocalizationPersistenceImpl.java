@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -160,9 +159,8 @@ public class RegionLocalizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RegionLocalization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RegionLocalization.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -550,9 +548,8 @@ public class RegionLocalizationPersistenceImpl
 	@Override
 	public int countByRegionId(long regionId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RegionLocalization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RegionLocalization.class)) {
 
 			FinderPath finderPath = _finderPathCountByRegionId;
 
@@ -669,9 +666,8 @@ public class RegionLocalizationPersistenceImpl
 		long regionId, String languageId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RegionLocalization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RegionLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -797,9 +793,8 @@ public class RegionLocalizationPersistenceImpl
 	@Override
 	public int countByRegionId_LanguageId(long regionId, String languageId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RegionLocalization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RegionLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -896,8 +891,8 @@ public class RegionLocalizationPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					regionLocalization.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					regionLocalization.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				RegionLocalizationImpl.class,
@@ -939,8 +934,8 @@ public class RegionLocalizationPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						regionLocalization.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						regionLocalization.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						RegionLocalizationImpl.class,
@@ -1008,8 +1003,8 @@ public class RegionLocalizationPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					regionLocalizationModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					regionLocalizationModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				regionLocalizationModelImpl.getRegionId(),
@@ -1137,72 +1132,67 @@ public class RegionLocalizationPersistenceImpl
 	public RegionLocalization updateImpl(
 		RegionLocalization regionLocalization) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = regionLocalization.isNew();
 
-			boolean isNew = regionLocalization.isNew();
+		if (!(regionLocalization instanceof RegionLocalizationModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(regionLocalization instanceof RegionLocalizationModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(regionLocalization.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						regionLocalization);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in regionLocalization proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(regionLocalization.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					regionLocalization);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom RegionLocalization implementation " +
-						regionLocalization.getClass());
+					"Implement ModelWrapper in regionLocalization proxy " +
+						invocationHandler.getClass());
 			}
 
-			RegionLocalizationModelImpl regionLocalizationModelImpl =
-				(RegionLocalizationModelImpl)regionLocalization;
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(regionLocalization)) {
-					if (!isNew) {
-						session.evict(
-							RegionLocalizationImpl.class,
-							regionLocalization.getPrimaryKeyObj());
-					}
-
-					session.save(regionLocalization);
-				}
-				else {
-					regionLocalization = (RegionLocalization)session.merge(
-						regionLocalization);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				RegionLocalizationImpl.class, regionLocalizationModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(regionLocalizationModelImpl);
-
-			if (isNew) {
-				regionLocalization.setNew(false);
-			}
-
-			regionLocalization.resetOriginalValues();
-
-			return regionLocalization;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom RegionLocalization implementation " +
+					regionLocalization.getClass());
 		}
+
+		RegionLocalizationModelImpl regionLocalizationModelImpl =
+			(RegionLocalizationModelImpl)regionLocalization;
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(regionLocalization)) {
+				if (!isNew) {
+					session.evict(
+						RegionLocalizationImpl.class,
+						regionLocalization.getPrimaryKeyObj());
+				}
+
+				session.save(regionLocalization);
+			}
+			else {
+				regionLocalization = (RegionLocalization)session.merge(
+					regionLocalization);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			RegionLocalizationImpl.class, regionLocalizationModelImpl, false,
+			true);
+
+		cacheUniqueFindersCache(regionLocalizationModelImpl);
+
+		if (isNew) {
+			regionLocalization.setNew(false);
+		}
+
+		regionLocalization.resetOriginalValues();
+
+		return regionLocalization;
 	}
 
 	/**
@@ -1256,45 +1246,41 @@ public class RegionLocalizationPersistenceImpl
 				RegionLocalization.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		RegionLocalization regionLocalization =
+			(RegionLocalization)EntityCacheUtil.getResult(
+				RegionLocalizationImpl.class, primaryKey);
 
-			RegionLocalization regionLocalization =
-				(RegionLocalization)EntityCacheUtil.getResult(
-					RegionLocalizationImpl.class, primaryKey);
-
-			if (regionLocalization != null) {
-				return regionLocalization;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				regionLocalization = (RegionLocalization)session.get(
-					RegionLocalizationImpl.class, primaryKey);
-
-				if (regionLocalization != null) {
-					cacheResult(regionLocalization);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (regionLocalization != null) {
 			return regionLocalization;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			regionLocalization = (RegionLocalization)session.get(
+				RegionLocalizationImpl.class, primaryKey);
+
+			if (regionLocalization != null) {
+				cacheResult(regionLocalization);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return regionLocalization;
 	}
 
 	/**
@@ -1316,8 +1302,8 @@ public class RegionLocalizationPersistenceImpl
 				RegionLocalization.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -1351,9 +1337,8 @@ public class RegionLocalizationPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							RegionLocalization.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						RegionLocalization.class, primaryKey)) {
 
 				RegionLocalization regionLocalization =
 					(RegionLocalization)EntityCacheUtil.getResult(
@@ -1507,9 +1492,8 @@ public class RegionLocalizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RegionLocalization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RegionLocalization.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1602,9 +1586,8 @@ public class RegionLocalizationPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RegionLocalization.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RegionLocalization.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

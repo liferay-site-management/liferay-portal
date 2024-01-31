@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -169,9 +168,8 @@ public class DDMStructureLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructureLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructureLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -559,9 +557,8 @@ public class DDMStructureLinkPersistenceImpl
 	@Override
 	public int countByStructureId(long structureId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructureLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructureLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByStructureId;
 
@@ -691,9 +688,8 @@ public class DDMStructureLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructureLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructureLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1106,9 +1102,8 @@ public class DDMStructureLinkPersistenceImpl
 	@Override
 	public int countByC_C(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructureLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructureLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -1239,9 +1234,8 @@ public class DDMStructureLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructureLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructureLink.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1358,9 +1352,8 @@ public class DDMStructureLinkPersistenceImpl
 	@Override
 	public int countByC_C_S(long classNameId, long classPK, long structureId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructureLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructureLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_S;
 
@@ -1448,8 +1441,8 @@ public class DDMStructureLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmStructureLink.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmStructureLink.getCtCollectionId())) {
 
 			entityCache.putResult(
 				DDMStructureLinkImpl.class, ddmStructureLink.getPrimaryKey(),
@@ -1492,8 +1485,8 @@ public class DDMStructureLinkPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						ddmStructureLink.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ddmStructureLink.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						DDMStructureLinkImpl.class,
@@ -1559,8 +1552,8 @@ public class DDMStructureLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmStructureLinkModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmStructureLinkModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				ddmStructureLinkModelImpl.getClassNameId(),
@@ -1683,72 +1676,66 @@ public class DDMStructureLinkPersistenceImpl
 
 	@Override
 	public DDMStructureLink updateImpl(DDMStructureLink ddmStructureLink) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = ddmStructureLink.isNew();
 
-			boolean isNew = ddmStructureLink.isNew();
+		if (!(ddmStructureLink instanceof DDMStructureLinkModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(ddmStructureLink instanceof DDMStructureLinkModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(ddmStructureLink.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						ddmStructureLink);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in ddmStructureLink proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(ddmStructureLink.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					ddmStructureLink);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DDMStructureLink implementation " +
-						ddmStructureLink.getClass());
+					"Implement ModelWrapper in ddmStructureLink proxy " +
+						invocationHandler.getClass());
 			}
 
-			DDMStructureLinkModelImpl ddmStructureLinkModelImpl =
-				(DDMStructureLinkModelImpl)ddmStructureLink;
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(ddmStructureLink)) {
-					if (!isNew) {
-						session.evict(
-							DDMStructureLinkImpl.class,
-							ddmStructureLink.getPrimaryKeyObj());
-					}
-
-					session.save(ddmStructureLink);
-				}
-				else {
-					ddmStructureLink = (DDMStructureLink)session.merge(
-						ddmStructureLink);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				DDMStructureLinkImpl.class, ddmStructureLinkModelImpl, false,
-				true);
-
-			cacheUniqueFindersCache(ddmStructureLinkModelImpl);
-
-			if (isNew) {
-				ddmStructureLink.setNew(false);
-			}
-
-			ddmStructureLink.resetOriginalValues();
-
-			return ddmStructureLink;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DDMStructureLink implementation " +
+					ddmStructureLink.getClass());
 		}
+
+		DDMStructureLinkModelImpl ddmStructureLinkModelImpl =
+			(DDMStructureLinkModelImpl)ddmStructureLink;
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(ddmStructureLink)) {
+				if (!isNew) {
+					session.evict(
+						DDMStructureLinkImpl.class,
+						ddmStructureLink.getPrimaryKeyObj());
+				}
+
+				session.save(ddmStructureLink);
+			}
+			else {
+				ddmStructureLink = (DDMStructureLink)session.merge(
+					ddmStructureLink);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			DDMStructureLinkImpl.class, ddmStructureLinkModelImpl, false, true);
+
+		cacheUniqueFindersCache(ddmStructureLinkModelImpl);
+
+		if (isNew) {
+			ddmStructureLink.setNew(false);
+		}
+
+		ddmStructureLink.resetOriginalValues();
+
+		return ddmStructureLink;
 	}
 
 	/**
@@ -1802,45 +1789,41 @@ public class DDMStructureLinkPersistenceImpl
 				DDMStructureLink.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DDMStructureLink ddmStructureLink =
+			(DDMStructureLink)entityCache.getResult(
+				DDMStructureLinkImpl.class, primaryKey);
 
-			DDMStructureLink ddmStructureLink =
-				(DDMStructureLink)entityCache.getResult(
-					DDMStructureLinkImpl.class, primaryKey);
-
-			if (ddmStructureLink != null) {
-				return ddmStructureLink;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ddmStructureLink = (DDMStructureLink)session.get(
-					DDMStructureLinkImpl.class, primaryKey);
-
-				if (ddmStructureLink != null) {
-					cacheResult(ddmStructureLink);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (ddmStructureLink != null) {
 			return ddmStructureLink;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			ddmStructureLink = (DDMStructureLink)session.get(
+				DDMStructureLinkImpl.class, primaryKey);
+
+			if (ddmStructureLink != null) {
+				cacheResult(ddmStructureLink);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return ddmStructureLink;
 	}
 
 	/**
@@ -1860,8 +1843,8 @@ public class DDMStructureLinkPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(DDMStructureLink.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -1894,9 +1877,8 @@ public class DDMStructureLinkPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							DDMStructureLink.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						DDMStructureLink.class, primaryKey)) {
 
 				DDMStructureLink ddmStructureLink =
 					(DDMStructureLink)entityCache.getResult(
@@ -2049,9 +2031,8 @@ public class DDMStructureLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructureLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructureLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2144,9 +2125,8 @@ public class DDMStructureLinkPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructureLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructureLink.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

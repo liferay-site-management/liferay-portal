@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -183,8 +182,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -566,8 +565,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByResourcePrimKey(long resourcePrimKey) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = _finderPathCountByResourcePrimKey;
 
@@ -689,8 +688,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1090,8 +1089,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1220,8 +1219,8 @@ public class WikiPagePersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1342,8 +1341,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1495,8 +1494,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1930,8 +1929,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -2076,8 +2075,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2456,8 +2455,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2578,8 +2577,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2956,8 +2955,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByNodeId(long nodeId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = _finderPathCountByNodeId;
 
@@ -3078,8 +3077,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			format = Objects.toString(format, "");
 
@@ -3482,8 +3481,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByFormat(String format) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			format = Objects.toString(format, "");
 
@@ -3629,8 +3628,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4041,8 +4040,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByR_N(long resourcePrimKey, long nodeId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = _finderPathCountByR_N;
 
@@ -4179,8 +4178,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4591,8 +4590,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByR_S(long resourcePrimKey, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = _finderPathCountByR_S;
 
@@ -4732,8 +4731,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -5543,8 +5542,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByG_ERC(long groupId, String externalReferenceCode) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -5761,8 +5760,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			title = Objects.toString(title, "");
 
@@ -6193,8 +6192,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByN_T(long nodeId, String title) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			title = Objects.toString(title, "");
 
@@ -6345,8 +6344,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6750,8 +6749,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByN_H(long nodeId, boolean head) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = _finderPathCountByN_H;
 
@@ -6886,8 +6885,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			parentTitle = Objects.toString(parentTitle, "");
 
@@ -7323,8 +7322,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByN_P(long nodeId, String parentTitle) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			parentTitle = Objects.toString(parentTitle, "");
 
@@ -7476,8 +7475,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			redirectTitle = Objects.toString(redirectTitle, "");
 
@@ -7914,8 +7913,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByN_R(long nodeId, String redirectTitle) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			redirectTitle = Objects.toString(redirectTitle, "");
 
@@ -8066,8 +8065,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -8473,8 +8472,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByN_S(long nodeId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = _finderPathCountByN_S;
 
@@ -8604,8 +8603,8 @@ public class WikiPagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			Object[] finderArgs = null;
 
@@ -8721,8 +8720,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByR_N_V(long resourcePrimKey, long nodeId, double version) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = _finderPathCountByR_N_V;
 
@@ -8874,8 +8873,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -9309,8 +9308,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByR_N_H(long resourcePrimKey, long nodeId, boolean head) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = _finderPathCountByR_N_H;
 
@@ -9461,8 +9460,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -9898,8 +9897,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByR_N_S(long resourcePrimKey, long nodeId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = _finderPathCountByR_N_S;
 
@@ -10039,8 +10038,8 @@ public class WikiPagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -10176,8 +10175,8 @@ public class WikiPagePersistenceImpl
 		long groupId, String externalReferenceCode, double version) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -10342,8 +10341,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -11130,8 +11129,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByG_N_H(long groupId, long nodeId, boolean head) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_N_H;
 
@@ -11337,8 +11336,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -12126,8 +12125,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByG_N_S(long groupId, long nodeId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_N_S;
 
@@ -12332,8 +12331,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -12766,8 +12765,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByU_N_S(long userId, long nodeId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = _finderPathCountByU_N_S;
 
@@ -12900,8 +12899,8 @@ public class WikiPagePersistenceImpl
 		long nodeId, String title, double version, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			title = Objects.toString(title, "");
 
@@ -13029,8 +13028,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByN_T_V(long nodeId, String title, double version) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			title = Objects.toString(title, "");
 
@@ -13193,8 +13192,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			title = Objects.toString(title, "");
 
@@ -13653,8 +13652,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByN_T_H(long nodeId, String title, boolean head) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			title = Objects.toString(title, "");
 
@@ -13817,8 +13816,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			title = Objects.toString(title, "");
 
@@ -14277,8 +14276,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByN_T_S(long nodeId, String title, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			title = Objects.toString(title, "");
 
@@ -14444,8 +14443,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			parentTitle = Objects.toString(parentTitle, "");
 
@@ -14904,8 +14903,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByN_H_P(long nodeId, boolean head, String parentTitle) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			parentTitle = Objects.toString(parentTitle, "");
 
@@ -15071,8 +15070,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			redirectTitle = Objects.toString(redirectTitle, "");
 
@@ -15532,8 +15531,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByN_H_R(long nodeId, boolean head, String redirectTitle) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			redirectTitle = Objects.toString(redirectTitle, "");
 
@@ -15696,8 +15695,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -16130,8 +16129,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByN_H_S(long nodeId, boolean head, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = _finderPathCountByN_H_S;
 
@@ -16279,8 +16278,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -16703,8 +16702,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countByN_H_NotS(long nodeId, boolean head, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByN_H_NotS;
 
@@ -16860,8 +16859,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -17691,8 +17690,8 @@ public class WikiPagePersistenceImpl
 		long groupId, long userId, long nodeId, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_U_N_S;
 
@@ -17922,8 +17921,8 @@ public class WikiPagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			title = Objects.toString(title, "");
 
@@ -18803,8 +18802,8 @@ public class WikiPagePersistenceImpl
 		long groupId, long nodeId, String title, boolean head) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			title = Objects.toString(title, "");
 
@@ -19060,8 +19059,8 @@ public class WikiPagePersistenceImpl
 		OrderByComparator<WikiPage> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -19889,8 +19888,8 @@ public class WikiPagePersistenceImpl
 		long groupId, long nodeId, boolean head, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_N_H_S;
 
@@ -20120,8 +20119,8 @@ public class WikiPagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			parentTitle = Objects.toString(parentTitle, "");
 
@@ -20610,8 +20609,8 @@ public class WikiPagePersistenceImpl
 		long nodeId, boolean head, String parentTitle, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			parentTitle = Objects.toString(parentTitle, "");
 
@@ -20793,8 +20792,8 @@ public class WikiPagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			parentTitle = Objects.toString(parentTitle, "");
 
@@ -21270,8 +21269,8 @@ public class WikiPagePersistenceImpl
 		long nodeId, boolean head, String parentTitle, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			parentTitle = Objects.toString(parentTitle, "");
 
@@ -21454,8 +21453,8 @@ public class WikiPagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			redirectTitle = Objects.toString(redirectTitle, "");
 
@@ -21945,8 +21944,8 @@ public class WikiPagePersistenceImpl
 		long nodeId, boolean head, String redirectTitle, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			redirectTitle = Objects.toString(redirectTitle, "");
 
@@ -22128,8 +22127,8 @@ public class WikiPagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			redirectTitle = Objects.toString(redirectTitle, "");
 
@@ -22607,8 +22606,8 @@ public class WikiPagePersistenceImpl
 		long nodeId, boolean head, String redirectTitle, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			redirectTitle = Objects.toString(redirectTitle, "");
 
@@ -22796,8 +22795,8 @@ public class WikiPagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			parentTitle = Objects.toString(parentTitle, "");
 
@@ -23724,8 +23723,8 @@ public class WikiPagePersistenceImpl
 		int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			parentTitle = Objects.toString(parentTitle, "");
 
@@ -23933,8 +23932,8 @@ public class WikiPagePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					wikiPage.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					wikiPage.getCtCollectionId())) {
 
 			entityCache.putResult(
 				WikiPageImpl.class, wikiPage.getPrimaryKey(), wikiPage);
@@ -23995,8 +23994,8 @@ public class WikiPagePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						wikiPage.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						wikiPage.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						WikiPageImpl.class, wikiPage.getPrimaryKey()) == null) {
@@ -24060,8 +24059,8 @@ public class WikiPagePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					wikiPageModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					wikiPageModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				wikiPageModelImpl.getUuid(), wikiPageModelImpl.getGroupId()
@@ -24210,162 +24209,154 @@ public class WikiPagePersistenceImpl
 
 	@Override
 	public WikiPage updateImpl(WikiPage wikiPage) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = wikiPage.isNew();
 
-			boolean isNew = wikiPage.isNew();
+		if (!(wikiPage instanceof WikiPageModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(wikiPage instanceof WikiPageModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(wikiPage.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						wikiPage);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in wikiPage proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(wikiPage.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(wikiPage);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom WikiPage implementation " +
-						wikiPage.getClass());
+					"Implement ModelWrapper in wikiPage proxy " +
+						invocationHandler.getClass());
 			}
 
-			WikiPageModelImpl wikiPageModelImpl = (WikiPageModelImpl)wikiPage;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom WikiPage implementation " +
+					wikiPage.getClass());
+		}
 
-			if (Validator.isNull(wikiPage.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		WikiPageModelImpl wikiPageModelImpl = (WikiPageModelImpl)wikiPage;
 
-				wikiPage.setUuid(uuid);
+		if (Validator.isNull(wikiPage.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			wikiPage.setUuid(uuid);
+		}
+
+		if (Validator.isNull(wikiPage.getExternalReferenceCode())) {
+			wikiPage.setExternalReferenceCode(wikiPage.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					wikiPageModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
+					wikiPage.getExternalReferenceCode())) {
+
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
+
+				if (userId > 0) {
+					long companyId = wikiPage.getCompanyId();
+
+					long groupId = wikiPage.getGroupId();
+
+					long classPK = 0;
+
+					if (!isNew) {
+						classPK = wikiPage.getPrimaryKey();
+					}
+
+					try {
+						wikiPage.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								WikiPage.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								wikiPage.getExternalReferenceCode(), null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
+				}
 			}
+		}
 
-			if (Validator.isNull(wikiPage.getExternalReferenceCode())) {
-				wikiPage.setExternalReferenceCode(wikiPage.getUuid());
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (wikiPage.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				wikiPage.setCreateDate(date);
 			}
 			else {
-				if (!Objects.equals(
-						wikiPageModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						wikiPage.getExternalReferenceCode())) {
-
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
-
-					if (userId > 0) {
-						long companyId = wikiPage.getCompanyId();
-
-						long groupId = wikiPage.getGroupId();
-
-						long classPK = 0;
-
-						if (!isNew) {
-							classPK = wikiPage.getPrimaryKey();
-						}
-
-						try {
-							wikiPage.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									WikiPage.class.getName(), classPK,
-									ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-									wikiPage.getExternalReferenceCode(), null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
+				wikiPage.setCreateDate(serviceContext.getCreateDate(date));
 			}
+		}
 
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (wikiPage.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					wikiPage.setCreateDate(date);
-				}
-				else {
-					wikiPage.setCreateDate(serviceContext.getCreateDate(date));
-				}
+		if (!wikiPageModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				wikiPage.setModifiedDate(date);
 			}
-
-			if (!wikiPageModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					wikiPage.setModifiedDate(date);
-				}
-				else {
-					wikiPage.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
+			else {
+				wikiPage.setModifiedDate(serviceContext.getModifiedDate(date));
 			}
+		}
 
-			long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
+		long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
 
-			if (userId > 0) {
-				long companyId = wikiPage.getCompanyId();
+		if (userId > 0) {
+			long companyId = wikiPage.getCompanyId();
 
-				long groupId = wikiPage.getGroupId();
+			long groupId = wikiPage.getGroupId();
 
-				long pageId = 0;
+			long pageId = 0;
 
-				if (!isNew) {
-					pageId = wikiPage.getPrimaryKey();
-				}
-
-				try {
-					wikiPage.setTitle(
-						SanitizerUtil.sanitize(
-							companyId, groupId, userId,
-							WikiPage.class.getName(), pageId,
-							ContentTypes.TEXT_PLAIN, Sanitizer.MODE_ALL,
-							wikiPage.getTitle(), null));
-				}
-				catch (SanitizerException sanitizerException) {
-					throw new SystemException(sanitizerException);
-				}
+			if (!isNew) {
+				pageId = wikiPage.getPrimaryKey();
 			}
-
-			Session session = null;
 
 			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(wikiPage)) {
-					if (!isNew) {
-						session.evict(
-							WikiPageImpl.class, wikiPage.getPrimaryKeyObj());
-					}
-
-					session.save(wikiPage);
-				}
-				else {
-					wikiPage = (WikiPage)session.merge(wikiPage);
-				}
+				wikiPage.setTitle(
+					SanitizerUtil.sanitize(
+						companyId, groupId, userId, WikiPage.class.getName(),
+						pageId, ContentTypes.TEXT_PLAIN, Sanitizer.MODE_ALL,
+						wikiPage.getTitle(), null));
 			}
-			catch (Exception exception) {
-				throw processException(exception);
+			catch (SanitizerException sanitizerException) {
+				throw new SystemException(sanitizerException);
 			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				WikiPageImpl.class, wikiPageModelImpl, false, true);
-
-			cacheUniqueFindersCache(wikiPageModelImpl);
-
-			if (isNew) {
-				wikiPage.setNew(false);
-			}
-
-			wikiPage.resetOriginalValues();
-
-			return wikiPage;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(wikiPage)) {
+				if (!isNew) {
+					session.evict(
+						WikiPageImpl.class, wikiPage.getPrimaryKeyObj());
+				}
+
+				session.save(wikiPage);
+			}
+			else {
+				wikiPage = (WikiPage)session.merge(wikiPage);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			WikiPageImpl.class, wikiPageModelImpl, false, true);
+
+		cacheUniqueFindersCache(wikiPageModelImpl);
+
+		if (isNew) {
+			wikiPage.setNew(false);
+		}
+
+		wikiPage.resetOriginalValues();
+
+		return wikiPage;
 	}
 
 	/**
@@ -24415,44 +24406,39 @@ public class WikiPagePersistenceImpl
 	public WikiPage fetchByPrimaryKey(Serializable primaryKey) {
 		if (ctPersistenceHelper.isProductionMode(WikiPage.class, primaryKey)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		WikiPage wikiPage = (WikiPage)entityCache.getResult(
+			WikiPageImpl.class, primaryKey);
 
-			WikiPage wikiPage = (WikiPage)entityCache.getResult(
-				WikiPageImpl.class, primaryKey);
-
-			if (wikiPage != null) {
-				return wikiPage;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				wikiPage = (WikiPage)session.get(
-					WikiPageImpl.class, primaryKey);
-
-				if (wikiPage != null) {
-					cacheResult(wikiPage);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (wikiPage != null) {
 			return wikiPage;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			wikiPage = (WikiPage)session.get(WikiPageImpl.class, primaryKey);
+
+			if (wikiPage != null) {
+				cacheResult(wikiPage);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return wikiPage;
 	}
 
 	/**
@@ -24472,8 +24458,8 @@ public class WikiPagePersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(WikiPage.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -24505,9 +24491,8 @@ public class WikiPagePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							WikiPage.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						WikiPage.class, primaryKey)) {
 
 				WikiPage wikiPage = (WikiPage)entityCache.getResult(
 					WikiPageImpl.class, primaryKey);
@@ -24655,8 +24640,8 @@ public class WikiPagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -24749,8 +24734,8 @@ public class WikiPagePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiPage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPage.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

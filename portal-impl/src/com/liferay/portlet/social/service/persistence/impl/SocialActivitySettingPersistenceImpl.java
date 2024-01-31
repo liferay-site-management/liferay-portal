@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -161,9 +160,8 @@ public class SocialActivitySettingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivitySetting.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivitySetting.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -553,9 +551,8 @@ public class SocialActivitySettingPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivitySetting.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivitySetting.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -687,9 +684,8 @@ public class SocialActivitySettingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivitySetting.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivitySetting.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1104,9 +1100,8 @@ public class SocialActivitySettingPersistenceImpl
 	@Override
 	public int countByG_C(long groupId, long classNameId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivitySetting.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivitySetting.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C;
 
@@ -1245,9 +1240,8 @@ public class SocialActivitySettingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivitySetting.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivitySetting.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1662,9 +1656,8 @@ public class SocialActivitySettingPersistenceImpl
 	@Override
 	public int countByG_A(long groupId, int activityType) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivitySetting.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivitySetting.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_A;
 
@@ -1810,9 +1803,8 @@ public class SocialActivitySettingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivitySetting.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivitySetting.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2257,9 +2249,8 @@ public class SocialActivitySettingPersistenceImpl
 	@Override
 	public int countByG_C_A(long groupId, long classNameId, int activityType) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivitySetting.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivitySetting.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_A;
 
@@ -2405,9 +2396,8 @@ public class SocialActivitySettingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivitySetting.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivitySetting.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -2567,9 +2557,8 @@ public class SocialActivitySettingPersistenceImpl
 		long groupId, long classNameId, int activityType, String name) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivitySetting.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivitySetting.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -2680,8 +2669,8 @@ public class SocialActivitySettingPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					socialActivitySetting.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					socialActivitySetting.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				SocialActivitySettingImpl.class,
@@ -2729,8 +2718,8 @@ public class SocialActivitySettingPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						socialActivitySetting.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						socialActivitySetting.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						SocialActivitySettingImpl.class,
@@ -2800,8 +2789,8 @@ public class SocialActivitySettingPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					socialActivitySettingModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					socialActivitySettingModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				socialActivitySettingModelImpl.getGroupId(),
@@ -2932,75 +2921,69 @@ public class SocialActivitySettingPersistenceImpl
 	public SocialActivitySetting updateImpl(
 		SocialActivitySetting socialActivitySetting) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = socialActivitySetting.isNew();
 
-			boolean isNew = socialActivitySetting.isNew();
+		if (!(socialActivitySetting instanceof
+				SocialActivitySettingModelImpl)) {
 
-			if (!(socialActivitySetting instanceof
-					SocialActivitySettingModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(socialActivitySetting.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						socialActivitySetting);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in socialActivitySetting proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(socialActivitySetting.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					socialActivitySetting);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom SocialActivitySetting implementation " +
-						socialActivitySetting.getClass());
+					"Implement ModelWrapper in socialActivitySetting proxy " +
+						invocationHandler.getClass());
 			}
 
-			SocialActivitySettingModelImpl socialActivitySettingModelImpl =
-				(SocialActivitySettingModelImpl)socialActivitySetting;
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(socialActivitySetting)) {
-					if (!isNew) {
-						session.evict(
-							SocialActivitySettingImpl.class,
-							socialActivitySetting.getPrimaryKeyObj());
-					}
-
-					session.save(socialActivitySetting);
-				}
-				else {
-					socialActivitySetting =
-						(SocialActivitySetting)session.merge(
-							socialActivitySetting);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				SocialActivitySettingImpl.class, socialActivitySettingModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(socialActivitySettingModelImpl);
-
-			if (isNew) {
-				socialActivitySetting.setNew(false);
-			}
-
-			socialActivitySetting.resetOriginalValues();
-
-			return socialActivitySetting;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom SocialActivitySetting implementation " +
+					socialActivitySetting.getClass());
 		}
+
+		SocialActivitySettingModelImpl socialActivitySettingModelImpl =
+			(SocialActivitySettingModelImpl)socialActivitySetting;
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(socialActivitySetting)) {
+				if (!isNew) {
+					session.evict(
+						SocialActivitySettingImpl.class,
+						socialActivitySetting.getPrimaryKeyObj());
+				}
+
+				session.save(socialActivitySetting);
+			}
+			else {
+				socialActivitySetting = (SocialActivitySetting)session.merge(
+					socialActivitySetting);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			SocialActivitySettingImpl.class, socialActivitySettingModelImpl,
+			false, true);
+
+		cacheUniqueFindersCache(socialActivitySettingModelImpl);
+
+		if (isNew) {
+			socialActivitySetting.setNew(false);
+		}
+
+		socialActivitySetting.resetOriginalValues();
+
+		return socialActivitySetting;
 	}
 
 	/**
@@ -3055,45 +3038,41 @@ public class SocialActivitySettingPersistenceImpl
 				SocialActivitySetting.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		SocialActivitySetting socialActivitySetting =
+			(SocialActivitySetting)EntityCacheUtil.getResult(
+				SocialActivitySettingImpl.class, primaryKey);
 
-			SocialActivitySetting socialActivitySetting =
-				(SocialActivitySetting)EntityCacheUtil.getResult(
-					SocialActivitySettingImpl.class, primaryKey);
-
-			if (socialActivitySetting != null) {
-				return socialActivitySetting;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				socialActivitySetting = (SocialActivitySetting)session.get(
-					SocialActivitySettingImpl.class, primaryKey);
-
-				if (socialActivitySetting != null) {
-					cacheResult(socialActivitySetting);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (socialActivitySetting != null) {
 			return socialActivitySetting;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			socialActivitySetting = (SocialActivitySetting)session.get(
+				SocialActivitySettingImpl.class, primaryKey);
+
+			if (socialActivitySetting != null) {
+				cacheResult(socialActivitySetting);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return socialActivitySetting;
 	}
 
 	/**
@@ -3115,8 +3094,8 @@ public class SocialActivitySettingPersistenceImpl
 				SocialActivitySetting.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3150,9 +3129,8 @@ public class SocialActivitySettingPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							SocialActivitySetting.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						SocialActivitySetting.class, primaryKey)) {
 
 				SocialActivitySetting socialActivitySetting =
 					(SocialActivitySetting)EntityCacheUtil.getResult(
@@ -3307,9 +3285,8 @@ public class SocialActivitySettingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivitySetting.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivitySetting.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3403,9 +3380,8 @@ public class SocialActivitySettingPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivitySetting.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivitySetting.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

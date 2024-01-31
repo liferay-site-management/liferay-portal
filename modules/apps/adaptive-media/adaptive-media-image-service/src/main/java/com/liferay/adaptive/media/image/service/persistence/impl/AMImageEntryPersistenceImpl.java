@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -172,9 +171,8 @@ public class AMImageEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -574,9 +572,8 @@ public class AMImageEntryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -705,9 +702,8 @@ public class AMImageEntryPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -828,9 +824,8 @@ public class AMImageEntryPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -983,9 +978,8 @@ public class AMImageEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1421,9 +1415,8 @@ public class AMImageEntryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1569,9 +1562,8 @@ public class AMImageEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1951,9 +1943,8 @@ public class AMImageEntryPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2078,9 +2069,8 @@ public class AMImageEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2460,9 +2450,8 @@ public class AMImageEntryPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2590,9 +2579,8 @@ public class AMImageEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			configurationUuid = Objects.toString(configurationUuid, "");
 
@@ -3010,9 +2998,8 @@ public class AMImageEntryPersistenceImpl
 	@Override
 	public int countByConfigurationUuid(String configurationUuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			configurationUuid = Objects.toString(configurationUuid, "");
 
@@ -3158,9 +3145,8 @@ public class AMImageEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3544,9 +3530,8 @@ public class AMImageEntryPersistenceImpl
 	@Override
 	public int countByFileVersionId(long fileVersionId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByFileVersionId;
 
@@ -3679,9 +3664,8 @@ public class AMImageEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			configurationUuid = Objects.toString(configurationUuid, "");
 
@@ -4119,9 +4103,8 @@ public class AMImageEntryPersistenceImpl
 	@Override
 	public int countByC_C(long companyId, String configurationUuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			configurationUuid = Objects.toString(configurationUuid, "");
 
@@ -4260,9 +4243,8 @@ public class AMImageEntryPersistenceImpl
 		String configurationUuid, long fileVersionId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			configurationUuid = Objects.toString(configurationUuid, "");
 
@@ -4386,9 +4368,8 @@ public class AMImageEntryPersistenceImpl
 	@Override
 	public int countByC_F(String configurationUuid, long fileVersionId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			configurationUuid = Objects.toString(configurationUuid, "");
 
@@ -4492,8 +4473,8 @@ public class AMImageEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					amImageEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					amImageEntry.getCtCollectionId())) {
 
 			entityCache.putResult(
 				AMImageEntryImpl.class, amImageEntry.getPrimaryKey(),
@@ -4541,8 +4522,8 @@ public class AMImageEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						amImageEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						amImageEntry.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						AMImageEntryImpl.class, amImageEntry.getPrimaryKey()) ==
@@ -4607,8 +4588,8 @@ public class AMImageEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					amImageEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					amImageEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				amImageEntryModelImpl.getUuid(),
@@ -4742,91 +4723,85 @@ public class AMImageEntryPersistenceImpl
 
 	@Override
 	public AMImageEntry updateImpl(AMImageEntry amImageEntry) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = amImageEntry.isNew();
 
-			boolean isNew = amImageEntry.isNew();
+		if (!(amImageEntry instanceof AMImageEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(amImageEntry instanceof AMImageEntryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(amImageEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						amImageEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in amImageEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(amImageEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					amImageEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom AMImageEntry implementation " +
-						amImageEntry.getClass());
+					"Implement ModelWrapper in amImageEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			AMImageEntryModelImpl amImageEntryModelImpl =
-				(AMImageEntryModelImpl)amImageEntry;
-
-			if (Validator.isNull(amImageEntry.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				amImageEntry.setUuid(uuid);
-			}
-
-			if (isNew && (amImageEntry.getCreateDate() == null)) {
-				ServiceContext serviceContext =
-					ServiceContextThreadLocal.getServiceContext();
-
-				Date date = new Date();
-
-				if (serviceContext == null) {
-					amImageEntry.setCreateDate(date);
-				}
-				else {
-					amImageEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(amImageEntry)) {
-					if (!isNew) {
-						session.evict(
-							AMImageEntryImpl.class,
-							amImageEntry.getPrimaryKeyObj());
-					}
-
-					session.save(amImageEntry);
-				}
-				else {
-					amImageEntry = (AMImageEntry)session.merge(amImageEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				AMImageEntryImpl.class, amImageEntryModelImpl, false, true);
-
-			cacheUniqueFindersCache(amImageEntryModelImpl);
-
-			if (isNew) {
-				amImageEntry.setNew(false);
-			}
-
-			amImageEntry.resetOriginalValues();
-
-			return amImageEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom AMImageEntry implementation " +
+					amImageEntry.getClass());
 		}
+
+		AMImageEntryModelImpl amImageEntryModelImpl =
+			(AMImageEntryModelImpl)amImageEntry;
+
+		if (Validator.isNull(amImageEntry.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			amImageEntry.setUuid(uuid);
+		}
+
+		if (isNew && (amImageEntry.getCreateDate() == null)) {
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (serviceContext == null) {
+				amImageEntry.setCreateDate(date);
+			}
+			else {
+				amImageEntry.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(amImageEntry)) {
+				if (!isNew) {
+					session.evict(
+						AMImageEntryImpl.class,
+						amImageEntry.getPrimaryKeyObj());
+				}
+
+				session.save(amImageEntry);
+			}
+			else {
+				amImageEntry = (AMImageEntry)session.merge(amImageEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			AMImageEntryImpl.class, amImageEntryModelImpl, false, true);
+
+		cacheUniqueFindersCache(amImageEntryModelImpl);
+
+		if (isNew) {
+			amImageEntry.setNew(false);
+		}
+
+		amImageEntry.resetOriginalValues();
+
+		return amImageEntry;
 	}
 
 	/**
@@ -4880,44 +4855,40 @@ public class AMImageEntryPersistenceImpl
 				AMImageEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		AMImageEntry amImageEntry = (AMImageEntry)entityCache.getResult(
+			AMImageEntryImpl.class, primaryKey);
 
-			AMImageEntry amImageEntry = (AMImageEntry)entityCache.getResult(
+		if (amImageEntry != null) {
+			return amImageEntry;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			amImageEntry = (AMImageEntry)session.get(
 				AMImageEntryImpl.class, primaryKey);
 
 			if (amImageEntry != null) {
-				return amImageEntry;
+				cacheResult(amImageEntry);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				amImageEntry = (AMImageEntry)session.get(
-					AMImageEntryImpl.class, primaryKey);
-
-				if (amImageEntry != null) {
-					cacheResult(amImageEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return amImageEntry;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return amImageEntry;
 	}
 
 	/**
@@ -4937,8 +4908,8 @@ public class AMImageEntryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(AMImageEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -4971,9 +4942,8 @@ public class AMImageEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							AMImageEntry.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						AMImageEntry.class, primaryKey)) {
 
 				AMImageEntry amImageEntry = (AMImageEntry)entityCache.getResult(
 					AMImageEntryImpl.class, primaryKey);
@@ -5121,9 +5091,8 @@ public class AMImageEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5216,9 +5185,8 @@ public class AMImageEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AMImageEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AMImageEntry.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

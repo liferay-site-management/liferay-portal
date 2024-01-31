@@ -18,7 +18,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -180,8 +179,8 @@ public class KBFolderPersistenceImpl
 		OrderByComparator<KBFolder> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -581,8 +580,8 @@ public class KBFolderPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -711,8 +710,8 @@ public class KBFolderPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -833,8 +832,8 @@ public class KBFolderPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -986,8 +985,8 @@ public class KBFolderPersistenceImpl
 		OrderByComparator<KBFolder> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1421,8 +1420,8 @@ public class KBFolderPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1567,8 +1566,8 @@ public class KBFolderPersistenceImpl
 		OrderByComparator<KBFolder> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1947,8 +1946,8 @@ public class KBFolderPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2078,8 +2077,8 @@ public class KBFolderPersistenceImpl
 		OrderByComparator<KBFolder> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2830,8 +2829,8 @@ public class KBFolderPersistenceImpl
 	@Override
 	public int countByG_P(long groupId, long parentKBFolderId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P;
 
@@ -3014,8 +3013,8 @@ public class KBFolderPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -3161,8 +3160,8 @@ public class KBFolderPersistenceImpl
 	@Override
 	public int countByG_P_N(long groupId, long parentKBFolderId, String name) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -3317,8 +3316,8 @@ public class KBFolderPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			urlTitle = Objects.toString(urlTitle, "");
 
@@ -3466,8 +3465,8 @@ public class KBFolderPersistenceImpl
 		long groupId, long parentKBFolderId, String urlTitle) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			urlTitle = Objects.toString(urlTitle, "");
 
@@ -3636,8 +3635,8 @@ public class KBFolderPersistenceImpl
 		OrderByComparator<KBFolder> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4433,8 +4432,8 @@ public class KBFolderPersistenceImpl
 	@Override
 	public int countByG_P_S(long groupId, long parentKBFolderId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P_S;
 
@@ -4623,8 +4622,8 @@ public class KBFolderPersistenceImpl
 		String externalReferenceCode, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -4747,8 +4746,8 @@ public class KBFolderPersistenceImpl
 	@Override
 	public int countByERC_G(String externalReferenceCode, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -4849,8 +4848,8 @@ public class KBFolderPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					kbFolder.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					kbFolder.getCtCollectionId())) {
 
 			entityCache.putResult(
 				KBFolderImpl.class, kbFolder.getPrimaryKey(), kbFolder);
@@ -4910,8 +4909,8 @@ public class KBFolderPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						kbFolder.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						kbFolder.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						KBFolderImpl.class, kbFolder.getPrimaryKey()) == null) {
@@ -4975,8 +4974,8 @@ public class KBFolderPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					kbFolderModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					kbFolderModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				kbFolderModelImpl.getUuid(), kbFolderModelImpl.getGroupId()
@@ -5128,159 +5127,151 @@ public class KBFolderPersistenceImpl
 
 	@Override
 	public KBFolder updateImpl(KBFolder kbFolder) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = kbFolder.isNew();
 
-			boolean isNew = kbFolder.isNew();
+		if (!(kbFolder instanceof KBFolderModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(kbFolder instanceof KBFolderModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(kbFolder.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						kbFolder);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in kbFolder proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(kbFolder.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(kbFolder);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom KBFolder implementation " +
-						kbFolder.getClass());
+					"Implement ModelWrapper in kbFolder proxy " +
+						invocationHandler.getClass());
 			}
 
-			KBFolderModelImpl kbFolderModelImpl = (KBFolderModelImpl)kbFolder;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom KBFolder implementation " +
+					kbFolder.getClass());
+		}
 
-			if (Validator.isNull(kbFolder.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		KBFolderModelImpl kbFolderModelImpl = (KBFolderModelImpl)kbFolder;
 
-				kbFolder.setUuid(uuid);
-			}
+		if (Validator.isNull(kbFolder.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
 
-			if (Validator.isNull(kbFolder.getExternalReferenceCode())) {
-				kbFolder.setExternalReferenceCode(kbFolder.getUuid());
-			}
-			else {
-				if (!Objects.equals(
-						kbFolderModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						kbFolder.getExternalReferenceCode())) {
+			kbFolder.setUuid(uuid);
+		}
 
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
+		if (Validator.isNull(kbFolder.getExternalReferenceCode())) {
+			kbFolder.setExternalReferenceCode(kbFolder.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					kbFolderModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
+					kbFolder.getExternalReferenceCode())) {
 
-					if (userId > 0) {
-						long companyId = kbFolder.getCompanyId();
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
 
-						long groupId = kbFolder.getGroupId();
+				if (userId > 0) {
+					long companyId = kbFolder.getCompanyId();
 
-						long classPK = 0;
+					long groupId = kbFolder.getGroupId();
 
-						if (!isNew) {
-							classPK = kbFolder.getPrimaryKey();
-						}
+					long classPK = 0;
 
-						try {
-							kbFolder.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									KBFolder.class.getName(), classPK,
-									ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-									kbFolder.getExternalReferenceCode(), null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
-
-				KBFolder ercKBFolder = fetchByERC_G(
-					kbFolder.getExternalReferenceCode(), kbFolder.getGroupId());
-
-				if (isNew) {
-					if (ercKBFolder != null) {
-						throw new DuplicateKBFolderExternalReferenceCodeException(
-							"Duplicate kb folder with external reference code " +
-								kbFolder.getExternalReferenceCode() +
-									" and group " + kbFolder.getGroupId());
-					}
-				}
-				else {
-					if ((ercKBFolder != null) &&
-						(kbFolder.getKbFolderId() !=
-							ercKBFolder.getKbFolderId())) {
-
-						throw new DuplicateKBFolderExternalReferenceCodeException(
-							"Duplicate kb folder with external reference code " +
-								kbFolder.getExternalReferenceCode() +
-									" and group " + kbFolder.getGroupId());
-					}
-				}
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (kbFolder.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					kbFolder.setCreateDate(date);
-				}
-				else {
-					kbFolder.setCreateDate(serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!kbFolderModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					kbFolder.setModifiedDate(date);
-				}
-				else {
-					kbFolder.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(kbFolder)) {
 					if (!isNew) {
-						session.evict(
-							KBFolderImpl.class, kbFolder.getPrimaryKeyObj());
+						classPK = kbFolder.getPrimaryKey();
 					}
 
-					session.save(kbFolder);
+					try {
+						kbFolder.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								KBFolder.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								kbFolder.getExternalReferenceCode(), null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
 				}
-				else {
-					kbFolder = (KBFolder)session.merge(kbFolder);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
 			}
 
-			entityCache.putResult(
-				KBFolderImpl.class, kbFolderModelImpl, false, true);
-
-			cacheUniqueFindersCache(kbFolderModelImpl);
+			KBFolder ercKBFolder = fetchByERC_G(
+				kbFolder.getExternalReferenceCode(), kbFolder.getGroupId());
 
 			if (isNew) {
-				kbFolder.setNew(false);
+				if (ercKBFolder != null) {
+					throw new DuplicateKBFolderExternalReferenceCodeException(
+						"Duplicate kb folder with external reference code " +
+							kbFolder.getExternalReferenceCode() +
+								" and group " + kbFolder.getGroupId());
+				}
 			}
+			else {
+				if ((ercKBFolder != null) &&
+					(kbFolder.getKbFolderId() != ercKBFolder.getKbFolderId())) {
 
-			kbFolder.resetOriginalValues();
-
-			return kbFolder;
+					throw new DuplicateKBFolderExternalReferenceCodeException(
+						"Duplicate kb folder with external reference code " +
+							kbFolder.getExternalReferenceCode() +
+								" and group " + kbFolder.getGroupId());
+				}
+			}
 		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (kbFolder.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				kbFolder.setCreateDate(date);
+			}
+			else {
+				kbFolder.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!kbFolderModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				kbFolder.setModifiedDate(date);
+			}
+			else {
+				kbFolder.setModifiedDate(serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(kbFolder)) {
+				if (!isNew) {
+					session.evict(
+						KBFolderImpl.class, kbFolder.getPrimaryKeyObj());
+				}
+
+				session.save(kbFolder);
+			}
+			else {
+				kbFolder = (KBFolder)session.merge(kbFolder);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			KBFolderImpl.class, kbFolderModelImpl, false, true);
+
+		cacheUniqueFindersCache(kbFolderModelImpl);
+
+		if (isNew) {
+			kbFolder.setNew(false);
+		}
+
+		kbFolder.resetOriginalValues();
+
+		return kbFolder;
 	}
 
 	/**
@@ -5332,44 +5323,39 @@ public class KBFolderPersistenceImpl
 	public KBFolder fetchByPrimaryKey(Serializable primaryKey) {
 		if (ctPersistenceHelper.isProductionMode(KBFolder.class, primaryKey)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		KBFolder kbFolder = (KBFolder)entityCache.getResult(
+			KBFolderImpl.class, primaryKey);
 
-			KBFolder kbFolder = (KBFolder)entityCache.getResult(
-				KBFolderImpl.class, primaryKey);
-
-			if (kbFolder != null) {
-				return kbFolder;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				kbFolder = (KBFolder)session.get(
-					KBFolderImpl.class, primaryKey);
-
-				if (kbFolder != null) {
-					cacheResult(kbFolder);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (kbFolder != null) {
 			return kbFolder;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			kbFolder = (KBFolder)session.get(KBFolderImpl.class, primaryKey);
+
+			if (kbFolder != null) {
+				cacheResult(kbFolder);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return kbFolder;
 	}
 
 	/**
@@ -5389,8 +5375,8 @@ public class KBFolderPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(KBFolder.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -5422,9 +5408,8 @@ public class KBFolderPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							KBFolder.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						KBFolder.class, primaryKey)) {
 
 				KBFolder kbFolder = (KBFolder)entityCache.getResult(
 					KBFolderImpl.class, primaryKey);
@@ -5572,8 +5557,8 @@ public class KBFolderPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5666,8 +5651,8 @@ public class KBFolderPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBFolder.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBFolder.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

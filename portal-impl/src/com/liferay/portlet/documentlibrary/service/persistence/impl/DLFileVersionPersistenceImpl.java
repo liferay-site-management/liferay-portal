@@ -14,7 +14,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -165,9 +164,8 @@ public class DLFileVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -569,9 +567,8 @@ public class DLFileVersionPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -700,9 +697,8 @@ public class DLFileVersionPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -823,9 +819,8 @@ public class DLFileVersionPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -978,9 +973,8 @@ public class DLFileVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1418,9 +1412,8 @@ public class DLFileVersionPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1568,9 +1561,8 @@ public class DLFileVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1951,9 +1943,8 @@ public class DLFileVersionPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2079,9 +2070,8 @@ public class DLFileVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2464,9 +2454,8 @@ public class DLFileVersionPersistenceImpl
 	@Override
 	public int countByFileEntryId(long fileEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			FinderPath finderPath = _finderPathCountByFileEntryId;
 
@@ -2591,9 +2580,8 @@ public class DLFileVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			mimeType = Objects.toString(mimeType, "");
 
@@ -3000,9 +2988,8 @@ public class DLFileVersionPersistenceImpl
 	@Override
 	public int countByMimeType(String mimeType) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			mimeType = Objects.toString(mimeType, "");
 
@@ -3148,9 +3135,8 @@ public class DLFileVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			storeUUID = Objects.toString(storeUUID, "");
 
@@ -3588,9 +3574,8 @@ public class DLFileVersionPersistenceImpl
 	@Override
 	public int countByC_SU(long companyId, String storeUUID) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			storeUUID = Objects.toString(storeUUID, "");
 
@@ -3742,9 +3727,8 @@ public class DLFileVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4146,9 +4130,8 @@ public class DLFileVersionPersistenceImpl
 	@Override
 	public int countByC_NotS(long companyId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByC_NotS;
 
@@ -4268,9 +4251,8 @@ public class DLFileVersionPersistenceImpl
 		long fileEntryId, String version, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			version = Objects.toString(version, "");
 
@@ -4391,9 +4373,8 @@ public class DLFileVersionPersistenceImpl
 	@Override
 	public int countByF_V(long fileEntryId, String version) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			version = Objects.toString(version, "");
 
@@ -4546,9 +4527,8 @@ public class DLFileVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4960,9 +4940,8 @@ public class DLFileVersionPersistenceImpl
 	@Override
 	public int countByF_S(long fileEntryId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			FinderPath finderPath = _finderPathCountByF_S;
 
@@ -5098,9 +5077,8 @@ public class DLFileVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5526,9 +5504,8 @@ public class DLFileVersionPersistenceImpl
 	@Override
 	public int countByLtD_S(Date displayDate, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByLtD_S;
 
@@ -5686,9 +5663,8 @@ public class DLFileVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6122,9 +6098,8 @@ public class DLFileVersionPersistenceImpl
 	@Override
 	public int countByG_F_S(long groupId, long folderId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_F_S;
 
@@ -6282,9 +6257,8 @@ public class DLFileVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			title = Objects.toString(title, "");
 			version = Objects.toString(version, "");
@@ -6798,9 +6772,8 @@ public class DLFileVersionPersistenceImpl
 		long groupId, long folderId, String title, String version) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			title = Objects.toString(title, "");
 			version = Objects.toString(version, "");
@@ -6933,8 +6906,8 @@ public class DLFileVersionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					dlFileVersion.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					dlFileVersion.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				DLFileVersionImpl.class, dlFileVersion.getPrimaryKey(),
@@ -6981,8 +6954,8 @@ public class DLFileVersionPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						dlFileVersion.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						dlFileVersion.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						DLFileVersionImpl.class,
@@ -7048,8 +7021,8 @@ public class DLFileVersionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					dlFileVersionModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					dlFileVersionModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				dlFileVersionModelImpl.getUuid(),
@@ -7184,101 +7157,95 @@ public class DLFileVersionPersistenceImpl
 
 	@Override
 	public DLFileVersion updateImpl(DLFileVersion dlFileVersion) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = dlFileVersion.isNew();
 
-			boolean isNew = dlFileVersion.isNew();
+		if (!(dlFileVersion instanceof DLFileVersionModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(dlFileVersion instanceof DLFileVersionModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(dlFileVersion.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						dlFileVersion);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in dlFileVersion proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(dlFileVersion.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					dlFileVersion);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DLFileVersion implementation " +
-						dlFileVersion.getClass());
+					"Implement ModelWrapper in dlFileVersion proxy " +
+						invocationHandler.getClass());
 			}
 
-			DLFileVersionModelImpl dlFileVersionModelImpl =
-				(DLFileVersionModelImpl)dlFileVersion;
-
-			if (Validator.isNull(dlFileVersion.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				dlFileVersion.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (dlFileVersion.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					dlFileVersion.setCreateDate(date);
-				}
-				else {
-					dlFileVersion.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!dlFileVersionModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					dlFileVersion.setModifiedDate(date);
-				}
-				else {
-					dlFileVersion.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(dlFileVersion)) {
-					if (!isNew) {
-						session.evict(
-							DLFileVersionImpl.class,
-							dlFileVersion.getPrimaryKeyObj());
-					}
-
-					session.save(dlFileVersion);
-				}
-				else {
-					dlFileVersion = (DLFileVersion)session.merge(dlFileVersion);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				DLFileVersionImpl.class, dlFileVersionModelImpl, false, true);
-
-			cacheUniqueFindersCache(dlFileVersionModelImpl);
-
-			if (isNew) {
-				dlFileVersion.setNew(false);
-			}
-
-			dlFileVersion.resetOriginalValues();
-
-			return dlFileVersion;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DLFileVersion implementation " +
+					dlFileVersion.getClass());
 		}
+
+		DLFileVersionModelImpl dlFileVersionModelImpl =
+			(DLFileVersionModelImpl)dlFileVersion;
+
+		if (Validator.isNull(dlFileVersion.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			dlFileVersion.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (dlFileVersion.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				dlFileVersion.setCreateDate(date);
+			}
+			else {
+				dlFileVersion.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!dlFileVersionModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				dlFileVersion.setModifiedDate(date);
+			}
+			else {
+				dlFileVersion.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(dlFileVersion)) {
+				if (!isNew) {
+					session.evict(
+						DLFileVersionImpl.class,
+						dlFileVersion.getPrimaryKeyObj());
+				}
+
+				session.save(dlFileVersion);
+			}
+			else {
+				dlFileVersion = (DLFileVersion)session.merge(dlFileVersion);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			DLFileVersionImpl.class, dlFileVersionModelImpl, false, true);
+
+		cacheUniqueFindersCache(dlFileVersionModelImpl);
+
+		if (isNew) {
+			dlFileVersion.setNew(false);
+		}
+
+		dlFileVersion.resetOriginalValues();
+
+		return dlFileVersion;
 	}
 
 	/**
@@ -7332,45 +7299,40 @@ public class DLFileVersionPersistenceImpl
 				DLFileVersion.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DLFileVersion dlFileVersion = (DLFileVersion)EntityCacheUtil.getResult(
+			DLFileVersionImpl.class, primaryKey);
 
-			DLFileVersion dlFileVersion =
-				(DLFileVersion)EntityCacheUtil.getResult(
-					DLFileVersionImpl.class, primaryKey);
-
-			if (dlFileVersion != null) {
-				return dlFileVersion;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				dlFileVersion = (DLFileVersion)session.get(
-					DLFileVersionImpl.class, primaryKey);
-
-				if (dlFileVersion != null) {
-					cacheResult(dlFileVersion);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (dlFileVersion != null) {
 			return dlFileVersion;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			dlFileVersion = (DLFileVersion)session.get(
+				DLFileVersionImpl.class, primaryKey);
+
+			if (dlFileVersion != null) {
+				cacheResult(dlFileVersion);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return dlFileVersion;
 	}
 
 	/**
@@ -7390,8 +7352,8 @@ public class DLFileVersionPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(DLFileVersion.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -7424,9 +7386,8 @@ public class DLFileVersionPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							DLFileVersion.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						DLFileVersion.class, primaryKey)) {
 
 				DLFileVersion dlFileVersion =
 					(DLFileVersion)EntityCacheUtil.getResult(
@@ -7578,9 +7539,8 @@ public class DLFileVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7673,9 +7633,8 @@ public class DLFileVersionPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileVersion.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileVersion.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

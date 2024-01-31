@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -157,8 +156,8 @@ public class ImagePersistenceImpl
 		OrderByComparator<Image> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Image.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Image.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -522,8 +521,8 @@ public class ImagePersistenceImpl
 	@Override
 	public int countByLtSize(int size) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Image.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Image.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByLtSize;
 
@@ -601,8 +600,8 @@ public class ImagePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					image.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					image.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				ImageImpl.class, image.getPrimaryKey(), image);
@@ -634,8 +633,8 @@ public class ImagePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						image.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						image.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						ImageImpl.class, image.getPrimaryKey()) == null) {
@@ -788,78 +787,72 @@ public class ImagePersistenceImpl
 
 	@Override
 	public Image updateImpl(Image image) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = image.isNew();
 
-			boolean isNew = image.isNew();
+		if (!(image instanceof ImageModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(image instanceof ImageModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(image.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(image);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in image proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(image.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(image);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom Image implementation " +
-						image.getClass());
+					"Implement ModelWrapper in image proxy " +
+						invocationHandler.getClass());
 			}
 
-			ImageModelImpl imageModelImpl = (ImageModelImpl)image;
-
-			if (!imageModelImpl.hasSetModifiedDate()) {
-				ServiceContext serviceContext =
-					ServiceContextThreadLocal.getServiceContext();
-
-				Date date = new Date();
-
-				if (serviceContext == null) {
-					image.setModifiedDate(date);
-				}
-				else {
-					image.setModifiedDate(serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(image)) {
-					if (!isNew) {
-						session.evict(
-							ImageImpl.class, image.getPrimaryKeyObj());
-					}
-
-					session.save(image);
-				}
-				else {
-					image = (Image)session.merge(image);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(ImageImpl.class, image, false, true);
-
-			if (isNew) {
-				image.setNew(false);
-			}
-
-			image.resetOriginalValues();
-
-			return image;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom Image implementation " +
+					image.getClass());
 		}
+
+		ImageModelImpl imageModelImpl = (ImageModelImpl)image;
+
+		if (!imageModelImpl.hasSetModifiedDate()) {
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (serviceContext == null) {
+				image.setModifiedDate(date);
+			}
+			else {
+				image.setModifiedDate(serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(image)) {
+				if (!isNew) {
+					session.evict(ImageImpl.class, image.getPrimaryKeyObj());
+				}
+
+				session.save(image);
+			}
+			else {
+				image = (Image)session.merge(image);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(ImageImpl.class, image, false, true);
+
+		if (isNew) {
+			image.setNew(false);
+		}
+
+		image.resetOriginalValues();
+
+		return image;
 	}
 
 	/**
@@ -909,43 +902,39 @@ public class ImagePersistenceImpl
 	public Image fetchByPrimaryKey(Serializable primaryKey) {
 		if (CTPersistenceHelperUtil.isProductionMode(Image.class, primaryKey)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		Image image = (Image)EntityCacheUtil.getResult(
+			ImageImpl.class, primaryKey);
 
-			Image image = (Image)EntityCacheUtil.getResult(
-				ImageImpl.class, primaryKey);
-
-			if (image != null) {
-				return image;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				image = (Image)session.get(ImageImpl.class, primaryKey);
-
-				if (image != null) {
-					cacheResult(image);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (image != null) {
 			return image;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			image = (Image)session.get(ImageImpl.class, primaryKey);
+
+			if (image != null) {
+				cacheResult(image);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return image;
 	}
 
 	/**
@@ -965,8 +954,8 @@ public class ImagePersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(Image.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -998,9 +987,8 @@ public class ImagePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							Image.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						Image.class, primaryKey)) {
 
 				Image image = (Image)EntityCacheUtil.getResult(
 					ImageImpl.class, primaryKey);
@@ -1148,8 +1136,8 @@ public class ImagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Image.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Image.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1242,8 +1230,8 @@ public class ImagePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Image.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Image.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

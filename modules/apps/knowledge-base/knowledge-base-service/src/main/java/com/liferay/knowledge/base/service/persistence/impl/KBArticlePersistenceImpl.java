@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -187,8 +186,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -572,8 +571,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByResourcePrimKey(long resourcePrimKey) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByResourcePrimKey;
 
@@ -696,8 +695,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1097,8 +1096,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1227,8 +1226,8 @@ public class KBArticlePersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1349,8 +1348,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1503,8 +1502,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1938,8 +1937,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -2093,8 +2092,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2847,8 +2846,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByR_G(long resourcePrimKey, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByR_G;
 
@@ -3021,8 +3020,8 @@ public class KBArticlePersistenceImpl
 		long resourcePrimKey, int version, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -3130,8 +3129,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByR_V(long resourcePrimKey, int version) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByR_V;
 
@@ -3270,8 +3269,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3751,8 +3750,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -3889,8 +3888,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByR_L(long resourcePrimKey, boolean latest) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByR_L;
 
@@ -3956,8 +3955,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(resourcePrimKeys), latest
@@ -4113,8 +4112,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4593,8 +4592,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -4731,8 +4730,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByR_M(long resourcePrimKey, boolean main) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByR_M;
 
@@ -4798,8 +4797,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(resourcePrimKeys), main
@@ -4956,8 +4955,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5436,8 +5435,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -5574,8 +5573,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByR_S(long resourcePrimKey, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByR_S;
 
@@ -5641,8 +5640,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(resourcePrimKeys), status
@@ -5801,8 +5800,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -6612,8 +6611,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByG_ERC(long groupId, String externalReferenceCode) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -6831,8 +6830,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7576,8 +7575,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByG_L(long groupId, boolean latest) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_L;
 
@@ -7766,8 +7765,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -8510,8 +8509,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByG_M(long groupId, boolean main) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_M;
 
@@ -8700,8 +8699,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -9445,8 +9444,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByG_S(long groupId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_S;
 
@@ -9636,8 +9635,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -10046,8 +10045,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByC_L(long companyId, boolean latest) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_L;
 
@@ -10183,8 +10182,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -10592,8 +10591,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByC_M(long companyId, boolean main) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_M;
 
@@ -10730,8 +10729,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -11140,8 +11139,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByC_S(long companyId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_S;
 
@@ -11282,8 +11281,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -11768,8 +11767,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -11906,8 +11905,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByP_L(long parentResourcePrimKey, boolean latest) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByP_L;
 
@@ -11974,8 +11973,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(parentResourcePrimKeys), latest
@@ -12132,8 +12131,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -12616,8 +12615,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -12754,8 +12753,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByP_M(long parentResourcePrimKey, boolean main) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByP_M;
 
@@ -12822,8 +12821,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(parentResourcePrimKeys), main
@@ -12980,8 +12979,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -13466,8 +13465,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -13604,8 +13603,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByP_S(long parentResourcePrimKey, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByP_S;
 
@@ -13672,8 +13671,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(parentResourcePrimKeys), status
@@ -13827,8 +13826,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -14250,8 +14249,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByLtD_S(Date displayDate, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByLtD_S;
 
@@ -14395,8 +14394,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -14512,8 +14511,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByR_G_V(long resourcePrimKey, long groupId, int version) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByR_G_V;
 
@@ -14669,8 +14668,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -15703,8 +15702,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -15852,8 +15851,8 @@ public class KBArticlePersistenceImpl
 		long resourcePrimKey, long groupId, boolean latest) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByR_G_L;
 
@@ -15928,8 +15927,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(resourcePrimKeys), groupId, latest
@@ -16241,8 +16240,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -17269,8 +17268,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -17416,8 +17415,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByR_G_M(long resourcePrimKey, long groupId, boolean main) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByR_G_M;
 
@@ -17490,8 +17489,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(resourcePrimKeys), groupId, main
@@ -17803,8 +17802,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -18834,8 +18833,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -18979,8 +18978,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByR_G_S(long resourcePrimKey, long groupId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByR_G_S;
 
@@ -19053,8 +19052,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(resourcePrimKeys), groupId, status
@@ -19365,8 +19364,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -20151,8 +20150,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByR_G_NotS(long resourcePrimKey, long groupId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByR_G_NotS;
 
@@ -20366,8 +20365,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -20868,8 +20867,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -21017,8 +21016,8 @@ public class KBArticlePersistenceImpl
 		long resourcePrimKey, boolean latest, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByR_L_NotS;
 
@@ -21093,8 +21092,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(resourcePrimKeys), latest, status
@@ -21263,8 +21262,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -21762,8 +21761,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -21909,8 +21908,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByR_M_NotS(long resourcePrimKey, boolean main, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByR_M_NotS;
 
@@ -21983,8 +21982,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(resourcePrimKeys), main, status
@@ -22141,8 +22140,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -22278,8 +22277,8 @@ public class KBArticlePersistenceImpl
 		long groupId, String externalReferenceCode, int version) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -22452,8 +22451,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -23489,8 +23488,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -23639,8 +23638,8 @@ public class KBArticlePersistenceImpl
 		long groupId, long parentResourcePrimKey, boolean latest) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P_L;
 
@@ -23716,8 +23715,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(parentResourcePrimKeys), latest
@@ -24032,8 +24031,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -25069,8 +25068,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -25218,8 +25217,8 @@ public class KBArticlePersistenceImpl
 		long groupId, long parentResourcePrimKey, boolean main) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P_M;
 
@@ -25295,8 +25294,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(parentResourcePrimKeys), main
@@ -25611,8 +25610,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -26648,8 +26647,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -26798,8 +26797,8 @@ public class KBArticlePersistenceImpl
 		long groupId, long parentResourcePrimKey, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P_S;
 
@@ -26875,8 +26874,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(parentResourcePrimKeys), status
@@ -27187,8 +27186,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			urlTitle = Objects.toString(urlTitle, "");
 
@@ -28033,8 +28032,8 @@ public class KBArticlePersistenceImpl
 		long groupId, long kbFolderId, String urlTitle) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			urlTitle = Objects.toString(urlTitle, "");
 
@@ -28274,8 +28273,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -29066,8 +29065,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByG_KBFI_L(long groupId, long kbFolderId, boolean latest) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_KBFI_L;
 
@@ -29278,8 +29277,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -30068,8 +30067,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByG_KBFI_S(long groupId, long kbFolderId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_KBFI_S;
 
@@ -30279,8 +30278,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			sections = Objects.toString(sections, "");
 
@@ -31367,8 +31366,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -31528,8 +31527,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByG_LikeS_L(long groupId, String sections, boolean latest) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			sections = Objects.toString(sections, "");
 
@@ -31619,8 +31618,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(sectionses), latest
@@ -31982,8 +31981,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			sections = Objects.toString(sections, "");
 
@@ -33069,8 +33068,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -33228,8 +33227,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByG_LikeS_M(long groupId, String sections, boolean main) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			sections = Objects.toString(sections, "");
 
@@ -33319,8 +33318,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(sectionses), main
@@ -33682,8 +33681,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			sections = Objects.toString(sections, "");
 
@@ -34770,8 +34769,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -34929,8 +34928,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByG_LikeS_S(long groupId, String sections, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			sections = Objects.toString(sections, "");
 
@@ -35018,8 +35017,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(sectionses), status
@@ -35381,8 +35380,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -36160,8 +36159,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByG_L_NotS(long groupId, boolean latest, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_L_NotS;
 
@@ -36368,8 +36367,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -37146,8 +37145,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByG_M_NotS(long groupId, boolean main, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_M_NotS;
 
@@ -37355,8 +37354,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -37779,8 +37778,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByC_L_NotS(long companyId, boolean latest, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByC_L_NotS;
 
@@ -37930,8 +37929,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -38354,8 +38353,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countByC_M_NotS(long companyId, boolean main, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByC_M_NotS;
 
@@ -38508,8 +38507,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -39012,8 +39011,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -39161,8 +39160,8 @@ public class KBArticlePersistenceImpl
 		long parentResourcePrimKey, boolean latest, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByP_L_NotS;
 
@@ -39238,8 +39237,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(parentResourcePrimKeys), latest, status
@@ -39413,8 +39412,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -39917,8 +39916,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -40066,8 +40065,8 @@ public class KBArticlePersistenceImpl
 		long parentResourcePrimKey, boolean main, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByP_M_NotS;
 
@@ -40143,8 +40142,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(parentResourcePrimKeys), main, status
@@ -40322,8 +40321,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -41390,8 +41389,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -41548,8 +41547,8 @@ public class KBArticlePersistenceImpl
 		long resourcePrimKey, long groupId, boolean latest, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByR_G_L_NotS;
 
@@ -41629,8 +41628,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(resourcePrimKeys), groupId, latest, status
@@ -41963,8 +41962,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -43029,8 +43028,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -43187,8 +43186,8 @@ public class KBArticlePersistenceImpl
 		long resourcePrimKey, long groupId, boolean main, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByR_G_M_NotS;
 
@@ -43268,8 +43267,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(resourcePrimKeys), groupId, main, status
@@ -43604,8 +43603,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -44690,8 +44689,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -44847,8 +44846,8 @@ public class KBArticlePersistenceImpl
 		long groupId, long parentResourcePrimKey, boolean latest, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P_L_S;
 
@@ -44930,8 +44929,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(parentResourcePrimKeys), latest,
@@ -45269,8 +45268,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -46343,8 +46342,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -46502,8 +46501,8 @@ public class KBArticlePersistenceImpl
 		long groupId, long parentResourcePrimKey, boolean latest, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_P_L_NotS;
 
@@ -46585,8 +46584,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(parentResourcePrimKeys), latest,
@@ -46927,8 +46926,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -47999,8 +47998,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -48158,8 +48157,8 @@ public class KBArticlePersistenceImpl
 		long groupId, long parentResourcePrimKey, boolean main, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_P_M_NotS;
 
@@ -48240,8 +48239,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(parentResourcePrimKeys), main, status
@@ -48582,8 +48581,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			urlTitle = Objects.toString(urlTitle, "");
 
@@ -49724,8 +49723,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -49890,8 +49889,8 @@ public class KBArticlePersistenceImpl
 		long groupId, long kbFolderId, String urlTitle, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			urlTitle = Objects.toString(urlTitle, "");
 
@@ -49986,8 +49985,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, kbFolderId, urlTitle, StringUtil.merge(statuses)
@@ -50356,8 +50355,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			urlTitle = Objects.toString(urlTitle, "");
 
@@ -51232,8 +51231,8 @@ public class KBArticlePersistenceImpl
 		long groupId, long kbFolderId, String urlTitle, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			urlTitle = Objects.toString(urlTitle, "");
 
@@ -51494,8 +51493,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -52317,8 +52316,8 @@ public class KBArticlePersistenceImpl
 		long groupId, long kbFolderId, boolean latest, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath =
 				_finderPathWithPaginationCountByG_KBFI_L_NotS;
@@ -52550,8 +52549,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			sections = Objects.toString(sections, "");
 
@@ -53691,8 +53690,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -53862,8 +53861,8 @@ public class KBArticlePersistenceImpl
 		long groupId, String sections, boolean latest, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			sections = Objects.toString(sections, "");
 
@@ -53961,8 +53960,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(sectionses), latest, status
@@ -54349,8 +54348,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			sections = Objects.toString(sections, "");
 
@@ -55489,8 +55488,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = null;
 
@@ -55660,8 +55659,8 @@ public class KBArticlePersistenceImpl
 		long groupId, String sections, boolean main, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			sections = Objects.toString(sections, "");
 
@@ -55759,8 +55758,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(sectionses), main, status
@@ -56082,8 +56081,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					kbArticle.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					kbArticle.getCtCollectionId())) {
 
 			entityCache.putResult(
 				KBArticleImpl.class, kbArticle.getPrimaryKey(), kbArticle);
@@ -56143,8 +56142,8 @@ public class KBArticlePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						kbArticle.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						kbArticle.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						KBArticleImpl.class, kbArticle.getPrimaryKey()) ==
@@ -56209,8 +56208,8 @@ public class KBArticlePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					kbArticleModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					kbArticleModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				kbArticleModelImpl.getUuid(), kbArticleModelImpl.getGroupId()
@@ -56362,164 +56361,154 @@ public class KBArticlePersistenceImpl
 
 	@Override
 	public KBArticle updateImpl(KBArticle kbArticle) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = kbArticle.isNew();
 
-			boolean isNew = kbArticle.isNew();
+		if (!(kbArticle instanceof KBArticleModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(kbArticle instanceof KBArticleModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(kbArticle.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						kbArticle);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in kbArticle proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(kbArticle.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(kbArticle);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom KBArticle implementation " +
-						kbArticle.getClass());
+					"Implement ModelWrapper in kbArticle proxy " +
+						invocationHandler.getClass());
 			}
 
-			KBArticleModelImpl kbArticleModelImpl =
-				(KBArticleModelImpl)kbArticle;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom KBArticle implementation " +
+					kbArticle.getClass());
+		}
 
-			if (Validator.isNull(kbArticle.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		KBArticleModelImpl kbArticleModelImpl = (KBArticleModelImpl)kbArticle;
 
-				kbArticle.setUuid(uuid);
+		if (Validator.isNull(kbArticle.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			kbArticle.setUuid(uuid);
+		}
+
+		if (Validator.isNull(kbArticle.getExternalReferenceCode())) {
+			kbArticle.setExternalReferenceCode(kbArticle.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					kbArticleModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
+					kbArticle.getExternalReferenceCode())) {
+
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
+
+				if (userId > 0) {
+					long companyId = kbArticle.getCompanyId();
+
+					long groupId = kbArticle.getGroupId();
+
+					long classPK = 0;
+
+					if (!isNew) {
+						classPK = kbArticle.getPrimaryKey();
+					}
+
+					try {
+						kbArticle.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								KBArticle.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								kbArticle.getExternalReferenceCode(), null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
+				}
 			}
+		}
 
-			if (Validator.isNull(kbArticle.getExternalReferenceCode())) {
-				kbArticle.setExternalReferenceCode(kbArticle.getUuid());
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (kbArticle.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				kbArticle.setCreateDate(date);
 			}
 			else {
-				if (!Objects.equals(
-						kbArticleModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						kbArticle.getExternalReferenceCode())) {
-
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
-
-					if (userId > 0) {
-						long companyId = kbArticle.getCompanyId();
-
-						long groupId = kbArticle.getGroupId();
-
-						long classPK = 0;
-
-						if (!isNew) {
-							classPK = kbArticle.getPrimaryKey();
-						}
-
-						try {
-							kbArticle.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									KBArticle.class.getName(), classPK,
-									ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-									kbArticle.getExternalReferenceCode(),
-									null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
+				kbArticle.setCreateDate(serviceContext.getCreateDate(date));
 			}
+		}
 
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (kbArticle.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					kbArticle.setCreateDate(date);
-				}
-				else {
-					kbArticle.setCreateDate(serviceContext.getCreateDate(date));
-				}
+		if (!kbArticleModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				kbArticle.setModifiedDate(date);
 			}
-
-			if (!kbArticleModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					kbArticle.setModifiedDate(date);
-				}
-				else {
-					kbArticle.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
+			else {
+				kbArticle.setModifiedDate(serviceContext.getModifiedDate(date));
 			}
+		}
 
-			long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
+		long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
 
-			if (userId > 0) {
-				long companyId = kbArticle.getCompanyId();
+		if (userId > 0) {
+			long companyId = kbArticle.getCompanyId();
 
-				long groupId = kbArticle.getGroupId();
+			long groupId = kbArticle.getGroupId();
 
-				long kbArticleId = 0;
+			long kbArticleId = 0;
 
-				if (!isNew) {
-					kbArticleId = kbArticle.getPrimaryKey();
-				}
-
-				try {
-					kbArticle.setContent(
-						SanitizerUtil.sanitize(
-							companyId, groupId, userId,
-							KBArticle.class.getName(), kbArticleId,
-							ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-							kbArticle.getContent(), null));
-				}
-				catch (SanitizerException sanitizerException) {
-					throw new SystemException(sanitizerException);
-				}
+			if (!isNew) {
+				kbArticleId = kbArticle.getPrimaryKey();
 			}
-
-			Session session = null;
 
 			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(kbArticle)) {
-					if (!isNew) {
-						session.evict(
-							KBArticleImpl.class, kbArticle.getPrimaryKeyObj());
-					}
-
-					session.save(kbArticle);
-				}
-				else {
-					kbArticle = (KBArticle)session.merge(kbArticle);
-				}
+				kbArticle.setContent(
+					SanitizerUtil.sanitize(
+						companyId, groupId, userId, KBArticle.class.getName(),
+						kbArticleId, ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+						kbArticle.getContent(), null));
 			}
-			catch (Exception exception) {
-				throw processException(exception);
+			catch (SanitizerException sanitizerException) {
+				throw new SystemException(sanitizerException);
 			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				KBArticleImpl.class, kbArticleModelImpl, false, true);
-
-			cacheUniqueFindersCache(kbArticleModelImpl);
-
-			if (isNew) {
-				kbArticle.setNew(false);
-			}
-
-			kbArticle.resetOriginalValues();
-
-			return kbArticle;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(kbArticle)) {
+				if (!isNew) {
+					session.evict(
+						KBArticleImpl.class, kbArticle.getPrimaryKeyObj());
+				}
+
+				session.save(kbArticle);
+			}
+			else {
+				kbArticle = (KBArticle)session.merge(kbArticle);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			KBArticleImpl.class, kbArticleModelImpl, false, true);
+
+		cacheUniqueFindersCache(kbArticleModelImpl);
+
+		if (isNew) {
+			kbArticle.setNew(false);
+		}
+
+		kbArticle.resetOriginalValues();
+
+		return kbArticle;
 	}
 
 	/**
@@ -56571,44 +56560,39 @@ public class KBArticlePersistenceImpl
 	public KBArticle fetchByPrimaryKey(Serializable primaryKey) {
 		if (ctPersistenceHelper.isProductionMode(KBArticle.class, primaryKey)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		KBArticle kbArticle = (KBArticle)entityCache.getResult(
+			KBArticleImpl.class, primaryKey);
 
-			KBArticle kbArticle = (KBArticle)entityCache.getResult(
-				KBArticleImpl.class, primaryKey);
-
-			if (kbArticle != null) {
-				return kbArticle;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				kbArticle = (KBArticle)session.get(
-					KBArticleImpl.class, primaryKey);
-
-				if (kbArticle != null) {
-					cacheResult(kbArticle);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (kbArticle != null) {
 			return kbArticle;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			kbArticle = (KBArticle)session.get(KBArticleImpl.class, primaryKey);
+
+			if (kbArticle != null) {
+				cacheResult(kbArticle);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return kbArticle;
 	}
 
 	/**
@@ -56628,8 +56612,8 @@ public class KBArticlePersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(KBArticle.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -56662,9 +56646,8 @@ public class KBArticlePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							KBArticle.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						KBArticle.class, primaryKey)) {
 
 				KBArticle kbArticle = (KBArticle)entityCache.getResult(
 					KBArticleImpl.class, primaryKey);
@@ -56812,8 +56795,8 @@ public class KBArticlePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -56906,8 +56889,8 @@ public class KBArticlePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBArticle.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBArticle.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

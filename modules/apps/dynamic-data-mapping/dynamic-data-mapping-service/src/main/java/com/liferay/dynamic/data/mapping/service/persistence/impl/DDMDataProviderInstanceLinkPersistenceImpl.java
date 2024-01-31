@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -172,9 +171,8 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMDataProviderInstanceLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMDataProviderInstanceLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -582,9 +580,8 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 	@Override
 	public int countByDataProviderInstanceId(long dataProviderInstanceId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMDataProviderInstanceLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMDataProviderInstanceLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByDataProviderInstanceId;
 
@@ -714,9 +711,8 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMDataProviderInstanceLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMDataProviderInstanceLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1113,9 +1109,8 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 	@Override
 	public int countByStructureId(long structureId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMDataProviderInstanceLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMDataProviderInstanceLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByStructureId;
 
@@ -1232,9 +1227,8 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 		long dataProviderInstanceId, long structureId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMDataProviderInstanceLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMDataProviderInstanceLink.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1349,9 +1343,8 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 	@Override
 	public int countByD_S(long dataProviderInstanceId, long structureId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMDataProviderInstanceLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMDataProviderInstanceLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByD_S;
 
@@ -1434,8 +1427,8 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmDataProviderInstanceLink.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmDataProviderInstanceLink.getCtCollectionId())) {
 
 			entityCache.putResult(
 				DDMDataProviderInstanceLinkImpl.class,
@@ -1482,8 +1475,8 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						ddmDataProviderInstanceLink.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ddmDataProviderInstanceLink.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						DDMDataProviderInstanceLinkImpl.class,
@@ -1559,9 +1552,8 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmDataProviderInstanceLinkModelImpl.getCtCollectionId() !=
-						0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmDataProviderInstanceLinkModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				ddmDataProviderInstanceLinkModelImpl.
@@ -1692,79 +1684,74 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 	public DDMDataProviderInstanceLink updateImpl(
 		DDMDataProviderInstanceLink ddmDataProviderInstanceLink) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = ddmDataProviderInstanceLink.isNew();
 
-			boolean isNew = ddmDataProviderInstanceLink.isNew();
+		if (!(ddmDataProviderInstanceLink instanceof
+				DDMDataProviderInstanceLinkModelImpl)) {
 
-			if (!(ddmDataProviderInstanceLink instanceof
-					DDMDataProviderInstanceLinkModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
+			if (ProxyUtil.isProxyClass(
+					ddmDataProviderInstanceLink.getClass())) {
 
-				if (ProxyUtil.isProxyClass(
-						ddmDataProviderInstanceLink.getClass())) {
-
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						ddmDataProviderInstanceLink);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in ddmDataProviderInstanceLink proxy " +
-							invocationHandler.getClass());
-				}
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					ddmDataProviderInstanceLink);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DDMDataProviderInstanceLink implementation " +
-						ddmDataProviderInstanceLink.getClass());
+					"Implement ModelWrapper in ddmDataProviderInstanceLink proxy " +
+						invocationHandler.getClass());
 			}
 
-			DDMDataProviderInstanceLinkModelImpl
-				ddmDataProviderInstanceLinkModelImpl =
-					(DDMDataProviderInstanceLinkModelImpl)
-						ddmDataProviderInstanceLink;
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(ddmDataProviderInstanceLink)) {
-					if (!isNew) {
-						session.evict(
-							DDMDataProviderInstanceLinkImpl.class,
-							ddmDataProviderInstanceLink.getPrimaryKeyObj());
-					}
-
-					session.save(ddmDataProviderInstanceLink);
-				}
-				else {
-					ddmDataProviderInstanceLink =
-						(DDMDataProviderInstanceLink)session.merge(
-							ddmDataProviderInstanceLink);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				DDMDataProviderInstanceLinkImpl.class,
-				ddmDataProviderInstanceLinkModelImpl, false, true);
-
-			cacheUniqueFindersCache(ddmDataProviderInstanceLinkModelImpl);
-
-			if (isNew) {
-				ddmDataProviderInstanceLink.setNew(false);
-			}
-
-			ddmDataProviderInstanceLink.resetOriginalValues();
-
-			return ddmDataProviderInstanceLink;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DDMDataProviderInstanceLink implementation " +
+					ddmDataProviderInstanceLink.getClass());
 		}
+
+		DDMDataProviderInstanceLinkModelImpl
+			ddmDataProviderInstanceLinkModelImpl =
+				(DDMDataProviderInstanceLinkModelImpl)
+					ddmDataProviderInstanceLink;
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(ddmDataProviderInstanceLink)) {
+				if (!isNew) {
+					session.evict(
+						DDMDataProviderInstanceLinkImpl.class,
+						ddmDataProviderInstanceLink.getPrimaryKeyObj());
+				}
+
+				session.save(ddmDataProviderInstanceLink);
+			}
+			else {
+				ddmDataProviderInstanceLink =
+					(DDMDataProviderInstanceLink)session.merge(
+						ddmDataProviderInstanceLink);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			DDMDataProviderInstanceLinkImpl.class,
+			ddmDataProviderInstanceLinkModelImpl, false, true);
+
+		cacheUniqueFindersCache(ddmDataProviderInstanceLinkModelImpl);
+
+		if (isNew) {
+			ddmDataProviderInstanceLink.setNew(false);
+		}
+
+		ddmDataProviderInstanceLink.resetOriginalValues();
+
+		return ddmDataProviderInstanceLink;
 	}
 
 	/**
@@ -1822,46 +1809,42 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 				DDMDataProviderInstanceLink.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DDMDataProviderInstanceLink ddmDataProviderInstanceLink =
+			(DDMDataProviderInstanceLink)entityCache.getResult(
+				DDMDataProviderInstanceLinkImpl.class, primaryKey);
 
-			DDMDataProviderInstanceLink ddmDataProviderInstanceLink =
-				(DDMDataProviderInstanceLink)entityCache.getResult(
+		if (ddmDataProviderInstanceLink != null) {
+			return ddmDataProviderInstanceLink;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			ddmDataProviderInstanceLink =
+				(DDMDataProviderInstanceLink)session.get(
 					DDMDataProviderInstanceLinkImpl.class, primaryKey);
 
 			if (ddmDataProviderInstanceLink != null) {
-				return ddmDataProviderInstanceLink;
+				cacheResult(ddmDataProviderInstanceLink);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ddmDataProviderInstanceLink =
-					(DDMDataProviderInstanceLink)session.get(
-						DDMDataProviderInstanceLinkImpl.class, primaryKey);
-
-				if (ddmDataProviderInstanceLink != null) {
-					cacheResult(ddmDataProviderInstanceLink);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return ddmDataProviderInstanceLink;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return ddmDataProviderInstanceLink;
 	}
 
 	/**
@@ -1885,8 +1868,8 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 				DDMDataProviderInstanceLink.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -1920,9 +1903,8 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							DDMDataProviderInstanceLink.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						DDMDataProviderInstanceLink.class, primaryKey)) {
 
 				DDMDataProviderInstanceLink ddmDataProviderInstanceLink =
 					(DDMDataProviderInstanceLink)entityCache.getResult(
@@ -2077,9 +2059,8 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMDataProviderInstanceLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMDataProviderInstanceLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2175,9 +2156,8 @@ public class DDMDataProviderInstanceLinkPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMDataProviderInstanceLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMDataProviderInstanceLink.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

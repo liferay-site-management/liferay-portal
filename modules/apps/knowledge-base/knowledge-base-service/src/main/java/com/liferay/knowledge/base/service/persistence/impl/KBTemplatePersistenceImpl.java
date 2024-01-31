@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -179,8 +178,8 @@ public class KBTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -580,8 +579,8 @@ public class KBTemplatePersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -710,8 +709,8 @@ public class KBTemplatePersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -832,8 +831,8 @@ public class KBTemplatePersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -986,8 +985,8 @@ public class KBTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1421,8 +1420,8 @@ public class KBTemplatePersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1568,8 +1567,8 @@ public class KBTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBTemplate.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2271,8 +2270,8 @@ public class KBTemplatePersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBTemplate.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2398,8 +2397,8 @@ public class KBTemplatePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					kbTemplate.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					kbTemplate.getCtCollectionId())) {
 
 			entityCache.putResult(
 				KBTemplateImpl.class, kbTemplate.getPrimaryKey(), kbTemplate);
@@ -2436,8 +2435,8 @@ public class KBTemplatePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						kbTemplate.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						kbTemplate.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						KBTemplateImpl.class, kbTemplate.getPrimaryKey()) ==
@@ -2502,8 +2501,8 @@ public class KBTemplatePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					kbTemplateModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					kbTemplateModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				kbTemplateModelImpl.getUuid(), kbTemplateModelImpl.getGroupId()
@@ -2625,127 +2624,118 @@ public class KBTemplatePersistenceImpl
 
 	@Override
 	public KBTemplate updateImpl(KBTemplate kbTemplate) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = kbTemplate.isNew();
 
-			boolean isNew = kbTemplate.isNew();
+		if (!(kbTemplate instanceof KBTemplateModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(kbTemplate instanceof KBTemplateModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(kbTemplate.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						kbTemplate);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in kbTemplate proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(kbTemplate.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(kbTemplate);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom KBTemplate implementation " +
-						kbTemplate.getClass());
+					"Implement ModelWrapper in kbTemplate proxy " +
+						invocationHandler.getClass());
 			}
 
-			KBTemplateModelImpl kbTemplateModelImpl =
-				(KBTemplateModelImpl)kbTemplate;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom KBTemplate implementation " +
+					kbTemplate.getClass());
+		}
 
-			if (Validator.isNull(kbTemplate.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		KBTemplateModelImpl kbTemplateModelImpl =
+			(KBTemplateModelImpl)kbTemplate;
 
-				kbTemplate.setUuid(uuid);
+		if (Validator.isNull(kbTemplate.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			kbTemplate.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (kbTemplate.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				kbTemplate.setCreateDate(date);
 			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (kbTemplate.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					kbTemplate.setCreateDate(date);
-				}
-				else {
-					kbTemplate.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
+			else {
+				kbTemplate.setCreateDate(serviceContext.getCreateDate(date));
 			}
+		}
 
-			if (!kbTemplateModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					kbTemplate.setModifiedDate(date);
-				}
-				else {
-					kbTemplate.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
+		if (!kbTemplateModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				kbTemplate.setModifiedDate(date);
 			}
-
-			long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
-
-			if (userId > 0) {
-				long companyId = kbTemplate.getCompanyId();
-
-				long groupId = kbTemplate.getGroupId();
-
-				long kbTemplateId = 0;
-
-				if (!isNew) {
-					kbTemplateId = kbTemplate.getPrimaryKey();
-				}
-
-				try {
-					kbTemplate.setContent(
-						SanitizerUtil.sanitize(
-							companyId, groupId, userId,
-							KBTemplate.class.getName(), kbTemplateId,
-							ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-							kbTemplate.getContent(), null));
-				}
-				catch (SanitizerException sanitizerException) {
-					throw new SystemException(sanitizerException);
-				}
+			else {
+				kbTemplate.setModifiedDate(
+					serviceContext.getModifiedDate(date));
 			}
+		}
 
-			Session session = null;
+		long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
+
+		if (userId > 0) {
+			long companyId = kbTemplate.getCompanyId();
+
+			long groupId = kbTemplate.getGroupId();
+
+			long kbTemplateId = 0;
+
+			if (!isNew) {
+				kbTemplateId = kbTemplate.getPrimaryKey();
+			}
 
 			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(kbTemplate)) {
-					if (!isNew) {
-						session.evict(
-							KBTemplateImpl.class,
-							kbTemplate.getPrimaryKeyObj());
-					}
-
-					session.save(kbTemplate);
-				}
-				else {
-					kbTemplate = (KBTemplate)session.merge(kbTemplate);
-				}
+				kbTemplate.setContent(
+					SanitizerUtil.sanitize(
+						companyId, groupId, userId, KBTemplate.class.getName(),
+						kbTemplateId, ContentTypes.TEXT_HTML,
+						Sanitizer.MODE_ALL, kbTemplate.getContent(), null));
 			}
-			catch (Exception exception) {
-				throw processException(exception);
+			catch (SanitizerException sanitizerException) {
+				throw new SystemException(sanitizerException);
 			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				KBTemplateImpl.class, kbTemplateModelImpl, false, true);
-
-			cacheUniqueFindersCache(kbTemplateModelImpl);
-
-			if (isNew) {
-				kbTemplate.setNew(false);
-			}
-
-			kbTemplate.resetOriginalValues();
-
-			return kbTemplate;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(kbTemplate)) {
+				if (!isNew) {
+					session.evict(
+						KBTemplateImpl.class, kbTemplate.getPrimaryKeyObj());
+				}
+
+				session.save(kbTemplate);
+			}
+			else {
+				kbTemplate = (KBTemplate)session.merge(kbTemplate);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			KBTemplateImpl.class, kbTemplateModelImpl, false, true);
+
+		cacheUniqueFindersCache(kbTemplateModelImpl);
+
+		if (isNew) {
+			kbTemplate.setNew(false);
+		}
+
+		kbTemplate.resetOriginalValues();
+
+		return kbTemplate;
 	}
 
 	/**
@@ -2799,44 +2789,40 @@ public class KBTemplatePersistenceImpl
 				KBTemplate.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		KBTemplate kbTemplate = (KBTemplate)entityCache.getResult(
+			KBTemplateImpl.class, primaryKey);
 
-			KBTemplate kbTemplate = (KBTemplate)entityCache.getResult(
+		if (kbTemplate != null) {
+			return kbTemplate;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			kbTemplate = (KBTemplate)session.get(
 				KBTemplateImpl.class, primaryKey);
 
 			if (kbTemplate != null) {
-				return kbTemplate;
+				cacheResult(kbTemplate);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				kbTemplate = (KBTemplate)session.get(
-					KBTemplateImpl.class, primaryKey);
-
-				if (kbTemplate != null) {
-					cacheResult(kbTemplate);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return kbTemplate;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return kbTemplate;
 	}
 
 	/**
@@ -2856,8 +2842,8 @@ public class KBTemplatePersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(KBTemplate.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2890,9 +2876,8 @@ public class KBTemplatePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							KBTemplate.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						KBTemplate.class, primaryKey)) {
 
 				KBTemplate kbTemplate = (KBTemplate)entityCache.getResult(
 					KBTemplateImpl.class, primaryKey);
@@ -3040,8 +3025,8 @@ public class KBTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBTemplate.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3134,8 +3119,8 @@ public class KBTemplatePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBTemplate.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

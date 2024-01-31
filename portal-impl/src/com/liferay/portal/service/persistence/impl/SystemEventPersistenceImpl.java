@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -160,9 +159,8 @@ public class SystemEventPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SystemEvent.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SystemEvent.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -542,9 +540,8 @@ public class SystemEventPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SystemEvent.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SystemEvent.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -675,9 +672,8 @@ public class SystemEventPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SystemEvent.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SystemEvent.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1089,9 +1085,8 @@ public class SystemEventPersistenceImpl
 	@Override
 	public int countByG_S(long groupId, long systemEventSetKey) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SystemEvent.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SystemEvent.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_S;
 
@@ -1235,9 +1230,8 @@ public class SystemEventPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SystemEvent.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SystemEvent.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1670,9 +1664,8 @@ public class SystemEventPersistenceImpl
 	@Override
 	public int countByG_C_C(long groupId, long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SystemEvent.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SystemEvent.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_C;
 
@@ -1830,9 +1823,8 @@ public class SystemEventPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SystemEvent.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SystemEvent.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2295,9 +2287,8 @@ public class SystemEventPersistenceImpl
 		long groupId, long classNameId, long classPK, int type) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SystemEvent.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SystemEvent.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_C_T;
 
@@ -2398,8 +2389,8 @@ public class SystemEventPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					systemEvent.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					systemEvent.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				SystemEventImpl.class, systemEvent.getPrimaryKey(),
@@ -2432,8 +2423,8 @@ public class SystemEventPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						systemEvent.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						systemEvent.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						SystemEventImpl.class, systemEvent.getPrimaryKey()) ==
@@ -2594,83 +2585,75 @@ public class SystemEventPersistenceImpl
 
 	@Override
 	public SystemEvent updateImpl(SystemEvent systemEvent) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = systemEvent.isNew();
 
-			boolean isNew = systemEvent.isNew();
+		if (!(systemEvent instanceof SystemEventModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(systemEvent instanceof SystemEventModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(systemEvent.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						systemEvent);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in systemEvent proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(systemEvent.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(systemEvent);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom SystemEvent implementation " +
-						systemEvent.getClass());
+					"Implement ModelWrapper in systemEvent proxy " +
+						invocationHandler.getClass());
 			}
 
-			SystemEventModelImpl systemEventModelImpl =
-				(SystemEventModelImpl)systemEvent;
-
-			if (isNew && (systemEvent.getCreateDate() == null)) {
-				ServiceContext serviceContext =
-					ServiceContextThreadLocal.getServiceContext();
-
-				Date date = new Date();
-
-				if (serviceContext == null) {
-					systemEvent.setCreateDate(date);
-				}
-				else {
-					systemEvent.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(systemEvent)) {
-					if (!isNew) {
-						session.evict(
-							SystemEventImpl.class,
-							systemEvent.getPrimaryKeyObj());
-					}
-
-					session.save(systemEvent);
-				}
-				else {
-					systemEvent = (SystemEvent)session.merge(systemEvent);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				SystemEventImpl.class, systemEventModelImpl, false, true);
-
-			if (isNew) {
-				systemEvent.setNew(false);
-			}
-
-			systemEvent.resetOriginalValues();
-
-			return systemEvent;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom SystemEvent implementation " +
+					systemEvent.getClass());
 		}
+
+		SystemEventModelImpl systemEventModelImpl =
+			(SystemEventModelImpl)systemEvent;
+
+		if (isNew && (systemEvent.getCreateDate() == null)) {
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (serviceContext == null) {
+				systemEvent.setCreateDate(date);
+			}
+			else {
+				systemEvent.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(systemEvent)) {
+				if (!isNew) {
+					session.evict(
+						SystemEventImpl.class, systemEvent.getPrimaryKeyObj());
+				}
+
+				session.save(systemEvent);
+			}
+			else {
+				systemEvent = (SystemEvent)session.merge(systemEvent);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			SystemEventImpl.class, systemEventModelImpl, false, true);
+
+		if (isNew) {
+			systemEvent.setNew(false);
+		}
+
+		systemEvent.resetOriginalValues();
+
+		return systemEvent;
 	}
 
 	/**
@@ -2724,44 +2707,40 @@ public class SystemEventPersistenceImpl
 				SystemEvent.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		SystemEvent systemEvent = (SystemEvent)EntityCacheUtil.getResult(
+			SystemEventImpl.class, primaryKey);
 
-			SystemEvent systemEvent = (SystemEvent)EntityCacheUtil.getResult(
+		if (systemEvent != null) {
+			return systemEvent;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			systemEvent = (SystemEvent)session.get(
 				SystemEventImpl.class, primaryKey);
 
 			if (systemEvent != null) {
-				return systemEvent;
+				cacheResult(systemEvent);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				systemEvent = (SystemEvent)session.get(
-					SystemEventImpl.class, primaryKey);
-
-				if (systemEvent != null) {
-					cacheResult(systemEvent);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return systemEvent;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return systemEvent;
 	}
 
 	/**
@@ -2781,8 +2760,8 @@ public class SystemEventPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(SystemEvent.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2815,9 +2794,8 @@ public class SystemEventPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							SystemEvent.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						SystemEvent.class, primaryKey)) {
 
 				SystemEvent systemEvent =
 					(SystemEvent)EntityCacheUtil.getResult(
@@ -2966,9 +2944,8 @@ public class SystemEventPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SystemEvent.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SystemEvent.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3061,9 +3038,8 @@ public class SystemEventPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SystemEvent.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SystemEvent.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

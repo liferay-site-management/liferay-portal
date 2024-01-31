@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -176,9 +175,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -599,9 +597,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -734,9 +731,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -862,9 +858,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1019,9 +1014,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1470,9 +1464,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1623,9 +1616,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2026,9 +2018,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 	@Override
 	public int countByAssetListEntryId(long assetListEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByAssetListEntryId;
 
@@ -2157,9 +2148,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2560,9 +2550,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 	@Override
 	public int countBySegmentsEntryId(long segmentsEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			FinderPath finderPath = _finderPathCountBySegmentsEntryId;
 
@@ -2680,9 +2669,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 		long assetListEntryId, long segmentsEntryId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2796,9 +2784,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 	@Override
 	public int countByA_S(long assetListEntryId, long segmentsEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByA_S;
 
@@ -2942,9 +2929,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3448,9 +3434,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			Object[] finderArgs = null;
 
@@ -3592,9 +3577,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 	@Override
 	public int countByA_S_C(long assetListEntryId, long segmentsEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByA_S_C;
 
@@ -3662,9 +3646,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			Object[] finderArgs = new Object[] {
 				assetListEntryId, StringUtil.merge(segmentsEntryIds)
@@ -3770,8 +3753,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					assetListEntrySegmentsEntryRel.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					assetListEntrySegmentsEntryRel.getCtCollectionId())) {
 
 			entityCache.putResult(
 				AssetListEntrySegmentsEntryRelImpl.class,
@@ -3826,9 +3809,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						assetListEntrySegmentsEntryRel.getCtCollectionId() !=
-							0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						assetListEntrySegmentsEntryRel.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						AssetListEntrySegmentsEntryRelImpl.class,
@@ -3907,9 +3889,9 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
 					assetListEntrySegmentsEntryRelModelImpl.
-						getCtCollectionId() != 0)) {
+						getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				assetListEntrySegmentsEntryRelModelImpl.getUuid(),
@@ -4058,114 +4040,105 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 	public AssetListEntrySegmentsEntryRel updateImpl(
 		AssetListEntrySegmentsEntryRel assetListEntrySegmentsEntryRel) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = assetListEntrySegmentsEntryRel.isNew();
 
-			boolean isNew = assetListEntrySegmentsEntryRel.isNew();
+		if (!(assetListEntrySegmentsEntryRel instanceof
+				AssetListEntrySegmentsEntryRelModelImpl)) {
 
-			if (!(assetListEntrySegmentsEntryRel instanceof
-					AssetListEntrySegmentsEntryRelModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
+			if (ProxyUtil.isProxyClass(
+					assetListEntrySegmentsEntryRel.getClass())) {
 
-				if (ProxyUtil.isProxyClass(
-						assetListEntrySegmentsEntryRel.getClass())) {
-
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						assetListEntrySegmentsEntryRel);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in assetListEntrySegmentsEntryRel proxy " +
-							invocationHandler.getClass());
-				}
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					assetListEntrySegmentsEntryRel);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom AssetListEntrySegmentsEntryRel implementation " +
-						assetListEntrySegmentsEntryRel.getClass());
+					"Implement ModelWrapper in assetListEntrySegmentsEntryRel proxy " +
+						invocationHandler.getClass());
 			}
 
-			AssetListEntrySegmentsEntryRelModelImpl
-				assetListEntrySegmentsEntryRelModelImpl =
-					(AssetListEntrySegmentsEntryRelModelImpl)
-						assetListEntrySegmentsEntryRel;
-
-			if (Validator.isNull(assetListEntrySegmentsEntryRel.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				assetListEntrySegmentsEntryRel.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew &&
-				(assetListEntrySegmentsEntryRel.getCreateDate() == null)) {
-
-				if (serviceContext == null) {
-					assetListEntrySegmentsEntryRel.setCreateDate(date);
-				}
-				else {
-					assetListEntrySegmentsEntryRel.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!assetListEntrySegmentsEntryRelModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					assetListEntrySegmentsEntryRel.setModifiedDate(date);
-				}
-				else {
-					assetListEntrySegmentsEntryRel.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(
-						assetListEntrySegmentsEntryRel)) {
-
-					if (!isNew) {
-						session.evict(
-							AssetListEntrySegmentsEntryRelImpl.class,
-							assetListEntrySegmentsEntryRel.getPrimaryKeyObj());
-					}
-
-					session.save(assetListEntrySegmentsEntryRel);
-				}
-				else {
-					assetListEntrySegmentsEntryRel =
-						(AssetListEntrySegmentsEntryRel)session.merge(
-							assetListEntrySegmentsEntryRel);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				AssetListEntrySegmentsEntryRelImpl.class,
-				assetListEntrySegmentsEntryRelModelImpl, false, true);
-
-			cacheUniqueFindersCache(assetListEntrySegmentsEntryRelModelImpl);
-
-			if (isNew) {
-				assetListEntrySegmentsEntryRel.setNew(false);
-			}
-
-			assetListEntrySegmentsEntryRel.resetOriginalValues();
-
-			return assetListEntrySegmentsEntryRel;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom AssetListEntrySegmentsEntryRel implementation " +
+					assetListEntrySegmentsEntryRel.getClass());
 		}
+
+		AssetListEntrySegmentsEntryRelModelImpl
+			assetListEntrySegmentsEntryRelModelImpl =
+				(AssetListEntrySegmentsEntryRelModelImpl)
+					assetListEntrySegmentsEntryRel;
+
+		if (Validator.isNull(assetListEntrySegmentsEntryRel.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			assetListEntrySegmentsEntryRel.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (assetListEntrySegmentsEntryRel.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				assetListEntrySegmentsEntryRel.setCreateDate(date);
+			}
+			else {
+				assetListEntrySegmentsEntryRel.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!assetListEntrySegmentsEntryRelModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				assetListEntrySegmentsEntryRel.setModifiedDate(date);
+			}
+			else {
+				assetListEntrySegmentsEntryRel.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(assetListEntrySegmentsEntryRel)) {
+				if (!isNew) {
+					session.evict(
+						AssetListEntrySegmentsEntryRelImpl.class,
+						assetListEntrySegmentsEntryRel.getPrimaryKeyObj());
+				}
+
+				session.save(assetListEntrySegmentsEntryRel);
+			}
+			else {
+				assetListEntrySegmentsEntryRel =
+					(AssetListEntrySegmentsEntryRel)session.merge(
+						assetListEntrySegmentsEntryRel);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			AssetListEntrySegmentsEntryRelImpl.class,
+			assetListEntrySegmentsEntryRelModelImpl, false, true);
+
+		cacheUniqueFindersCache(assetListEntrySegmentsEntryRelModelImpl);
+
+		if (isNew) {
+			assetListEntrySegmentsEntryRel.setNew(false);
+		}
+
+		assetListEntrySegmentsEntryRel.resetOriginalValues();
+
+		return assetListEntrySegmentsEntryRel;
 	}
 
 	/**
@@ -4224,46 +4197,42 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 				AssetListEntrySegmentsEntryRel.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		AssetListEntrySegmentsEntryRel assetListEntrySegmentsEntryRel =
+			(AssetListEntrySegmentsEntryRel)entityCache.getResult(
+				AssetListEntrySegmentsEntryRelImpl.class, primaryKey);
 
-			AssetListEntrySegmentsEntryRel assetListEntrySegmentsEntryRel =
-				(AssetListEntrySegmentsEntryRel)entityCache.getResult(
+		if (assetListEntrySegmentsEntryRel != null) {
+			return assetListEntrySegmentsEntryRel;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			assetListEntrySegmentsEntryRel =
+				(AssetListEntrySegmentsEntryRel)session.get(
 					AssetListEntrySegmentsEntryRelImpl.class, primaryKey);
 
 			if (assetListEntrySegmentsEntryRel != null) {
-				return assetListEntrySegmentsEntryRel;
+				cacheResult(assetListEntrySegmentsEntryRel);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				assetListEntrySegmentsEntryRel =
-					(AssetListEntrySegmentsEntryRel)session.get(
-						AssetListEntrySegmentsEntryRelImpl.class, primaryKey);
-
-				if (assetListEntrySegmentsEntryRel != null) {
-					cacheResult(assetListEntrySegmentsEntryRel);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return assetListEntrySegmentsEntryRel;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return assetListEntrySegmentsEntryRel;
 	}
 
 	/**
@@ -4288,8 +4257,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 				AssetListEntrySegmentsEntryRel.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -4323,10 +4292,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							AssetListEntrySegmentsEntryRel.class,
-							primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						AssetListEntrySegmentsEntryRel.class, primaryKey)) {
 
 				AssetListEntrySegmentsEntryRel assetListEntrySegmentsEntryRel =
 					(AssetListEntrySegmentsEntryRel)entityCache.getResult(
@@ -4481,9 +4448,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4580,9 +4546,8 @@ public class AssetListEntrySegmentsEntryRelPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetListEntrySegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetListEntrySegmentsEntryRel.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

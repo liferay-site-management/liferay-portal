@@ -14,7 +14,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -163,9 +162,8 @@ public class AnnouncementsFlagPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsFlag.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsFlag.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -552,9 +550,8 @@ public class AnnouncementsFlagPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsFlag.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsFlag.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -679,9 +676,8 @@ public class AnnouncementsFlagPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsFlag.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsFlag.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1065,9 +1061,8 @@ public class AnnouncementsFlagPersistenceImpl
 	@Override
 	public int countByEntryId(long entryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsFlag.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsFlag.class)) {
 
 			FinderPath finderPath = _finderPathCountByEntryId;
 
@@ -1189,9 +1184,8 @@ public class AnnouncementsFlagPersistenceImpl
 		long userId, long entryId, int value, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsFlag.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsFlag.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1324,9 +1318,8 @@ public class AnnouncementsFlagPersistenceImpl
 	@Override
 	public int countByU_E_V(long userId, long entryId, int value) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsFlag.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsFlag.class)) {
 
 			FinderPath finderPath = _finderPathCountByU_E_V;
 
@@ -1412,8 +1405,8 @@ public class AnnouncementsFlagPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					announcementsFlag.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					announcementsFlag.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				AnnouncementsFlagImpl.class, announcementsFlag.getPrimaryKey(),
@@ -1455,8 +1448,8 @@ public class AnnouncementsFlagPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						announcementsFlag.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						announcementsFlag.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						AnnouncementsFlagImpl.class,
@@ -1524,8 +1517,8 @@ public class AnnouncementsFlagPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					announcementsFlagModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					announcementsFlagModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				announcementsFlagModelImpl.getUserId(),
@@ -1649,87 +1642,82 @@ public class AnnouncementsFlagPersistenceImpl
 
 	@Override
 	public AnnouncementsFlag updateImpl(AnnouncementsFlag announcementsFlag) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = announcementsFlag.isNew();
 
-			boolean isNew = announcementsFlag.isNew();
+		if (!(announcementsFlag instanceof AnnouncementsFlagModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(announcementsFlag instanceof AnnouncementsFlagModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(announcementsFlag.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						announcementsFlag);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in announcementsFlag proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(announcementsFlag.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					announcementsFlag);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom AnnouncementsFlag implementation " +
-						announcementsFlag.getClass());
+					"Implement ModelWrapper in announcementsFlag proxy " +
+						invocationHandler.getClass());
 			}
 
-			AnnouncementsFlagModelImpl announcementsFlagModelImpl =
-				(AnnouncementsFlagModelImpl)announcementsFlag;
-
-			if (isNew && (announcementsFlag.getCreateDate() == null)) {
-				ServiceContext serviceContext =
-					ServiceContextThreadLocal.getServiceContext();
-
-				Date date = new Date();
-
-				if (serviceContext == null) {
-					announcementsFlag.setCreateDate(date);
-				}
-				else {
-					announcementsFlag.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(announcementsFlag)) {
-					if (!isNew) {
-						session.evict(
-							AnnouncementsFlagImpl.class,
-							announcementsFlag.getPrimaryKeyObj());
-					}
-
-					session.save(announcementsFlag);
-				}
-				else {
-					announcementsFlag = (AnnouncementsFlag)session.merge(
-						announcementsFlag);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				AnnouncementsFlagImpl.class, announcementsFlagModelImpl, false,
-				true);
-
-			cacheUniqueFindersCache(announcementsFlagModelImpl);
-
-			if (isNew) {
-				announcementsFlag.setNew(false);
-			}
-
-			announcementsFlag.resetOriginalValues();
-
-			return announcementsFlag;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom AnnouncementsFlag implementation " +
+					announcementsFlag.getClass());
 		}
+
+		AnnouncementsFlagModelImpl announcementsFlagModelImpl =
+			(AnnouncementsFlagModelImpl)announcementsFlag;
+
+		if (isNew && (announcementsFlag.getCreateDate() == null)) {
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (serviceContext == null) {
+				announcementsFlag.setCreateDate(date);
+			}
+			else {
+				announcementsFlag.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(announcementsFlag)) {
+				if (!isNew) {
+					session.evict(
+						AnnouncementsFlagImpl.class,
+						announcementsFlag.getPrimaryKeyObj());
+				}
+
+				session.save(announcementsFlag);
+			}
+			else {
+				announcementsFlag = (AnnouncementsFlag)session.merge(
+					announcementsFlag);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			AnnouncementsFlagImpl.class, announcementsFlagModelImpl, false,
+			true);
+
+		cacheUniqueFindersCache(announcementsFlagModelImpl);
+
+		if (isNew) {
+			announcementsFlag.setNew(false);
+		}
+
+		announcementsFlag.resetOriginalValues();
+
+		return announcementsFlag;
 	}
 
 	/**
@@ -1783,45 +1771,41 @@ public class AnnouncementsFlagPersistenceImpl
 				AnnouncementsFlag.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		AnnouncementsFlag announcementsFlag =
+			(AnnouncementsFlag)EntityCacheUtil.getResult(
+				AnnouncementsFlagImpl.class, primaryKey);
 
-			AnnouncementsFlag announcementsFlag =
-				(AnnouncementsFlag)EntityCacheUtil.getResult(
-					AnnouncementsFlagImpl.class, primaryKey);
-
-			if (announcementsFlag != null) {
-				return announcementsFlag;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				announcementsFlag = (AnnouncementsFlag)session.get(
-					AnnouncementsFlagImpl.class, primaryKey);
-
-				if (announcementsFlag != null) {
-					cacheResult(announcementsFlag);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (announcementsFlag != null) {
 			return announcementsFlag;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			announcementsFlag = (AnnouncementsFlag)session.get(
+				AnnouncementsFlagImpl.class, primaryKey);
+
+			if (announcementsFlag != null) {
+				cacheResult(announcementsFlag);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return announcementsFlag;
 	}
 
 	/**
@@ -1841,8 +1825,8 @@ public class AnnouncementsFlagPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(AnnouncementsFlag.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -1875,9 +1859,8 @@ public class AnnouncementsFlagPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							AnnouncementsFlag.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						AnnouncementsFlag.class, primaryKey)) {
 
 				AnnouncementsFlag announcementsFlag =
 					(AnnouncementsFlag)EntityCacheUtil.getResult(
@@ -2031,9 +2014,8 @@ public class AnnouncementsFlagPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsFlag.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsFlag.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2126,9 +2108,8 @@ public class AnnouncementsFlagPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsFlag.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsFlag.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

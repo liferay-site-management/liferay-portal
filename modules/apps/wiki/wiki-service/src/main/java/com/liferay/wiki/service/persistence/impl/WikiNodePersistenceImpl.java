@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -179,8 +178,8 @@ public class WikiNodePersistenceImpl
 		OrderByComparator<WikiNode> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -580,8 +579,8 @@ public class WikiNodePersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -710,8 +709,8 @@ public class WikiNodePersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -832,8 +831,8 @@ public class WikiNodePersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -985,8 +984,8 @@ public class WikiNodePersistenceImpl
 		OrderByComparator<WikiNode> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1420,8 +1419,8 @@ public class WikiNodePersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1566,8 +1565,8 @@ public class WikiNodePersistenceImpl
 		OrderByComparator<WikiNode> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2268,8 +2267,8 @@ public class WikiNodePersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2439,8 +2438,8 @@ public class WikiNodePersistenceImpl
 		OrderByComparator<WikiNode> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2819,8 +2818,8 @@ public class WikiNodePersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2933,8 +2932,8 @@ public class WikiNodePersistenceImpl
 		long groupId, String name, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -3055,8 +3054,8 @@ public class WikiNodePersistenceImpl
 	@Override
 	public int countByG_N(long groupId, String name) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -3206,8 +3205,8 @@ public class WikiNodePersistenceImpl
 		OrderByComparator<WikiNode> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3950,8 +3949,8 @@ public class WikiNodePersistenceImpl
 	@Override
 	public int countByG_S(long groupId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_S;
 
@@ -4140,8 +4139,8 @@ public class WikiNodePersistenceImpl
 		OrderByComparator<WikiNode> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4549,8 +4548,8 @@ public class WikiNodePersistenceImpl
 	@Override
 	public int countByC_S(long companyId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_S;
 
@@ -4670,8 +4669,8 @@ public class WikiNodePersistenceImpl
 		String externalReferenceCode, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -4794,8 +4793,8 @@ public class WikiNodePersistenceImpl
 	@Override
 	public int countByERC_G(String externalReferenceCode, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -4896,8 +4895,8 @@ public class WikiNodePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					wikiNode.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					wikiNode.getCtCollectionId())) {
 
 			entityCache.putResult(
 				WikiNodeImpl.class, wikiNode.getPrimaryKey(), wikiNode);
@@ -4946,8 +4945,8 @@ public class WikiNodePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						wikiNode.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						wikiNode.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						WikiNodeImpl.class, wikiNode.getPrimaryKey()) == null) {
@@ -5011,8 +5010,8 @@ public class WikiNodePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					wikiNodeModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					wikiNodeModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				wikiNodeModelImpl.getUuid(), wikiNodeModelImpl.getGroupId()
@@ -5148,158 +5147,151 @@ public class WikiNodePersistenceImpl
 
 	@Override
 	public WikiNode updateImpl(WikiNode wikiNode) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = wikiNode.isNew();
 
-			boolean isNew = wikiNode.isNew();
+		if (!(wikiNode instanceof WikiNodeModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(wikiNode instanceof WikiNodeModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(wikiNode.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						wikiNode);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in wikiNode proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(wikiNode.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(wikiNode);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom WikiNode implementation " +
-						wikiNode.getClass());
+					"Implement ModelWrapper in wikiNode proxy " +
+						invocationHandler.getClass());
 			}
 
-			WikiNodeModelImpl wikiNodeModelImpl = (WikiNodeModelImpl)wikiNode;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom WikiNode implementation " +
+					wikiNode.getClass());
+		}
 
-			if (Validator.isNull(wikiNode.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		WikiNodeModelImpl wikiNodeModelImpl = (WikiNodeModelImpl)wikiNode;
 
-				wikiNode.setUuid(uuid);
-			}
+		if (Validator.isNull(wikiNode.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
 
-			if (Validator.isNull(wikiNode.getExternalReferenceCode())) {
-				wikiNode.setExternalReferenceCode(wikiNode.getUuid());
-			}
-			else {
-				if (!Objects.equals(
-						wikiNodeModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						wikiNode.getExternalReferenceCode())) {
+			wikiNode.setUuid(uuid);
+		}
 
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
+		if (Validator.isNull(wikiNode.getExternalReferenceCode())) {
+			wikiNode.setExternalReferenceCode(wikiNode.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					wikiNodeModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
+					wikiNode.getExternalReferenceCode())) {
 
-					if (userId > 0) {
-						long companyId = wikiNode.getCompanyId();
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
 
-						long groupId = wikiNode.getGroupId();
+				if (userId > 0) {
+					long companyId = wikiNode.getCompanyId();
 
-						long classPK = 0;
+					long groupId = wikiNode.getGroupId();
 
-						if (!isNew) {
-							classPK = wikiNode.getPrimaryKey();
-						}
+					long classPK = 0;
 
-						try {
-							wikiNode.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									WikiNode.class.getName(), classPK,
-									ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-									wikiNode.getExternalReferenceCode(), null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
-
-				WikiNode ercWikiNode = fetchByERC_G(
-					wikiNode.getExternalReferenceCode(), wikiNode.getGroupId());
-
-				if (isNew) {
-					if (ercWikiNode != null) {
-						throw new DuplicateWikiNodeExternalReferenceCodeException(
-							"Duplicate wiki node with external reference code " +
-								wikiNode.getExternalReferenceCode() +
-									" and group " + wikiNode.getGroupId());
-					}
-				}
-				else {
-					if ((ercWikiNode != null) &&
-						(wikiNode.getNodeId() != ercWikiNode.getNodeId())) {
-
-						throw new DuplicateWikiNodeExternalReferenceCodeException(
-							"Duplicate wiki node with external reference code " +
-								wikiNode.getExternalReferenceCode() +
-									" and group " + wikiNode.getGroupId());
-					}
-				}
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (wikiNode.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					wikiNode.setCreateDate(date);
-				}
-				else {
-					wikiNode.setCreateDate(serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!wikiNodeModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					wikiNode.setModifiedDate(date);
-				}
-				else {
-					wikiNode.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(wikiNode)) {
 					if (!isNew) {
-						session.evict(
-							WikiNodeImpl.class, wikiNode.getPrimaryKeyObj());
+						classPK = wikiNode.getPrimaryKey();
 					}
 
-					session.save(wikiNode);
+					try {
+						wikiNode.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								WikiNode.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								wikiNode.getExternalReferenceCode(), null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
 				}
-				else {
-					wikiNode = (WikiNode)session.merge(wikiNode);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
 			}
 
-			entityCache.putResult(
-				WikiNodeImpl.class, wikiNodeModelImpl, false, true);
-
-			cacheUniqueFindersCache(wikiNodeModelImpl);
+			WikiNode ercWikiNode = fetchByERC_G(
+				wikiNode.getExternalReferenceCode(), wikiNode.getGroupId());
 
 			if (isNew) {
-				wikiNode.setNew(false);
+				if (ercWikiNode != null) {
+					throw new DuplicateWikiNodeExternalReferenceCodeException(
+						"Duplicate wiki node with external reference code " +
+							wikiNode.getExternalReferenceCode() +
+								" and group " + wikiNode.getGroupId());
+				}
 			}
+			else {
+				if ((ercWikiNode != null) &&
+					(wikiNode.getNodeId() != ercWikiNode.getNodeId())) {
 
-			wikiNode.resetOriginalValues();
-
-			return wikiNode;
+					throw new DuplicateWikiNodeExternalReferenceCodeException(
+						"Duplicate wiki node with external reference code " +
+							wikiNode.getExternalReferenceCode() +
+								" and group " + wikiNode.getGroupId());
+				}
+			}
 		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (wikiNode.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				wikiNode.setCreateDate(date);
+			}
+			else {
+				wikiNode.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!wikiNodeModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				wikiNode.setModifiedDate(date);
+			}
+			else {
+				wikiNode.setModifiedDate(serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(wikiNode)) {
+				if (!isNew) {
+					session.evict(
+						WikiNodeImpl.class, wikiNode.getPrimaryKeyObj());
+				}
+
+				session.save(wikiNode);
+			}
+			else {
+				wikiNode = (WikiNode)session.merge(wikiNode);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			WikiNodeImpl.class, wikiNodeModelImpl, false, true);
+
+		cacheUniqueFindersCache(wikiNodeModelImpl);
+
+		if (isNew) {
+			wikiNode.setNew(false);
+		}
+
+		wikiNode.resetOriginalValues();
+
+		return wikiNode;
 	}
 
 	/**
@@ -5349,44 +5341,39 @@ public class WikiNodePersistenceImpl
 	public WikiNode fetchByPrimaryKey(Serializable primaryKey) {
 		if (ctPersistenceHelper.isProductionMode(WikiNode.class, primaryKey)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		WikiNode wikiNode = (WikiNode)entityCache.getResult(
+			WikiNodeImpl.class, primaryKey);
 
-			WikiNode wikiNode = (WikiNode)entityCache.getResult(
-				WikiNodeImpl.class, primaryKey);
-
-			if (wikiNode != null) {
-				return wikiNode;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				wikiNode = (WikiNode)session.get(
-					WikiNodeImpl.class, primaryKey);
-
-				if (wikiNode != null) {
-					cacheResult(wikiNode);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (wikiNode != null) {
 			return wikiNode;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			wikiNode = (WikiNode)session.get(WikiNodeImpl.class, primaryKey);
+
+			if (wikiNode != null) {
+				cacheResult(wikiNode);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return wikiNode;
 	}
 
 	/**
@@ -5406,8 +5393,8 @@ public class WikiNodePersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(WikiNode.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -5439,9 +5426,8 @@ public class WikiNodePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							WikiNode.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						WikiNode.class, primaryKey)) {
 
 				WikiNode wikiNode = (WikiNode)entityCache.getResult(
 					WikiNodeImpl.class, primaryKey);
@@ -5589,8 +5575,8 @@ public class WikiNodePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5683,8 +5669,8 @@ public class WikiNodePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(WikiNode.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiNode.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

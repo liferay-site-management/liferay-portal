@@ -10,7 +10,6 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -171,8 +170,8 @@ public class RolePersistenceImpl
 		OrderByComparator<Role> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -916,8 +915,8 @@ public class RolePersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1128,8 +1127,8 @@ public class RolePersistenceImpl
 		OrderByComparator<Role> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1923,8 +1922,8 @@ public class RolePersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -2141,8 +2140,8 @@ public class RolePersistenceImpl
 		OrderByComparator<Role> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2843,8 +2842,8 @@ public class RolePersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -3013,8 +3012,8 @@ public class RolePersistenceImpl
 		OrderByComparator<Role> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -3758,8 +3757,8 @@ public class RolePersistenceImpl
 	@Override
 	public int countByName(String name) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -3956,8 +3955,8 @@ public class RolePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4649,8 +4648,8 @@ public class RolePersistenceImpl
 	@Override
 	public int countByType(int type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			FinderPath finderPath = _finderPathCountByType;
 
@@ -4822,8 +4821,8 @@ public class RolePersistenceImpl
 		OrderByComparator<Role> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			subtype = Objects.toString(subtype, "");
 
@@ -5574,8 +5573,8 @@ public class RolePersistenceImpl
 	@Override
 	public int countBySubtype(String subtype) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			subtype = Objects.toString(subtype, "");
 
@@ -5765,8 +5764,8 @@ public class RolePersistenceImpl
 		long companyId, String name, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -5887,8 +5886,8 @@ public class RolePersistenceImpl
 	@Override
 	public int countByC_N(long companyId, String name) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -6038,8 +6037,8 @@ public class RolePersistenceImpl
 		OrderByComparator<Role> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6986,8 +6985,8 @@ public class RolePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			Object[] finderArgs = null;
 
@@ -7120,8 +7119,8 @@ public class RolePersistenceImpl
 	@Override
 	public int countByC_T(long companyId, int type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_T;
 
@@ -7187,8 +7186,8 @@ public class RolePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			Object[] finderArgs = new Object[] {
 				companyId, StringUtil.merge(types)
@@ -7465,8 +7464,8 @@ public class RolePersistenceImpl
 		OrderByComparator<Role> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			subtype = Objects.toString(subtype, "");
 
@@ -8255,8 +8254,8 @@ public class RolePersistenceImpl
 	@Override
 	public int countByT_S(int type, String subtype) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			subtype = Objects.toString(subtype, "");
 
@@ -8513,8 +8512,8 @@ public class RolePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			Object[] finderArgs = null;
 
@@ -8694,8 +8693,8 @@ public class RolePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			Object[] finderArgs = null;
 
@@ -8810,8 +8809,8 @@ public class RolePersistenceImpl
 	@Override
 	public int countByC_C_C(long companyId, long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_C;
 
@@ -8884,8 +8883,8 @@ public class RolePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			Object[] finderArgs = new Object[] {
 				companyId, classNameId, StringUtil.merge(classPKs)
@@ -9227,8 +9226,8 @@ public class RolePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			Object[] finderArgs = null;
 
@@ -9424,8 +9423,8 @@ public class RolePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			Object[] finderArgs = null;
 
@@ -9552,8 +9551,8 @@ public class RolePersistenceImpl
 		long companyId, long classNameId, long classPK, int type) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_C_T;
 
@@ -9633,8 +9632,8 @@ public class RolePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			Object[] finderArgs = new Object[] {
 				companyId, classNameId, StringUtil.merge(classPKs), type
@@ -9907,8 +9906,8 @@ public class RolePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					role.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					role.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				RoleImpl.class, role.getPrimaryKey(), role);
@@ -9960,8 +9959,8 @@ public class RolePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						role.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						role.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						RoleImpl.class, role.getPrimaryKey()) == null) {
@@ -10023,8 +10022,8 @@ public class RolePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					roleModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					roleModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				roleModelImpl.getCompanyId(), roleModelImpl.getName()
@@ -10167,95 +10166,89 @@ public class RolePersistenceImpl
 
 	@Override
 	public Role updateImpl(Role role) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = role.isNew();
 
-			boolean isNew = role.isNew();
+		if (!(role instanceof RoleModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(role instanceof RoleModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(role.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(role);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in role proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(role.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(role);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom Role implementation " +
-						role.getClass());
+					"Implement ModelWrapper in role proxy " +
+						invocationHandler.getClass());
 			}
 
-			RoleModelImpl roleModelImpl = (RoleModelImpl)role;
-
-			if (Validator.isNull(role.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				role.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (role.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					role.setCreateDate(date);
-				}
-				else {
-					role.setCreateDate(serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!roleModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					role.setModifiedDate(date);
-				}
-				else {
-					role.setModifiedDate(serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(role)) {
-					if (!isNew) {
-						session.evict(RoleImpl.class, role.getPrimaryKeyObj());
-					}
-
-					session.save(role);
-				}
-				else {
-					role = (Role)session.merge(role);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				RoleImpl.class, roleModelImpl, false, true);
-
-			cacheUniqueFindersCache(roleModelImpl);
-
-			if (isNew) {
-				role.setNew(false);
-			}
-
-			role.resetOriginalValues();
-
-			return role;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom Role implementation " +
+					role.getClass());
 		}
+
+		RoleModelImpl roleModelImpl = (RoleModelImpl)role;
+
+		if (Validator.isNull(role.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			role.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (role.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				role.setCreateDate(date);
+			}
+			else {
+				role.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!roleModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				role.setModifiedDate(date);
+			}
+			else {
+				role.setModifiedDate(serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(role)) {
+				if (!isNew) {
+					session.evict(RoleImpl.class, role.getPrimaryKeyObj());
+				}
+
+				session.save(role);
+			}
+			else {
+				role = (Role)session.merge(role);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(RoleImpl.class, roleModelImpl, false, true);
+
+		cacheUniqueFindersCache(roleModelImpl);
+
+		if (isNew) {
+			role.setNew(false);
+		}
+
+		role.resetOriginalValues();
+
+		return role;
 	}
 
 	/**
@@ -10305,43 +10298,38 @@ public class RolePersistenceImpl
 	public Role fetchByPrimaryKey(Serializable primaryKey) {
 		if (CTPersistenceHelperUtil.isProductionMode(Role.class, primaryKey)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		Role role = (Role)EntityCacheUtil.getResult(RoleImpl.class, primaryKey);
 
-			Role role = (Role)EntityCacheUtil.getResult(
-				RoleImpl.class, primaryKey);
-
-			if (role != null) {
-				return role;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				role = (Role)session.get(RoleImpl.class, primaryKey);
-
-				if (role != null) {
-					cacheResult(role);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (role != null) {
 			return role;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			role = (Role)session.get(RoleImpl.class, primaryKey);
+
+			if (role != null) {
+				cacheResult(role);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return role;
 	}
 
 	/**
@@ -10361,8 +10349,8 @@ public class RolePersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(Role.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -10394,9 +10382,8 @@ public class RolePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							Role.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						Role.class, primaryKey)) {
 
 				Role role = (Role)EntityCacheUtil.getResult(
 					RoleImpl.class, primaryKey);
@@ -10544,8 +10531,8 @@ public class RolePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -10638,8 +10625,8 @@ public class RolePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Role.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Role.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

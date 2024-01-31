@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -165,8 +164,8 @@ public class DDMFieldPersistenceImpl
 		OrderByComparator<DDMField> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMField.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMField.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -545,8 +544,8 @@ public class DDMFieldPersistenceImpl
 	@Override
 	public int countByStorageId(long storageId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMField.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMField.class)) {
 
 			FinderPath finderPath = _finderPathCountByStorageId;
 
@@ -671,8 +670,8 @@ public class DDMFieldPersistenceImpl
 		OrderByComparator<DDMField> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMField.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMField.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1062,8 +1061,8 @@ public class DDMFieldPersistenceImpl
 	@Override
 	public int countByStructureVersionId(long structureVersionId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMField.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMField.class)) {
 
 			FinderPath finderPath = _finderPathCountByStructureVersionId;
 
@@ -1194,8 +1193,8 @@ public class DDMFieldPersistenceImpl
 		OrderByComparator<DDMField> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMField.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMField.class)) {
 
 			fieldType = Objects.toString(fieldType, "");
 
@@ -1631,8 +1630,8 @@ public class DDMFieldPersistenceImpl
 	@Override
 	public int countByC_F(long companyId, String fieldType) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMField.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMField.class)) {
 
 			fieldType = Objects.toString(fieldType, "");
 
@@ -1784,8 +1783,8 @@ public class DDMFieldPersistenceImpl
 		OrderByComparator<DDMField> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMField.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMField.class)) {
 
 			fieldName = Objects.toString(fieldName, "");
 
@@ -2221,8 +2220,8 @@ public class DDMFieldPersistenceImpl
 	@Override
 	public int countByS_F(long storageId, String fieldName) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMField.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMField.class)) {
 
 			fieldName = Objects.toString(fieldName, "");
 
@@ -2358,8 +2357,8 @@ public class DDMFieldPersistenceImpl
 		long storageId, String instanceId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMField.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMField.class)) {
 
 			instanceId = Objects.toString(instanceId, "");
 
@@ -2480,8 +2479,8 @@ public class DDMFieldPersistenceImpl
 	@Override
 	public int countByS_I(long storageId, String instanceId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMField.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMField.class)) {
 
 			instanceId = Objects.toString(instanceId, "");
 
@@ -2576,8 +2575,8 @@ public class DDMFieldPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmField.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmField.getCtCollectionId())) {
 
 			entityCache.putResult(
 				DDMFieldImpl.class, ddmField.getPrimaryKey(), ddmField);
@@ -2616,8 +2615,8 @@ public class DDMFieldPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						ddmField.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ddmField.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						DDMFieldImpl.class, ddmField.getPrimaryKey()) == null) {
@@ -2681,8 +2680,8 @@ public class DDMFieldPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmFieldModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmFieldModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				ddmFieldModelImpl.getStorageId(),
@@ -2798,68 +2797,62 @@ public class DDMFieldPersistenceImpl
 
 	@Override
 	public DDMField updateImpl(DDMField ddmField) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = ddmField.isNew();
 
-			boolean isNew = ddmField.isNew();
+		if (!(ddmField instanceof DDMFieldModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(ddmField instanceof DDMFieldModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(ddmField.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						ddmField);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in ddmField proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(ddmField.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(ddmField);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DDMField implementation " +
-						ddmField.getClass());
+					"Implement ModelWrapper in ddmField proxy " +
+						invocationHandler.getClass());
 			}
 
-			DDMFieldModelImpl ddmFieldModelImpl = (DDMFieldModelImpl)ddmField;
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(ddmField)) {
-					if (!isNew) {
-						session.evict(
-							DDMFieldImpl.class, ddmField.getPrimaryKeyObj());
-					}
-
-					session.save(ddmField);
-				}
-				else {
-					ddmField = (DDMField)session.merge(ddmField);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				DDMFieldImpl.class, ddmFieldModelImpl, false, true);
-
-			cacheUniqueFindersCache(ddmFieldModelImpl);
-
-			if (isNew) {
-				ddmField.setNew(false);
-			}
-
-			ddmField.resetOriginalValues();
-
-			return ddmField;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DDMField implementation " +
+					ddmField.getClass());
 		}
+
+		DDMFieldModelImpl ddmFieldModelImpl = (DDMFieldModelImpl)ddmField;
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(ddmField)) {
+				if (!isNew) {
+					session.evict(
+						DDMFieldImpl.class, ddmField.getPrimaryKeyObj());
+				}
+
+				session.save(ddmField);
+			}
+			else {
+				ddmField = (DDMField)session.merge(ddmField);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			DDMFieldImpl.class, ddmFieldModelImpl, false, true);
+
+		cacheUniqueFindersCache(ddmFieldModelImpl);
+
+		if (isNew) {
+			ddmField.setNew(false);
+		}
+
+		ddmField.resetOriginalValues();
+
+		return ddmField;
 	}
 
 	/**
@@ -2909,44 +2902,39 @@ public class DDMFieldPersistenceImpl
 	public DDMField fetchByPrimaryKey(Serializable primaryKey) {
 		if (ctPersistenceHelper.isProductionMode(DDMField.class, primaryKey)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DDMField ddmField = (DDMField)entityCache.getResult(
+			DDMFieldImpl.class, primaryKey);
 
-			DDMField ddmField = (DDMField)entityCache.getResult(
-				DDMFieldImpl.class, primaryKey);
-
-			if (ddmField != null) {
-				return ddmField;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ddmField = (DDMField)session.get(
-					DDMFieldImpl.class, primaryKey);
-
-				if (ddmField != null) {
-					cacheResult(ddmField);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (ddmField != null) {
 			return ddmField;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			ddmField = (DDMField)session.get(DDMFieldImpl.class, primaryKey);
+
+			if (ddmField != null) {
+				cacheResult(ddmField);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return ddmField;
 	}
 
 	/**
@@ -2966,8 +2954,8 @@ public class DDMFieldPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(DDMField.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2999,9 +2987,8 @@ public class DDMFieldPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							DDMField.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						DDMField.class, primaryKey)) {
 
 				DDMField ddmField = (DDMField)entityCache.getResult(
 					DDMFieldImpl.class, primaryKey);
@@ -3149,8 +3136,8 @@ public class DDMFieldPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMField.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMField.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3243,8 +3230,8 @@ public class DDMFieldPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMField.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMField.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

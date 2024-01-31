@@ -18,7 +18,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -185,9 +184,8 @@ public class CommercePriceModifierPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -597,9 +595,8 @@ public class CommercePriceModifierPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -729,9 +726,8 @@ public class CommercePriceModifierPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -855,9 +851,8 @@ public class CommercePriceModifierPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1012,9 +1007,8 @@ public class CommercePriceModifierPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1455,9 +1449,8 @@ public class CommercePriceModifierPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1605,9 +1598,8 @@ public class CommercePriceModifierPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1997,9 +1989,8 @@ public class CommercePriceModifierPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2127,9 +2118,8 @@ public class CommercePriceModifierPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2527,9 +2517,8 @@ public class CommercePriceModifierPersistenceImpl
 	@Override
 	public int countByCommercePriceListId(long commercePriceListId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			FinderPath finderPath = _finderPathCountByCommercePriceListId;
 
@@ -2663,9 +2652,8 @@ public class CommercePriceModifierPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			target = Objects.toString(target, "");
 
@@ -3106,9 +3094,8 @@ public class CommercePriceModifierPersistenceImpl
 	@Override
 	public int countByC_T(long companyId, String target) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			target = Objects.toString(target, "");
 
@@ -3262,9 +3249,8 @@ public class CommercePriceModifierPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3692,9 +3678,8 @@ public class CommercePriceModifierPersistenceImpl
 	@Override
 	public int countByLtD_S(Date displayDate, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByLtD_S;
 
@@ -3846,9 +3831,8 @@ public class CommercePriceModifierPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4276,9 +4260,8 @@ public class CommercePriceModifierPersistenceImpl
 	@Override
 	public int countByLtE_S(Date expirationDate, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByLtE_S;
 
@@ -4439,9 +4422,8 @@ public class CommercePriceModifierPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4951,9 +4933,8 @@ public class CommercePriceModifierPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			Object[] finderArgs = null;
 
@@ -5097,9 +5078,8 @@ public class CommercePriceModifierPersistenceImpl
 	@Override
 	public int countByG_C_S(long groupId, long companyId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_S;
 
@@ -5170,9 +5150,8 @@ public class CommercePriceModifierPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(groupIds), companyId, status
@@ -5341,9 +5320,8 @@ public class CommercePriceModifierPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5843,9 +5821,8 @@ public class CommercePriceModifierPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			Object[] finderArgs = null;
 
@@ -5989,9 +5966,8 @@ public class CommercePriceModifierPersistenceImpl
 	@Override
 	public int countByG_C_NotS(long groupId, long companyId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_C_NotS;
 
@@ -6062,9 +6038,8 @@ public class CommercePriceModifierPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(groupIds), companyId, status
@@ -6214,9 +6189,8 @@ public class CommercePriceModifierPersistenceImpl
 		String externalReferenceCode, long companyId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -6343,9 +6317,8 @@ public class CommercePriceModifierPersistenceImpl
 	@Override
 	public int countByERC_C(String externalReferenceCode, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -6449,8 +6422,8 @@ public class CommercePriceModifierPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					commercePriceModifier.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					commercePriceModifier.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CommercePriceModifierImpl.class,
@@ -6504,8 +6477,8 @@ public class CommercePriceModifierPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						commercePriceModifier.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						commercePriceModifier.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CommercePriceModifierImpl.class,
@@ -6575,8 +6548,8 @@ public class CommercePriceModifierPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					commercePriceModifierModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					commercePriceModifierModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				commercePriceModifierModelImpl.getUuid(),
@@ -6718,181 +6691,170 @@ public class CommercePriceModifierPersistenceImpl
 	public CommercePriceModifier updateImpl(
 		CommercePriceModifier commercePriceModifier) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = commercePriceModifier.isNew();
 
-			boolean isNew = commercePriceModifier.isNew();
+		if (!(commercePriceModifier instanceof
+				CommercePriceModifierModelImpl)) {
 
-			if (!(commercePriceModifier instanceof
-					CommercePriceModifierModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(commercePriceModifier.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						commercePriceModifier);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in commercePriceModifier proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(commercePriceModifier.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					commercePriceModifier);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CommercePriceModifier implementation " +
-						commercePriceModifier.getClass());
+					"Implement ModelWrapper in commercePriceModifier proxy " +
+						invocationHandler.getClass());
 			}
 
-			CommercePriceModifierModelImpl commercePriceModifierModelImpl =
-				(CommercePriceModifierModelImpl)commercePriceModifier;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CommercePriceModifier implementation " +
+					commercePriceModifier.getClass());
+		}
 
-			if (Validator.isNull(commercePriceModifier.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		CommercePriceModifierModelImpl commercePriceModifierModelImpl =
+			(CommercePriceModifierModelImpl)commercePriceModifier;
 
-				commercePriceModifier.setUuid(uuid);
-			}
+		if (Validator.isNull(commercePriceModifier.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
 
-			if (Validator.isNull(
+			commercePriceModifier.setUuid(uuid);
+		}
+
+		if (Validator.isNull(
+				commercePriceModifier.getExternalReferenceCode())) {
+
+			commercePriceModifier.setExternalReferenceCode(
+				commercePriceModifier.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					commercePriceModifierModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
 					commercePriceModifier.getExternalReferenceCode())) {
 
-				commercePriceModifier.setExternalReferenceCode(
-					commercePriceModifier.getUuid());
-			}
-			else {
-				if (!Objects.equals(
-						commercePriceModifierModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						commercePriceModifier.getExternalReferenceCode())) {
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
 
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
+				if (userId > 0) {
+					long companyId = commercePriceModifier.getCompanyId();
 
-					if (userId > 0) {
-						long companyId = commercePriceModifier.getCompanyId();
+					long groupId = commercePriceModifier.getGroupId();
 
-						long groupId = commercePriceModifier.getGroupId();
+					long classPK = 0;
 
-						long classPK = 0;
-
-						if (!isNew) {
-							classPK = commercePriceModifier.getPrimaryKey();
-						}
-
-						try {
-							commercePriceModifier.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									CommercePriceModifier.class.getName(),
-									classPK, ContentTypes.TEXT_HTML,
-									Sanitizer.MODE_ALL,
-									commercePriceModifier.
-										getExternalReferenceCode(),
-									null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
-
-				CommercePriceModifier ercCommercePriceModifier = fetchByERC_C(
-					commercePriceModifier.getExternalReferenceCode(),
-					commercePriceModifier.getCompanyId());
-
-				if (isNew) {
-					if (ercCommercePriceModifier != null) {
-						throw new DuplicateCommercePriceModifierExternalReferenceCodeException(
-							"Duplicate commerce price modifier with external reference code " +
-								commercePriceModifier.
-									getExternalReferenceCode() +
-										" and company " +
-											commercePriceModifier.
-												getCompanyId());
-					}
-				}
-				else {
-					if ((ercCommercePriceModifier != null) &&
-						(commercePriceModifier.getCommercePriceModifierId() !=
-							ercCommercePriceModifier.
-								getCommercePriceModifierId())) {
-
-						throw new DuplicateCommercePriceModifierExternalReferenceCodeException(
-							"Duplicate commerce price modifier with external reference code " +
-								commercePriceModifier.
-									getExternalReferenceCode() +
-										" and company " +
-											commercePriceModifier.
-												getCompanyId());
-					}
-				}
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (commercePriceModifier.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					commercePriceModifier.setCreateDate(date);
-				}
-				else {
-					commercePriceModifier.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!commercePriceModifierModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					commercePriceModifier.setModifiedDate(date);
-				}
-				else {
-					commercePriceModifier.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(commercePriceModifier)) {
 					if (!isNew) {
-						session.evict(
-							CommercePriceModifierImpl.class,
-							commercePriceModifier.getPrimaryKeyObj());
+						classPK = commercePriceModifier.getPrimaryKey();
 					}
 
-					session.save(commercePriceModifier);
+					try {
+						commercePriceModifier.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								CommercePriceModifier.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								commercePriceModifier.
+									getExternalReferenceCode(),
+								null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
 				}
-				else {
-					commercePriceModifier =
-						(CommercePriceModifier)session.merge(
-							commercePriceModifier);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
 			}
 
-			entityCache.putResult(
-				CommercePriceModifierImpl.class, commercePriceModifierModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(commercePriceModifierModelImpl);
+			CommercePriceModifier ercCommercePriceModifier = fetchByERC_C(
+				commercePriceModifier.getExternalReferenceCode(),
+				commercePriceModifier.getCompanyId());
 
 			if (isNew) {
-				commercePriceModifier.setNew(false);
+				if (ercCommercePriceModifier != null) {
+					throw new DuplicateCommercePriceModifierExternalReferenceCodeException(
+						"Duplicate commerce price modifier with external reference code " +
+							commercePriceModifier.getExternalReferenceCode() +
+								" and company " +
+									commercePriceModifier.getCompanyId());
+				}
 			}
+			else {
+				if ((ercCommercePriceModifier != null) &&
+					(commercePriceModifier.getCommercePriceModifierId() !=
+						ercCommercePriceModifier.
+							getCommercePriceModifierId())) {
 
-			commercePriceModifier.resetOriginalValues();
-
-			return commercePriceModifier;
+					throw new DuplicateCommercePriceModifierExternalReferenceCodeException(
+						"Duplicate commerce price modifier with external reference code " +
+							commercePriceModifier.getExternalReferenceCode() +
+								" and company " +
+									commercePriceModifier.getCompanyId());
+				}
+			}
 		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (commercePriceModifier.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				commercePriceModifier.setCreateDate(date);
+			}
+			else {
+				commercePriceModifier.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!commercePriceModifierModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				commercePriceModifier.setModifiedDate(date);
+			}
+			else {
+				commercePriceModifier.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(commercePriceModifier)) {
+				if (!isNew) {
+					session.evict(
+						CommercePriceModifierImpl.class,
+						commercePriceModifier.getPrimaryKeyObj());
+				}
+
+				session.save(commercePriceModifier);
+			}
+			else {
+				commercePriceModifier = (CommercePriceModifier)session.merge(
+					commercePriceModifier);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CommercePriceModifierImpl.class, commercePriceModifierModelImpl,
+			false, true);
+
+		cacheUniqueFindersCache(commercePriceModifierModelImpl);
+
+		if (isNew) {
+			commercePriceModifier.setNew(false);
+		}
+
+		commercePriceModifier.resetOriginalValues();
+
+		return commercePriceModifier;
 	}
 
 	/**
@@ -6947,45 +6909,41 @@ public class CommercePriceModifierPersistenceImpl
 				CommercePriceModifier.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CommercePriceModifier commercePriceModifier =
+			(CommercePriceModifier)entityCache.getResult(
+				CommercePriceModifierImpl.class, primaryKey);
 
-			CommercePriceModifier commercePriceModifier =
-				(CommercePriceModifier)entityCache.getResult(
-					CommercePriceModifierImpl.class, primaryKey);
-
-			if (commercePriceModifier != null) {
-				return commercePriceModifier;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				commercePriceModifier = (CommercePriceModifier)session.get(
-					CommercePriceModifierImpl.class, primaryKey);
-
-				if (commercePriceModifier != null) {
-					cacheResult(commercePriceModifier);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (commercePriceModifier != null) {
 			return commercePriceModifier;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			commercePriceModifier = (CommercePriceModifier)session.get(
+				CommercePriceModifierImpl.class, primaryKey);
+
+			if (commercePriceModifier != null) {
+				cacheResult(commercePriceModifier);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return commercePriceModifier;
 	}
 
 	/**
@@ -7007,8 +6965,8 @@ public class CommercePriceModifierPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(CommercePriceModifier.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -7042,9 +7000,8 @@ public class CommercePriceModifierPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CommercePriceModifier.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CommercePriceModifier.class, primaryKey)) {
 
 				CommercePriceModifier commercePriceModifier =
 					(CommercePriceModifier)entityCache.getResult(
@@ -7199,9 +7156,8 @@ public class CommercePriceModifierPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7295,9 +7251,8 @@ public class CommercePriceModifierPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceModifier.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceModifier.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

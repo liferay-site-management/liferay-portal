@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -165,9 +164,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -573,9 +571,8 @@ public class LayoutFriendlyURLPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -704,9 +701,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -827,9 +823,8 @@ public class LayoutFriendlyURLPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -982,9 +977,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1423,9 +1417,8 @@ public class LayoutFriendlyURLPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1573,9 +1566,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1960,9 +1952,8 @@ public class LayoutFriendlyURLPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2087,9 +2078,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2477,9 +2467,8 @@ public class LayoutFriendlyURLPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2601,9 +2590,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2983,9 +2971,8 @@ public class LayoutFriendlyURLPersistenceImpl
 	@Override
 	public int countByPlid(long plid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			FinderPath finderPath = _finderPathCountByPlid;
 
@@ -3117,9 +3104,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			friendlyURL = Objects.toString(friendlyURL, "");
 
@@ -3560,9 +3546,8 @@ public class LayoutFriendlyURLPersistenceImpl
 	@Override
 	public int countByC_F(long companyId, String friendlyURL) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			friendlyURL = Objects.toString(friendlyURL, "");
 
@@ -3715,9 +3700,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			friendlyURL = Objects.toString(friendlyURL, "");
 
@@ -4158,9 +4142,8 @@ public class LayoutFriendlyURLPersistenceImpl
 	@Override
 	public int countByP_F(long plid, String friendlyURL) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			friendlyURL = Objects.toString(friendlyURL, "");
 
@@ -4340,9 +4323,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			Object[] finderArgs = null;
 
@@ -4564,9 +4546,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		long plid, String languageId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -4688,9 +4669,8 @@ public class LayoutFriendlyURLPersistenceImpl
 	@Override
 	public int countByP_L(long plid, String languageId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -4771,9 +4751,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		languageId = Objects.toString(languageId, "");
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(plids), languageId
@@ -4979,9 +4958,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			friendlyURL = Objects.toString(friendlyURL, "");
 
@@ -5454,9 +5432,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		long groupId, boolean privateLayout, String friendlyURL) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			friendlyURL = Objects.toString(friendlyURL, "");
 
@@ -5621,9 +5598,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		String languageId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			friendlyURL = Objects.toString(friendlyURL, "");
 			languageId = Objects.toString(languageId, "");
@@ -5780,9 +5756,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		String languageId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			friendlyURL = Objects.toString(friendlyURL, "");
 			languageId = Objects.toString(languageId, "");
@@ -5914,8 +5889,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					layoutFriendlyURL.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					layoutFriendlyURL.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				LayoutFriendlyURLImpl.class, layoutFriendlyURL.getPrimaryKey(),
@@ -5974,8 +5949,8 @@ public class LayoutFriendlyURLPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						layoutFriendlyURL.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						layoutFriendlyURL.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						LayoutFriendlyURLImpl.class,
@@ -6043,8 +6018,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					layoutFriendlyURLModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					layoutFriendlyURLModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				layoutFriendlyURLModelImpl.getUuid(),
@@ -6195,103 +6170,98 @@ public class LayoutFriendlyURLPersistenceImpl
 
 	@Override
 	public LayoutFriendlyURL updateImpl(LayoutFriendlyURL layoutFriendlyURL) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = layoutFriendlyURL.isNew();
 
-			boolean isNew = layoutFriendlyURL.isNew();
+		if (!(layoutFriendlyURL instanceof LayoutFriendlyURLModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(layoutFriendlyURL instanceof LayoutFriendlyURLModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(layoutFriendlyURL.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						layoutFriendlyURL);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in layoutFriendlyURL proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(layoutFriendlyURL.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					layoutFriendlyURL);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom LayoutFriendlyURL implementation " +
-						layoutFriendlyURL.getClass());
+					"Implement ModelWrapper in layoutFriendlyURL proxy " +
+						invocationHandler.getClass());
 			}
 
-			LayoutFriendlyURLModelImpl layoutFriendlyURLModelImpl =
-				(LayoutFriendlyURLModelImpl)layoutFriendlyURL;
-
-			if (Validator.isNull(layoutFriendlyURL.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				layoutFriendlyURL.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (layoutFriendlyURL.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					layoutFriendlyURL.setCreateDate(date);
-				}
-				else {
-					layoutFriendlyURL.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!layoutFriendlyURLModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					layoutFriendlyURL.setModifiedDate(date);
-				}
-				else {
-					layoutFriendlyURL.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(layoutFriendlyURL)) {
-					if (!isNew) {
-						session.evict(
-							LayoutFriendlyURLImpl.class,
-							layoutFriendlyURL.getPrimaryKeyObj());
-					}
-
-					session.save(layoutFriendlyURL);
-				}
-				else {
-					layoutFriendlyURL = (LayoutFriendlyURL)session.merge(
-						layoutFriendlyURL);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				LayoutFriendlyURLImpl.class, layoutFriendlyURLModelImpl, false,
-				true);
-
-			cacheUniqueFindersCache(layoutFriendlyURLModelImpl);
-
-			if (isNew) {
-				layoutFriendlyURL.setNew(false);
-			}
-
-			layoutFriendlyURL.resetOriginalValues();
-
-			return layoutFriendlyURL;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom LayoutFriendlyURL implementation " +
+					layoutFriendlyURL.getClass());
 		}
+
+		LayoutFriendlyURLModelImpl layoutFriendlyURLModelImpl =
+			(LayoutFriendlyURLModelImpl)layoutFriendlyURL;
+
+		if (Validator.isNull(layoutFriendlyURL.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			layoutFriendlyURL.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (layoutFriendlyURL.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				layoutFriendlyURL.setCreateDate(date);
+			}
+			else {
+				layoutFriendlyURL.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!layoutFriendlyURLModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				layoutFriendlyURL.setModifiedDate(date);
+			}
+			else {
+				layoutFriendlyURL.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(layoutFriendlyURL)) {
+				if (!isNew) {
+					session.evict(
+						LayoutFriendlyURLImpl.class,
+						layoutFriendlyURL.getPrimaryKeyObj());
+				}
+
+				session.save(layoutFriendlyURL);
+			}
+			else {
+				layoutFriendlyURL = (LayoutFriendlyURL)session.merge(
+					layoutFriendlyURL);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			LayoutFriendlyURLImpl.class, layoutFriendlyURLModelImpl, false,
+			true);
+
+		cacheUniqueFindersCache(layoutFriendlyURLModelImpl);
+
+		if (isNew) {
+			layoutFriendlyURL.setNew(false);
+		}
+
+		layoutFriendlyURL.resetOriginalValues();
+
+		return layoutFriendlyURL;
 	}
 
 	/**
@@ -6345,45 +6315,41 @@ public class LayoutFriendlyURLPersistenceImpl
 				LayoutFriendlyURL.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		LayoutFriendlyURL layoutFriendlyURL =
+			(LayoutFriendlyURL)EntityCacheUtil.getResult(
+				LayoutFriendlyURLImpl.class, primaryKey);
 
-			LayoutFriendlyURL layoutFriendlyURL =
-				(LayoutFriendlyURL)EntityCacheUtil.getResult(
-					LayoutFriendlyURLImpl.class, primaryKey);
-
-			if (layoutFriendlyURL != null) {
-				return layoutFriendlyURL;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				layoutFriendlyURL = (LayoutFriendlyURL)session.get(
-					LayoutFriendlyURLImpl.class, primaryKey);
-
-				if (layoutFriendlyURL != null) {
-					cacheResult(layoutFriendlyURL);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (layoutFriendlyURL != null) {
 			return layoutFriendlyURL;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			layoutFriendlyURL = (LayoutFriendlyURL)session.get(
+				LayoutFriendlyURLImpl.class, primaryKey);
+
+			if (layoutFriendlyURL != null) {
+				cacheResult(layoutFriendlyURL);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return layoutFriendlyURL;
 	}
 
 	/**
@@ -6403,8 +6369,8 @@ public class LayoutFriendlyURLPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(LayoutFriendlyURL.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -6437,9 +6403,8 @@ public class LayoutFriendlyURLPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							LayoutFriendlyURL.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						LayoutFriendlyURL.class, primaryKey)) {
 
 				LayoutFriendlyURL layoutFriendlyURL =
 					(LayoutFriendlyURL)EntityCacheUtil.getResult(
@@ -6593,9 +6558,8 @@ public class LayoutFriendlyURLPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6688,9 +6652,8 @@ public class LayoutFriendlyURLPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutFriendlyURL.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutFriendlyURL.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

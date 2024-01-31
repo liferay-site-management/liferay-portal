@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -172,9 +171,8 @@ public class MBMailingListPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBMailingList.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMailingList.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -576,9 +574,8 @@ public class MBMailingListPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBMailingList.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMailingList.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -707,9 +704,8 @@ public class MBMailingListPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBMailingList.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMailingList.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -830,9 +826,8 @@ public class MBMailingListPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBMailingList.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMailingList.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -985,9 +980,8 @@ public class MBMailingListPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBMailingList.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMailingList.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1425,9 +1419,8 @@ public class MBMailingListPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBMailingList.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMailingList.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1574,9 +1567,8 @@ public class MBMailingListPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBMailingList.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMailingList.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1957,9 +1949,8 @@ public class MBMailingListPersistenceImpl
 	@Override
 	public int countByActive(boolean active) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBMailingList.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMailingList.class)) {
 
 			FinderPath finderPath = _finderPathCountByActive;
 
@@ -2072,9 +2063,8 @@ public class MBMailingListPersistenceImpl
 		long groupId, long categoryId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBMailingList.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMailingList.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2182,9 +2172,8 @@ public class MBMailingListPersistenceImpl
 	@Override
 	public int countByG_C(long groupId, long categoryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBMailingList.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMailingList.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C;
 
@@ -2270,8 +2259,8 @@ public class MBMailingListPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					mbMailingList.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					mbMailingList.getCtCollectionId())) {
 
 			entityCache.putResult(
 				MBMailingListImpl.class, mbMailingList.getPrimaryKey(),
@@ -2318,8 +2307,8 @@ public class MBMailingListPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						mbMailingList.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						mbMailingList.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						MBMailingListImpl.class,
@@ -2384,8 +2373,8 @@ public class MBMailingListPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					mbMailingListModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					mbMailingListModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				mbMailingListModelImpl.getUuid(),
@@ -2519,101 +2508,95 @@ public class MBMailingListPersistenceImpl
 
 	@Override
 	public MBMailingList updateImpl(MBMailingList mbMailingList) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = mbMailingList.isNew();
 
-			boolean isNew = mbMailingList.isNew();
+		if (!(mbMailingList instanceof MBMailingListModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(mbMailingList instanceof MBMailingListModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(mbMailingList.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						mbMailingList);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in mbMailingList proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(mbMailingList.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					mbMailingList);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom MBMailingList implementation " +
-						mbMailingList.getClass());
+					"Implement ModelWrapper in mbMailingList proxy " +
+						invocationHandler.getClass());
 			}
 
-			MBMailingListModelImpl mbMailingListModelImpl =
-				(MBMailingListModelImpl)mbMailingList;
-
-			if (Validator.isNull(mbMailingList.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				mbMailingList.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (mbMailingList.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					mbMailingList.setCreateDate(date);
-				}
-				else {
-					mbMailingList.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!mbMailingListModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					mbMailingList.setModifiedDate(date);
-				}
-				else {
-					mbMailingList.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(mbMailingList)) {
-					if (!isNew) {
-						session.evict(
-							MBMailingListImpl.class,
-							mbMailingList.getPrimaryKeyObj());
-					}
-
-					session.save(mbMailingList);
-				}
-				else {
-					mbMailingList = (MBMailingList)session.merge(mbMailingList);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				MBMailingListImpl.class, mbMailingListModelImpl, false, true);
-
-			cacheUniqueFindersCache(mbMailingListModelImpl);
-
-			if (isNew) {
-				mbMailingList.setNew(false);
-			}
-
-			mbMailingList.resetOriginalValues();
-
-			return mbMailingList;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom MBMailingList implementation " +
+					mbMailingList.getClass());
 		}
+
+		MBMailingListModelImpl mbMailingListModelImpl =
+			(MBMailingListModelImpl)mbMailingList;
+
+		if (Validator.isNull(mbMailingList.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			mbMailingList.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (mbMailingList.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				mbMailingList.setCreateDate(date);
+			}
+			else {
+				mbMailingList.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!mbMailingListModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				mbMailingList.setModifiedDate(date);
+			}
+			else {
+				mbMailingList.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(mbMailingList)) {
+				if (!isNew) {
+					session.evict(
+						MBMailingListImpl.class,
+						mbMailingList.getPrimaryKeyObj());
+				}
+
+				session.save(mbMailingList);
+			}
+			else {
+				mbMailingList = (MBMailingList)session.merge(mbMailingList);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			MBMailingListImpl.class, mbMailingListModelImpl, false, true);
+
+		cacheUniqueFindersCache(mbMailingListModelImpl);
+
+		if (isNew) {
+			mbMailingList.setNew(false);
+		}
+
+		mbMailingList.resetOriginalValues();
+
+		return mbMailingList;
 	}
 
 	/**
@@ -2667,44 +2650,40 @@ public class MBMailingListPersistenceImpl
 				MBMailingList.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		MBMailingList mbMailingList = (MBMailingList)entityCache.getResult(
+			MBMailingListImpl.class, primaryKey);
 
-			MBMailingList mbMailingList = (MBMailingList)entityCache.getResult(
+		if (mbMailingList != null) {
+			return mbMailingList;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			mbMailingList = (MBMailingList)session.get(
 				MBMailingListImpl.class, primaryKey);
 
 			if (mbMailingList != null) {
-				return mbMailingList;
+				cacheResult(mbMailingList);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				mbMailingList = (MBMailingList)session.get(
-					MBMailingListImpl.class, primaryKey);
-
-				if (mbMailingList != null) {
-					cacheResult(mbMailingList);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return mbMailingList;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return mbMailingList;
 	}
 
 	/**
@@ -2724,8 +2703,8 @@ public class MBMailingListPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(MBMailingList.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2758,9 +2737,8 @@ public class MBMailingListPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							MBMailingList.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						MBMailingList.class, primaryKey)) {
 
 				MBMailingList mbMailingList =
 					(MBMailingList)entityCache.getResult(
@@ -2912,9 +2890,8 @@ public class MBMailingListPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBMailingList.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMailingList.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3007,9 +2984,8 @@ public class MBMailingListPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBMailingList.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBMailingList.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

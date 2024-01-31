@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -174,9 +173,8 @@ public class DDMStructureVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructureVersion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructureVersion.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -568,9 +566,8 @@ public class DDMStructureVersionPersistenceImpl
 	@Override
 	public int countByStructureId(long structureId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructureVersion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructureVersion.class)) {
 
 			FinderPath finderPath = _finderPathCountByStructureId;
 
@@ -684,9 +681,8 @@ public class DDMStructureVersionPersistenceImpl
 		long structureId, String version, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructureVersion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructureVersion.class)) {
 
 			version = Objects.toString(version, "");
 
@@ -810,9 +806,8 @@ public class DDMStructureVersionPersistenceImpl
 	@Override
 	public int countByS_V(long structureId, String version) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructureVersion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructureVersion.class)) {
 
 			version = Objects.toString(version, "");
 
@@ -965,9 +960,8 @@ public class DDMStructureVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructureVersion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructureVersion.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1382,9 +1376,8 @@ public class DDMStructureVersionPersistenceImpl
 	@Override
 	public int countByS_S(long structureId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructureVersion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructureVersion.class)) {
 
 			FinderPath finderPath = _finderPathCountByS_S;
 
@@ -1469,8 +1462,8 @@ public class DDMStructureVersionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmStructureVersion.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmStructureVersion.getCtCollectionId())) {
 
 			entityCache.putResult(
 				DDMStructureVersionImpl.class,
@@ -1512,8 +1505,8 @@ public class DDMStructureVersionPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						ddmStructureVersion.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ddmStructureVersion.getCtCollectionId())) {
 
 				DDMStructureVersion cachedDDMStructureVersion =
 					(DDMStructureVersion)entityCache.getResult(
@@ -1593,8 +1586,8 @@ public class DDMStructureVersionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmStructureVersionModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmStructureVersionModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				ddmStructureVersionModelImpl.getStructureId(),
@@ -1720,89 +1713,82 @@ public class DDMStructureVersionPersistenceImpl
 	public DDMStructureVersion updateImpl(
 		DDMStructureVersion ddmStructureVersion) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = ddmStructureVersion.isNew();
 
-			boolean isNew = ddmStructureVersion.isNew();
+		if (!(ddmStructureVersion instanceof DDMStructureVersionModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(ddmStructureVersion instanceof
-					DDMStructureVersionModelImpl)) {
-
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(ddmStructureVersion.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						ddmStructureVersion);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in ddmStructureVersion proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(ddmStructureVersion.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					ddmStructureVersion);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DDMStructureVersion implementation " +
-						ddmStructureVersion.getClass());
+					"Implement ModelWrapper in ddmStructureVersion proxy " +
+						invocationHandler.getClass());
 			}
 
-			DDMStructureVersionModelImpl ddmStructureVersionModelImpl =
-				(DDMStructureVersionModelImpl)ddmStructureVersion;
-
-			if (isNew && (ddmStructureVersion.getCreateDate() == null)) {
-				ServiceContext serviceContext =
-					ServiceContextThreadLocal.getServiceContext();
-
-				Date date = new Date();
-
-				if (serviceContext == null) {
-					ddmStructureVersion.setCreateDate(date);
-				}
-				else {
-					ddmStructureVersion.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(ddmStructureVersion)) {
-					if (!isNew) {
-						session.evict(
-							DDMStructureVersionImpl.class,
-							ddmStructureVersion.getPrimaryKeyObj());
-					}
-
-					session.save(ddmStructureVersion);
-				}
-				else {
-					ddmStructureVersion = (DDMStructureVersion)session.merge(
-						ddmStructureVersion);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				DDMStructureVersionImpl.class, ddmStructureVersionModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(ddmStructureVersionModelImpl);
-
-			if (isNew) {
-				ddmStructureVersion.setNew(false);
-			}
-
-			ddmStructureVersion.resetOriginalValues();
-
-			return ddmStructureVersion;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DDMStructureVersion implementation " +
+					ddmStructureVersion.getClass());
 		}
+
+		DDMStructureVersionModelImpl ddmStructureVersionModelImpl =
+			(DDMStructureVersionModelImpl)ddmStructureVersion;
+
+		if (isNew && (ddmStructureVersion.getCreateDate() == null)) {
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (serviceContext == null) {
+				ddmStructureVersion.setCreateDate(date);
+			}
+			else {
+				ddmStructureVersion.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(ddmStructureVersion)) {
+				if (!isNew) {
+					session.evict(
+						DDMStructureVersionImpl.class,
+						ddmStructureVersion.getPrimaryKeyObj());
+				}
+
+				session.save(ddmStructureVersion);
+			}
+			else {
+				ddmStructureVersion = (DDMStructureVersion)session.merge(
+					ddmStructureVersion);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			DDMStructureVersionImpl.class, ddmStructureVersionModelImpl, false,
+			true);
+
+		cacheUniqueFindersCache(ddmStructureVersionModelImpl);
+
+		if (isNew) {
+			ddmStructureVersion.setNew(false);
+		}
+
+		ddmStructureVersion.resetOriginalValues();
+
+		return ddmStructureVersion;
 	}
 
 	/**
@@ -1856,45 +1842,41 @@ public class DDMStructureVersionPersistenceImpl
 				DDMStructureVersion.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DDMStructureVersion ddmStructureVersion =
+			(DDMStructureVersion)entityCache.getResult(
+				DDMStructureVersionImpl.class, primaryKey);
 
-			DDMStructureVersion ddmStructureVersion =
-				(DDMStructureVersion)entityCache.getResult(
-					DDMStructureVersionImpl.class, primaryKey);
-
-			if (ddmStructureVersion != null) {
-				return ddmStructureVersion;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ddmStructureVersion = (DDMStructureVersion)session.get(
-					DDMStructureVersionImpl.class, primaryKey);
-
-				if (ddmStructureVersion != null) {
-					cacheResult(ddmStructureVersion);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (ddmStructureVersion != null) {
 			return ddmStructureVersion;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			ddmStructureVersion = (DDMStructureVersion)session.get(
+				DDMStructureVersionImpl.class, primaryKey);
+
+			if (ddmStructureVersion != null) {
+				cacheResult(ddmStructureVersion);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return ddmStructureVersion;
 	}
 
 	/**
@@ -1914,8 +1896,8 @@ public class DDMStructureVersionPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(DDMStructureVersion.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -1949,9 +1931,8 @@ public class DDMStructureVersionPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							DDMStructureVersion.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						DDMStructureVersion.class, primaryKey)) {
 
 				DDMStructureVersion ddmStructureVersion =
 					(DDMStructureVersion)entityCache.getResult(
@@ -2106,9 +2087,8 @@ public class DDMStructureVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructureVersion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructureVersion.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2202,9 +2182,8 @@ public class DDMStructureVersionPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStructureVersion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStructureVersion.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

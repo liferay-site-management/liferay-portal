@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -172,9 +171,8 @@ public class MBDiscussionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBDiscussion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBDiscussion.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -574,9 +572,8 @@ public class MBDiscussionPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBDiscussion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBDiscussion.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -705,9 +702,8 @@ public class MBDiscussionPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBDiscussion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBDiscussion.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -828,9 +824,8 @@ public class MBDiscussionPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBDiscussion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBDiscussion.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -983,9 +978,8 @@ public class MBDiscussionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBDiscussion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBDiscussion.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1421,9 +1415,8 @@ public class MBDiscussionPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBDiscussion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBDiscussion.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1551,9 +1544,8 @@ public class MBDiscussionPersistenceImpl
 	@Override
 	public MBDiscussion fetchByThreadId(long threadId, boolean useFinderCache) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBDiscussion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBDiscussion.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1653,9 +1645,8 @@ public class MBDiscussionPersistenceImpl
 	@Override
 	public int countByThreadId(long threadId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBDiscussion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBDiscussion.class)) {
 
 			FinderPath finderPath = _finderPathCountByThreadId;
 
@@ -1768,9 +1759,8 @@ public class MBDiscussionPersistenceImpl
 		long classNameId, long classPK, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBDiscussion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBDiscussion.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1878,9 +1868,8 @@ public class MBDiscussionPersistenceImpl
 	@Override
 	public int countByC_C(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBDiscussion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBDiscussion.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -1965,8 +1954,8 @@ public class MBDiscussionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					mbDiscussion.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					mbDiscussion.getCtCollectionId())) {
 
 			entityCache.putResult(
 				MBDiscussionImpl.class, mbDiscussion.getPrimaryKey(),
@@ -2017,8 +2006,8 @@ public class MBDiscussionPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						mbDiscussion.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						mbDiscussion.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						MBDiscussionImpl.class, mbDiscussion.getPrimaryKey()) ==
@@ -2083,8 +2072,8 @@ public class MBDiscussionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					mbDiscussionModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					mbDiscussionModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				mbDiscussionModelImpl.getUuid(),
@@ -2225,101 +2214,95 @@ public class MBDiscussionPersistenceImpl
 
 	@Override
 	public MBDiscussion updateImpl(MBDiscussion mbDiscussion) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = mbDiscussion.isNew();
 
-			boolean isNew = mbDiscussion.isNew();
+		if (!(mbDiscussion instanceof MBDiscussionModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(mbDiscussion instanceof MBDiscussionModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(mbDiscussion.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						mbDiscussion);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in mbDiscussion proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(mbDiscussion.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					mbDiscussion);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom MBDiscussion implementation " +
-						mbDiscussion.getClass());
+					"Implement ModelWrapper in mbDiscussion proxy " +
+						invocationHandler.getClass());
 			}
 
-			MBDiscussionModelImpl mbDiscussionModelImpl =
-				(MBDiscussionModelImpl)mbDiscussion;
-
-			if (Validator.isNull(mbDiscussion.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				mbDiscussion.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (mbDiscussion.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					mbDiscussion.setCreateDate(date);
-				}
-				else {
-					mbDiscussion.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!mbDiscussionModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					mbDiscussion.setModifiedDate(date);
-				}
-				else {
-					mbDiscussion.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(mbDiscussion)) {
-					if (!isNew) {
-						session.evict(
-							MBDiscussionImpl.class,
-							mbDiscussion.getPrimaryKeyObj());
-					}
-
-					session.save(mbDiscussion);
-				}
-				else {
-					mbDiscussion = (MBDiscussion)session.merge(mbDiscussion);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				MBDiscussionImpl.class, mbDiscussionModelImpl, false, true);
-
-			cacheUniqueFindersCache(mbDiscussionModelImpl);
-
-			if (isNew) {
-				mbDiscussion.setNew(false);
-			}
-
-			mbDiscussion.resetOriginalValues();
-
-			return mbDiscussion;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom MBDiscussion implementation " +
+					mbDiscussion.getClass());
 		}
+
+		MBDiscussionModelImpl mbDiscussionModelImpl =
+			(MBDiscussionModelImpl)mbDiscussion;
+
+		if (Validator.isNull(mbDiscussion.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			mbDiscussion.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (mbDiscussion.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				mbDiscussion.setCreateDate(date);
+			}
+			else {
+				mbDiscussion.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!mbDiscussionModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				mbDiscussion.setModifiedDate(date);
+			}
+			else {
+				mbDiscussion.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(mbDiscussion)) {
+				if (!isNew) {
+					session.evict(
+						MBDiscussionImpl.class,
+						mbDiscussion.getPrimaryKeyObj());
+				}
+
+				session.save(mbDiscussion);
+			}
+			else {
+				mbDiscussion = (MBDiscussion)session.merge(mbDiscussion);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			MBDiscussionImpl.class, mbDiscussionModelImpl, false, true);
+
+		cacheUniqueFindersCache(mbDiscussionModelImpl);
+
+		if (isNew) {
+			mbDiscussion.setNew(false);
+		}
+
+		mbDiscussion.resetOriginalValues();
+
+		return mbDiscussion;
 	}
 
 	/**
@@ -2373,44 +2356,40 @@ public class MBDiscussionPersistenceImpl
 				MBDiscussion.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		MBDiscussion mbDiscussion = (MBDiscussion)entityCache.getResult(
+			MBDiscussionImpl.class, primaryKey);
 
-			MBDiscussion mbDiscussion = (MBDiscussion)entityCache.getResult(
+		if (mbDiscussion != null) {
+			return mbDiscussion;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			mbDiscussion = (MBDiscussion)session.get(
 				MBDiscussionImpl.class, primaryKey);
 
 			if (mbDiscussion != null) {
-				return mbDiscussion;
+				cacheResult(mbDiscussion);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				mbDiscussion = (MBDiscussion)session.get(
-					MBDiscussionImpl.class, primaryKey);
-
-				if (mbDiscussion != null) {
-					cacheResult(mbDiscussion);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return mbDiscussion;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return mbDiscussion;
 	}
 
 	/**
@@ -2430,8 +2409,8 @@ public class MBDiscussionPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(MBDiscussion.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2464,9 +2443,8 @@ public class MBDiscussionPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							MBDiscussion.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						MBDiscussion.class, primaryKey)) {
 
 				MBDiscussion mbDiscussion = (MBDiscussion)entityCache.getResult(
 					MBDiscussionImpl.class, primaryKey);
@@ -2614,9 +2592,8 @@ public class MBDiscussionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBDiscussion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBDiscussion.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2709,9 +2686,8 @@ public class MBDiscussionPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBDiscussion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBDiscussion.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

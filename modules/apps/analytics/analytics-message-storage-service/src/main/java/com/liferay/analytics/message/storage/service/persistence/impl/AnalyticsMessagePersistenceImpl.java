@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -171,9 +170,8 @@ public class AnalyticsMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AnalyticsMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AnalyticsMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -558,9 +556,8 @@ public class AnalyticsMessagePersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AnalyticsMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AnalyticsMessage.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -632,8 +629,8 @@ public class AnalyticsMessagePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					analyticsMessage.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					analyticsMessage.getCtCollectionId())) {
 
 			entityCache.putResult(
 				AnalyticsMessageImpl.class, analyticsMessage.getPrimaryKey(),
@@ -667,8 +664,8 @@ public class AnalyticsMessagePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						analyticsMessage.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						analyticsMessage.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						AnalyticsMessageImpl.class,
@@ -831,91 +828,85 @@ public class AnalyticsMessagePersistenceImpl
 
 	@Override
 	public AnalyticsMessage updateImpl(AnalyticsMessage analyticsMessage) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = analyticsMessage.isNew();
 
-			boolean isNew = analyticsMessage.isNew();
+		if (!(analyticsMessage instanceof AnalyticsMessageModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(analyticsMessage instanceof AnalyticsMessageModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(analyticsMessage.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						analyticsMessage);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in analyticsMessage proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(analyticsMessage.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					analyticsMessage);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom AnalyticsMessage implementation " +
-						analyticsMessage.getClass());
+					"Implement ModelWrapper in analyticsMessage proxy " +
+						invocationHandler.getClass());
 			}
 
-			AnalyticsMessageModelImpl analyticsMessageModelImpl =
-				(AnalyticsMessageModelImpl)analyticsMessage;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom AnalyticsMessage implementation " +
+					analyticsMessage.getClass());
+		}
 
-			if (isNew && (analyticsMessage.getCreateDate() == null)) {
-				ServiceContext serviceContext =
-					ServiceContextThreadLocal.getServiceContext();
+		AnalyticsMessageModelImpl analyticsMessageModelImpl =
+			(AnalyticsMessageModelImpl)analyticsMessage;
 
-				Date date = new Date();
+		if (isNew && (analyticsMessage.getCreateDate() == null)) {
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
 
-				if (serviceContext == null) {
-					analyticsMessage.setCreateDate(date);
-				}
-				else {
-					analyticsMessage.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
+			Date date = new Date();
+
+			if (serviceContext == null) {
+				analyticsMessage.setCreateDate(date);
 			}
+			else {
+				analyticsMessage.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
 
-			Session session = null;
+		Session session = null;
 
-			try {
-				session = openSession();
+		try {
+			session = openSession();
 
-				if (ctPersistenceHelper.isInsert(analyticsMessage)) {
-					if (!isNew) {
-						session.evict(
-							AnalyticsMessageImpl.class,
-							analyticsMessage.getPrimaryKeyObj());
-					}
-
-					session.save(analyticsMessage);
-				}
-				else {
+			if (ctPersistenceHelper.isInsert(analyticsMessage)) {
+				if (!isNew) {
 					session.evict(
 						AnalyticsMessageImpl.class,
 						analyticsMessage.getPrimaryKeyObj());
-
-					session.saveOrUpdate(analyticsMessage);
 				}
 
-				session.flush();
-				session.clear();
+				session.save(analyticsMessage);
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
+			else {
+				session.evict(
+					AnalyticsMessageImpl.class,
+					analyticsMessage.getPrimaryKeyObj());
 
-			entityCache.putResult(
-				AnalyticsMessageImpl.class, analyticsMessageModelImpl, false,
-				true);
-
-			if (isNew) {
-				analyticsMessage.setNew(false);
+				session.saveOrUpdate(analyticsMessage);
 			}
 
-			analyticsMessage.resetOriginalValues();
-
-			return analyticsMessage;
+			session.flush();
+			session.clear();
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			AnalyticsMessageImpl.class, analyticsMessageModelImpl, false, true);
+
+		if (isNew) {
+			analyticsMessage.setNew(false);
+		}
+
+		analyticsMessage.resetOriginalValues();
+
+		return analyticsMessage;
 	}
 
 	/**
@@ -969,45 +960,41 @@ public class AnalyticsMessagePersistenceImpl
 				AnalyticsMessage.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		AnalyticsMessage analyticsMessage =
+			(AnalyticsMessage)entityCache.getResult(
+				AnalyticsMessageImpl.class, primaryKey);
 
-			AnalyticsMessage analyticsMessage =
-				(AnalyticsMessage)entityCache.getResult(
-					AnalyticsMessageImpl.class, primaryKey);
-
-			if (analyticsMessage != null) {
-				return analyticsMessage;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				analyticsMessage = (AnalyticsMessage)session.get(
-					AnalyticsMessageImpl.class, primaryKey);
-
-				if (analyticsMessage != null) {
-					cacheResult(analyticsMessage);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (analyticsMessage != null) {
 			return analyticsMessage;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			analyticsMessage = (AnalyticsMessage)session.get(
+				AnalyticsMessageImpl.class, primaryKey);
+
+			if (analyticsMessage != null) {
+				cacheResult(analyticsMessage);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return analyticsMessage;
 	}
 
 	/**
@@ -1027,8 +1014,8 @@ public class AnalyticsMessagePersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(AnalyticsMessage.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -1061,9 +1048,8 @@ public class AnalyticsMessagePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							AnalyticsMessage.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						AnalyticsMessage.class, primaryKey)) {
 
 				AnalyticsMessage analyticsMessage =
 					(AnalyticsMessage)entityCache.getResult(
@@ -1216,9 +1202,8 @@ public class AnalyticsMessagePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AnalyticsMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AnalyticsMessage.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1311,9 +1296,8 @@ public class AnalyticsMessagePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AnalyticsMessage.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AnalyticsMessage.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

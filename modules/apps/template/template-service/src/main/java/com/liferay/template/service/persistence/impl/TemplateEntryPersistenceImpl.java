@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -174,9 +173,8 @@ public class TemplateEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -578,9 +576,8 @@ public class TemplateEntryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -709,9 +706,8 @@ public class TemplateEntryPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -832,9 +828,8 @@ public class TemplateEntryPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -987,9 +982,8 @@ public class TemplateEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1427,9 +1421,8 @@ public class TemplateEntryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1576,9 +1569,8 @@ public class TemplateEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2023,9 +2015,8 @@ public class TemplateEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2146,9 +2137,8 @@ public class TemplateEntryPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2209,9 +2199,8 @@ public class TemplateEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			Object[] finderArgs = new Object[] {StringUtil.merge(groupIds)};
 
@@ -2331,9 +2320,8 @@ public class TemplateEntryPersistenceImpl
 		long ddmTemplateId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2449,9 +2437,8 @@ public class TemplateEntryPersistenceImpl
 	@Override
 	public int countByDDMTemplateId(long ddmTemplateId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByDDMTemplateId;
 
@@ -2584,9 +2571,8 @@ public class TemplateEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			infoItemClassName = Objects.toString(infoItemClassName, "");
 
@@ -3025,9 +3011,8 @@ public class TemplateEntryPersistenceImpl
 	@Override
 	public int countByG_IICN(long groupId, String infoItemClassName) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			infoItemClassName = Objects.toString(infoItemClassName, "");
 
@@ -3194,9 +3179,8 @@ public class TemplateEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			infoItemClassName = Objects.toString(infoItemClassName, "");
 			infoItemFormVariationKey = Objects.toString(
@@ -3781,9 +3765,8 @@ public class TemplateEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -3960,9 +3943,8 @@ public class TemplateEntryPersistenceImpl
 		String infoItemFormVariationKey) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			infoItemClassName = Objects.toString(infoItemClassName, "");
 			infoItemFormVariationKey = Objects.toString(
@@ -4070,9 +4052,8 @@ public class TemplateEntryPersistenceImpl
 			infoItemFormVariationKey, "");
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(groupIds), infoItemClassName,
@@ -4218,8 +4199,8 @@ public class TemplateEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					templateEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					templateEntry.getCtCollectionId())) {
 
 			entityCache.putResult(
 				TemplateEntryImpl.class, templateEntry.getPrimaryKey(),
@@ -4263,8 +4244,8 @@ public class TemplateEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						templateEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						templateEntry.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						TemplateEntryImpl.class,
@@ -4329,8 +4310,8 @@ public class TemplateEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					templateEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					templateEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				templateEntryModelImpl.getUuid(),
@@ -4462,101 +4443,95 @@ public class TemplateEntryPersistenceImpl
 
 	@Override
 	public TemplateEntry updateImpl(TemplateEntry templateEntry) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = templateEntry.isNew();
 
-			boolean isNew = templateEntry.isNew();
+		if (!(templateEntry instanceof TemplateEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(templateEntry instanceof TemplateEntryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(templateEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						templateEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in templateEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(templateEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					templateEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom TemplateEntry implementation " +
-						templateEntry.getClass());
+					"Implement ModelWrapper in templateEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			TemplateEntryModelImpl templateEntryModelImpl =
-				(TemplateEntryModelImpl)templateEntry;
-
-			if (Validator.isNull(templateEntry.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				templateEntry.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (templateEntry.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					templateEntry.setCreateDate(date);
-				}
-				else {
-					templateEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!templateEntryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					templateEntry.setModifiedDate(date);
-				}
-				else {
-					templateEntry.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(templateEntry)) {
-					if (!isNew) {
-						session.evict(
-							TemplateEntryImpl.class,
-							templateEntry.getPrimaryKeyObj());
-					}
-
-					session.save(templateEntry);
-				}
-				else {
-					templateEntry = (TemplateEntry)session.merge(templateEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				TemplateEntryImpl.class, templateEntryModelImpl, false, true);
-
-			cacheUniqueFindersCache(templateEntryModelImpl);
-
-			if (isNew) {
-				templateEntry.setNew(false);
-			}
-
-			templateEntry.resetOriginalValues();
-
-			return templateEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom TemplateEntry implementation " +
+					templateEntry.getClass());
 		}
+
+		TemplateEntryModelImpl templateEntryModelImpl =
+			(TemplateEntryModelImpl)templateEntry;
+
+		if (Validator.isNull(templateEntry.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			templateEntry.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (templateEntry.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				templateEntry.setCreateDate(date);
+			}
+			else {
+				templateEntry.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!templateEntryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				templateEntry.setModifiedDate(date);
+			}
+			else {
+				templateEntry.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(templateEntry)) {
+				if (!isNew) {
+					session.evict(
+						TemplateEntryImpl.class,
+						templateEntry.getPrimaryKeyObj());
+				}
+
+				session.save(templateEntry);
+			}
+			else {
+				templateEntry = (TemplateEntry)session.merge(templateEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			TemplateEntryImpl.class, templateEntryModelImpl, false, true);
+
+		cacheUniqueFindersCache(templateEntryModelImpl);
+
+		if (isNew) {
+			templateEntry.setNew(false);
+		}
+
+		templateEntry.resetOriginalValues();
+
+		return templateEntry;
 	}
 
 	/**
@@ -4610,44 +4585,40 @@ public class TemplateEntryPersistenceImpl
 				TemplateEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		TemplateEntry templateEntry = (TemplateEntry)entityCache.getResult(
+			TemplateEntryImpl.class, primaryKey);
 
-			TemplateEntry templateEntry = (TemplateEntry)entityCache.getResult(
+		if (templateEntry != null) {
+			return templateEntry;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			templateEntry = (TemplateEntry)session.get(
 				TemplateEntryImpl.class, primaryKey);
 
 			if (templateEntry != null) {
-				return templateEntry;
+				cacheResult(templateEntry);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				templateEntry = (TemplateEntry)session.get(
-					TemplateEntryImpl.class, primaryKey);
-
-				if (templateEntry != null) {
-					cacheResult(templateEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return templateEntry;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return templateEntry;
 	}
 
 	/**
@@ -4667,8 +4638,8 @@ public class TemplateEntryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(TemplateEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -4701,9 +4672,8 @@ public class TemplateEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							TemplateEntry.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						TemplateEntry.class, primaryKey)) {
 
 				TemplateEntry templateEntry =
 					(TemplateEntry)entityCache.getResult(
@@ -4855,9 +4825,8 @@ public class TemplateEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4950,9 +4919,8 @@ public class TemplateEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TemplateEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TemplateEntry.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

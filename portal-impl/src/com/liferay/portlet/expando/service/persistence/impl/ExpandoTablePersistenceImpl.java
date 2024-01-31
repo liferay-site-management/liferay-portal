@@ -14,7 +14,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -165,9 +164,8 @@ public class ExpandoTablePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ExpandoTable.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ExpandoTable.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -578,9 +576,8 @@ public class ExpandoTablePersistenceImpl
 	@Override
 	public int countByC_C(long companyId, long classNameId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ExpandoTable.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ExpandoTable.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -709,9 +706,8 @@ public class ExpandoTablePersistenceImpl
 		long companyId, long classNameId, String name, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ExpandoTable.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ExpandoTable.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -840,9 +836,8 @@ public class ExpandoTablePersistenceImpl
 	@Override
 	public int countByC_C_N(long companyId, long classNameId, String name) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ExpandoTable.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ExpandoTable.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -944,8 +939,8 @@ public class ExpandoTablePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					expandoTable.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					expandoTable.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				ExpandoTableImpl.class, expandoTable.getPrimaryKey(),
@@ -986,8 +981,8 @@ public class ExpandoTablePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						expandoTable.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						expandoTable.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						ExpandoTableImpl.class, expandoTable.getPrimaryKey()) ==
@@ -1052,8 +1047,8 @@ public class ExpandoTablePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					expandoTableModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					expandoTableModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				expandoTableModelImpl.getCompanyId(),
@@ -1173,70 +1168,65 @@ public class ExpandoTablePersistenceImpl
 
 	@Override
 	public ExpandoTable updateImpl(ExpandoTable expandoTable) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = expandoTable.isNew();
 
-			boolean isNew = expandoTable.isNew();
+		if (!(expandoTable instanceof ExpandoTableModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(expandoTable instanceof ExpandoTableModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(expandoTable.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						expandoTable);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in expandoTable proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(expandoTable.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					expandoTable);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom ExpandoTable implementation " +
-						expandoTable.getClass());
+					"Implement ModelWrapper in expandoTable proxy " +
+						invocationHandler.getClass());
 			}
 
-			ExpandoTableModelImpl expandoTableModelImpl =
-				(ExpandoTableModelImpl)expandoTable;
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(expandoTable)) {
-					if (!isNew) {
-						session.evict(
-							ExpandoTableImpl.class,
-							expandoTable.getPrimaryKeyObj());
-					}
-
-					session.save(expandoTable);
-				}
-				else {
-					expandoTable = (ExpandoTable)session.merge(expandoTable);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				ExpandoTableImpl.class, expandoTableModelImpl, false, true);
-
-			cacheUniqueFindersCache(expandoTableModelImpl);
-
-			if (isNew) {
-				expandoTable.setNew(false);
-			}
-
-			expandoTable.resetOriginalValues();
-
-			return expandoTable;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom ExpandoTable implementation " +
+					expandoTable.getClass());
 		}
+
+		ExpandoTableModelImpl expandoTableModelImpl =
+			(ExpandoTableModelImpl)expandoTable;
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(expandoTable)) {
+				if (!isNew) {
+					session.evict(
+						ExpandoTableImpl.class,
+						expandoTable.getPrimaryKeyObj());
+				}
+
+				session.save(expandoTable);
+			}
+			else {
+				expandoTable = (ExpandoTable)session.merge(expandoTable);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			ExpandoTableImpl.class, expandoTableModelImpl, false, true);
+
+		cacheUniqueFindersCache(expandoTableModelImpl);
+
+		if (isNew) {
+			expandoTable.setNew(false);
+		}
+
+		expandoTable.resetOriginalValues();
+
+		return expandoTable;
 	}
 
 	/**
@@ -1290,44 +1280,40 @@ public class ExpandoTablePersistenceImpl
 				ExpandoTable.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		ExpandoTable expandoTable = (ExpandoTable)EntityCacheUtil.getResult(
+			ExpandoTableImpl.class, primaryKey);
 
-			ExpandoTable expandoTable = (ExpandoTable)EntityCacheUtil.getResult(
+		if (expandoTable != null) {
+			return expandoTable;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			expandoTable = (ExpandoTable)session.get(
 				ExpandoTableImpl.class, primaryKey);
 
 			if (expandoTable != null) {
-				return expandoTable;
+				cacheResult(expandoTable);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				expandoTable = (ExpandoTable)session.get(
-					ExpandoTableImpl.class, primaryKey);
-
-				if (expandoTable != null) {
-					cacheResult(expandoTable);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return expandoTable;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return expandoTable;
 	}
 
 	/**
@@ -1347,8 +1333,8 @@ public class ExpandoTablePersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(ExpandoTable.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -1381,9 +1367,8 @@ public class ExpandoTablePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							ExpandoTable.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						ExpandoTable.class, primaryKey)) {
 
 				ExpandoTable expandoTable =
 					(ExpandoTable)EntityCacheUtil.getResult(
@@ -1532,9 +1517,8 @@ public class ExpandoTablePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ExpandoTable.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ExpandoTable.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1627,9 +1611,8 @@ public class ExpandoTablePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ExpandoTable.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ExpandoTable.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

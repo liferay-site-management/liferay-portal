@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -175,9 +174,8 @@ public class FragmentCompositionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -585,9 +583,8 @@ public class FragmentCompositionPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -716,9 +713,8 @@ public class FragmentCompositionPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -840,9 +836,8 @@ public class FragmentCompositionPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -995,9 +990,8 @@ public class FragmentCompositionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1437,9 +1431,8 @@ public class FragmentCompositionPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1587,9 +1580,8 @@ public class FragmentCompositionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1977,9 +1969,8 @@ public class FragmentCompositionPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2108,9 +2099,8 @@ public class FragmentCompositionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2508,9 +2498,8 @@ public class FragmentCompositionPersistenceImpl
 	@Override
 	public int countByFragmentCollectionId(long fragmentCollectionId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			FinderPath finderPath = _finderPathCountByFragmentCollectionId;
 
@@ -2645,9 +2634,8 @@ public class FragmentCompositionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3063,9 +3051,8 @@ public class FragmentCompositionPersistenceImpl
 	@Override
 	public int countByG_FCI(long groupId, long fragmentCollectionId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_FCI;
 
@@ -3189,9 +3176,8 @@ public class FragmentCompositionPersistenceImpl
 		long groupId, String fragmentCompositionKey, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			fragmentCompositionKey = Objects.toString(
 				fragmentCompositionKey, "");
@@ -3318,9 +3304,8 @@ public class FragmentCompositionPersistenceImpl
 	@Override
 	public int countByG_FCK(long groupId, String fragmentCompositionKey) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			fragmentCompositionKey = Objects.toString(
 				fragmentCompositionKey, "");
@@ -3485,9 +3470,8 @@ public class FragmentCompositionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -3950,9 +3934,8 @@ public class FragmentCompositionPersistenceImpl
 		long groupId, long fragmentCollectionId, String name) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -4125,9 +4108,8 @@ public class FragmentCompositionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4574,9 +4556,8 @@ public class FragmentCompositionPersistenceImpl
 		long groupId, long fragmentCollectionId, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_FCI_S;
 
@@ -4737,9 +4718,8 @@ public class FragmentCompositionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -5226,9 +5206,8 @@ public class FragmentCompositionPersistenceImpl
 		long groupId, long fragmentCollectionId, String name, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -5348,8 +5327,8 @@ public class FragmentCompositionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					fragmentComposition.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					fragmentComposition.getCtCollectionId())) {
 
 			entityCache.putResult(
 				FragmentCompositionImpl.class,
@@ -5399,8 +5378,8 @@ public class FragmentCompositionPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						fragmentComposition.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						fragmentComposition.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						FragmentCompositionImpl.class,
@@ -5467,8 +5446,8 @@ public class FragmentCompositionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					fragmentCompositionModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					fragmentCompositionModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				fragmentCompositionModelImpl.getUuid(),
@@ -5609,105 +5588,98 @@ public class FragmentCompositionPersistenceImpl
 	public FragmentComposition updateImpl(
 		FragmentComposition fragmentComposition) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = fragmentComposition.isNew();
 
-			boolean isNew = fragmentComposition.isNew();
+		if (!(fragmentComposition instanceof FragmentCompositionModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(fragmentComposition instanceof
-					FragmentCompositionModelImpl)) {
-
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(fragmentComposition.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						fragmentComposition);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in fragmentComposition proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(fragmentComposition.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					fragmentComposition);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom FragmentComposition implementation " +
-						fragmentComposition.getClass());
+					"Implement ModelWrapper in fragmentComposition proxy " +
+						invocationHandler.getClass());
 			}
 
-			FragmentCompositionModelImpl fragmentCompositionModelImpl =
-				(FragmentCompositionModelImpl)fragmentComposition;
-
-			if (Validator.isNull(fragmentComposition.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				fragmentComposition.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (fragmentComposition.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					fragmentComposition.setCreateDate(date);
-				}
-				else {
-					fragmentComposition.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!fragmentCompositionModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					fragmentComposition.setModifiedDate(date);
-				}
-				else {
-					fragmentComposition.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(fragmentComposition)) {
-					if (!isNew) {
-						session.evict(
-							FragmentCompositionImpl.class,
-							fragmentComposition.getPrimaryKeyObj());
-					}
-
-					session.save(fragmentComposition);
-				}
-				else {
-					fragmentComposition = (FragmentComposition)session.merge(
-						fragmentComposition);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				FragmentCompositionImpl.class, fragmentCompositionModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(fragmentCompositionModelImpl);
-
-			if (isNew) {
-				fragmentComposition.setNew(false);
-			}
-
-			fragmentComposition.resetOriginalValues();
-
-			return fragmentComposition;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom FragmentComposition implementation " +
+					fragmentComposition.getClass());
 		}
+
+		FragmentCompositionModelImpl fragmentCompositionModelImpl =
+			(FragmentCompositionModelImpl)fragmentComposition;
+
+		if (Validator.isNull(fragmentComposition.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			fragmentComposition.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (fragmentComposition.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				fragmentComposition.setCreateDate(date);
+			}
+			else {
+				fragmentComposition.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!fragmentCompositionModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				fragmentComposition.setModifiedDate(date);
+			}
+			else {
+				fragmentComposition.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(fragmentComposition)) {
+				if (!isNew) {
+					session.evict(
+						FragmentCompositionImpl.class,
+						fragmentComposition.getPrimaryKeyObj());
+				}
+
+				session.save(fragmentComposition);
+			}
+			else {
+				fragmentComposition = (FragmentComposition)session.merge(
+					fragmentComposition);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			FragmentCompositionImpl.class, fragmentCompositionModelImpl, false,
+			true);
+
+		cacheUniqueFindersCache(fragmentCompositionModelImpl);
+
+		if (isNew) {
+			fragmentComposition.setNew(false);
+		}
+
+		fragmentComposition.resetOriginalValues();
+
+		return fragmentComposition;
 	}
 
 	/**
@@ -5761,45 +5733,41 @@ public class FragmentCompositionPersistenceImpl
 				FragmentComposition.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		FragmentComposition fragmentComposition =
+			(FragmentComposition)entityCache.getResult(
+				FragmentCompositionImpl.class, primaryKey);
 
-			FragmentComposition fragmentComposition =
-				(FragmentComposition)entityCache.getResult(
-					FragmentCompositionImpl.class, primaryKey);
-
-			if (fragmentComposition != null) {
-				return fragmentComposition;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				fragmentComposition = (FragmentComposition)session.get(
-					FragmentCompositionImpl.class, primaryKey);
-
-				if (fragmentComposition != null) {
-					cacheResult(fragmentComposition);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (fragmentComposition != null) {
 			return fragmentComposition;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			fragmentComposition = (FragmentComposition)session.get(
+				FragmentCompositionImpl.class, primaryKey);
+
+			if (fragmentComposition != null) {
+				cacheResult(fragmentComposition);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return fragmentComposition;
 	}
 
 	/**
@@ -5819,8 +5787,8 @@ public class FragmentCompositionPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(FragmentComposition.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -5854,9 +5822,8 @@ public class FragmentCompositionPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							FragmentComposition.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						FragmentComposition.class, primaryKey)) {
 
 				FragmentComposition fragmentComposition =
 					(FragmentComposition)entityCache.getResult(
@@ -6011,9 +5978,8 @@ public class FragmentCompositionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6107,9 +6073,8 @@ public class FragmentCompositionPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentComposition.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentComposition.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

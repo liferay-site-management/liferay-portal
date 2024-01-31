@@ -18,7 +18,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -179,9 +178,8 @@ public class CPTaxCategoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPTaxCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPTaxCategory.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -583,9 +581,8 @@ public class CPTaxCategoryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPTaxCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPTaxCategory.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -731,9 +728,8 @@ public class CPTaxCategoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPTaxCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPTaxCategory.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1171,9 +1167,8 @@ public class CPTaxCategoryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPTaxCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPTaxCategory.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1321,9 +1316,8 @@ public class CPTaxCategoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPTaxCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPTaxCategory.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1704,9 +1698,8 @@ public class CPTaxCategoryPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPTaxCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPTaxCategory.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -1823,9 +1816,8 @@ public class CPTaxCategoryPersistenceImpl
 		String externalReferenceCode, long companyId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPTaxCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPTaxCategory.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -1950,9 +1942,8 @@ public class CPTaxCategoryPersistenceImpl
 	@Override
 	public int countByERC_C(String externalReferenceCode, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPTaxCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPTaxCategory.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -2055,8 +2046,8 @@ public class CPTaxCategoryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cpTaxCategory.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cpTaxCategory.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CPTaxCategoryImpl.class, cpTaxCategory.getPrimaryKey(),
@@ -2097,8 +2088,8 @@ public class CPTaxCategoryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						cpTaxCategory.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						cpTaxCategory.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CPTaxCategoryImpl.class,
@@ -2163,8 +2154,8 @@ public class CPTaxCategoryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cpTaxCategoryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cpTaxCategoryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				cpTaxCategoryModelImpl.getExternalReferenceCode(),
@@ -2289,166 +2280,158 @@ public class CPTaxCategoryPersistenceImpl
 
 	@Override
 	public CPTaxCategory updateImpl(CPTaxCategory cpTaxCategory) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = cpTaxCategory.isNew();
 
-			boolean isNew = cpTaxCategory.isNew();
+		if (!(cpTaxCategory instanceof CPTaxCategoryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(cpTaxCategory instanceof CPTaxCategoryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(cpTaxCategory.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						cpTaxCategory);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in cpTaxCategory proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(cpTaxCategory.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					cpTaxCategory);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CPTaxCategory implementation " +
-						cpTaxCategory.getClass());
+					"Implement ModelWrapper in cpTaxCategory proxy " +
+						invocationHandler.getClass());
 			}
 
-			CPTaxCategoryModelImpl cpTaxCategoryModelImpl =
-				(CPTaxCategoryModelImpl)cpTaxCategory;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CPTaxCategory implementation " +
+					cpTaxCategory.getClass());
+		}
 
-			if (Validator.isNull(cpTaxCategory.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		CPTaxCategoryModelImpl cpTaxCategoryModelImpl =
+			(CPTaxCategoryModelImpl)cpTaxCategory;
 
-				cpTaxCategory.setUuid(uuid);
-			}
+		if (Validator.isNull(cpTaxCategory.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
 
-			if (Validator.isNull(cpTaxCategory.getExternalReferenceCode())) {
-				cpTaxCategory.setExternalReferenceCode(cpTaxCategory.getUuid());
-			}
-			else {
-				if (!Objects.equals(
-						cpTaxCategoryModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						cpTaxCategory.getExternalReferenceCode())) {
+			cpTaxCategory.setUuid(uuid);
+		}
 
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
+		if (Validator.isNull(cpTaxCategory.getExternalReferenceCode())) {
+			cpTaxCategory.setExternalReferenceCode(cpTaxCategory.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					cpTaxCategoryModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
+					cpTaxCategory.getExternalReferenceCode())) {
 
-					if (userId > 0) {
-						long companyId = cpTaxCategory.getCompanyId();
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
 
-						long groupId = 0;
+				if (userId > 0) {
+					long companyId = cpTaxCategory.getCompanyId();
 
-						long classPK = 0;
+					long groupId = 0;
 
-						if (!isNew) {
-							classPK = cpTaxCategory.getPrimaryKey();
-						}
+					long classPK = 0;
 
-						try {
-							cpTaxCategory.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									CPTaxCategory.class.getName(), classPK,
-									ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-									cpTaxCategory.getExternalReferenceCode(),
-									null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
-
-				CPTaxCategory ercCPTaxCategory = fetchByERC_C(
-					cpTaxCategory.getExternalReferenceCode(),
-					cpTaxCategory.getCompanyId());
-
-				if (isNew) {
-					if (ercCPTaxCategory != null) {
-						throw new DuplicateCPTaxCategoryExternalReferenceCodeException(
-							"Duplicate cp tax category with external reference code " +
-								cpTaxCategory.getExternalReferenceCode() +
-									" and company " +
-										cpTaxCategory.getCompanyId());
-					}
-				}
-				else {
-					if ((ercCPTaxCategory != null) &&
-						(cpTaxCategory.getCPTaxCategoryId() !=
-							ercCPTaxCategory.getCPTaxCategoryId())) {
-
-						throw new DuplicateCPTaxCategoryExternalReferenceCodeException(
-							"Duplicate cp tax category with external reference code " +
-								cpTaxCategory.getExternalReferenceCode() +
-									" and company " +
-										cpTaxCategory.getCompanyId());
-					}
-				}
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (cpTaxCategory.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					cpTaxCategory.setCreateDate(date);
-				}
-				else {
-					cpTaxCategory.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!cpTaxCategoryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					cpTaxCategory.setModifiedDate(date);
-				}
-				else {
-					cpTaxCategory.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(cpTaxCategory)) {
 					if (!isNew) {
-						session.evict(
-							CPTaxCategoryImpl.class,
-							cpTaxCategory.getPrimaryKeyObj());
+						classPK = cpTaxCategory.getPrimaryKey();
 					}
 
-					session.save(cpTaxCategory);
+					try {
+						cpTaxCategory.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								CPTaxCategory.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								cpTaxCategory.getExternalReferenceCode(),
+								null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
 				}
-				else {
-					cpTaxCategory = (CPTaxCategory)session.merge(cpTaxCategory);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
 			}
 
-			entityCache.putResult(
-				CPTaxCategoryImpl.class, cpTaxCategoryModelImpl, false, true);
-
-			cacheUniqueFindersCache(cpTaxCategoryModelImpl);
+			CPTaxCategory ercCPTaxCategory = fetchByERC_C(
+				cpTaxCategory.getExternalReferenceCode(),
+				cpTaxCategory.getCompanyId());
 
 			if (isNew) {
-				cpTaxCategory.setNew(false);
+				if (ercCPTaxCategory != null) {
+					throw new DuplicateCPTaxCategoryExternalReferenceCodeException(
+						"Duplicate cp tax category with external reference code " +
+							cpTaxCategory.getExternalReferenceCode() +
+								" and company " + cpTaxCategory.getCompanyId());
+				}
 			}
+			else {
+				if ((ercCPTaxCategory != null) &&
+					(cpTaxCategory.getCPTaxCategoryId() !=
+						ercCPTaxCategory.getCPTaxCategoryId())) {
 
-			cpTaxCategory.resetOriginalValues();
-
-			return cpTaxCategory;
+					throw new DuplicateCPTaxCategoryExternalReferenceCodeException(
+						"Duplicate cp tax category with external reference code " +
+							cpTaxCategory.getExternalReferenceCode() +
+								" and company " + cpTaxCategory.getCompanyId());
+				}
+			}
 		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (cpTaxCategory.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				cpTaxCategory.setCreateDate(date);
+			}
+			else {
+				cpTaxCategory.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!cpTaxCategoryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				cpTaxCategory.setModifiedDate(date);
+			}
+			else {
+				cpTaxCategory.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(cpTaxCategory)) {
+				if (!isNew) {
+					session.evict(
+						CPTaxCategoryImpl.class,
+						cpTaxCategory.getPrimaryKeyObj());
+				}
+
+				session.save(cpTaxCategory);
+			}
+			else {
+				cpTaxCategory = (CPTaxCategory)session.merge(cpTaxCategory);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CPTaxCategoryImpl.class, cpTaxCategoryModelImpl, false, true);
+
+		cacheUniqueFindersCache(cpTaxCategoryModelImpl);
+
+		if (isNew) {
+			cpTaxCategory.setNew(false);
+		}
+
+		cpTaxCategory.resetOriginalValues();
+
+		return cpTaxCategory;
 	}
 
 	/**
@@ -2502,44 +2485,40 @@ public class CPTaxCategoryPersistenceImpl
 				CPTaxCategory.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CPTaxCategory cpTaxCategory = (CPTaxCategory)entityCache.getResult(
+			CPTaxCategoryImpl.class, primaryKey);
 
-			CPTaxCategory cpTaxCategory = (CPTaxCategory)entityCache.getResult(
+		if (cpTaxCategory != null) {
+			return cpTaxCategory;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			cpTaxCategory = (CPTaxCategory)session.get(
 				CPTaxCategoryImpl.class, primaryKey);
 
 			if (cpTaxCategory != null) {
-				return cpTaxCategory;
+				cacheResult(cpTaxCategory);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				cpTaxCategory = (CPTaxCategory)session.get(
-					CPTaxCategoryImpl.class, primaryKey);
-
-				if (cpTaxCategory != null) {
-					cacheResult(cpTaxCategory);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return cpTaxCategory;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return cpTaxCategory;
 	}
 
 	/**
@@ -2559,8 +2538,8 @@ public class CPTaxCategoryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(CPTaxCategory.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2593,9 +2572,8 @@ public class CPTaxCategoryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CPTaxCategory.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CPTaxCategory.class, primaryKey)) {
 
 				CPTaxCategory cpTaxCategory =
 					(CPTaxCategory)entityCache.getResult(
@@ -2747,9 +2725,8 @@ public class CPTaxCategoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPTaxCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPTaxCategory.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2842,9 +2819,8 @@ public class CPTaxCategoryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPTaxCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPTaxCategory.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

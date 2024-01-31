@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -169,9 +168,8 @@ public class JournalContentSearchPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -561,9 +559,8 @@ public class JournalContentSearchPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -688,9 +685,8 @@ public class JournalContentSearchPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -1108,9 +1104,8 @@ public class JournalContentSearchPersistenceImpl
 	@Override
 	public int countByPortletId(String portletId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -1251,9 +1246,8 @@ public class JournalContentSearchPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			articleId = Objects.toString(articleId, "");
 
@@ -1671,9 +1665,8 @@ public class JournalContentSearchPersistenceImpl
 	@Override
 	public int countByArticleId(String articleId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			articleId = Objects.toString(articleId, "");
 
@@ -1821,9 +1814,8 @@ public class JournalContentSearchPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2238,9 +2230,8 @@ public class JournalContentSearchPersistenceImpl
 	@Override
 	public int countByG_P(long groupId, boolean privateLayout) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P;
 
@@ -2379,9 +2370,8 @@ public class JournalContentSearchPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			articleId = Objects.toString(articleId, "");
 
@@ -2822,9 +2812,8 @@ public class JournalContentSearchPersistenceImpl
 	@Override
 	public int countByG_A(long groupId, String articleId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			articleId = Objects.toString(articleId, "");
 
@@ -2986,9 +2975,8 @@ public class JournalContentSearchPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3434,9 +3422,8 @@ public class JournalContentSearchPersistenceImpl
 		long groupId, boolean privateLayout, long layoutId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P_L;
 
@@ -3591,9 +3578,8 @@ public class JournalContentSearchPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			articleId = Objects.toString(articleId, "");
 
@@ -4066,9 +4052,8 @@ public class JournalContentSearchPersistenceImpl
 		long groupId, boolean privateLayout, String articleId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			articleId = Objects.toString(articleId, "");
 
@@ -4246,9 +4231,8 @@ public class JournalContentSearchPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -4746,9 +4730,8 @@ public class JournalContentSearchPersistenceImpl
 		long groupId, boolean privateLayout, long layoutId, String portletId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			portletId = Objects.toString(portletId, "");
 
@@ -4926,9 +4909,8 @@ public class JournalContentSearchPersistenceImpl
 		String articleId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			portletId = Objects.toString(portletId, "");
 			articleId = Objects.toString(articleId, "");
@@ -5093,9 +5075,8 @@ public class JournalContentSearchPersistenceImpl
 		String articleId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			portletId = Objects.toString(portletId, "");
 			articleId = Objects.toString(articleId, "");
@@ -5228,8 +5209,8 @@ public class JournalContentSearchPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					journalContentSearch.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					journalContentSearch.getCtCollectionId())) {
 
 			entityCache.putResult(
 				JournalContentSearchImpl.class,
@@ -5276,8 +5257,8 @@ public class JournalContentSearchPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						journalContentSearch.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						journalContentSearch.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						JournalContentSearchImpl.class,
@@ -5347,8 +5328,8 @@ public class JournalContentSearchPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					journalContentSearchModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					journalContentSearchModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				journalContentSearchModelImpl.getGroupId(),
@@ -5480,74 +5461,67 @@ public class JournalContentSearchPersistenceImpl
 	public JournalContentSearch updateImpl(
 		JournalContentSearch journalContentSearch) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = journalContentSearch.isNew();
 
-			boolean isNew = journalContentSearch.isNew();
+		if (!(journalContentSearch instanceof JournalContentSearchModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(journalContentSearch instanceof
-					JournalContentSearchModelImpl)) {
-
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(journalContentSearch.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						journalContentSearch);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in journalContentSearch proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(journalContentSearch.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					journalContentSearch);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom JournalContentSearch implementation " +
-						journalContentSearch.getClass());
+					"Implement ModelWrapper in journalContentSearch proxy " +
+						invocationHandler.getClass());
 			}
 
-			JournalContentSearchModelImpl journalContentSearchModelImpl =
-				(JournalContentSearchModelImpl)journalContentSearch;
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(journalContentSearch)) {
-					if (!isNew) {
-						session.evict(
-							JournalContentSearchImpl.class,
-							journalContentSearch.getPrimaryKeyObj());
-					}
-
-					session.save(journalContentSearch);
-				}
-				else {
-					journalContentSearch = (JournalContentSearch)session.merge(
-						journalContentSearch);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				JournalContentSearchImpl.class, journalContentSearchModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(journalContentSearchModelImpl);
-
-			if (isNew) {
-				journalContentSearch.setNew(false);
-			}
-
-			journalContentSearch.resetOriginalValues();
-
-			return journalContentSearch;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom JournalContentSearch implementation " +
+					journalContentSearch.getClass());
 		}
+
+		JournalContentSearchModelImpl journalContentSearchModelImpl =
+			(JournalContentSearchModelImpl)journalContentSearch;
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(journalContentSearch)) {
+				if (!isNew) {
+					session.evict(
+						JournalContentSearchImpl.class,
+						journalContentSearch.getPrimaryKeyObj());
+				}
+
+				session.save(journalContentSearch);
+			}
+			else {
+				journalContentSearch = (JournalContentSearch)session.merge(
+					journalContentSearch);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			JournalContentSearchImpl.class, journalContentSearchModelImpl,
+			false, true);
+
+		cacheUniqueFindersCache(journalContentSearchModelImpl);
+
+		if (isNew) {
+			journalContentSearch.setNew(false);
+		}
+
+		journalContentSearch.resetOriginalValues();
+
+		return journalContentSearch;
 	}
 
 	/**
@@ -5602,45 +5576,41 @@ public class JournalContentSearchPersistenceImpl
 				JournalContentSearch.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		JournalContentSearch journalContentSearch =
+			(JournalContentSearch)entityCache.getResult(
+				JournalContentSearchImpl.class, primaryKey);
 
-			JournalContentSearch journalContentSearch =
-				(JournalContentSearch)entityCache.getResult(
-					JournalContentSearchImpl.class, primaryKey);
-
-			if (journalContentSearch != null) {
-				return journalContentSearch;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				journalContentSearch = (JournalContentSearch)session.get(
-					JournalContentSearchImpl.class, primaryKey);
-
-				if (journalContentSearch != null) {
-					cacheResult(journalContentSearch);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (journalContentSearch != null) {
 			return journalContentSearch;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			journalContentSearch = (JournalContentSearch)session.get(
+				JournalContentSearchImpl.class, primaryKey);
+
+			if (journalContentSearch != null) {
+				cacheResult(journalContentSearch);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return journalContentSearch;
 	}
 
 	/**
@@ -5660,8 +5630,8 @@ public class JournalContentSearchPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(JournalContentSearch.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -5695,9 +5665,8 @@ public class JournalContentSearchPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							JournalContentSearch.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						JournalContentSearch.class, primaryKey)) {
 
 				JournalContentSearch journalContentSearch =
 					(JournalContentSearch)entityCache.getResult(
@@ -5852,9 +5821,8 @@ public class JournalContentSearchPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5948,9 +5916,8 @@ public class JournalContentSearchPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						JournalContentSearch.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					JournalContentSearch.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

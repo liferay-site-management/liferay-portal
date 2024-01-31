@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -174,9 +173,8 @@ public class CPDefinitionInventoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionInventory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionInventory.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -586,9 +584,8 @@ public class CPDefinitionInventoryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionInventory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionInventory.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -718,9 +715,8 @@ public class CPDefinitionInventoryPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionInventory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionInventory.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -844,9 +840,8 @@ public class CPDefinitionInventoryPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionInventory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionInventory.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1001,9 +996,8 @@ public class CPDefinitionInventoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionInventory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionInventory.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1444,9 +1438,8 @@ public class CPDefinitionInventoryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionInventory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionInventory.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1577,9 +1570,8 @@ public class CPDefinitionInventoryPersistenceImpl
 		long CPDefinitionId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionInventory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionInventory.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1685,9 +1677,8 @@ public class CPDefinitionInventoryPersistenceImpl
 	@Override
 	public int countByCPDefinitionId(long CPDefinitionId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionInventory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionInventory.class)) {
 
 			FinderPath finderPath = _finderPathCountByCPDefinitionId;
 
@@ -1765,8 +1756,8 @@ public class CPDefinitionInventoryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cpDefinitionInventory.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cpDefinitionInventory.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CPDefinitionInventoryImpl.class,
@@ -1817,8 +1808,8 @@ public class CPDefinitionInventoryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						cpDefinitionInventory.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						cpDefinitionInventory.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CPDefinitionInventoryImpl.class,
@@ -1890,8 +1881,8 @@ public class CPDefinitionInventoryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cpDefinitionInventoryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cpDefinitionInventoryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				cpDefinitionInventoryModelImpl.getUuid(),
@@ -2033,106 +2024,100 @@ public class CPDefinitionInventoryPersistenceImpl
 	public CPDefinitionInventory updateImpl(
 		CPDefinitionInventory cpDefinitionInventory) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = cpDefinitionInventory.isNew();
 
-			boolean isNew = cpDefinitionInventory.isNew();
+		if (!(cpDefinitionInventory instanceof
+				CPDefinitionInventoryModelImpl)) {
 
-			if (!(cpDefinitionInventory instanceof
-					CPDefinitionInventoryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(cpDefinitionInventory.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						cpDefinitionInventory);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in cpDefinitionInventory proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(cpDefinitionInventory.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					cpDefinitionInventory);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CPDefinitionInventory implementation " +
-						cpDefinitionInventory.getClass());
+					"Implement ModelWrapper in cpDefinitionInventory proxy " +
+						invocationHandler.getClass());
 			}
 
-			CPDefinitionInventoryModelImpl cpDefinitionInventoryModelImpl =
-				(CPDefinitionInventoryModelImpl)cpDefinitionInventory;
-
-			if (Validator.isNull(cpDefinitionInventory.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				cpDefinitionInventory.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (cpDefinitionInventory.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					cpDefinitionInventory.setCreateDate(date);
-				}
-				else {
-					cpDefinitionInventory.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!cpDefinitionInventoryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					cpDefinitionInventory.setModifiedDate(date);
-				}
-				else {
-					cpDefinitionInventory.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(cpDefinitionInventory)) {
-					if (!isNew) {
-						session.evict(
-							CPDefinitionInventoryImpl.class,
-							cpDefinitionInventory.getPrimaryKeyObj());
-					}
-
-					session.save(cpDefinitionInventory);
-				}
-				else {
-					cpDefinitionInventory =
-						(CPDefinitionInventory)session.merge(
-							cpDefinitionInventory);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				CPDefinitionInventoryImpl.class, cpDefinitionInventoryModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(cpDefinitionInventoryModelImpl);
-
-			if (isNew) {
-				cpDefinitionInventory.setNew(false);
-			}
-
-			cpDefinitionInventory.resetOriginalValues();
-
-			return cpDefinitionInventory;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CPDefinitionInventory implementation " +
+					cpDefinitionInventory.getClass());
 		}
+
+		CPDefinitionInventoryModelImpl cpDefinitionInventoryModelImpl =
+			(CPDefinitionInventoryModelImpl)cpDefinitionInventory;
+
+		if (Validator.isNull(cpDefinitionInventory.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			cpDefinitionInventory.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (cpDefinitionInventory.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				cpDefinitionInventory.setCreateDate(date);
+			}
+			else {
+				cpDefinitionInventory.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!cpDefinitionInventoryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				cpDefinitionInventory.setModifiedDate(date);
+			}
+			else {
+				cpDefinitionInventory.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(cpDefinitionInventory)) {
+				if (!isNew) {
+					session.evict(
+						CPDefinitionInventoryImpl.class,
+						cpDefinitionInventory.getPrimaryKeyObj());
+				}
+
+				session.save(cpDefinitionInventory);
+			}
+			else {
+				cpDefinitionInventory = (CPDefinitionInventory)session.merge(
+					cpDefinitionInventory);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CPDefinitionInventoryImpl.class, cpDefinitionInventoryModelImpl,
+			false, true);
+
+		cacheUniqueFindersCache(cpDefinitionInventoryModelImpl);
+
+		if (isNew) {
+			cpDefinitionInventory.setNew(false);
+		}
+
+		cpDefinitionInventory.resetOriginalValues();
+
+		return cpDefinitionInventory;
 	}
 
 	/**
@@ -2187,45 +2172,41 @@ public class CPDefinitionInventoryPersistenceImpl
 				CPDefinitionInventory.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CPDefinitionInventory cpDefinitionInventory =
+			(CPDefinitionInventory)entityCache.getResult(
+				CPDefinitionInventoryImpl.class, primaryKey);
 
-			CPDefinitionInventory cpDefinitionInventory =
-				(CPDefinitionInventory)entityCache.getResult(
-					CPDefinitionInventoryImpl.class, primaryKey);
-
-			if (cpDefinitionInventory != null) {
-				return cpDefinitionInventory;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				cpDefinitionInventory = (CPDefinitionInventory)session.get(
-					CPDefinitionInventoryImpl.class, primaryKey);
-
-				if (cpDefinitionInventory != null) {
-					cacheResult(cpDefinitionInventory);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (cpDefinitionInventory != null) {
 			return cpDefinitionInventory;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			cpDefinitionInventory = (CPDefinitionInventory)session.get(
+				CPDefinitionInventoryImpl.class, primaryKey);
+
+			if (cpDefinitionInventory != null) {
+				cacheResult(cpDefinitionInventory);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return cpDefinitionInventory;
 	}
 
 	/**
@@ -2247,8 +2228,8 @@ public class CPDefinitionInventoryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(CPDefinitionInventory.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2282,9 +2263,8 @@ public class CPDefinitionInventoryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CPDefinitionInventory.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CPDefinitionInventory.class, primaryKey)) {
 
 				CPDefinitionInventory cpDefinitionInventory =
 					(CPDefinitionInventory)entityCache.getResult(
@@ -2439,9 +2419,8 @@ public class CPDefinitionInventoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionInventory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionInventory.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2535,9 +2514,8 @@ public class CPDefinitionInventoryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPDefinitionInventory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPDefinitionInventory.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

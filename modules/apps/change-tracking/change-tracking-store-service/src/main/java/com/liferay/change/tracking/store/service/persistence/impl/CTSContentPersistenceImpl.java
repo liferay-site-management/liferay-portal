@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -185,8 +184,8 @@ public class CTSContentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CTSContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CTSContent.class)) {
 
 			storeType = Objects.toString(storeType, "");
 
@@ -653,8 +652,8 @@ public class CTSContentPersistenceImpl
 		long companyId, long repositoryId, String storeType) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CTSContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CTSContent.class)) {
 
 			storeType = Objects.toString(storeType, "");
 
@@ -830,8 +829,8 @@ public class CTSContentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CTSContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CTSContent.class)) {
 
 			path = Objects.toString(path, "");
 			storeType = Objects.toString(storeType, "");
@@ -1344,8 +1343,8 @@ public class CTSContentPersistenceImpl
 		long companyId, long repositoryId, String path, String storeType) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CTSContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CTSContent.class)) {
 
 			path = Objects.toString(path, "");
 			storeType = Objects.toString(storeType, "");
@@ -1542,8 +1541,8 @@ public class CTSContentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CTSContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CTSContent.class)) {
 
 			path = Objects.toString(path, "");
 			storeType = Objects.toString(storeType, "");
@@ -2047,8 +2046,8 @@ public class CTSContentPersistenceImpl
 		long companyId, long repositoryId, String path, String storeType) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CTSContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CTSContent.class)) {
 
 			path = Objects.toString(path, "");
 			storeType = Objects.toString(storeType, "");
@@ -2241,8 +2240,8 @@ public class CTSContentPersistenceImpl
 		String storeType, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CTSContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CTSContent.class)) {
 
 			path = Objects.toString(path, "");
 			version = Objects.toString(version, "");
@@ -2416,8 +2415,8 @@ public class CTSContentPersistenceImpl
 		String storeType) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CTSContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CTSContent.class)) {
 
 			path = Objects.toString(path, "");
 			version = Objects.toString(version, "");
@@ -2573,8 +2572,8 @@ public class CTSContentPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ctsContent.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ctsContent.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CTSContentImpl.class, ctsContent.getPrimaryKey(), ctsContent);
@@ -2615,8 +2614,8 @@ public class CTSContentPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						ctsContent.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ctsContent.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CTSContentImpl.class, ctsContent.getPrimaryKey()) ==
@@ -2681,8 +2680,8 @@ public class CTSContentPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ctsContentModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ctsContentModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				ctsContentModelImpl.getCompanyId(),
@@ -2803,76 +2802,69 @@ public class CTSContentPersistenceImpl
 
 	@Override
 	public CTSContent updateImpl(CTSContent ctsContent) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = ctsContent.isNew();
 
-			boolean isNew = ctsContent.isNew();
+		if (!(ctsContent instanceof CTSContentModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(ctsContent instanceof CTSContentModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(ctsContent.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						ctsContent);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in ctsContent proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(ctsContent.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(ctsContent);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CTSContent implementation " +
-						ctsContent.getClass());
+					"Implement ModelWrapper in ctsContent proxy " +
+						invocationHandler.getClass());
 			}
 
-			CTSContentModelImpl ctsContentModelImpl =
-				(CTSContentModelImpl)ctsContent;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CTSContent implementation " +
+					ctsContent.getClass());
+		}
 
-			Session session = null;
+		CTSContentModelImpl ctsContentModelImpl =
+			(CTSContentModelImpl)ctsContent;
 
-			try {
-				session = openSession();
+		Session session = null;
 
-				if (ctPersistenceHelper.isInsert(ctsContent)) {
-					if (!isNew) {
-						session.evict(
-							CTSContentImpl.class,
-							ctsContent.getPrimaryKeyObj());
-					}
+		try {
+			session = openSession();
 
-					session.save(ctsContent);
-				}
-				else {
+			if (ctPersistenceHelper.isInsert(ctsContent)) {
+				if (!isNew) {
 					session.evict(
 						CTSContentImpl.class, ctsContent.getPrimaryKeyObj());
-
-					session.saveOrUpdate(ctsContent);
 				}
 
-				session.flush();
-				session.clear();
+				session.save(ctsContent);
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
+			else {
+				session.evict(
+					CTSContentImpl.class, ctsContent.getPrimaryKeyObj());
 
-			entityCache.putResult(
-				CTSContentImpl.class, ctsContentModelImpl, false, true);
-
-			cacheUniqueFindersCache(ctsContentModelImpl);
-
-			if (isNew) {
-				ctsContent.setNew(false);
+				session.saveOrUpdate(ctsContent);
 			}
 
-			ctsContent.resetOriginalValues();
-
-			return ctsContent;
+			session.flush();
+			session.clear();
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CTSContentImpl.class, ctsContentModelImpl, false, true);
+
+		cacheUniqueFindersCache(ctsContentModelImpl);
+
+		if (isNew) {
+			ctsContent.setNew(false);
+		}
+
+		ctsContent.resetOriginalValues();
+
+		return ctsContent;
 	}
 
 	/**
@@ -2926,44 +2918,40 @@ public class CTSContentPersistenceImpl
 				CTSContent.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CTSContent ctsContent = (CTSContent)entityCache.getResult(
+			CTSContentImpl.class, primaryKey);
 
-			CTSContent ctsContent = (CTSContent)entityCache.getResult(
+		if (ctsContent != null) {
+			return ctsContent;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			ctsContent = (CTSContent)session.get(
 				CTSContentImpl.class, primaryKey);
 
 			if (ctsContent != null) {
-				return ctsContent;
+				cacheResult(ctsContent);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ctsContent = (CTSContent)session.get(
-					CTSContentImpl.class, primaryKey);
-
-				if (ctsContent != null) {
-					cacheResult(ctsContent);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return ctsContent;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return ctsContent;
 	}
 
 	/**
@@ -2983,8 +2971,8 @@ public class CTSContentPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(CTSContent.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3017,9 +3005,8 @@ public class CTSContentPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CTSContent.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CTSContent.class, primaryKey)) {
 
 				CTSContent ctsContent = (CTSContent)entityCache.getResult(
 					CTSContentImpl.class, primaryKey);
@@ -3167,8 +3154,8 @@ public class CTSContentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CTSContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CTSContent.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3261,8 +3248,8 @@ public class CTSContentPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CTSContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CTSContent.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

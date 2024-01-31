@@ -18,7 +18,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -173,9 +172,8 @@ public class FriendlyURLEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -580,9 +578,8 @@ public class FriendlyURLEntryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -711,9 +708,8 @@ public class FriendlyURLEntryPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -834,9 +830,8 @@ public class FriendlyURLEntryPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -989,9 +984,8 @@ public class FriendlyURLEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1430,9 +1424,8 @@ public class FriendlyURLEntryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1592,9 +1585,8 @@ public class FriendlyURLEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2031,9 +2023,8 @@ public class FriendlyURLEntryPersistenceImpl
 	@Override
 	public int countByG_C_C(long groupId, long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_C;
 
@@ -2125,8 +2116,8 @@ public class FriendlyURLEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					friendlyURLEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					friendlyURLEntry.getCtCollectionId())) {
 
 			entityCache.putResult(
 				FriendlyURLEntryImpl.class, friendlyURLEntry.getPrimaryKey(),
@@ -2167,8 +2158,8 @@ public class FriendlyURLEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						friendlyURLEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						friendlyURLEntry.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						FriendlyURLEntryImpl.class,
@@ -2234,8 +2225,8 @@ public class FriendlyURLEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					friendlyURLEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					friendlyURLEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				friendlyURLEntryModelImpl.getUuid(),
@@ -2364,103 +2355,97 @@ public class FriendlyURLEntryPersistenceImpl
 
 	@Override
 	public FriendlyURLEntry updateImpl(FriendlyURLEntry friendlyURLEntry) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = friendlyURLEntry.isNew();
 
-			boolean isNew = friendlyURLEntry.isNew();
+		if (!(friendlyURLEntry instanceof FriendlyURLEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(friendlyURLEntry instanceof FriendlyURLEntryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(friendlyURLEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						friendlyURLEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in friendlyURLEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(friendlyURLEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					friendlyURLEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom FriendlyURLEntry implementation " +
-						friendlyURLEntry.getClass());
+					"Implement ModelWrapper in friendlyURLEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			FriendlyURLEntryModelImpl friendlyURLEntryModelImpl =
-				(FriendlyURLEntryModelImpl)friendlyURLEntry;
-
-			if (Validator.isNull(friendlyURLEntry.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				friendlyURLEntry.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (friendlyURLEntry.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					friendlyURLEntry.setCreateDate(date);
-				}
-				else {
-					friendlyURLEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!friendlyURLEntryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					friendlyURLEntry.setModifiedDate(date);
-				}
-				else {
-					friendlyURLEntry.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(friendlyURLEntry)) {
-					if (!isNew) {
-						session.evict(
-							FriendlyURLEntryImpl.class,
-							friendlyURLEntry.getPrimaryKeyObj());
-					}
-
-					session.save(friendlyURLEntry);
-				}
-				else {
-					friendlyURLEntry = (FriendlyURLEntry)session.merge(
-						friendlyURLEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				FriendlyURLEntryImpl.class, friendlyURLEntryModelImpl, false,
-				true);
-
-			cacheUniqueFindersCache(friendlyURLEntryModelImpl);
-
-			if (isNew) {
-				friendlyURLEntry.setNew(false);
-			}
-
-			friendlyURLEntry.resetOriginalValues();
-
-			return friendlyURLEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom FriendlyURLEntry implementation " +
+					friendlyURLEntry.getClass());
 		}
+
+		FriendlyURLEntryModelImpl friendlyURLEntryModelImpl =
+			(FriendlyURLEntryModelImpl)friendlyURLEntry;
+
+		if (Validator.isNull(friendlyURLEntry.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			friendlyURLEntry.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (friendlyURLEntry.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				friendlyURLEntry.setCreateDate(date);
+			}
+			else {
+				friendlyURLEntry.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!friendlyURLEntryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				friendlyURLEntry.setModifiedDate(date);
+			}
+			else {
+				friendlyURLEntry.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(friendlyURLEntry)) {
+				if (!isNew) {
+					session.evict(
+						FriendlyURLEntryImpl.class,
+						friendlyURLEntry.getPrimaryKeyObj());
+				}
+
+				session.save(friendlyURLEntry);
+			}
+			else {
+				friendlyURLEntry = (FriendlyURLEntry)session.merge(
+					friendlyURLEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			FriendlyURLEntryImpl.class, friendlyURLEntryModelImpl, false, true);
+
+		cacheUniqueFindersCache(friendlyURLEntryModelImpl);
+
+		if (isNew) {
+			friendlyURLEntry.setNew(false);
+		}
+
+		friendlyURLEntry.resetOriginalValues();
+
+		return friendlyURLEntry;
 	}
 
 	/**
@@ -2514,45 +2499,41 @@ public class FriendlyURLEntryPersistenceImpl
 				FriendlyURLEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		FriendlyURLEntry friendlyURLEntry =
+			(FriendlyURLEntry)entityCache.getResult(
+				FriendlyURLEntryImpl.class, primaryKey);
 
-			FriendlyURLEntry friendlyURLEntry =
-				(FriendlyURLEntry)entityCache.getResult(
-					FriendlyURLEntryImpl.class, primaryKey);
-
-			if (friendlyURLEntry != null) {
-				return friendlyURLEntry;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				friendlyURLEntry = (FriendlyURLEntry)session.get(
-					FriendlyURLEntryImpl.class, primaryKey);
-
-				if (friendlyURLEntry != null) {
-					cacheResult(friendlyURLEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (friendlyURLEntry != null) {
 			return friendlyURLEntry;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			friendlyURLEntry = (FriendlyURLEntry)session.get(
+				FriendlyURLEntryImpl.class, primaryKey);
+
+			if (friendlyURLEntry != null) {
+				cacheResult(friendlyURLEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return friendlyURLEntry;
 	}
 
 	/**
@@ -2572,8 +2553,8 @@ public class FriendlyURLEntryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(FriendlyURLEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2606,9 +2587,8 @@ public class FriendlyURLEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							FriendlyURLEntry.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						FriendlyURLEntry.class, primaryKey)) {
 
 				FriendlyURLEntry friendlyURLEntry =
 					(FriendlyURLEntry)entityCache.getResult(
@@ -2761,9 +2741,8 @@ public class FriendlyURLEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2856,9 +2835,8 @@ public class FriendlyURLEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntry.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

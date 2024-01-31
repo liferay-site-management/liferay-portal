@@ -10,7 +10,6 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -170,8 +169,8 @@ public class TeamPersistenceImpl
 		OrderByComparator<Team> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Team.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Team.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -569,8 +568,8 @@ public class TeamPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Team.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Team.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -698,8 +697,8 @@ public class TeamPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Team.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Team.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -820,8 +819,8 @@ public class TeamPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Team.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Team.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -973,8 +972,8 @@ public class TeamPersistenceImpl
 		OrderByComparator<Team> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Team.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Team.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1406,8 +1405,8 @@ public class TeamPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Team.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Team.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1552,8 +1551,8 @@ public class TeamPersistenceImpl
 		OrderByComparator<Team> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Team.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Team.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1930,8 +1929,8 @@ public class TeamPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Team.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Team.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2053,8 +2052,8 @@ public class TeamPersistenceImpl
 		OrderByComparator<Team> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Team.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Team.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2753,8 +2752,8 @@ public class TeamPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Team.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Team.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2913,8 +2912,8 @@ public class TeamPersistenceImpl
 	@Override
 	public Team fetchByG_N(long groupId, String name, boolean useFinderCache) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Team.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Team.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -3035,8 +3034,8 @@ public class TeamPersistenceImpl
 	@Override
 	public int countByG_N(long groupId, String name) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Team.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Team.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -3136,8 +3135,8 @@ public class TeamPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					team.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					team.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				TeamImpl.class, team.getPrimaryKey(), team);
@@ -3177,8 +3176,8 @@ public class TeamPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						team.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						team.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						TeamImpl.class, team.getPrimaryKey()) == null) {
@@ -3240,8 +3239,8 @@ public class TeamPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					teamModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					teamModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				teamModelImpl.getUuid(), teamModelImpl.getGroupId()
@@ -3373,95 +3372,89 @@ public class TeamPersistenceImpl
 
 	@Override
 	public Team updateImpl(Team team) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = team.isNew();
 
-			boolean isNew = team.isNew();
+		if (!(team instanceof TeamModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(team instanceof TeamModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(team.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(team);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in team proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(team.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(team);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom Team implementation " +
-						team.getClass());
+					"Implement ModelWrapper in team proxy " +
+						invocationHandler.getClass());
 			}
 
-			TeamModelImpl teamModelImpl = (TeamModelImpl)team;
-
-			if (Validator.isNull(team.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				team.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (team.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					team.setCreateDate(date);
-				}
-				else {
-					team.setCreateDate(serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!teamModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					team.setModifiedDate(date);
-				}
-				else {
-					team.setModifiedDate(serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(team)) {
-					if (!isNew) {
-						session.evict(TeamImpl.class, team.getPrimaryKeyObj());
-					}
-
-					session.save(team);
-				}
-				else {
-					team = (Team)session.merge(team);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				TeamImpl.class, teamModelImpl, false, true);
-
-			cacheUniqueFindersCache(teamModelImpl);
-
-			if (isNew) {
-				team.setNew(false);
-			}
-
-			team.resetOriginalValues();
-
-			return team;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom Team implementation " +
+					team.getClass());
 		}
+
+		TeamModelImpl teamModelImpl = (TeamModelImpl)team;
+
+		if (Validator.isNull(team.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			team.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (team.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				team.setCreateDate(date);
+			}
+			else {
+				team.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!teamModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				team.setModifiedDate(date);
+			}
+			else {
+				team.setModifiedDate(serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(team)) {
+				if (!isNew) {
+					session.evict(TeamImpl.class, team.getPrimaryKeyObj());
+				}
+
+				session.save(team);
+			}
+			else {
+				team = (Team)session.merge(team);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(TeamImpl.class, teamModelImpl, false, true);
+
+		cacheUniqueFindersCache(teamModelImpl);
+
+		if (isNew) {
+			team.setNew(false);
+		}
+
+		team.resetOriginalValues();
+
+		return team;
 	}
 
 	/**
@@ -3511,43 +3504,38 @@ public class TeamPersistenceImpl
 	public Team fetchByPrimaryKey(Serializable primaryKey) {
 		if (CTPersistenceHelperUtil.isProductionMode(Team.class, primaryKey)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		Team team = (Team)EntityCacheUtil.getResult(TeamImpl.class, primaryKey);
 
-			Team team = (Team)EntityCacheUtil.getResult(
-				TeamImpl.class, primaryKey);
-
-			if (team != null) {
-				return team;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				team = (Team)session.get(TeamImpl.class, primaryKey);
-
-				if (team != null) {
-					cacheResult(team);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (team != null) {
 			return team;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			team = (Team)session.get(TeamImpl.class, primaryKey);
+
+			if (team != null) {
+				cacheResult(team);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return team;
 	}
 
 	/**
@@ -3567,8 +3555,8 @@ public class TeamPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(Team.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3600,9 +3588,8 @@ public class TeamPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							Team.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						Team.class, primaryKey)) {
 
 				Team team = (Team)EntityCacheUtil.getResult(
 					TeamImpl.class, primaryKey);
@@ -3750,8 +3737,8 @@ public class TeamPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Team.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Team.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3844,8 +3831,8 @@ public class TeamPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Team.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Team.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

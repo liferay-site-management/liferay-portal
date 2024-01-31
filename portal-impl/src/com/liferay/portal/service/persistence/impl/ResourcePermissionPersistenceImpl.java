@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -161,9 +160,8 @@ public class ResourcePermissionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -571,9 +569,8 @@ public class ResourcePermissionPersistenceImpl
 	@Override
 	public int countByName(String name) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -712,9 +709,8 @@ public class ResourcePermissionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1160,9 +1156,8 @@ public class ResourcePermissionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1283,9 +1278,8 @@ public class ResourcePermissionPersistenceImpl
 	@Override
 	public int countByScope(int scope) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			FinderPath finderPath = _finderPathCountByScope;
 
@@ -1346,9 +1340,8 @@ public class ResourcePermissionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			Object[] finderArgs = new Object[] {StringUtil.merge(scopes)};
 
@@ -1485,9 +1478,8 @@ public class ResourcePermissionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1872,9 +1864,8 @@ public class ResourcePermissionPersistenceImpl
 	@Override
 	public int countByRoleId(long roleId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			FinderPath finderPath = _finderPathCountByRoleId;
 
@@ -2005,9 +1996,8 @@ public class ResourcePermissionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			primKey = Objects.toString(primKey, "");
 
@@ -2438,9 +2428,8 @@ public class ResourcePermissionPersistenceImpl
 	@Override
 	public int countByC_LikeP(long companyId, String primKey) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			primKey = Objects.toString(primKey, "");
 
@@ -2600,9 +2589,8 @@ public class ResourcePermissionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			primKey = Objects.toString(primKey, "");
 
@@ -3065,9 +3053,8 @@ public class ResourcePermissionPersistenceImpl
 	@Override
 	public int countByC_S_P(long companyId, int scope, String primKey) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			primKey = Objects.toString(primKey, "");
 
@@ -3241,9 +3228,8 @@ public class ResourcePermissionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			name = Objects.toString(name, "");
 			primKey = Objects.toString(primKey, "");
@@ -3838,9 +3824,8 @@ public class ResourcePermissionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			Object[] finderArgs = null;
 
@@ -4018,9 +4003,8 @@ public class ResourcePermissionPersistenceImpl
 		long companyId, String name, int scope, String primKey) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			name = Objects.toString(name, "");
 			primKey = Objects.toString(primKey, "");
@@ -4131,9 +4115,8 @@ public class ResourcePermissionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			Object[] finderArgs = new Object[] {
 				companyId, name, scope, StringUtil.merge(primKeys)
@@ -4343,9 +4326,8 @@ public class ResourcePermissionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -4836,9 +4818,8 @@ public class ResourcePermissionPersistenceImpl
 		long companyId, String name, int scope, long roleId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -5054,9 +5035,8 @@ public class ResourcePermissionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			Object[] finderArgs = null;
 
@@ -5328,9 +5308,8 @@ public class ResourcePermissionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			name = Objects.toString(name, "");
 			primKey = Objects.toString(primKey, "");
@@ -5491,9 +5470,8 @@ public class ResourcePermissionPersistenceImpl
 		long companyId, String name, int scope, String primKey, long roleId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			name = Objects.toString(name, "");
 			primKey = Objects.toString(primKey, "");
@@ -5607,9 +5585,8 @@ public class ResourcePermissionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			Object[] finderArgs = new Object[] {
 				companyId, name, scope, primKey, StringUtil.merge(roleIds)
@@ -5873,9 +5850,8 @@ public class ResourcePermissionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -6506,9 +6482,8 @@ public class ResourcePermissionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			Object[] finderArgs = null;
 
@@ -6735,9 +6710,8 @@ public class ResourcePermissionPersistenceImpl
 		boolean viewActionId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -6843,9 +6817,8 @@ public class ResourcePermissionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			Object[] finderArgs = new Object[] {
 				companyId, name, scope, primKeyId, StringUtil.merge(roleIds),
@@ -7021,8 +6994,8 @@ public class ResourcePermissionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					resourcePermission.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					resourcePermission.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				ResourcePermissionImpl.class,
@@ -7066,8 +7039,8 @@ public class ResourcePermissionPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						resourcePermission.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						resourcePermission.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						ResourcePermissionImpl.class,
@@ -7135,8 +7108,8 @@ public class ResourcePermissionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					resourcePermissionModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					resourcePermissionModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				resourcePermissionModelImpl.getCompanyId(),
@@ -7266,72 +7239,67 @@ public class ResourcePermissionPersistenceImpl
 	public ResourcePermission updateImpl(
 		ResourcePermission resourcePermission) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = resourcePermission.isNew();
 
-			boolean isNew = resourcePermission.isNew();
+		if (!(resourcePermission instanceof ResourcePermissionModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(resourcePermission instanceof ResourcePermissionModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(resourcePermission.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						resourcePermission);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in resourcePermission proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(resourcePermission.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					resourcePermission);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom ResourcePermission implementation " +
-						resourcePermission.getClass());
+					"Implement ModelWrapper in resourcePermission proxy " +
+						invocationHandler.getClass());
 			}
 
-			ResourcePermissionModelImpl resourcePermissionModelImpl =
-				(ResourcePermissionModelImpl)resourcePermission;
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(resourcePermission)) {
-					if (!isNew) {
-						session.evict(
-							ResourcePermissionImpl.class,
-							resourcePermission.getPrimaryKeyObj());
-					}
-
-					session.save(resourcePermission);
-				}
-				else {
-					resourcePermission = (ResourcePermission)session.merge(
-						resourcePermission);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				ResourcePermissionImpl.class, resourcePermissionModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(resourcePermissionModelImpl);
-
-			if (isNew) {
-				resourcePermission.setNew(false);
-			}
-
-			resourcePermission.resetOriginalValues();
-
-			return resourcePermission;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom ResourcePermission implementation " +
+					resourcePermission.getClass());
 		}
+
+		ResourcePermissionModelImpl resourcePermissionModelImpl =
+			(ResourcePermissionModelImpl)resourcePermission;
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(resourcePermission)) {
+				if (!isNew) {
+					session.evict(
+						ResourcePermissionImpl.class,
+						resourcePermission.getPrimaryKeyObj());
+				}
+
+				session.save(resourcePermission);
+			}
+			else {
+				resourcePermission = (ResourcePermission)session.merge(
+					resourcePermission);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			ResourcePermissionImpl.class, resourcePermissionModelImpl, false,
+			true);
+
+		cacheUniqueFindersCache(resourcePermissionModelImpl);
+
+		if (isNew) {
+			resourcePermission.setNew(false);
+		}
+
+		resourcePermission.resetOriginalValues();
+
+		return resourcePermission;
 	}
 
 	/**
@@ -7385,45 +7353,41 @@ public class ResourcePermissionPersistenceImpl
 				ResourcePermission.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		ResourcePermission resourcePermission =
+			(ResourcePermission)EntityCacheUtil.getResult(
+				ResourcePermissionImpl.class, primaryKey);
 
-			ResourcePermission resourcePermission =
-				(ResourcePermission)EntityCacheUtil.getResult(
-					ResourcePermissionImpl.class, primaryKey);
-
-			if (resourcePermission != null) {
-				return resourcePermission;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				resourcePermission = (ResourcePermission)session.get(
-					ResourcePermissionImpl.class, primaryKey);
-
-				if (resourcePermission != null) {
-					cacheResult(resourcePermission);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (resourcePermission != null) {
 			return resourcePermission;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			resourcePermission = (ResourcePermission)session.get(
+				ResourcePermissionImpl.class, primaryKey);
+
+			if (resourcePermission != null) {
+				cacheResult(resourcePermission);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return resourcePermission;
 	}
 
 	/**
@@ -7445,8 +7409,8 @@ public class ResourcePermissionPersistenceImpl
 				ResourcePermission.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -7480,9 +7444,8 @@ public class ResourcePermissionPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							ResourcePermission.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						ResourcePermission.class, primaryKey)) {
 
 				ResourcePermission resourcePermission =
 					(ResourcePermission)EntityCacheUtil.getResult(
@@ -7636,9 +7599,8 @@ public class ResourcePermissionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7731,9 +7693,8 @@ public class ResourcePermissionPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ResourcePermission.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ResourcePermission.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

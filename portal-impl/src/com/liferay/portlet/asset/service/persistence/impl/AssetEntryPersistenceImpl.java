@@ -16,7 +16,6 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -170,9 +169,8 @@ public class AssetEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -550,9 +548,8 @@ public class AssetEntryPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -677,9 +674,8 @@ public class AssetEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1059,9 +1055,8 @@ public class AssetEntryPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -1184,9 +1179,8 @@ public class AssetEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1564,9 +1558,8 @@ public class AssetEntryPersistenceImpl
 	@Override
 	public int countByVisible(boolean visible) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByVisible;
 
@@ -1692,9 +1685,8 @@ public class AssetEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2098,9 +2090,8 @@ public class AssetEntryPersistenceImpl
 	@Override
 	public int countByPublishDate(Date publishDate) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByPublishDate;
 
@@ -2240,9 +2231,8 @@ public class AssetEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2651,9 +2641,8 @@ public class AssetEntryPersistenceImpl
 	@Override
 	public int countByExpirationDate(Date expirationDate) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByExpirationDate;
 
@@ -2793,9 +2782,8 @@ public class AssetEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			layoutUuid = Objects.toString(layoutUuid, "");
 
@@ -3201,9 +3189,8 @@ public class AssetEntryPersistenceImpl
 	@Override
 	public int countByLayoutUuid(String layoutUuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			layoutUuid = Objects.toString(layoutUuid, "");
 
@@ -3332,9 +3319,8 @@ public class AssetEntryPersistenceImpl
 		long groupId, String classUuid, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			classUuid = Objects.toString(classUuid, "");
 
@@ -3472,9 +3458,8 @@ public class AssetEntryPersistenceImpl
 	@Override
 	public int countByG_CU(long groupId, String classUuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			classUuid = Objects.toString(classUuid, "");
 
@@ -3610,9 +3595,8 @@ public class AssetEntryPersistenceImpl
 		long classNameId, long classPK, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -3720,9 +3704,8 @@ public class AssetEntryPersistenceImpl
 	@Override
 	public int countByC_C(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -3866,9 +3849,8 @@ public class AssetEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4301,9 +4283,8 @@ public class AssetEntryPersistenceImpl
 	@Override
 	public int countByG_C_V(long groupId, long classNameId, boolean visible) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_V;
 
@@ -4462,9 +4443,8 @@ public class AssetEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4982,9 +4962,8 @@ public class AssetEntryPersistenceImpl
 		long groupId, long classNameId, Date publishDate, Date expirationDate) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_P_E;
 
@@ -5108,8 +5087,8 @@ public class AssetEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					assetEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					assetEntry.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				AssetEntryImpl.class, assetEntry.getPrimaryKey(), assetEntry);
@@ -5155,8 +5134,8 @@ public class AssetEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						assetEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						assetEntry.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						AssetEntryImpl.class, assetEntry.getPrimaryKey()) ==
@@ -5221,8 +5200,8 @@ public class AssetEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					assetEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					assetEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				assetEntryModelImpl.getGroupId(),
@@ -5354,95 +5333,87 @@ public class AssetEntryPersistenceImpl
 
 	@Override
 	public AssetEntry updateImpl(AssetEntry assetEntry) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = assetEntry.isNew();
 
-			boolean isNew = assetEntry.isNew();
+		if (!(assetEntry instanceof AssetEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(assetEntry instanceof AssetEntryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(assetEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						assetEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in assetEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(assetEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(assetEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom AssetEntry implementation " +
-						assetEntry.getClass());
+					"Implement ModelWrapper in assetEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			AssetEntryModelImpl assetEntryModelImpl =
-				(AssetEntryModelImpl)assetEntry;
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (assetEntry.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					assetEntry.setCreateDate(date);
-				}
-				else {
-					assetEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!assetEntryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					assetEntry.setModifiedDate(date);
-				}
-				else {
-					assetEntry.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(assetEntry)) {
-					if (!isNew) {
-						session.evict(
-							AssetEntryImpl.class,
-							assetEntry.getPrimaryKeyObj());
-					}
-
-					session.save(assetEntry);
-				}
-				else {
-					assetEntry = (AssetEntry)session.merge(assetEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				AssetEntryImpl.class, assetEntryModelImpl, false, true);
-
-			cacheUniqueFindersCache(assetEntryModelImpl);
-
-			if (isNew) {
-				assetEntry.setNew(false);
-			}
-
-			assetEntry.resetOriginalValues();
-
-			return assetEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom AssetEntry implementation " +
+					assetEntry.getClass());
 		}
+
+		AssetEntryModelImpl assetEntryModelImpl =
+			(AssetEntryModelImpl)assetEntry;
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (assetEntry.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				assetEntry.setCreateDate(date);
+			}
+			else {
+				assetEntry.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!assetEntryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				assetEntry.setModifiedDate(date);
+			}
+			else {
+				assetEntry.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(assetEntry)) {
+				if (!isNew) {
+					session.evict(
+						AssetEntryImpl.class, assetEntry.getPrimaryKeyObj());
+				}
+
+				session.save(assetEntry);
+			}
+			else {
+				assetEntry = (AssetEntry)session.merge(assetEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			AssetEntryImpl.class, assetEntryModelImpl, false, true);
+
+		cacheUniqueFindersCache(assetEntryModelImpl);
+
+		if (isNew) {
+			assetEntry.setNew(false);
+		}
+
+		assetEntry.resetOriginalValues();
+
+		return assetEntry;
 	}
 
 	/**
@@ -5496,44 +5467,40 @@ public class AssetEntryPersistenceImpl
 				AssetEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		AssetEntry assetEntry = (AssetEntry)EntityCacheUtil.getResult(
+			AssetEntryImpl.class, primaryKey);
 
-			AssetEntry assetEntry = (AssetEntry)EntityCacheUtil.getResult(
+		if (assetEntry != null) {
+			return assetEntry;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			assetEntry = (AssetEntry)session.get(
 				AssetEntryImpl.class, primaryKey);
 
 			if (assetEntry != null) {
-				return assetEntry;
+				cacheResult(assetEntry);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				assetEntry = (AssetEntry)session.get(
-					AssetEntryImpl.class, primaryKey);
-
-				if (assetEntry != null) {
-					cacheResult(assetEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return assetEntry;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return assetEntry;
 	}
 
 	/**
@@ -5553,8 +5520,8 @@ public class AssetEntryPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(AssetEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -5587,9 +5554,8 @@ public class AssetEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							AssetEntry.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						AssetEntry.class, primaryKey)) {
 
 				AssetEntry assetEntry = (AssetEntry)EntityCacheUtil.getResult(
 					AssetEntryImpl.class, primaryKey);
@@ -5737,9 +5703,8 @@ public class AssetEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5832,9 +5797,8 @@ public class AssetEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetEntry.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

@@ -18,7 +18,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -177,8 +176,8 @@ public class CProductPersistenceImpl
 		OrderByComparator<CProduct> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CProduct.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CProduct.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -578,8 +577,8 @@ public class CProductPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CProduct.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CProduct.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -708,8 +707,8 @@ public class CProductPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CProduct.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CProduct.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -830,8 +829,8 @@ public class CProductPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CProduct.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CProduct.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -983,8 +982,8 @@ public class CProductPersistenceImpl
 		OrderByComparator<CProduct> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CProduct.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CProduct.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1418,8 +1417,8 @@ public class CProductPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CProduct.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CProduct.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1564,8 +1563,8 @@ public class CProductPersistenceImpl
 		OrderByComparator<CProduct> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CProduct.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CProduct.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1942,8 +1941,8 @@ public class CProductPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CProduct.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CProduct.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2056,8 +2055,8 @@ public class CProductPersistenceImpl
 		String externalReferenceCode, long companyId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CProduct.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CProduct.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -2180,8 +2179,8 @@ public class CProductPersistenceImpl
 	@Override
 	public int countByERC_C(String externalReferenceCode, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CProduct.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CProduct.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -2284,8 +2283,8 @@ public class CProductPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cProduct.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cProduct.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CProductImpl.class, cProduct.getPrimaryKey(), cProduct);
@@ -2329,8 +2328,8 @@ public class CProductPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						cProduct.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						cProduct.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CProductImpl.class, cProduct.getPrimaryKey()) == null) {
@@ -2394,8 +2393,8 @@ public class CProductPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cProductModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cProductModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				cProductModelImpl.getUuid(), cProductModelImpl.getGroupId()
@@ -2525,160 +2524,151 @@ public class CProductPersistenceImpl
 
 	@Override
 	public CProduct updateImpl(CProduct cProduct) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = cProduct.isNew();
 
-			boolean isNew = cProduct.isNew();
+		if (!(cProduct instanceof CProductModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(cProduct instanceof CProductModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(cProduct.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						cProduct);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in cProduct proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(cProduct.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(cProduct);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CProduct implementation " +
-						cProduct.getClass());
+					"Implement ModelWrapper in cProduct proxy " +
+						invocationHandler.getClass());
 			}
 
-			CProductModelImpl cProductModelImpl = (CProductModelImpl)cProduct;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CProduct implementation " +
+					cProduct.getClass());
+		}
 
-			if (Validator.isNull(cProduct.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		CProductModelImpl cProductModelImpl = (CProductModelImpl)cProduct;
 
-				cProduct.setUuid(uuid);
-			}
+		if (Validator.isNull(cProduct.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
 
-			if (Validator.isNull(cProduct.getExternalReferenceCode())) {
-				cProduct.setExternalReferenceCode(cProduct.getUuid());
-			}
-			else {
-				if (!Objects.equals(
-						cProductModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						cProduct.getExternalReferenceCode())) {
+			cProduct.setUuid(uuid);
+		}
 
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
+		if (Validator.isNull(cProduct.getExternalReferenceCode())) {
+			cProduct.setExternalReferenceCode(cProduct.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					cProductModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
+					cProduct.getExternalReferenceCode())) {
 
-					if (userId > 0) {
-						long companyId = cProduct.getCompanyId();
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
 
-						long groupId = cProduct.getGroupId();
+				if (userId > 0) {
+					long companyId = cProduct.getCompanyId();
 
-						long classPK = 0;
+					long groupId = cProduct.getGroupId();
 
-						if (!isNew) {
-							classPK = cProduct.getPrimaryKey();
-						}
+					long classPK = 0;
 
-						try {
-							cProduct.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									CProduct.class.getName(), classPK,
-									ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-									cProduct.getExternalReferenceCode(), null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
-
-				CProduct ercCProduct = fetchByERC_C(
-					cProduct.getExternalReferenceCode(),
-					cProduct.getCompanyId());
-
-				if (isNew) {
-					if (ercCProduct != null) {
-						throw new DuplicateCProductExternalReferenceCodeException(
-							"Duplicate c product with external reference code " +
-								cProduct.getExternalReferenceCode() +
-									" and company " + cProduct.getCompanyId());
-					}
-				}
-				else {
-					if ((ercCProduct != null) &&
-						(cProduct.getCProductId() !=
-							ercCProduct.getCProductId())) {
-
-						throw new DuplicateCProductExternalReferenceCodeException(
-							"Duplicate c product with external reference code " +
-								cProduct.getExternalReferenceCode() +
-									" and company " + cProduct.getCompanyId());
-					}
-				}
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (cProduct.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					cProduct.setCreateDate(date);
-				}
-				else {
-					cProduct.setCreateDate(serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!cProductModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					cProduct.setModifiedDate(date);
-				}
-				else {
-					cProduct.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(cProduct)) {
 					if (!isNew) {
-						session.evict(
-							CProductImpl.class, cProduct.getPrimaryKeyObj());
+						classPK = cProduct.getPrimaryKey();
 					}
 
-					session.save(cProduct);
+					try {
+						cProduct.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								CProduct.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								cProduct.getExternalReferenceCode(), null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
 				}
-				else {
-					cProduct = (CProduct)session.merge(cProduct);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
 			}
 
-			entityCache.putResult(
-				CProductImpl.class, cProductModelImpl, false, true);
-
-			cacheUniqueFindersCache(cProductModelImpl);
+			CProduct ercCProduct = fetchByERC_C(
+				cProduct.getExternalReferenceCode(), cProduct.getCompanyId());
 
 			if (isNew) {
-				cProduct.setNew(false);
+				if (ercCProduct != null) {
+					throw new DuplicateCProductExternalReferenceCodeException(
+						"Duplicate c product with external reference code " +
+							cProduct.getExternalReferenceCode() +
+								" and company " + cProduct.getCompanyId());
+				}
 			}
+			else {
+				if ((ercCProduct != null) &&
+					(cProduct.getCProductId() != ercCProduct.getCProductId())) {
 
-			cProduct.resetOriginalValues();
-
-			return cProduct;
+					throw new DuplicateCProductExternalReferenceCodeException(
+						"Duplicate c product with external reference code " +
+							cProduct.getExternalReferenceCode() +
+								" and company " + cProduct.getCompanyId());
+				}
+			}
 		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (cProduct.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				cProduct.setCreateDate(date);
+			}
+			else {
+				cProduct.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!cProductModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				cProduct.setModifiedDate(date);
+			}
+			else {
+				cProduct.setModifiedDate(serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(cProduct)) {
+				if (!isNew) {
+					session.evict(
+						CProductImpl.class, cProduct.getPrimaryKeyObj());
+				}
+
+				session.save(cProduct);
+			}
+			else {
+				cProduct = (CProduct)session.merge(cProduct);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CProductImpl.class, cProductModelImpl, false, true);
+
+		cacheUniqueFindersCache(cProductModelImpl);
+
+		if (isNew) {
+			cProduct.setNew(false);
+		}
+
+		cProduct.resetOriginalValues();
+
+		return cProduct;
 	}
 
 	/**
@@ -2730,44 +2720,39 @@ public class CProductPersistenceImpl
 	public CProduct fetchByPrimaryKey(Serializable primaryKey) {
 		if (ctPersistenceHelper.isProductionMode(CProduct.class, primaryKey)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CProduct cProduct = (CProduct)entityCache.getResult(
+			CProductImpl.class, primaryKey);
 
-			CProduct cProduct = (CProduct)entityCache.getResult(
-				CProductImpl.class, primaryKey);
-
-			if (cProduct != null) {
-				return cProduct;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				cProduct = (CProduct)session.get(
-					CProductImpl.class, primaryKey);
-
-				if (cProduct != null) {
-					cacheResult(cProduct);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (cProduct != null) {
 			return cProduct;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			cProduct = (CProduct)session.get(CProductImpl.class, primaryKey);
+
+			if (cProduct != null) {
+				cacheResult(cProduct);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return cProduct;
 	}
 
 	/**
@@ -2787,8 +2772,8 @@ public class CProductPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(CProduct.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2820,9 +2805,8 @@ public class CProductPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CProduct.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CProduct.class, primaryKey)) {
 
 				CProduct cProduct = (CProduct)entityCache.getResult(
 					CProductImpl.class, primaryKey);
@@ -2970,8 +2954,8 @@ public class CProductPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CProduct.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CProduct.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3064,8 +3048,8 @@ public class CProductPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(CProduct.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CProduct.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

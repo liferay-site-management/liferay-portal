@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -163,9 +162,8 @@ public class EmailAddressPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						EmailAddress.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					EmailAddress.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -565,9 +563,8 @@ public class EmailAddressPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						EmailAddress.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					EmailAddress.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -713,9 +710,8 @@ public class EmailAddressPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						EmailAddress.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					EmailAddress.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1151,9 +1147,8 @@ public class EmailAddressPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						EmailAddress.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					EmailAddress.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1301,9 +1296,8 @@ public class EmailAddressPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						EmailAddress.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					EmailAddress.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1683,9 +1677,8 @@ public class EmailAddressPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						EmailAddress.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					EmailAddress.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -1807,9 +1800,8 @@ public class EmailAddressPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						EmailAddress.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					EmailAddress.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2188,9 +2180,8 @@ public class EmailAddressPersistenceImpl
 	@Override
 	public int countByUserId(long userId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						EmailAddress.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					EmailAddress.class)) {
 
 			FinderPath finderPath = _finderPathCountByUserId;
 
@@ -2320,9 +2311,8 @@ public class EmailAddressPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						EmailAddress.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					EmailAddress.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2733,9 +2723,8 @@ public class EmailAddressPersistenceImpl
 	@Override
 	public int countByC_C(long companyId, long classNameId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						EmailAddress.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					EmailAddress.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -2880,9 +2869,8 @@ public class EmailAddressPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						EmailAddress.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					EmailAddress.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3317,9 +3305,8 @@ public class EmailAddressPersistenceImpl
 	@Override
 	public int countByC_C_C(long companyId, long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						EmailAddress.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					EmailAddress.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_C;
 
@@ -3479,9 +3466,8 @@ public class EmailAddressPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						EmailAddress.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					EmailAddress.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3944,9 +3930,8 @@ public class EmailAddressPersistenceImpl
 		long companyId, long classNameId, long classPK, boolean primary) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						EmailAddress.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					EmailAddress.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_C_P;
 
@@ -4048,8 +4033,8 @@ public class EmailAddressPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					emailAddress.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					emailAddress.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				EmailAddressImpl.class, emailAddress.getPrimaryKey(),
@@ -4082,8 +4067,8 @@ public class EmailAddressPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						emailAddress.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						emailAddress.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						EmailAddressImpl.class, emailAddress.getPrimaryKey()) ==
@@ -4248,99 +4233,93 @@ public class EmailAddressPersistenceImpl
 
 	@Override
 	public EmailAddress updateImpl(EmailAddress emailAddress) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = emailAddress.isNew();
 
-			boolean isNew = emailAddress.isNew();
+		if (!(emailAddress instanceof EmailAddressModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(emailAddress instanceof EmailAddressModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(emailAddress.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						emailAddress);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in emailAddress proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(emailAddress.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					emailAddress);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom EmailAddress implementation " +
-						emailAddress.getClass());
+					"Implement ModelWrapper in emailAddress proxy " +
+						invocationHandler.getClass());
 			}
 
-			EmailAddressModelImpl emailAddressModelImpl =
-				(EmailAddressModelImpl)emailAddress;
-
-			if (Validator.isNull(emailAddress.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				emailAddress.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (emailAddress.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					emailAddress.setCreateDate(date);
-				}
-				else {
-					emailAddress.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!emailAddressModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					emailAddress.setModifiedDate(date);
-				}
-				else {
-					emailAddress.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(emailAddress)) {
-					if (!isNew) {
-						session.evict(
-							EmailAddressImpl.class,
-							emailAddress.getPrimaryKeyObj());
-					}
-
-					session.save(emailAddress);
-				}
-				else {
-					emailAddress = (EmailAddress)session.merge(emailAddress);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				EmailAddressImpl.class, emailAddressModelImpl, false, true);
-
-			if (isNew) {
-				emailAddress.setNew(false);
-			}
-
-			emailAddress.resetOriginalValues();
-
-			return emailAddress;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom EmailAddress implementation " +
+					emailAddress.getClass());
 		}
+
+		EmailAddressModelImpl emailAddressModelImpl =
+			(EmailAddressModelImpl)emailAddress;
+
+		if (Validator.isNull(emailAddress.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			emailAddress.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (emailAddress.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				emailAddress.setCreateDate(date);
+			}
+			else {
+				emailAddress.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!emailAddressModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				emailAddress.setModifiedDate(date);
+			}
+			else {
+				emailAddress.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(emailAddress)) {
+				if (!isNew) {
+					session.evict(
+						EmailAddressImpl.class,
+						emailAddress.getPrimaryKeyObj());
+				}
+
+				session.save(emailAddress);
+			}
+			else {
+				emailAddress = (EmailAddress)session.merge(emailAddress);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			EmailAddressImpl.class, emailAddressModelImpl, false, true);
+
+		if (isNew) {
+			emailAddress.setNew(false);
+		}
+
+		emailAddress.resetOriginalValues();
+
+		return emailAddress;
 	}
 
 	/**
@@ -4394,44 +4373,40 @@ public class EmailAddressPersistenceImpl
 				EmailAddress.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		EmailAddress emailAddress = (EmailAddress)EntityCacheUtil.getResult(
+			EmailAddressImpl.class, primaryKey);
 
-			EmailAddress emailAddress = (EmailAddress)EntityCacheUtil.getResult(
+		if (emailAddress != null) {
+			return emailAddress;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			emailAddress = (EmailAddress)session.get(
 				EmailAddressImpl.class, primaryKey);
 
 			if (emailAddress != null) {
-				return emailAddress;
+				cacheResult(emailAddress);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				emailAddress = (EmailAddress)session.get(
-					EmailAddressImpl.class, primaryKey);
-
-				if (emailAddress != null) {
-					cacheResult(emailAddress);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return emailAddress;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return emailAddress;
 	}
 
 	/**
@@ -4451,8 +4426,8 @@ public class EmailAddressPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(EmailAddress.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -4485,9 +4460,8 @@ public class EmailAddressPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							EmailAddress.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						EmailAddress.class, primaryKey)) {
 
 				EmailAddress emailAddress =
 					(EmailAddress)EntityCacheUtil.getResult(
@@ -4636,9 +4610,8 @@ public class EmailAddressPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						EmailAddress.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					EmailAddress.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4731,9 +4704,8 @@ public class EmailAddressPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						EmailAddress.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					EmailAddress.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

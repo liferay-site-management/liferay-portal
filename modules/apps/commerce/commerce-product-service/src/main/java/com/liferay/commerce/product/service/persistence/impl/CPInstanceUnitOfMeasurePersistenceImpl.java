@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -174,9 +173,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -592,9 +590,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -742,9 +739,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1188,9 +1184,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1339,9 +1334,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1736,9 +1730,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 	@Override
 	public int countByCPInstanceId(long CPInstanceId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			FinderPath finderPath = _finderPathCountByCPInstanceId;
 
@@ -1867,9 +1860,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			sku = Objects.toString(sku, "");
 
@@ -2313,9 +2305,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 	@Override
 	public int countByC_S(long companyId, String sku) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			sku = Objects.toString(sku, "");
 
@@ -2470,9 +2461,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2890,9 +2880,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 	@Override
 	public int countByC_A(long CPInstanceId, boolean active) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_A;
 
@@ -3013,9 +3002,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 		long CPInstanceId, String key, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			key = Objects.toString(key, "");
 
@@ -3140,9 +3128,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 	@Override
 	public int countByC_K(long CPInstanceId, String key) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			key = Objects.toString(key, "");
 
@@ -3297,9 +3284,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3717,9 +3703,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 	@Override
 	public int countByC_P(long CPInstanceId, boolean primary) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_P;
 
@@ -3862,9 +3847,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			key = Objects.toString(key, "");
 			sku = Objects.toString(sku, "");
@@ -4355,9 +4339,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 	@Override
 	public int countByC_K_S(long companyId, String key, String sku) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			key = Objects.toString(key, "");
 			sku = Objects.toString(sku, "");
@@ -4485,8 +4468,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cpInstanceUnitOfMeasure.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cpInstanceUnitOfMeasure.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CPInstanceUnitOfMeasureImpl.class,
@@ -4533,8 +4516,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						cpInstanceUnitOfMeasure.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						cpInstanceUnitOfMeasure.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CPInstanceUnitOfMeasureImpl.class,
@@ -4606,9 +4589,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cpInstanceUnitOfMeasureModelImpl.getCtCollectionId() !=
-						0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cpInstanceUnitOfMeasureModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				cpInstanceUnitOfMeasureModelImpl.getCPInstanceId(),
@@ -4739,108 +4721,101 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 	public CPInstanceUnitOfMeasure updateImpl(
 		CPInstanceUnitOfMeasure cpInstanceUnitOfMeasure) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = cpInstanceUnitOfMeasure.isNew();
 
-			boolean isNew = cpInstanceUnitOfMeasure.isNew();
+		if (!(cpInstanceUnitOfMeasure instanceof
+				CPInstanceUnitOfMeasureModelImpl)) {
 
-			if (!(cpInstanceUnitOfMeasure instanceof
-					CPInstanceUnitOfMeasureModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(
-						cpInstanceUnitOfMeasure.getClass())) {
-
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						cpInstanceUnitOfMeasure);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in cpInstanceUnitOfMeasure proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(cpInstanceUnitOfMeasure.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					cpInstanceUnitOfMeasure);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CPInstanceUnitOfMeasure implementation " +
-						cpInstanceUnitOfMeasure.getClass());
+					"Implement ModelWrapper in cpInstanceUnitOfMeasure proxy " +
+						invocationHandler.getClass());
 			}
 
-			CPInstanceUnitOfMeasureModelImpl cpInstanceUnitOfMeasureModelImpl =
-				(CPInstanceUnitOfMeasureModelImpl)cpInstanceUnitOfMeasure;
-
-			if (Validator.isNull(cpInstanceUnitOfMeasure.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				cpInstanceUnitOfMeasure.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (cpInstanceUnitOfMeasure.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					cpInstanceUnitOfMeasure.setCreateDate(date);
-				}
-				else {
-					cpInstanceUnitOfMeasure.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!cpInstanceUnitOfMeasureModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					cpInstanceUnitOfMeasure.setModifiedDate(date);
-				}
-				else {
-					cpInstanceUnitOfMeasure.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(cpInstanceUnitOfMeasure)) {
-					if (!isNew) {
-						session.evict(
-							CPInstanceUnitOfMeasureImpl.class,
-							cpInstanceUnitOfMeasure.getPrimaryKeyObj());
-					}
-
-					session.save(cpInstanceUnitOfMeasure);
-				}
-				else {
-					cpInstanceUnitOfMeasure =
-						(CPInstanceUnitOfMeasure)session.merge(
-							cpInstanceUnitOfMeasure);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				CPInstanceUnitOfMeasureImpl.class,
-				cpInstanceUnitOfMeasureModelImpl, false, true);
-
-			cacheUniqueFindersCache(cpInstanceUnitOfMeasureModelImpl);
-
-			if (isNew) {
-				cpInstanceUnitOfMeasure.setNew(false);
-			}
-
-			cpInstanceUnitOfMeasure.resetOriginalValues();
-
-			return cpInstanceUnitOfMeasure;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CPInstanceUnitOfMeasure implementation " +
+					cpInstanceUnitOfMeasure.getClass());
 		}
+
+		CPInstanceUnitOfMeasureModelImpl cpInstanceUnitOfMeasureModelImpl =
+			(CPInstanceUnitOfMeasureModelImpl)cpInstanceUnitOfMeasure;
+
+		if (Validator.isNull(cpInstanceUnitOfMeasure.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			cpInstanceUnitOfMeasure.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (cpInstanceUnitOfMeasure.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				cpInstanceUnitOfMeasure.setCreateDate(date);
+			}
+			else {
+				cpInstanceUnitOfMeasure.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!cpInstanceUnitOfMeasureModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				cpInstanceUnitOfMeasure.setModifiedDate(date);
+			}
+			else {
+				cpInstanceUnitOfMeasure.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(cpInstanceUnitOfMeasure)) {
+				if (!isNew) {
+					session.evict(
+						CPInstanceUnitOfMeasureImpl.class,
+						cpInstanceUnitOfMeasure.getPrimaryKeyObj());
+				}
+
+				session.save(cpInstanceUnitOfMeasure);
+			}
+			else {
+				cpInstanceUnitOfMeasure =
+					(CPInstanceUnitOfMeasure)session.merge(
+						cpInstanceUnitOfMeasure);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CPInstanceUnitOfMeasureImpl.class, cpInstanceUnitOfMeasureModelImpl,
+			false, true);
+
+		cacheUniqueFindersCache(cpInstanceUnitOfMeasureModelImpl);
+
+		if (isNew) {
+			cpInstanceUnitOfMeasure.setNew(false);
+		}
+
+		cpInstanceUnitOfMeasure.resetOriginalValues();
+
+		return cpInstanceUnitOfMeasure;
 	}
 
 	/**
@@ -4896,45 +4871,41 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 				CPInstanceUnitOfMeasure.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CPInstanceUnitOfMeasure cpInstanceUnitOfMeasure =
+			(CPInstanceUnitOfMeasure)entityCache.getResult(
+				CPInstanceUnitOfMeasureImpl.class, primaryKey);
 
-			CPInstanceUnitOfMeasure cpInstanceUnitOfMeasure =
-				(CPInstanceUnitOfMeasure)entityCache.getResult(
-					CPInstanceUnitOfMeasureImpl.class, primaryKey);
-
-			if (cpInstanceUnitOfMeasure != null) {
-				return cpInstanceUnitOfMeasure;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				cpInstanceUnitOfMeasure = (CPInstanceUnitOfMeasure)session.get(
-					CPInstanceUnitOfMeasureImpl.class, primaryKey);
-
-				if (cpInstanceUnitOfMeasure != null) {
-					cacheResult(cpInstanceUnitOfMeasure);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (cpInstanceUnitOfMeasure != null) {
 			return cpInstanceUnitOfMeasure;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			cpInstanceUnitOfMeasure = (CPInstanceUnitOfMeasure)session.get(
+				CPInstanceUnitOfMeasureImpl.class, primaryKey);
+
+			if (cpInstanceUnitOfMeasure != null) {
+				cacheResult(cpInstanceUnitOfMeasure);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return cpInstanceUnitOfMeasure;
 	}
 
 	/**
@@ -4958,8 +4929,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 				CPInstanceUnitOfMeasure.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -4993,9 +4964,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CPInstanceUnitOfMeasure.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CPInstanceUnitOfMeasure.class, primaryKey)) {
 
 				CPInstanceUnitOfMeasure cpInstanceUnitOfMeasure =
 					(CPInstanceUnitOfMeasure)entityCache.getResult(
@@ -5150,9 +5120,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5246,9 +5215,8 @@ public class CPInstanceUnitOfMeasurePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPInstanceUnitOfMeasure.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPInstanceUnitOfMeasure.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

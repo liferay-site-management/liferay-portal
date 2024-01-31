@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -176,9 +175,8 @@ public class DDMFormInstancePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstance.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstance.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -582,9 +580,8 @@ public class DDMFormInstancePersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstance.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstance.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -713,9 +710,8 @@ public class DDMFormInstancePersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstance.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstance.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -836,9 +832,8 @@ public class DDMFormInstancePersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstance.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstance.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -991,9 +986,8 @@ public class DDMFormInstancePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstance.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstance.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1431,9 +1425,8 @@ public class DDMFormInstancePersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstance.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstance.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1582,9 +1575,8 @@ public class DDMFormInstancePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstance.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstance.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2502,9 +2494,8 @@ public class DDMFormInstancePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstance.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstance.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2625,9 +2616,8 @@ public class DDMFormInstancePersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstance.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstance.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2688,9 +2678,8 @@ public class DDMFormInstancePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstance.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstance.class)) {
 
 			Object[] finderArgs = new Object[] {StringUtil.merge(groupIds)};
 
@@ -2894,8 +2883,8 @@ public class DDMFormInstancePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmFormInstance.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmFormInstance.getCtCollectionId())) {
 
 			entityCache.putResult(
 				DDMFormInstanceImpl.class, ddmFormInstance.getPrimaryKey(),
@@ -2936,8 +2925,8 @@ public class DDMFormInstancePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						ddmFormInstance.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ddmFormInstance.getCtCollectionId())) {
 
 				DDMFormInstance cachedDDMFormInstance =
 					(DDMFormInstance)entityCache.getResult(
@@ -3014,8 +3003,8 @@ public class DDMFormInstancePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmFormInstanceModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmFormInstanceModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				ddmFormInstanceModelImpl.getUuid(),
@@ -3141,103 +3130,97 @@ public class DDMFormInstancePersistenceImpl
 
 	@Override
 	public DDMFormInstance updateImpl(DDMFormInstance ddmFormInstance) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = ddmFormInstance.isNew();
 
-			boolean isNew = ddmFormInstance.isNew();
+		if (!(ddmFormInstance instanceof DDMFormInstanceModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(ddmFormInstance instanceof DDMFormInstanceModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(ddmFormInstance.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						ddmFormInstance);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in ddmFormInstance proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(ddmFormInstance.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					ddmFormInstance);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DDMFormInstance implementation " +
-						ddmFormInstance.getClass());
+					"Implement ModelWrapper in ddmFormInstance proxy " +
+						invocationHandler.getClass());
 			}
 
-			DDMFormInstanceModelImpl ddmFormInstanceModelImpl =
-				(DDMFormInstanceModelImpl)ddmFormInstance;
-
-			if (Validator.isNull(ddmFormInstance.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				ddmFormInstance.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (ddmFormInstance.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					ddmFormInstance.setCreateDate(date);
-				}
-				else {
-					ddmFormInstance.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!ddmFormInstanceModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					ddmFormInstance.setModifiedDate(date);
-				}
-				else {
-					ddmFormInstance.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(ddmFormInstance)) {
-					if (!isNew) {
-						session.evict(
-							DDMFormInstanceImpl.class,
-							ddmFormInstance.getPrimaryKeyObj());
-					}
-
-					session.save(ddmFormInstance);
-				}
-				else {
-					ddmFormInstance = (DDMFormInstance)session.merge(
-						ddmFormInstance);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				DDMFormInstanceImpl.class, ddmFormInstanceModelImpl, false,
-				true);
-
-			cacheUniqueFindersCache(ddmFormInstanceModelImpl);
-
-			if (isNew) {
-				ddmFormInstance.setNew(false);
-			}
-
-			ddmFormInstance.resetOriginalValues();
-
-			return ddmFormInstance;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DDMFormInstance implementation " +
+					ddmFormInstance.getClass());
 		}
+
+		DDMFormInstanceModelImpl ddmFormInstanceModelImpl =
+			(DDMFormInstanceModelImpl)ddmFormInstance;
+
+		if (Validator.isNull(ddmFormInstance.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			ddmFormInstance.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (ddmFormInstance.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				ddmFormInstance.setCreateDate(date);
+			}
+			else {
+				ddmFormInstance.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!ddmFormInstanceModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				ddmFormInstance.setModifiedDate(date);
+			}
+			else {
+				ddmFormInstance.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(ddmFormInstance)) {
+				if (!isNew) {
+					session.evict(
+						DDMFormInstanceImpl.class,
+						ddmFormInstance.getPrimaryKeyObj());
+				}
+
+				session.save(ddmFormInstance);
+			}
+			else {
+				ddmFormInstance = (DDMFormInstance)session.merge(
+					ddmFormInstance);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			DDMFormInstanceImpl.class, ddmFormInstanceModelImpl, false, true);
+
+		cacheUniqueFindersCache(ddmFormInstanceModelImpl);
+
+		if (isNew) {
+			ddmFormInstance.setNew(false);
+		}
+
+		ddmFormInstance.resetOriginalValues();
+
+		return ddmFormInstance;
 	}
 
 	/**
@@ -3291,45 +3274,41 @@ public class DDMFormInstancePersistenceImpl
 				DDMFormInstance.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DDMFormInstance ddmFormInstance =
+			(DDMFormInstance)entityCache.getResult(
+				DDMFormInstanceImpl.class, primaryKey);
 
-			DDMFormInstance ddmFormInstance =
-				(DDMFormInstance)entityCache.getResult(
-					DDMFormInstanceImpl.class, primaryKey);
-
-			if (ddmFormInstance != null) {
-				return ddmFormInstance;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ddmFormInstance = (DDMFormInstance)session.get(
-					DDMFormInstanceImpl.class, primaryKey);
-
-				if (ddmFormInstance != null) {
-					cacheResult(ddmFormInstance);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (ddmFormInstance != null) {
 			return ddmFormInstance;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			ddmFormInstance = (DDMFormInstance)session.get(
+				DDMFormInstanceImpl.class, primaryKey);
+
+			if (ddmFormInstance != null) {
+				cacheResult(ddmFormInstance);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return ddmFormInstance;
 	}
 
 	/**
@@ -3349,8 +3328,8 @@ public class DDMFormInstancePersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(DDMFormInstance.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3383,9 +3362,8 @@ public class DDMFormInstancePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							DDMFormInstance.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						DDMFormInstance.class, primaryKey)) {
 
 				DDMFormInstance ddmFormInstance =
 					(DDMFormInstance)entityCache.getResult(
@@ -3538,9 +3516,8 @@ public class DDMFormInstancePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstance.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstance.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3633,9 +3610,8 @@ public class DDMFormInstancePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstance.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstance.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

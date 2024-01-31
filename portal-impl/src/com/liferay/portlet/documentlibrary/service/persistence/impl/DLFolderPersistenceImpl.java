@@ -17,7 +17,6 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -177,9 +176,8 @@ public class DLFolderPersistenceImpl
 		OrderByComparator<DLFolder> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -579,9 +577,8 @@ public class DLFolderPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -710,9 +707,8 @@ public class DLFolderPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -833,9 +829,8 @@ public class DLFolderPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -987,9 +982,8 @@ public class DLFolderPersistenceImpl
 		OrderByComparator<DLFolder> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1423,9 +1417,8 @@ public class DLFolderPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1570,9 +1563,8 @@ public class DLFolderPersistenceImpl
 		OrderByComparator<DLFolder> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2273,9 +2265,8 @@ public class DLFolderPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2445,9 +2436,8 @@ public class DLFolderPersistenceImpl
 		OrderByComparator<DLFolder> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2826,9 +2816,8 @@ public class DLFolderPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2953,9 +2942,8 @@ public class DLFolderPersistenceImpl
 		OrderByComparator<DLFolder> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3335,9 +3323,8 @@ public class DLFolderPersistenceImpl
 	@Override
 	public int countByRepositoryId(long repositoryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = _finderPathCountByRepositoryId;
 
@@ -3467,9 +3454,8 @@ public class DLFolderPersistenceImpl
 		OrderByComparator<DLFolder> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4219,9 +4205,8 @@ public class DLFolderPersistenceImpl
 	@Override
 	public int countByG_P(long groupId, long parentFolderId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P;
 
@@ -4409,9 +4394,8 @@ public class DLFolderPersistenceImpl
 		OrderByComparator<DLFolder> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4809,9 +4793,8 @@ public class DLFolderPersistenceImpl
 	@Override
 	public int countByC_NotS(long companyId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByC_NotS;
 
@@ -4931,9 +4914,8 @@ public class DLFolderPersistenceImpl
 		long repositoryId, boolean mountPoint, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			Object[] finderArgs = null;
 
@@ -5058,9 +5040,8 @@ public class DLFolderPersistenceImpl
 	@Override
 	public int countByR_M(long repositoryId, boolean mountPoint) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = _finderPathCountByR_M;
 
@@ -5197,9 +5178,8 @@ public class DLFolderPersistenceImpl
 		OrderByComparator<DLFolder> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5610,9 +5590,8 @@ public class DLFolderPersistenceImpl
 	@Override
 	public int countByR_P(long repositoryId, long parentFolderId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = _finderPathCountByR_P;
 
@@ -5748,9 +5727,8 @@ public class DLFolderPersistenceImpl
 		OrderByComparator<DLFolder> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -6186,9 +6164,8 @@ public class DLFolderPersistenceImpl
 	@Override
 	public int countByP_N(long parentFolderId, String name) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -6348,9 +6325,8 @@ public class DLFolderPersistenceImpl
 		OrderByComparator<DLFolder> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6616,9 +6592,8 @@ public class DLFolderPersistenceImpl
 		long folderId, long companyId, long parentFolderId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByGtF_C_P;
 
@@ -6774,9 +6749,8 @@ public class DLFolderPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7576,9 +7550,8 @@ public class DLFolderPersistenceImpl
 		long groupId, boolean mountPoint, long parentFolderId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_M_P;
 
@@ -7776,9 +7749,8 @@ public class DLFolderPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -7907,9 +7879,8 @@ public class DLFolderPersistenceImpl
 	@Override
 	public int countByG_P_N(long groupId, long parentFolderId, String name) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -8082,9 +8053,8 @@ public class DLFolderPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -8369,9 +8339,8 @@ public class DLFolderPersistenceImpl
 		long folderId, long companyId, long parentFolderId, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath =
 				_finderPathWithPaginationCountByGtF_C_P_NotS;
@@ -8539,9 +8508,8 @@ public class DLFolderPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -9378,9 +9346,8 @@ public class DLFolderPersistenceImpl
 		long groupId, boolean mountPoint, long parentFolderId, boolean hidden) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_M_P_H;
 
@@ -9614,9 +9581,8 @@ public class DLFolderPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			treePath = Objects.toString(treePath, "");
 
@@ -10492,9 +10458,8 @@ public class DLFolderPersistenceImpl
 		long groupId, boolean mountPoint, String treePath, boolean hidden) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			treePath = Objects.toString(treePath, "");
 
@@ -10758,9 +10723,8 @@ public class DLFolderPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -11594,9 +11558,8 @@ public class DLFolderPersistenceImpl
 		long groupId, long parentFolderId, boolean hidden, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P_H_S;
 
@@ -11838,9 +11801,8 @@ public class DLFolderPersistenceImpl
 		OrderByComparator<DLFolder> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -12721,9 +12683,8 @@ public class DLFolderPersistenceImpl
 		int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_M_P_H_S;
 
@@ -12977,9 +12938,8 @@ public class DLFolderPersistenceImpl
 		OrderByComparator<DLFolder> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			treePath = Objects.toString(treePath, "");
 
@@ -13897,9 +13857,8 @@ public class DLFolderPersistenceImpl
 		int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			treePath = Objects.toString(treePath, "");
 
@@ -14147,9 +14106,8 @@ public class DLFolderPersistenceImpl
 		String externalReferenceCode, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -14272,9 +14230,8 @@ public class DLFolderPersistenceImpl
 	@Override
 	public int countByERC_G(String externalReferenceCode, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -14376,8 +14333,8 @@ public class DLFolderPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					dlFolder.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					dlFolder.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				DLFolderImpl.class, dlFolder.getPrimaryKey(), dlFolder);
@@ -14436,8 +14393,8 @@ public class DLFolderPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						dlFolder.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						dlFolder.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						DLFolderImpl.class, dlFolder.getPrimaryKey()) == null) {
@@ -14501,8 +14458,8 @@ public class DLFolderPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					dlFolderModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					dlFolderModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				dlFolderModelImpl.getUuid(), dlFolderModelImpl.getGroupId()
@@ -14658,158 +14615,151 @@ public class DLFolderPersistenceImpl
 
 	@Override
 	public DLFolder updateImpl(DLFolder dlFolder) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = dlFolder.isNew();
 
-			boolean isNew = dlFolder.isNew();
+		if (!(dlFolder instanceof DLFolderModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(dlFolder instanceof DLFolderModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(dlFolder.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						dlFolder);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in dlFolder proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(dlFolder.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(dlFolder);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DLFolder implementation " +
-						dlFolder.getClass());
+					"Implement ModelWrapper in dlFolder proxy " +
+						invocationHandler.getClass());
 			}
 
-			DLFolderModelImpl dlFolderModelImpl = (DLFolderModelImpl)dlFolder;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DLFolder implementation " +
+					dlFolder.getClass());
+		}
 
-			if (Validator.isNull(dlFolder.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		DLFolderModelImpl dlFolderModelImpl = (DLFolderModelImpl)dlFolder;
 
-				dlFolder.setUuid(uuid);
-			}
+		if (Validator.isNull(dlFolder.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
 
-			if (Validator.isNull(dlFolder.getExternalReferenceCode())) {
-				dlFolder.setExternalReferenceCode(dlFolder.getUuid());
-			}
-			else {
-				if (!Objects.equals(
-						dlFolderModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						dlFolder.getExternalReferenceCode())) {
+			dlFolder.setUuid(uuid);
+		}
 
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
+		if (Validator.isNull(dlFolder.getExternalReferenceCode())) {
+			dlFolder.setExternalReferenceCode(dlFolder.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					dlFolderModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
+					dlFolder.getExternalReferenceCode())) {
 
-					if (userId > 0) {
-						long companyId = dlFolder.getCompanyId();
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
 
-						long groupId = dlFolder.getGroupId();
+				if (userId > 0) {
+					long companyId = dlFolder.getCompanyId();
 
-						long classPK = 0;
+					long groupId = dlFolder.getGroupId();
 
-						if (!isNew) {
-							classPK = dlFolder.getPrimaryKey();
-						}
+					long classPK = 0;
 
-						try {
-							dlFolder.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									DLFolder.class.getName(), classPK,
-									ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-									dlFolder.getExternalReferenceCode(), null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
-
-				DLFolder ercDLFolder = fetchByERC_G(
-					dlFolder.getExternalReferenceCode(), dlFolder.getGroupId());
-
-				if (isNew) {
-					if (ercDLFolder != null) {
-						throw new DuplicateDLFolderExternalReferenceCodeException(
-							"Duplicate document library folder with external reference code " +
-								dlFolder.getExternalReferenceCode() +
-									" and group " + dlFolder.getGroupId());
-					}
-				}
-				else {
-					if ((ercDLFolder != null) &&
-						(dlFolder.getFolderId() != ercDLFolder.getFolderId())) {
-
-						throw new DuplicateDLFolderExternalReferenceCodeException(
-							"Duplicate document library folder with external reference code " +
-								dlFolder.getExternalReferenceCode() +
-									" and group " + dlFolder.getGroupId());
-					}
-				}
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (dlFolder.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					dlFolder.setCreateDate(date);
-				}
-				else {
-					dlFolder.setCreateDate(serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!dlFolderModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					dlFolder.setModifiedDate(date);
-				}
-				else {
-					dlFolder.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(dlFolder)) {
 					if (!isNew) {
-						session.evict(
-							DLFolderImpl.class, dlFolder.getPrimaryKeyObj());
+						classPK = dlFolder.getPrimaryKey();
 					}
 
-					session.save(dlFolder);
+					try {
+						dlFolder.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								DLFolder.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								dlFolder.getExternalReferenceCode(), null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
 				}
-				else {
-					dlFolder = (DLFolder)session.merge(dlFolder);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
 			}
 
-			EntityCacheUtil.putResult(
-				DLFolderImpl.class, dlFolderModelImpl, false, true);
-
-			cacheUniqueFindersCache(dlFolderModelImpl);
+			DLFolder ercDLFolder = fetchByERC_G(
+				dlFolder.getExternalReferenceCode(), dlFolder.getGroupId());
 
 			if (isNew) {
-				dlFolder.setNew(false);
+				if (ercDLFolder != null) {
+					throw new DuplicateDLFolderExternalReferenceCodeException(
+						"Duplicate document library folder with external reference code " +
+							dlFolder.getExternalReferenceCode() +
+								" and group " + dlFolder.getGroupId());
+				}
 			}
+			else {
+				if ((ercDLFolder != null) &&
+					(dlFolder.getFolderId() != ercDLFolder.getFolderId())) {
 
-			dlFolder.resetOriginalValues();
-
-			return dlFolder;
+					throw new DuplicateDLFolderExternalReferenceCodeException(
+						"Duplicate document library folder with external reference code " +
+							dlFolder.getExternalReferenceCode() +
+								" and group " + dlFolder.getGroupId());
+				}
+			}
 		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (dlFolder.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				dlFolder.setCreateDate(date);
+			}
+			else {
+				dlFolder.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!dlFolderModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				dlFolder.setModifiedDate(date);
+			}
+			else {
+				dlFolder.setModifiedDate(serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(dlFolder)) {
+				if (!isNew) {
+					session.evict(
+						DLFolderImpl.class, dlFolder.getPrimaryKeyObj());
+				}
+
+				session.save(dlFolder);
+			}
+			else {
+				dlFolder = (DLFolder)session.merge(dlFolder);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			DLFolderImpl.class, dlFolderModelImpl, false, true);
+
+		cacheUniqueFindersCache(dlFolderModelImpl);
+
+		if (isNew) {
+			dlFolder.setNew(false);
+		}
+
+		dlFolder.resetOriginalValues();
+
+		return dlFolder;
 	}
 
 	/**
@@ -14863,44 +14813,39 @@ public class DLFolderPersistenceImpl
 				DLFolder.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DLFolder dlFolder = (DLFolder)EntityCacheUtil.getResult(
+			DLFolderImpl.class, primaryKey);
 
-			DLFolder dlFolder = (DLFolder)EntityCacheUtil.getResult(
-				DLFolderImpl.class, primaryKey);
-
-			if (dlFolder != null) {
-				return dlFolder;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				dlFolder = (DLFolder)session.get(
-					DLFolderImpl.class, primaryKey);
-
-				if (dlFolder != null) {
-					cacheResult(dlFolder);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (dlFolder != null) {
 			return dlFolder;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			dlFolder = (DLFolder)session.get(DLFolderImpl.class, primaryKey);
+
+			if (dlFolder != null) {
+				cacheResult(dlFolder);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return dlFolder;
 	}
 
 	/**
@@ -14920,8 +14865,8 @@ public class DLFolderPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(DLFolder.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -14953,9 +14898,8 @@ public class DLFolderPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							DLFolder.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						DLFolder.class, primaryKey)) {
 
 				DLFolder dlFolder = (DLFolder)EntityCacheUtil.getResult(
 					DLFolderImpl.class, primaryKey);
@@ -15103,9 +15047,8 @@ public class DLFolderPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -15198,9 +15141,8 @@ public class DLFolderPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFolder.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFolder.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

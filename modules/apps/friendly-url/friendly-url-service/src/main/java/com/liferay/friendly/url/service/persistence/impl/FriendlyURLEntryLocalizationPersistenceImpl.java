@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -172,9 +171,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntryLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntryLocalization.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -578,9 +576,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 	@Override
 	public int countByFriendlyURLEntryId(long friendlyURLEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntryLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntryLocalization.class)) {
 
 			FinderPath finderPath = _finderPathCountByFriendlyURLEntryId;
 
@@ -702,9 +699,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		long friendlyURLEntryId, String languageId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntryLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntryLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -839,9 +835,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		long friendlyURLEntryId, String languageId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntryLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntryLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -1009,9 +1004,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntryLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntryLocalization.class)) {
 
 			urlTitle = Objects.toString(urlTitle, "");
 
@@ -1488,9 +1482,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 	@Override
 	public int countByG_C_U(long groupId, long classNameId, String urlTitle) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntryLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntryLocalization.class)) {
 
 			urlTitle = Objects.toString(urlTitle, "");
 
@@ -1666,9 +1659,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntryLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntryLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -2174,9 +2166,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		long groupId, long classNameId, long classPK, String languageId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntryLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntryLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -2346,9 +2337,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntryLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntryLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 			urlTitle = Objects.toString(urlTitle, "");
@@ -2507,9 +2497,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		long groupId, long classNameId, String languageId, String urlTitle) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntryLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntryLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 			urlTitle = Objects.toString(urlTitle, "");
@@ -2708,9 +2697,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntryLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntryLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 			urlTitle = Objects.toString(urlTitle, "");
@@ -3230,9 +3218,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		long groupId, long classNameId, String languageId, String urlTitle) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntryLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntryLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 			urlTitle = Objects.toString(urlTitle, "");
@@ -3360,8 +3347,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					friendlyURLEntryLocalization.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					friendlyURLEntryLocalization.getCtCollectionId())) {
 
 			entityCache.putResult(
 				FriendlyURLEntryLocalizationImpl.class,
@@ -3418,9 +3405,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						friendlyURLEntryLocalization.getCtCollectionId() !=
-							0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						friendlyURLEntryLocalization.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						FriendlyURLEntryLocalizationImpl.class,
@@ -3497,9 +3483,9 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					friendlyURLEntryLocalizationModelImpl.getCtCollectionId() !=
-						0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					friendlyURLEntryLocalizationModelImpl.
+						getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				friendlyURLEntryLocalizationModelImpl.getFriendlyURLEntryId(),
@@ -3650,81 +3636,74 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 	public FriendlyURLEntryLocalization updateImpl(
 		FriendlyURLEntryLocalization friendlyURLEntryLocalization) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = friendlyURLEntryLocalization.isNew();
 
-			boolean isNew = friendlyURLEntryLocalization.isNew();
+		if (!(friendlyURLEntryLocalization instanceof
+				FriendlyURLEntryLocalizationModelImpl)) {
 
-			if (!(friendlyURLEntryLocalization instanceof
-					FriendlyURLEntryLocalizationModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
+			if (ProxyUtil.isProxyClass(
+					friendlyURLEntryLocalization.getClass())) {
 
-				if (ProxyUtil.isProxyClass(
-						friendlyURLEntryLocalization.getClass())) {
-
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						friendlyURLEntryLocalization);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in friendlyURLEntryLocalization proxy " +
-							invocationHandler.getClass());
-				}
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					friendlyURLEntryLocalization);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom FriendlyURLEntryLocalization implementation " +
-						friendlyURLEntryLocalization.getClass());
+					"Implement ModelWrapper in friendlyURLEntryLocalization proxy " +
+						invocationHandler.getClass());
 			}
 
-			FriendlyURLEntryLocalizationModelImpl
-				friendlyURLEntryLocalizationModelImpl =
-					(FriendlyURLEntryLocalizationModelImpl)
-						friendlyURLEntryLocalization;
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(
-						friendlyURLEntryLocalization)) {
-
-					if (!isNew) {
-						session.evict(
-							FriendlyURLEntryLocalizationImpl.class,
-							friendlyURLEntryLocalization.getPrimaryKeyObj());
-					}
-
-					session.save(friendlyURLEntryLocalization);
-				}
-				else {
-					friendlyURLEntryLocalization =
-						(FriendlyURLEntryLocalization)session.merge(
-							friendlyURLEntryLocalization);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				FriendlyURLEntryLocalizationImpl.class,
-				friendlyURLEntryLocalizationModelImpl, false, true);
-
-			cacheUniqueFindersCache(friendlyURLEntryLocalizationModelImpl);
-
-			if (isNew) {
-				friendlyURLEntryLocalization.setNew(false);
-			}
-
-			friendlyURLEntryLocalization.resetOriginalValues();
-
-			return friendlyURLEntryLocalization;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom FriendlyURLEntryLocalization implementation " +
+					friendlyURLEntryLocalization.getClass());
 		}
+
+		FriendlyURLEntryLocalizationModelImpl
+			friendlyURLEntryLocalizationModelImpl =
+				(FriendlyURLEntryLocalizationModelImpl)
+					friendlyURLEntryLocalization;
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(friendlyURLEntryLocalization)) {
+				if (!isNew) {
+					session.evict(
+						FriendlyURLEntryLocalizationImpl.class,
+						friendlyURLEntryLocalization.getPrimaryKeyObj());
+				}
+
+				session.save(friendlyURLEntryLocalization);
+			}
+			else {
+				friendlyURLEntryLocalization =
+					(FriendlyURLEntryLocalization)session.merge(
+						friendlyURLEntryLocalization);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			FriendlyURLEntryLocalizationImpl.class,
+			friendlyURLEntryLocalizationModelImpl, false, true);
+
+		cacheUniqueFindersCache(friendlyURLEntryLocalizationModelImpl);
+
+		if (isNew) {
+			friendlyURLEntryLocalization.setNew(false);
+		}
+
+		friendlyURLEntryLocalization.resetOriginalValues();
+
+		return friendlyURLEntryLocalization;
 	}
 
 	/**
@@ -3783,46 +3762,42 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 				FriendlyURLEntryLocalization.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		FriendlyURLEntryLocalization friendlyURLEntryLocalization =
+			(FriendlyURLEntryLocalization)entityCache.getResult(
+				FriendlyURLEntryLocalizationImpl.class, primaryKey);
 
-			FriendlyURLEntryLocalization friendlyURLEntryLocalization =
-				(FriendlyURLEntryLocalization)entityCache.getResult(
+		if (friendlyURLEntryLocalization != null) {
+			return friendlyURLEntryLocalization;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			friendlyURLEntryLocalization =
+				(FriendlyURLEntryLocalization)session.get(
 					FriendlyURLEntryLocalizationImpl.class, primaryKey);
 
 			if (friendlyURLEntryLocalization != null) {
-				return friendlyURLEntryLocalization;
+				cacheResult(friendlyURLEntryLocalization);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				friendlyURLEntryLocalization =
-					(FriendlyURLEntryLocalization)session.get(
-						FriendlyURLEntryLocalizationImpl.class, primaryKey);
-
-				if (friendlyURLEntryLocalization != null) {
-					cacheResult(friendlyURLEntryLocalization);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return friendlyURLEntryLocalization;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return friendlyURLEntryLocalization;
 	}
 
 	/**
@@ -3846,8 +3821,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 				FriendlyURLEntryLocalization.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3881,9 +3856,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							FriendlyURLEntryLocalization.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						FriendlyURLEntryLocalization.class, primaryKey)) {
 
 				FriendlyURLEntryLocalization friendlyURLEntryLocalization =
 					(FriendlyURLEntryLocalization)entityCache.getResult(
@@ -4038,9 +4012,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntryLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntryLocalization.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4137,9 +4110,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FriendlyURLEntryLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FriendlyURLEntryLocalization.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

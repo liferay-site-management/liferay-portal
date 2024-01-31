@@ -18,7 +18,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -183,9 +182,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -595,9 +593,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -727,9 +724,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -853,9 +849,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1010,9 +1005,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1453,9 +1447,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1604,9 +1597,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1998,9 +1990,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 	@Override
 	public int countByFileEntryId(long fileEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByFileEntryId;
 
@@ -2132,9 +2123,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2549,9 +2539,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 	@Override
 	public int countByC_C(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -2689,9 +2678,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3119,9 +3107,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 	@Override
 	public int countByLtD_S(Date displayDate, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByLtD_S;
 
@@ -3280,9 +3267,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3727,9 +3713,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 	@Override
 	public int countByG_C_F(long groupId, long classNameId, long fileEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_F;
 
@@ -3883,9 +3868,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4330,9 +4314,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 	@Override
 	public int countByC_C_F(long classNameId, long classPK, long fileEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_F;
 
@@ -4485,9 +4468,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			cdnURL = Objects.toString(cdnURL, "");
 
@@ -4951,9 +4933,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 	@Override
 	public int countByC_C_C(long classNameId, long classPK, String cdnURL) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			cdnURL = Objects.toString(cdnURL, "");
 
@@ -5126,9 +5107,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5608,9 +5588,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		long classNameId, long classPK, Date displayDate, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByC_C_LtD_S;
 
@@ -5791,9 +5770,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6261,9 +6239,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		long classNameId, long classPK, int type, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_T_ST;
 
@@ -6429,9 +6406,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6887,9 +6863,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		long classNameId, long classPK, int type, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByC_C_T_NotST;
 
@@ -7064,9 +7039,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7567,9 +7541,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_G_T_ST;
 
@@ -7750,9 +7723,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -8242,9 +8214,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath =
 				_finderPathWithPaginationCountByC_C_G_T_NotST;
@@ -8392,9 +8363,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		String externalReferenceCode, long companyId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -8521,9 +8491,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 	@Override
 	public int countByERC_C(String externalReferenceCode, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -8627,8 +8596,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cpAttachmentFileEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cpAttachmentFileEntry.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CPAttachmentFileEntryImpl.class,
@@ -8682,8 +8651,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						cpAttachmentFileEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						cpAttachmentFileEntry.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CPAttachmentFileEntryImpl.class,
@@ -8755,8 +8724,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cpAttachmentFileEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cpAttachmentFileEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				cpAttachmentFileEntryModelImpl.getUuid(),
@@ -8898,181 +8867,170 @@ public class CPAttachmentFileEntryPersistenceImpl
 	public CPAttachmentFileEntry updateImpl(
 		CPAttachmentFileEntry cpAttachmentFileEntry) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = cpAttachmentFileEntry.isNew();
 
-			boolean isNew = cpAttachmentFileEntry.isNew();
+		if (!(cpAttachmentFileEntry instanceof
+				CPAttachmentFileEntryModelImpl)) {
 
-			if (!(cpAttachmentFileEntry instanceof
-					CPAttachmentFileEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(cpAttachmentFileEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						cpAttachmentFileEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in cpAttachmentFileEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(cpAttachmentFileEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					cpAttachmentFileEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CPAttachmentFileEntry implementation " +
-						cpAttachmentFileEntry.getClass());
+					"Implement ModelWrapper in cpAttachmentFileEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			CPAttachmentFileEntryModelImpl cpAttachmentFileEntryModelImpl =
-				(CPAttachmentFileEntryModelImpl)cpAttachmentFileEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CPAttachmentFileEntry implementation " +
+					cpAttachmentFileEntry.getClass());
+		}
 
-			if (Validator.isNull(cpAttachmentFileEntry.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		CPAttachmentFileEntryModelImpl cpAttachmentFileEntryModelImpl =
+			(CPAttachmentFileEntryModelImpl)cpAttachmentFileEntry;
 
-				cpAttachmentFileEntry.setUuid(uuid);
-			}
+		if (Validator.isNull(cpAttachmentFileEntry.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
 
-			if (Validator.isNull(
+			cpAttachmentFileEntry.setUuid(uuid);
+		}
+
+		if (Validator.isNull(
+				cpAttachmentFileEntry.getExternalReferenceCode())) {
+
+			cpAttachmentFileEntry.setExternalReferenceCode(
+				cpAttachmentFileEntry.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					cpAttachmentFileEntryModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
 					cpAttachmentFileEntry.getExternalReferenceCode())) {
 
-				cpAttachmentFileEntry.setExternalReferenceCode(
-					cpAttachmentFileEntry.getUuid());
-			}
-			else {
-				if (!Objects.equals(
-						cpAttachmentFileEntryModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						cpAttachmentFileEntry.getExternalReferenceCode())) {
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
 
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
+				if (userId > 0) {
+					long companyId = cpAttachmentFileEntry.getCompanyId();
 
-					if (userId > 0) {
-						long companyId = cpAttachmentFileEntry.getCompanyId();
+					long groupId = cpAttachmentFileEntry.getGroupId();
 
-						long groupId = cpAttachmentFileEntry.getGroupId();
+					long classPK = 0;
 
-						long classPK = 0;
-
-						if (!isNew) {
-							classPK = cpAttachmentFileEntry.getPrimaryKey();
-						}
-
-						try {
-							cpAttachmentFileEntry.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									CPAttachmentFileEntry.class.getName(),
-									classPK, ContentTypes.TEXT_HTML,
-									Sanitizer.MODE_ALL,
-									cpAttachmentFileEntry.
-										getExternalReferenceCode(),
-									null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
-
-				CPAttachmentFileEntry ercCPAttachmentFileEntry = fetchByERC_C(
-					cpAttachmentFileEntry.getExternalReferenceCode(),
-					cpAttachmentFileEntry.getCompanyId());
-
-				if (isNew) {
-					if (ercCPAttachmentFileEntry != null) {
-						throw new DuplicateCPAttachmentFileEntryExternalReferenceCodeException(
-							"Duplicate cp attachment file entry with external reference code " +
-								cpAttachmentFileEntry.
-									getExternalReferenceCode() +
-										" and company " +
-											cpAttachmentFileEntry.
-												getCompanyId());
-					}
-				}
-				else {
-					if ((ercCPAttachmentFileEntry != null) &&
-						(cpAttachmentFileEntry.getCPAttachmentFileEntryId() !=
-							ercCPAttachmentFileEntry.
-								getCPAttachmentFileEntryId())) {
-
-						throw new DuplicateCPAttachmentFileEntryExternalReferenceCodeException(
-							"Duplicate cp attachment file entry with external reference code " +
-								cpAttachmentFileEntry.
-									getExternalReferenceCode() +
-										" and company " +
-											cpAttachmentFileEntry.
-												getCompanyId());
-					}
-				}
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (cpAttachmentFileEntry.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					cpAttachmentFileEntry.setCreateDate(date);
-				}
-				else {
-					cpAttachmentFileEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!cpAttachmentFileEntryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					cpAttachmentFileEntry.setModifiedDate(date);
-				}
-				else {
-					cpAttachmentFileEntry.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(cpAttachmentFileEntry)) {
 					if (!isNew) {
-						session.evict(
-							CPAttachmentFileEntryImpl.class,
-							cpAttachmentFileEntry.getPrimaryKeyObj());
+						classPK = cpAttachmentFileEntry.getPrimaryKey();
 					}
 
-					session.save(cpAttachmentFileEntry);
+					try {
+						cpAttachmentFileEntry.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								CPAttachmentFileEntry.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								cpAttachmentFileEntry.
+									getExternalReferenceCode(),
+								null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
 				}
-				else {
-					cpAttachmentFileEntry =
-						(CPAttachmentFileEntry)session.merge(
-							cpAttachmentFileEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
 			}
 
-			entityCache.putResult(
-				CPAttachmentFileEntryImpl.class, cpAttachmentFileEntryModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(cpAttachmentFileEntryModelImpl);
+			CPAttachmentFileEntry ercCPAttachmentFileEntry = fetchByERC_C(
+				cpAttachmentFileEntry.getExternalReferenceCode(),
+				cpAttachmentFileEntry.getCompanyId());
 
 			if (isNew) {
-				cpAttachmentFileEntry.setNew(false);
+				if (ercCPAttachmentFileEntry != null) {
+					throw new DuplicateCPAttachmentFileEntryExternalReferenceCodeException(
+						"Duplicate cp attachment file entry with external reference code " +
+							cpAttachmentFileEntry.getExternalReferenceCode() +
+								" and company " +
+									cpAttachmentFileEntry.getCompanyId());
+				}
 			}
+			else {
+				if ((ercCPAttachmentFileEntry != null) &&
+					(cpAttachmentFileEntry.getCPAttachmentFileEntryId() !=
+						ercCPAttachmentFileEntry.
+							getCPAttachmentFileEntryId())) {
 
-			cpAttachmentFileEntry.resetOriginalValues();
-
-			return cpAttachmentFileEntry;
+					throw new DuplicateCPAttachmentFileEntryExternalReferenceCodeException(
+						"Duplicate cp attachment file entry with external reference code " +
+							cpAttachmentFileEntry.getExternalReferenceCode() +
+								" and company " +
+									cpAttachmentFileEntry.getCompanyId());
+				}
+			}
 		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (cpAttachmentFileEntry.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				cpAttachmentFileEntry.setCreateDate(date);
+			}
+			else {
+				cpAttachmentFileEntry.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!cpAttachmentFileEntryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				cpAttachmentFileEntry.setModifiedDate(date);
+			}
+			else {
+				cpAttachmentFileEntry.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(cpAttachmentFileEntry)) {
+				if (!isNew) {
+					session.evict(
+						CPAttachmentFileEntryImpl.class,
+						cpAttachmentFileEntry.getPrimaryKeyObj());
+				}
+
+				session.save(cpAttachmentFileEntry);
+			}
+			else {
+				cpAttachmentFileEntry = (CPAttachmentFileEntry)session.merge(
+					cpAttachmentFileEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CPAttachmentFileEntryImpl.class, cpAttachmentFileEntryModelImpl,
+			false, true);
+
+		cacheUniqueFindersCache(cpAttachmentFileEntryModelImpl);
+
+		if (isNew) {
+			cpAttachmentFileEntry.setNew(false);
+		}
+
+		cpAttachmentFileEntry.resetOriginalValues();
+
+		return cpAttachmentFileEntry;
 	}
 
 	/**
@@ -9127,45 +9085,41 @@ public class CPAttachmentFileEntryPersistenceImpl
 				CPAttachmentFileEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CPAttachmentFileEntry cpAttachmentFileEntry =
+			(CPAttachmentFileEntry)entityCache.getResult(
+				CPAttachmentFileEntryImpl.class, primaryKey);
 
-			CPAttachmentFileEntry cpAttachmentFileEntry =
-				(CPAttachmentFileEntry)entityCache.getResult(
-					CPAttachmentFileEntryImpl.class, primaryKey);
-
-			if (cpAttachmentFileEntry != null) {
-				return cpAttachmentFileEntry;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				cpAttachmentFileEntry = (CPAttachmentFileEntry)session.get(
-					CPAttachmentFileEntryImpl.class, primaryKey);
-
-				if (cpAttachmentFileEntry != null) {
-					cacheResult(cpAttachmentFileEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (cpAttachmentFileEntry != null) {
 			return cpAttachmentFileEntry;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			cpAttachmentFileEntry = (CPAttachmentFileEntry)session.get(
+				CPAttachmentFileEntryImpl.class, primaryKey);
+
+			if (cpAttachmentFileEntry != null) {
+				cacheResult(cpAttachmentFileEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return cpAttachmentFileEntry;
 	}
 
 	/**
@@ -9187,8 +9141,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(CPAttachmentFileEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -9222,9 +9176,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CPAttachmentFileEntry.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CPAttachmentFileEntry.class, primaryKey)) {
 
 				CPAttachmentFileEntry cpAttachmentFileEntry =
 					(CPAttachmentFileEntry)entityCache.getResult(
@@ -9379,9 +9332,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -9475,9 +9427,8 @@ public class CPAttachmentFileEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPAttachmentFileEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPAttachmentFileEntry.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

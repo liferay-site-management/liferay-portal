@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -176,9 +175,8 @@ public class DDMFormInstanceVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstanceVersion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstanceVersion.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -572,9 +570,8 @@ public class DDMFormInstanceVersionPersistenceImpl
 	@Override
 	public int countByFormInstanceId(long formInstanceId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstanceVersion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstanceVersion.class)) {
 
 			FinderPath finderPath = _finderPathCountByFormInstanceId;
 
@@ -690,9 +687,8 @@ public class DDMFormInstanceVersionPersistenceImpl
 		long formInstanceId, String version, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstanceVersion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstanceVersion.class)) {
 
 			version = Objects.toString(version, "");
 
@@ -819,9 +815,8 @@ public class DDMFormInstanceVersionPersistenceImpl
 	@Override
 	public int countByF_V(long formInstanceId, String version) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstanceVersion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstanceVersion.class)) {
 
 			version = Objects.toString(version, "");
 
@@ -976,9 +971,8 @@ public class DDMFormInstanceVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstanceVersion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstanceVersion.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1393,9 +1387,8 @@ public class DDMFormInstanceVersionPersistenceImpl
 	@Override
 	public int countByF_S(long formInstanceId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstanceVersion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstanceVersion.class)) {
 
 			FinderPath finderPath = _finderPathCountByF_S;
 
@@ -1480,8 +1473,8 @@ public class DDMFormInstanceVersionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmFormInstanceVersion.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmFormInstanceVersion.getCtCollectionId())) {
 
 			entityCache.putResult(
 				DDMFormInstanceVersionImpl.class,
@@ -1527,8 +1520,8 @@ public class DDMFormInstanceVersionPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						ddmFormInstanceVersion.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ddmFormInstanceVersion.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						DDMFormInstanceVersionImpl.class,
@@ -1600,8 +1593,8 @@ public class DDMFormInstanceVersionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmFormInstanceVersionModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmFormInstanceVersionModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				ddmFormInstanceVersionModelImpl.getFormInstanceId(),
@@ -1728,90 +1721,84 @@ public class DDMFormInstanceVersionPersistenceImpl
 	public DDMFormInstanceVersion updateImpl(
 		DDMFormInstanceVersion ddmFormInstanceVersion) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = ddmFormInstanceVersion.isNew();
 
-			boolean isNew = ddmFormInstanceVersion.isNew();
+		if (!(ddmFormInstanceVersion instanceof
+				DDMFormInstanceVersionModelImpl)) {
 
-			if (!(ddmFormInstanceVersion instanceof
-					DDMFormInstanceVersionModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(ddmFormInstanceVersion.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						ddmFormInstanceVersion);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in ddmFormInstanceVersion proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(ddmFormInstanceVersion.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					ddmFormInstanceVersion);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DDMFormInstanceVersion implementation " +
-						ddmFormInstanceVersion.getClass());
+					"Implement ModelWrapper in ddmFormInstanceVersion proxy " +
+						invocationHandler.getClass());
 			}
 
-			DDMFormInstanceVersionModelImpl ddmFormInstanceVersionModelImpl =
-				(DDMFormInstanceVersionModelImpl)ddmFormInstanceVersion;
-
-			if (isNew && (ddmFormInstanceVersion.getCreateDate() == null)) {
-				ServiceContext serviceContext =
-					ServiceContextThreadLocal.getServiceContext();
-
-				Date date = new Date();
-
-				if (serviceContext == null) {
-					ddmFormInstanceVersion.setCreateDate(date);
-				}
-				else {
-					ddmFormInstanceVersion.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(ddmFormInstanceVersion)) {
-					if (!isNew) {
-						session.evict(
-							DDMFormInstanceVersionImpl.class,
-							ddmFormInstanceVersion.getPrimaryKeyObj());
-					}
-
-					session.save(ddmFormInstanceVersion);
-				}
-				else {
-					ddmFormInstanceVersion =
-						(DDMFormInstanceVersion)session.merge(
-							ddmFormInstanceVersion);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				DDMFormInstanceVersionImpl.class,
-				ddmFormInstanceVersionModelImpl, false, true);
-
-			cacheUniqueFindersCache(ddmFormInstanceVersionModelImpl);
-
-			if (isNew) {
-				ddmFormInstanceVersion.setNew(false);
-			}
-
-			ddmFormInstanceVersion.resetOriginalValues();
-
-			return ddmFormInstanceVersion;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DDMFormInstanceVersion implementation " +
+					ddmFormInstanceVersion.getClass());
 		}
+
+		DDMFormInstanceVersionModelImpl ddmFormInstanceVersionModelImpl =
+			(DDMFormInstanceVersionModelImpl)ddmFormInstanceVersion;
+
+		if (isNew && (ddmFormInstanceVersion.getCreateDate() == null)) {
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (serviceContext == null) {
+				ddmFormInstanceVersion.setCreateDate(date);
+			}
+			else {
+				ddmFormInstanceVersion.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(ddmFormInstanceVersion)) {
+				if (!isNew) {
+					session.evict(
+						DDMFormInstanceVersionImpl.class,
+						ddmFormInstanceVersion.getPrimaryKeyObj());
+				}
+
+				session.save(ddmFormInstanceVersion);
+			}
+			else {
+				ddmFormInstanceVersion = (DDMFormInstanceVersion)session.merge(
+					ddmFormInstanceVersion);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			DDMFormInstanceVersionImpl.class, ddmFormInstanceVersionModelImpl,
+			false, true);
+
+		cacheUniqueFindersCache(ddmFormInstanceVersionModelImpl);
+
+		if (isNew) {
+			ddmFormInstanceVersion.setNew(false);
+		}
+
+		ddmFormInstanceVersion.resetOriginalValues();
+
+		return ddmFormInstanceVersion;
 	}
 
 	/**
@@ -1866,45 +1853,41 @@ public class DDMFormInstanceVersionPersistenceImpl
 				DDMFormInstanceVersion.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DDMFormInstanceVersion ddmFormInstanceVersion =
+			(DDMFormInstanceVersion)entityCache.getResult(
+				DDMFormInstanceVersionImpl.class, primaryKey);
 
-			DDMFormInstanceVersion ddmFormInstanceVersion =
-				(DDMFormInstanceVersion)entityCache.getResult(
-					DDMFormInstanceVersionImpl.class, primaryKey);
-
-			if (ddmFormInstanceVersion != null) {
-				return ddmFormInstanceVersion;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ddmFormInstanceVersion = (DDMFormInstanceVersion)session.get(
-					DDMFormInstanceVersionImpl.class, primaryKey);
-
-				if (ddmFormInstanceVersion != null) {
-					cacheResult(ddmFormInstanceVersion);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (ddmFormInstanceVersion != null) {
 			return ddmFormInstanceVersion;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			ddmFormInstanceVersion = (DDMFormInstanceVersion)session.get(
+				DDMFormInstanceVersionImpl.class, primaryKey);
+
+			if (ddmFormInstanceVersion != null) {
+				cacheResult(ddmFormInstanceVersion);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return ddmFormInstanceVersion;
 	}
 
 	/**
@@ -1928,8 +1911,8 @@ public class DDMFormInstanceVersionPersistenceImpl
 				DDMFormInstanceVersion.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -1963,9 +1946,8 @@ public class DDMFormInstanceVersionPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							DDMFormInstanceVersion.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						DDMFormInstanceVersion.class, primaryKey)) {
 
 				DDMFormInstanceVersion ddmFormInstanceVersion =
 					(DDMFormInstanceVersion)entityCache.getResult(
@@ -2120,9 +2102,8 @@ public class DDMFormInstanceVersionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstanceVersion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstanceVersion.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2216,9 +2197,8 @@ public class DDMFormInstanceVersionPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMFormInstanceVersion.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMFormInstanceVersion.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

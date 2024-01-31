@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -176,9 +175,8 @@ public class BookmarksEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -581,9 +579,8 @@ public class BookmarksEntryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -712,9 +709,8 @@ public class BookmarksEntryPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -835,9 +831,8 @@ public class BookmarksEntryPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -990,9 +985,8 @@ public class BookmarksEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1430,9 +1424,8 @@ public class BookmarksEntryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1580,9 +1573,8 @@ public class BookmarksEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1963,9 +1955,8 @@ public class BookmarksEntryPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2096,9 +2087,8 @@ public class BookmarksEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3074,9 +3064,8 @@ public class BookmarksEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -3210,9 +3199,8 @@ public class BookmarksEntryPersistenceImpl
 	@Override
 	public int countByG_F(long groupId, long folderId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_F;
 
@@ -3278,9 +3266,8 @@ public class BookmarksEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(folderIds)
@@ -3556,9 +3543,8 @@ public class BookmarksEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4316,9 +4302,8 @@ public class BookmarksEntryPersistenceImpl
 	@Override
 	public int countByG_S(long groupId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_S;
 
@@ -4507,9 +4492,8 @@ public class BookmarksEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5257,9 +5241,8 @@ public class BookmarksEntryPersistenceImpl
 	@Override
 	public int countByG_NotS(long groupId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_NotS;
 
@@ -5448,9 +5431,8 @@ public class BookmarksEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5852,9 +5834,8 @@ public class BookmarksEntryPersistenceImpl
 	@Override
 	public int countByC_NotS(long companyId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByC_NotS;
 
@@ -5998,9 +5979,8 @@ public class BookmarksEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6796,9 +6776,8 @@ public class BookmarksEntryPersistenceImpl
 	@Override
 	public int countByG_U_S(long groupId, long userId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_U_S;
 
@@ -7006,9 +6985,8 @@ public class BookmarksEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7794,9 +7772,8 @@ public class BookmarksEntryPersistenceImpl
 	@Override
 	public int countByG_U_NotS(long groupId, long userId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_U_NotS;
 
@@ -8006,9 +7983,8 @@ public class BookmarksEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -9038,9 +9014,8 @@ public class BookmarksEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -9183,9 +9158,8 @@ public class BookmarksEntryPersistenceImpl
 	@Override
 	public int countByG_F_S(long groupId, long folderId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_F_S;
 
@@ -9256,9 +9230,8 @@ public class BookmarksEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(folderIds), status
@@ -9563,9 +9536,8 @@ public class BookmarksEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -10587,9 +10559,8 @@ public class BookmarksEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -10732,9 +10703,8 @@ public class BookmarksEntryPersistenceImpl
 	@Override
 	public int countByG_F_NotS(long groupId, long folderId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_F_NotS;
 
@@ -10805,9 +10775,8 @@ public class BookmarksEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(folderIds), status
@@ -11123,9 +11092,8 @@ public class BookmarksEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -12212,9 +12180,8 @@ public class BookmarksEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -12368,9 +12335,8 @@ public class BookmarksEntryPersistenceImpl
 		long groupId, long userId, long folderId, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_U_F_S;
 
@@ -12450,9 +12416,8 @@ public class BookmarksEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, userId, StringUtil.merge(folderIds), status
@@ -12720,8 +12685,8 @@ public class BookmarksEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					bookmarksEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					bookmarksEntry.getCtCollectionId())) {
 
 			entityCache.putResult(
 				BookmarksEntryImpl.class, bookmarksEntry.getPrimaryKey(),
@@ -12762,8 +12727,8 @@ public class BookmarksEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						bookmarksEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						bookmarksEntry.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						BookmarksEntryImpl.class,
@@ -12828,8 +12793,8 @@ public class BookmarksEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					bookmarksEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					bookmarksEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				bookmarksEntryModelImpl.getUuid(),
@@ -12953,102 +12918,96 @@ public class BookmarksEntryPersistenceImpl
 
 	@Override
 	public BookmarksEntry updateImpl(BookmarksEntry bookmarksEntry) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = bookmarksEntry.isNew();
 
-			boolean isNew = bookmarksEntry.isNew();
+		if (!(bookmarksEntry instanceof BookmarksEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(bookmarksEntry instanceof BookmarksEntryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(bookmarksEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						bookmarksEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in bookmarksEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(bookmarksEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					bookmarksEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom BookmarksEntry implementation " +
-						bookmarksEntry.getClass());
+					"Implement ModelWrapper in bookmarksEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			BookmarksEntryModelImpl bookmarksEntryModelImpl =
-				(BookmarksEntryModelImpl)bookmarksEntry;
-
-			if (Validator.isNull(bookmarksEntry.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				bookmarksEntry.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (bookmarksEntry.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					bookmarksEntry.setCreateDate(date);
-				}
-				else {
-					bookmarksEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!bookmarksEntryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					bookmarksEntry.setModifiedDate(date);
-				}
-				else {
-					bookmarksEntry.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(bookmarksEntry)) {
-					if (!isNew) {
-						session.evict(
-							BookmarksEntryImpl.class,
-							bookmarksEntry.getPrimaryKeyObj());
-					}
-
-					session.save(bookmarksEntry);
-				}
-				else {
-					bookmarksEntry = (BookmarksEntry)session.merge(
-						bookmarksEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				BookmarksEntryImpl.class, bookmarksEntryModelImpl, false, true);
-
-			cacheUniqueFindersCache(bookmarksEntryModelImpl);
-
-			if (isNew) {
-				bookmarksEntry.setNew(false);
-			}
-
-			bookmarksEntry.resetOriginalValues();
-
-			return bookmarksEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom BookmarksEntry implementation " +
+					bookmarksEntry.getClass());
 		}
+
+		BookmarksEntryModelImpl bookmarksEntryModelImpl =
+			(BookmarksEntryModelImpl)bookmarksEntry;
+
+		if (Validator.isNull(bookmarksEntry.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			bookmarksEntry.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (bookmarksEntry.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				bookmarksEntry.setCreateDate(date);
+			}
+			else {
+				bookmarksEntry.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!bookmarksEntryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				bookmarksEntry.setModifiedDate(date);
+			}
+			else {
+				bookmarksEntry.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(bookmarksEntry)) {
+				if (!isNew) {
+					session.evict(
+						BookmarksEntryImpl.class,
+						bookmarksEntry.getPrimaryKeyObj());
+				}
+
+				session.save(bookmarksEntry);
+			}
+			else {
+				bookmarksEntry = (BookmarksEntry)session.merge(bookmarksEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			BookmarksEntryImpl.class, bookmarksEntryModelImpl, false, true);
+
+		cacheUniqueFindersCache(bookmarksEntryModelImpl);
+
+		if (isNew) {
+			bookmarksEntry.setNew(false);
+		}
+
+		bookmarksEntry.resetOriginalValues();
+
+		return bookmarksEntry;
 	}
 
 	/**
@@ -13102,45 +13061,40 @@ public class BookmarksEntryPersistenceImpl
 				BookmarksEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		BookmarksEntry bookmarksEntry = (BookmarksEntry)entityCache.getResult(
+			BookmarksEntryImpl.class, primaryKey);
 
-			BookmarksEntry bookmarksEntry =
-				(BookmarksEntry)entityCache.getResult(
-					BookmarksEntryImpl.class, primaryKey);
-
-			if (bookmarksEntry != null) {
-				return bookmarksEntry;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				bookmarksEntry = (BookmarksEntry)session.get(
-					BookmarksEntryImpl.class, primaryKey);
-
-				if (bookmarksEntry != null) {
-					cacheResult(bookmarksEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (bookmarksEntry != null) {
 			return bookmarksEntry;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			bookmarksEntry = (BookmarksEntry)session.get(
+				BookmarksEntryImpl.class, primaryKey);
+
+			if (bookmarksEntry != null) {
+				cacheResult(bookmarksEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return bookmarksEntry;
 	}
 
 	/**
@@ -13160,8 +13114,8 @@ public class BookmarksEntryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(BookmarksEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -13194,9 +13148,8 @@ public class BookmarksEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							BookmarksEntry.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						BookmarksEntry.class, primaryKey)) {
 
 				BookmarksEntry bookmarksEntry =
 					(BookmarksEntry)entityCache.getResult(
@@ -13348,9 +13301,8 @@ public class BookmarksEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -13443,9 +13395,8 @@ public class BookmarksEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						BookmarksEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BookmarksEntry.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

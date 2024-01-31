@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -172,9 +171,8 @@ public class DEDataListViewPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataListView.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataListView.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -577,9 +575,8 @@ public class DEDataListViewPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataListView.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataListView.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -708,9 +705,8 @@ public class DEDataListViewPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataListView.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataListView.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -831,9 +827,8 @@ public class DEDataListViewPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataListView.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataListView.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -986,9 +981,8 @@ public class DEDataListViewPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataListView.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataListView.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1426,9 +1420,8 @@ public class DEDataListViewPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataListView.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataListView.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1577,9 +1570,8 @@ public class DEDataListViewPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataListView.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataListView.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1970,9 +1962,8 @@ public class DEDataListViewPersistenceImpl
 	@Override
 	public int countByDDMStructureId(long ddmStructureId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataListView.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataListView.class)) {
 
 			FinderPath finderPath = _finderPathCountByDDMStructureId;
 
@@ -2111,9 +2102,8 @@ public class DEDataListViewPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataListView.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataListView.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2557,9 +2547,8 @@ public class DEDataListViewPersistenceImpl
 		long groupId, long companyId, long ddmStructureId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataListView.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataListView.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_DDMSI;
 
@@ -2653,8 +2642,8 @@ public class DEDataListViewPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					deDataListView.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					deDataListView.getCtCollectionId())) {
 
 			entityCache.putResult(
 				DEDataListViewImpl.class, deDataListView.getPrimaryKey(),
@@ -2694,8 +2683,8 @@ public class DEDataListViewPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						deDataListView.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						deDataListView.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						DEDataListViewImpl.class,
@@ -2760,8 +2749,8 @@ public class DEDataListViewPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					deDataListViewModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					deDataListViewModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				deDataListViewModelImpl.getUuid(),
@@ -2887,102 +2876,96 @@ public class DEDataListViewPersistenceImpl
 
 	@Override
 	public DEDataListView updateImpl(DEDataListView deDataListView) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = deDataListView.isNew();
 
-			boolean isNew = deDataListView.isNew();
+		if (!(deDataListView instanceof DEDataListViewModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(deDataListView instanceof DEDataListViewModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(deDataListView.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						deDataListView);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in deDataListView proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(deDataListView.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					deDataListView);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DEDataListView implementation " +
-						deDataListView.getClass());
+					"Implement ModelWrapper in deDataListView proxy " +
+						invocationHandler.getClass());
 			}
 
-			DEDataListViewModelImpl deDataListViewModelImpl =
-				(DEDataListViewModelImpl)deDataListView;
-
-			if (Validator.isNull(deDataListView.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				deDataListView.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (deDataListView.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					deDataListView.setCreateDate(date);
-				}
-				else {
-					deDataListView.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!deDataListViewModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					deDataListView.setModifiedDate(date);
-				}
-				else {
-					deDataListView.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(deDataListView)) {
-					if (!isNew) {
-						session.evict(
-							DEDataListViewImpl.class,
-							deDataListView.getPrimaryKeyObj());
-					}
-
-					session.save(deDataListView);
-				}
-				else {
-					deDataListView = (DEDataListView)session.merge(
-						deDataListView);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				DEDataListViewImpl.class, deDataListViewModelImpl, false, true);
-
-			cacheUniqueFindersCache(deDataListViewModelImpl);
-
-			if (isNew) {
-				deDataListView.setNew(false);
-			}
-
-			deDataListView.resetOriginalValues();
-
-			return deDataListView;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DEDataListView implementation " +
+					deDataListView.getClass());
 		}
+
+		DEDataListViewModelImpl deDataListViewModelImpl =
+			(DEDataListViewModelImpl)deDataListView;
+
+		if (Validator.isNull(deDataListView.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			deDataListView.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (deDataListView.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				deDataListView.setCreateDate(date);
+			}
+			else {
+				deDataListView.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!deDataListViewModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				deDataListView.setModifiedDate(date);
+			}
+			else {
+				deDataListView.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(deDataListView)) {
+				if (!isNew) {
+					session.evict(
+						DEDataListViewImpl.class,
+						deDataListView.getPrimaryKeyObj());
+				}
+
+				session.save(deDataListView);
+			}
+			else {
+				deDataListView = (DEDataListView)session.merge(deDataListView);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			DEDataListViewImpl.class, deDataListViewModelImpl, false, true);
+
+		cacheUniqueFindersCache(deDataListViewModelImpl);
+
+		if (isNew) {
+			deDataListView.setNew(false);
+		}
+
+		deDataListView.resetOriginalValues();
+
+		return deDataListView;
 	}
 
 	/**
@@ -3036,45 +3019,40 @@ public class DEDataListViewPersistenceImpl
 				DEDataListView.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DEDataListView deDataListView = (DEDataListView)entityCache.getResult(
+			DEDataListViewImpl.class, primaryKey);
 
-			DEDataListView deDataListView =
-				(DEDataListView)entityCache.getResult(
-					DEDataListViewImpl.class, primaryKey);
-
-			if (deDataListView != null) {
-				return deDataListView;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				deDataListView = (DEDataListView)session.get(
-					DEDataListViewImpl.class, primaryKey);
-
-				if (deDataListView != null) {
-					cacheResult(deDataListView);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (deDataListView != null) {
 			return deDataListView;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			deDataListView = (DEDataListView)session.get(
+				DEDataListViewImpl.class, primaryKey);
+
+			if (deDataListView != null) {
+				cacheResult(deDataListView);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return deDataListView;
 	}
 
 	/**
@@ -3094,8 +3072,8 @@ public class DEDataListViewPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(DEDataListView.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3128,9 +3106,8 @@ public class DEDataListViewPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							DEDataListView.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						DEDataListView.class, primaryKey)) {
 
 				DEDataListView deDataListView =
 					(DEDataListView)entityCache.getResult(
@@ -3282,9 +3259,8 @@ public class DEDataListViewPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataListView.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataListView.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3377,9 +3353,8 @@ public class DEDataListViewPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DEDataListView.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DEDataListView.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

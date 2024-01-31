@@ -10,7 +10,6 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -163,8 +162,8 @@ public class RegionPersistenceImpl
 		OrderByComparator<Region> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Region.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Region.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -564,8 +563,8 @@ public class RegionPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Region.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Region.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -709,8 +708,8 @@ public class RegionPersistenceImpl
 		OrderByComparator<Region> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Region.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Region.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1142,8 +1141,8 @@ public class RegionPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Region.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Region.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1288,8 +1287,8 @@ public class RegionPersistenceImpl
 		OrderByComparator<Region> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Region.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Region.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1666,8 +1665,8 @@ public class RegionPersistenceImpl
 	@Override
 	public int countByCountryId(long countryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Region.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Region.class)) {
 
 			FinderPath finderPath = _finderPathCountByCountryId;
 
@@ -1788,8 +1787,8 @@ public class RegionPersistenceImpl
 		OrderByComparator<Region> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Region.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Region.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2166,8 +2165,8 @@ public class RegionPersistenceImpl
 	@Override
 	public int countByActive(boolean active) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Region.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Region.class)) {
 
 			FinderPath finderPath = _finderPathCountByActive;
 
@@ -2296,8 +2295,8 @@ public class RegionPersistenceImpl
 		OrderByComparator<Region> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Region.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Region.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2703,8 +2702,8 @@ public class RegionPersistenceImpl
 	@Override
 	public int countByC_A(long countryId, boolean active) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Region.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Region.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_A;
 
@@ -2824,8 +2823,8 @@ public class RegionPersistenceImpl
 		long countryId, String regionCode, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Region.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Region.class)) {
 
 			regionCode = Objects.toString(regionCode, "");
 
@@ -2946,8 +2945,8 @@ public class RegionPersistenceImpl
 	@Override
 	public int countByC_R(long countryId, String regionCode) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Region.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Region.class)) {
 
 			regionCode = Objects.toString(regionCode, "");
 
@@ -3049,8 +3048,8 @@ public class RegionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					region.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					region.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				RegionImpl.class, region.getPrimaryKey(), region);
@@ -3087,8 +3086,8 @@ public class RegionPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						region.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						region.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						RegionImpl.class, region.getPrimaryKey()) == null) {
@@ -3150,8 +3149,8 @@ public class RegionPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					regionModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					regionModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				regionModelImpl.getCountryId(), regionModelImpl.getRegionCode()
@@ -3270,97 +3269,90 @@ public class RegionPersistenceImpl
 
 	@Override
 	public Region updateImpl(Region region) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = region.isNew();
 
-			boolean isNew = region.isNew();
+		if (!(region instanceof RegionModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(region instanceof RegionModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(region.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(region);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in region proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(region.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(region);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom Region implementation " +
-						region.getClass());
+					"Implement ModelWrapper in region proxy " +
+						invocationHandler.getClass());
 			}
 
-			RegionModelImpl regionModelImpl = (RegionModelImpl)region;
-
-			if (Validator.isNull(region.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				region.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (region.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					region.setCreateDate(date);
-				}
-				else {
-					region.setCreateDate(serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!regionModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					region.setModifiedDate(date);
-				}
-				else {
-					region.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(region)) {
-					if (!isNew) {
-						session.evict(
-							RegionImpl.class, region.getPrimaryKeyObj());
-					}
-
-					session.save(region);
-				}
-				else {
-					region = (Region)session.merge(region);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				RegionImpl.class, regionModelImpl, false, true);
-
-			cacheUniqueFindersCache(regionModelImpl);
-
-			if (isNew) {
-				region.setNew(false);
-			}
-
-			region.resetOriginalValues();
-
-			return region;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom Region implementation " +
+					region.getClass());
 		}
+
+		RegionModelImpl regionModelImpl = (RegionModelImpl)region;
+
+		if (Validator.isNull(region.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			region.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (region.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				region.setCreateDate(date);
+			}
+			else {
+				region.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!regionModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				region.setModifiedDate(date);
+			}
+			else {
+				region.setModifiedDate(serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(region)) {
+				if (!isNew) {
+					session.evict(RegionImpl.class, region.getPrimaryKeyObj());
+				}
+
+				session.save(region);
+			}
+			else {
+				region = (Region)session.merge(region);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			RegionImpl.class, regionModelImpl, false, true);
+
+		cacheUniqueFindersCache(regionModelImpl);
+
+		if (isNew) {
+			region.setNew(false);
+		}
+
+		region.resetOriginalValues();
+
+		return region;
 	}
 
 	/**
@@ -3412,43 +3404,39 @@ public class RegionPersistenceImpl
 				Region.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		Region region = (Region)EntityCacheUtil.getResult(
+			RegionImpl.class, primaryKey);
 
-			Region region = (Region)EntityCacheUtil.getResult(
-				RegionImpl.class, primaryKey);
-
-			if (region != null) {
-				return region;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				region = (Region)session.get(RegionImpl.class, primaryKey);
-
-				if (region != null) {
-					cacheResult(region);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (region != null) {
 			return region;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			region = (Region)session.get(RegionImpl.class, primaryKey);
+
+			if (region != null) {
+				cacheResult(region);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return region;
 	}
 
 	/**
@@ -3468,8 +3456,8 @@ public class RegionPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(Region.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3501,9 +3489,8 @@ public class RegionPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							Region.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						Region.class, primaryKey)) {
 
 				Region region = (Region)EntityCacheUtil.getResult(
 					RegionImpl.class, primaryKey);
@@ -3651,8 +3638,8 @@ public class RegionPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Region.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Region.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3745,8 +3732,8 @@ public class RegionPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Region.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Region.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

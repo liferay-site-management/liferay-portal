@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -169,9 +168,8 @@ public class WikiPageResourcePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						WikiPageResource.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPageResource.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -575,9 +573,8 @@ public class WikiPageResourcePersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						WikiPageResource.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPageResource.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -706,9 +703,8 @@ public class WikiPageResourcePersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						WikiPageResource.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPageResource.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -829,9 +825,8 @@ public class WikiPageResourcePersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						WikiPageResource.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPageResource.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -984,9 +979,8 @@ public class WikiPageResourcePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						WikiPageResource.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPageResource.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1424,9 +1418,8 @@ public class WikiPageResourcePersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						WikiPageResource.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPageResource.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1562,9 +1555,8 @@ public class WikiPageResourcePersistenceImpl
 		long nodeId, String title, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						WikiPageResource.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPageResource.class)) {
 
 			title = Objects.toString(title, "");
 
@@ -1685,9 +1677,8 @@ public class WikiPageResourcePersistenceImpl
 	@Override
 	public int countByN_T(long nodeId, String title) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						WikiPageResource.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPageResource.class)) {
 
 			title = Objects.toString(title, "");
 
@@ -1788,8 +1779,8 @@ public class WikiPageResourcePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					wikiPageResource.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					wikiPageResource.getCtCollectionId())) {
 
 			entityCache.putResult(
 				WikiPageResourceImpl.class, wikiPageResource.getPrimaryKey(),
@@ -1837,8 +1828,8 @@ public class WikiPageResourcePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						wikiPageResource.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						wikiPageResource.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						WikiPageResourceImpl.class,
@@ -1904,8 +1895,8 @@ public class WikiPageResourcePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					wikiPageResourceModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					wikiPageResourceModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				wikiPageResourceModelImpl.getUuid(),
@@ -2040,78 +2031,72 @@ public class WikiPageResourcePersistenceImpl
 
 	@Override
 	public WikiPageResource updateImpl(WikiPageResource wikiPageResource) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = wikiPageResource.isNew();
 
-			boolean isNew = wikiPageResource.isNew();
+		if (!(wikiPageResource instanceof WikiPageResourceModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(wikiPageResource instanceof WikiPageResourceModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(wikiPageResource.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						wikiPageResource);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in wikiPageResource proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(wikiPageResource.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					wikiPageResource);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom WikiPageResource implementation " +
-						wikiPageResource.getClass());
+					"Implement ModelWrapper in wikiPageResource proxy " +
+						invocationHandler.getClass());
 			}
 
-			WikiPageResourceModelImpl wikiPageResourceModelImpl =
-				(WikiPageResourceModelImpl)wikiPageResource;
-
-			if (Validator.isNull(wikiPageResource.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				wikiPageResource.setUuid(uuid);
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(wikiPageResource)) {
-					if (!isNew) {
-						session.evict(
-							WikiPageResourceImpl.class,
-							wikiPageResource.getPrimaryKeyObj());
-					}
-
-					session.save(wikiPageResource);
-				}
-				else {
-					wikiPageResource = (WikiPageResource)session.merge(
-						wikiPageResource);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				WikiPageResourceImpl.class, wikiPageResourceModelImpl, false,
-				true);
-
-			cacheUniqueFindersCache(wikiPageResourceModelImpl);
-
-			if (isNew) {
-				wikiPageResource.setNew(false);
-			}
-
-			wikiPageResource.resetOriginalValues();
-
-			return wikiPageResource;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom WikiPageResource implementation " +
+					wikiPageResource.getClass());
 		}
+
+		WikiPageResourceModelImpl wikiPageResourceModelImpl =
+			(WikiPageResourceModelImpl)wikiPageResource;
+
+		if (Validator.isNull(wikiPageResource.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			wikiPageResource.setUuid(uuid);
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(wikiPageResource)) {
+				if (!isNew) {
+					session.evict(
+						WikiPageResourceImpl.class,
+						wikiPageResource.getPrimaryKeyObj());
+				}
+
+				session.save(wikiPageResource);
+			}
+			else {
+				wikiPageResource = (WikiPageResource)session.merge(
+					wikiPageResource);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			WikiPageResourceImpl.class, wikiPageResourceModelImpl, false, true);
+
+		cacheUniqueFindersCache(wikiPageResourceModelImpl);
+
+		if (isNew) {
+			wikiPageResource.setNew(false);
+		}
+
+		wikiPageResource.resetOriginalValues();
+
+		return wikiPageResource;
 	}
 
 	/**
@@ -2165,45 +2150,41 @@ public class WikiPageResourcePersistenceImpl
 				WikiPageResource.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		WikiPageResource wikiPageResource =
+			(WikiPageResource)entityCache.getResult(
+				WikiPageResourceImpl.class, primaryKey);
 
-			WikiPageResource wikiPageResource =
-				(WikiPageResource)entityCache.getResult(
-					WikiPageResourceImpl.class, primaryKey);
-
-			if (wikiPageResource != null) {
-				return wikiPageResource;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				wikiPageResource = (WikiPageResource)session.get(
-					WikiPageResourceImpl.class, primaryKey);
-
-				if (wikiPageResource != null) {
-					cacheResult(wikiPageResource);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (wikiPageResource != null) {
 			return wikiPageResource;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			wikiPageResource = (WikiPageResource)session.get(
+				WikiPageResourceImpl.class, primaryKey);
+
+			if (wikiPageResource != null) {
+				cacheResult(wikiPageResource);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return wikiPageResource;
 	}
 
 	/**
@@ -2223,8 +2204,8 @@ public class WikiPageResourcePersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(WikiPageResource.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2257,9 +2238,8 @@ public class WikiPageResourcePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							WikiPageResource.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						WikiPageResource.class, primaryKey)) {
 
 				WikiPageResource wikiPageResource =
 					(WikiPageResource)entityCache.getResult(
@@ -2412,9 +2392,8 @@ public class WikiPageResourcePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						WikiPageResource.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPageResource.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2507,9 +2486,8 @@ public class WikiPageResourcePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						WikiPageResource.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					WikiPageResource.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

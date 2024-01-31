@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -171,8 +170,8 @@ public class DDLRecordPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -572,8 +571,8 @@ public class DDLRecordPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -702,8 +701,8 @@ public class DDLRecordPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -824,8 +823,8 @@ public class DDLRecordPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -978,8 +977,8 @@ public class DDLRecordPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1413,8 +1412,8 @@ public class DDLRecordPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1560,8 +1559,8 @@ public class DDLRecordPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1941,8 +1940,8 @@ public class DDLRecordPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2068,8 +2067,8 @@ public class DDLRecordPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2449,8 +2448,8 @@ public class DDLRecordPersistenceImpl
 	@Override
 	public int countByRecordSetId(long recordSetId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			FinderPath finderPath = _finderPathCountByRecordSetId;
 
@@ -2580,8 +2579,8 @@ public class DDLRecordPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2991,8 +2990,8 @@ public class DDLRecordPersistenceImpl
 	@Override
 	public int countByR_U(long recordSetId, long userId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			FinderPath finderPath = _finderPathCountByR_U;
 
@@ -3132,8 +3131,8 @@ public class DDLRecordPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			recordSetVersion = Objects.toString(recordSetVersion, "");
 
@@ -3571,8 +3570,8 @@ public class DDLRecordPersistenceImpl
 	@Override
 	public int countByR_R(long recordSetId, String recordSetVersion) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			recordSetVersion = Objects.toString(recordSetVersion, "");
 
@@ -3725,8 +3724,8 @@ public class DDLRecordPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			className = Objects.toString(className, "");
 
@@ -4162,8 +4161,8 @@ public class DDLRecordPersistenceImpl
 	@Override
 	public int countByC_C(String className, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			className = Objects.toString(className, "");
 
@@ -4264,8 +4263,8 @@ public class DDLRecordPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddlRecord.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddlRecord.getCtCollectionId())) {
 
 			entityCache.putResult(
 				DDLRecordImpl.class, ddlRecord.getPrimaryKey(), ddlRecord);
@@ -4302,8 +4301,8 @@ public class DDLRecordPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						ddlRecord.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ddlRecord.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						DDLRecordImpl.class, ddlRecord.getPrimaryKey()) ==
@@ -4368,8 +4367,8 @@ public class DDLRecordPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddlRecordModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddlRecordModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				ddlRecordModelImpl.getUuid(), ddlRecordModelImpl.getGroupId()
@@ -4491,99 +4490,91 @@ public class DDLRecordPersistenceImpl
 
 	@Override
 	public DDLRecord updateImpl(DDLRecord ddlRecord) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = ddlRecord.isNew();
 
-			boolean isNew = ddlRecord.isNew();
+		if (!(ddlRecord instanceof DDLRecordModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(ddlRecord instanceof DDLRecordModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(ddlRecord.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						ddlRecord);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in ddlRecord proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(ddlRecord.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(ddlRecord);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DDLRecord implementation " +
-						ddlRecord.getClass());
+					"Implement ModelWrapper in ddlRecord proxy " +
+						invocationHandler.getClass());
 			}
 
-			DDLRecordModelImpl ddlRecordModelImpl =
-				(DDLRecordModelImpl)ddlRecord;
-
-			if (Validator.isNull(ddlRecord.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				ddlRecord.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (ddlRecord.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					ddlRecord.setCreateDate(date);
-				}
-				else {
-					ddlRecord.setCreateDate(serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!ddlRecordModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					ddlRecord.setModifiedDate(date);
-				}
-				else {
-					ddlRecord.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(ddlRecord)) {
-					if (!isNew) {
-						session.evict(
-							DDLRecordImpl.class, ddlRecord.getPrimaryKeyObj());
-					}
-
-					session.save(ddlRecord);
-				}
-				else {
-					ddlRecord = (DDLRecord)session.merge(ddlRecord);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				DDLRecordImpl.class, ddlRecordModelImpl, false, true);
-
-			cacheUniqueFindersCache(ddlRecordModelImpl);
-
-			if (isNew) {
-				ddlRecord.setNew(false);
-			}
-
-			ddlRecord.resetOriginalValues();
-
-			return ddlRecord;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DDLRecord implementation " +
+					ddlRecord.getClass());
 		}
+
+		DDLRecordModelImpl ddlRecordModelImpl = (DDLRecordModelImpl)ddlRecord;
+
+		if (Validator.isNull(ddlRecord.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			ddlRecord.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (ddlRecord.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				ddlRecord.setCreateDate(date);
+			}
+			else {
+				ddlRecord.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!ddlRecordModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				ddlRecord.setModifiedDate(date);
+			}
+			else {
+				ddlRecord.setModifiedDate(serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(ddlRecord)) {
+				if (!isNew) {
+					session.evict(
+						DDLRecordImpl.class, ddlRecord.getPrimaryKeyObj());
+				}
+
+				session.save(ddlRecord);
+			}
+			else {
+				ddlRecord = (DDLRecord)session.merge(ddlRecord);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			DDLRecordImpl.class, ddlRecordModelImpl, false, true);
+
+		cacheUniqueFindersCache(ddlRecordModelImpl);
+
+		if (isNew) {
+			ddlRecord.setNew(false);
+		}
+
+		ddlRecord.resetOriginalValues();
+
+		return ddlRecord;
 	}
 
 	/**
@@ -4635,44 +4626,39 @@ public class DDLRecordPersistenceImpl
 	public DDLRecord fetchByPrimaryKey(Serializable primaryKey) {
 		if (ctPersistenceHelper.isProductionMode(DDLRecord.class, primaryKey)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DDLRecord ddlRecord = (DDLRecord)entityCache.getResult(
+			DDLRecordImpl.class, primaryKey);
 
-			DDLRecord ddlRecord = (DDLRecord)entityCache.getResult(
-				DDLRecordImpl.class, primaryKey);
-
-			if (ddlRecord != null) {
-				return ddlRecord;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ddlRecord = (DDLRecord)session.get(
-					DDLRecordImpl.class, primaryKey);
-
-				if (ddlRecord != null) {
-					cacheResult(ddlRecord);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (ddlRecord != null) {
 			return ddlRecord;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			ddlRecord = (DDLRecord)session.get(DDLRecordImpl.class, primaryKey);
+
+			if (ddlRecord != null) {
+				cacheResult(ddlRecord);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return ddlRecord;
 	}
 
 	/**
@@ -4692,8 +4678,8 @@ public class DDLRecordPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(DDLRecord.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -4726,9 +4712,8 @@ public class DDLRecordPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							DDLRecord.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						DDLRecord.class, primaryKey)) {
 
 				DDLRecord ddlRecord = (DDLRecord)entityCache.getResult(
 					DDLRecordImpl.class, primaryKey);
@@ -4876,8 +4861,8 @@ public class DDLRecordPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4970,8 +4955,8 @@ public class DDLRecordPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDLRecord.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDLRecord.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

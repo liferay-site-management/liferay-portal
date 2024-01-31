@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -193,9 +192,8 @@ public class RatingsStatsPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RatingsStats.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RatingsStats.class)) {
 
 			Object[] finderArgs = null;
 
@@ -404,9 +402,8 @@ public class RatingsStatsPersistenceImpl
 		long classNameId, long classPK, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RatingsStats.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RatingsStats.class)) {
 
 			Object[] finderArgs = null;
 
@@ -514,9 +511,8 @@ public class RatingsStatsPersistenceImpl
 	@Override
 	public int countByC_C(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RatingsStats.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RatingsStats.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -582,9 +578,8 @@ public class RatingsStatsPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RatingsStats.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RatingsStats.class)) {
 
 			Object[] finderArgs = new Object[] {
 				classNameId, StringUtil.merge(classPKs)
@@ -707,8 +702,8 @@ public class RatingsStatsPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ratingsStats.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ratingsStats.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				RatingsStatsImpl.class, ratingsStats.getPrimaryKey(),
@@ -748,8 +743,8 @@ public class RatingsStatsPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						ratingsStats.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ratingsStats.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						RatingsStatsImpl.class, ratingsStats.getPrimaryKey()) ==
@@ -814,8 +809,8 @@ public class RatingsStatsPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ratingsStatsModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ratingsStatsModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				ratingsStatsModelImpl.getClassNameId(),
@@ -934,95 +929,89 @@ public class RatingsStatsPersistenceImpl
 
 	@Override
 	public RatingsStats updateImpl(RatingsStats ratingsStats) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = ratingsStats.isNew();
 
-			boolean isNew = ratingsStats.isNew();
+		if (!(ratingsStats instanceof RatingsStatsModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(ratingsStats instanceof RatingsStatsModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(ratingsStats.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						ratingsStats);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in ratingsStats proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(ratingsStats.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					ratingsStats);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom RatingsStats implementation " +
-						ratingsStats.getClass());
+					"Implement ModelWrapper in ratingsStats proxy " +
+						invocationHandler.getClass());
 			}
 
-			RatingsStatsModelImpl ratingsStatsModelImpl =
-				(RatingsStatsModelImpl)ratingsStats;
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (ratingsStats.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					ratingsStats.setCreateDate(date);
-				}
-				else {
-					ratingsStats.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!ratingsStatsModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					ratingsStats.setModifiedDate(date);
-				}
-				else {
-					ratingsStats.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(ratingsStats)) {
-					if (!isNew) {
-						session.evict(
-							RatingsStatsImpl.class,
-							ratingsStats.getPrimaryKeyObj());
-					}
-
-					session.save(ratingsStats);
-				}
-				else {
-					ratingsStats = (RatingsStats)session.merge(ratingsStats);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				RatingsStatsImpl.class, ratingsStatsModelImpl, false, true);
-
-			cacheUniqueFindersCache(ratingsStatsModelImpl);
-
-			if (isNew) {
-				ratingsStats.setNew(false);
-			}
-
-			ratingsStats.resetOriginalValues();
-
-			return ratingsStats;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom RatingsStats implementation " +
+					ratingsStats.getClass());
 		}
+
+		RatingsStatsModelImpl ratingsStatsModelImpl =
+			(RatingsStatsModelImpl)ratingsStats;
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (ratingsStats.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				ratingsStats.setCreateDate(date);
+			}
+			else {
+				ratingsStats.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!ratingsStatsModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				ratingsStats.setModifiedDate(date);
+			}
+			else {
+				ratingsStats.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(ratingsStats)) {
+				if (!isNew) {
+					session.evict(
+						RatingsStatsImpl.class,
+						ratingsStats.getPrimaryKeyObj());
+				}
+
+				session.save(ratingsStats);
+			}
+			else {
+				ratingsStats = (RatingsStats)session.merge(ratingsStats);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			RatingsStatsImpl.class, ratingsStatsModelImpl, false, true);
+
+		cacheUniqueFindersCache(ratingsStatsModelImpl);
+
+		if (isNew) {
+			ratingsStats.setNew(false);
+		}
+
+		ratingsStats.resetOriginalValues();
+
+		return ratingsStats;
 	}
 
 	/**
@@ -1076,44 +1065,40 @@ public class RatingsStatsPersistenceImpl
 				RatingsStats.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		RatingsStats ratingsStats = (RatingsStats)EntityCacheUtil.getResult(
+			RatingsStatsImpl.class, primaryKey);
 
-			RatingsStats ratingsStats = (RatingsStats)EntityCacheUtil.getResult(
+		if (ratingsStats != null) {
+			return ratingsStats;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			ratingsStats = (RatingsStats)session.get(
 				RatingsStatsImpl.class, primaryKey);
 
 			if (ratingsStats != null) {
-				return ratingsStats;
+				cacheResult(ratingsStats);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ratingsStats = (RatingsStats)session.get(
-					RatingsStatsImpl.class, primaryKey);
-
-				if (ratingsStats != null) {
-					cacheResult(ratingsStats);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return ratingsStats;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return ratingsStats;
 	}
 
 	/**
@@ -1133,8 +1118,8 @@ public class RatingsStatsPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(RatingsStats.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -1167,9 +1152,8 @@ public class RatingsStatsPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							RatingsStats.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						RatingsStats.class, primaryKey)) {
 
 				RatingsStats ratingsStats =
 					(RatingsStats)EntityCacheUtil.getResult(
@@ -1318,9 +1302,8 @@ public class RatingsStatsPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RatingsStats.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RatingsStats.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1413,9 +1396,8 @@ public class RatingsStatsPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RatingsStats.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RatingsStats.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

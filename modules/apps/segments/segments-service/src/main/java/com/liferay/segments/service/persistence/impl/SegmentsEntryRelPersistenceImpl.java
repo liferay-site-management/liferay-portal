@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -172,9 +171,8 @@ public class SegmentsEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -568,9 +566,8 @@ public class SegmentsEntryRelPersistenceImpl
 	@Override
 	public int countBySegmentsEntryId(long segmentsEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsEntryRel.class)) {
 
 			FinderPath finderPath = _finderPathCountBySegmentsEntryId;
 
@@ -701,9 +698,8 @@ public class SegmentsEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1117,9 +1113,8 @@ public class SegmentsEntryRelPersistenceImpl
 	@Override
 	public int countByCN_CPK(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsEntryRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByCN_CPK;
 
@@ -1263,9 +1258,8 @@ public class SegmentsEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1702,9 +1696,8 @@ public class SegmentsEntryRelPersistenceImpl
 	@Override
 	public int countByG_CN_CPK(long groupId, long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsEntryRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_CN_CPK;
 
@@ -1842,9 +1835,8 @@ public class SegmentsEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsEntryRel.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1966,9 +1958,8 @@ public class SegmentsEntryRelPersistenceImpl
 		long segmentsEntryId, long classNameId, long classPK) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsEntryRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByS_CN_CPK;
 
@@ -2056,8 +2047,8 @@ public class SegmentsEntryRelPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					segmentsEntryRel.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					segmentsEntryRel.getCtCollectionId())) {
 
 			entityCache.putResult(
 				SegmentsEntryRelImpl.class, segmentsEntryRel.getPrimaryKey(),
@@ -2100,8 +2091,8 @@ public class SegmentsEntryRelPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						segmentsEntryRel.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						segmentsEntryRel.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						SegmentsEntryRelImpl.class,
@@ -2167,8 +2158,8 @@ public class SegmentsEntryRelPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					segmentsEntryRelModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					segmentsEntryRelModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				segmentsEntryRelModelImpl.getSegmentsEntryId(),
@@ -2291,97 +2282,91 @@ public class SegmentsEntryRelPersistenceImpl
 
 	@Override
 	public SegmentsEntryRel updateImpl(SegmentsEntryRel segmentsEntryRel) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = segmentsEntryRel.isNew();
 
-			boolean isNew = segmentsEntryRel.isNew();
+		if (!(segmentsEntryRel instanceof SegmentsEntryRelModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(segmentsEntryRel instanceof SegmentsEntryRelModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(segmentsEntryRel.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						segmentsEntryRel);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in segmentsEntryRel proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(segmentsEntryRel.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					segmentsEntryRel);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom SegmentsEntryRel implementation " +
-						segmentsEntryRel.getClass());
+					"Implement ModelWrapper in segmentsEntryRel proxy " +
+						invocationHandler.getClass());
 			}
 
-			SegmentsEntryRelModelImpl segmentsEntryRelModelImpl =
-				(SegmentsEntryRelModelImpl)segmentsEntryRel;
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (segmentsEntryRel.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					segmentsEntryRel.setCreateDate(date);
-				}
-				else {
-					segmentsEntryRel.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!segmentsEntryRelModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					segmentsEntryRel.setModifiedDate(date);
-				}
-				else {
-					segmentsEntryRel.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(segmentsEntryRel)) {
-					if (!isNew) {
-						session.evict(
-							SegmentsEntryRelImpl.class,
-							segmentsEntryRel.getPrimaryKeyObj());
-					}
-
-					session.save(segmentsEntryRel);
-				}
-				else {
-					segmentsEntryRel = (SegmentsEntryRel)session.merge(
-						segmentsEntryRel);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				SegmentsEntryRelImpl.class, segmentsEntryRelModelImpl, false,
-				true);
-
-			cacheUniqueFindersCache(segmentsEntryRelModelImpl);
-
-			if (isNew) {
-				segmentsEntryRel.setNew(false);
-			}
-
-			segmentsEntryRel.resetOriginalValues();
-
-			return segmentsEntryRel;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom SegmentsEntryRel implementation " +
+					segmentsEntryRel.getClass());
 		}
+
+		SegmentsEntryRelModelImpl segmentsEntryRelModelImpl =
+			(SegmentsEntryRelModelImpl)segmentsEntryRel;
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (segmentsEntryRel.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				segmentsEntryRel.setCreateDate(date);
+			}
+			else {
+				segmentsEntryRel.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!segmentsEntryRelModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				segmentsEntryRel.setModifiedDate(date);
+			}
+			else {
+				segmentsEntryRel.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(segmentsEntryRel)) {
+				if (!isNew) {
+					session.evict(
+						SegmentsEntryRelImpl.class,
+						segmentsEntryRel.getPrimaryKeyObj());
+				}
+
+				session.save(segmentsEntryRel);
+			}
+			else {
+				segmentsEntryRel = (SegmentsEntryRel)session.merge(
+					segmentsEntryRel);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			SegmentsEntryRelImpl.class, segmentsEntryRelModelImpl, false, true);
+
+		cacheUniqueFindersCache(segmentsEntryRelModelImpl);
+
+		if (isNew) {
+			segmentsEntryRel.setNew(false);
+		}
+
+		segmentsEntryRel.resetOriginalValues();
+
+		return segmentsEntryRel;
 	}
 
 	/**
@@ -2435,45 +2420,41 @@ public class SegmentsEntryRelPersistenceImpl
 				SegmentsEntryRel.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		SegmentsEntryRel segmentsEntryRel =
+			(SegmentsEntryRel)entityCache.getResult(
+				SegmentsEntryRelImpl.class, primaryKey);
 
-			SegmentsEntryRel segmentsEntryRel =
-				(SegmentsEntryRel)entityCache.getResult(
-					SegmentsEntryRelImpl.class, primaryKey);
-
-			if (segmentsEntryRel != null) {
-				return segmentsEntryRel;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				segmentsEntryRel = (SegmentsEntryRel)session.get(
-					SegmentsEntryRelImpl.class, primaryKey);
-
-				if (segmentsEntryRel != null) {
-					cacheResult(segmentsEntryRel);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (segmentsEntryRel != null) {
 			return segmentsEntryRel;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			segmentsEntryRel = (SegmentsEntryRel)session.get(
+				SegmentsEntryRelImpl.class, primaryKey);
+
+			if (segmentsEntryRel != null) {
+				cacheResult(segmentsEntryRel);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return segmentsEntryRel;
 	}
 
 	/**
@@ -2493,8 +2474,8 @@ public class SegmentsEntryRelPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(SegmentsEntryRel.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2527,9 +2508,8 @@ public class SegmentsEntryRelPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							SegmentsEntryRel.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						SegmentsEntryRel.class, primaryKey)) {
 
 				SegmentsEntryRel segmentsEntryRel =
 					(SegmentsEntryRel)entityCache.getResult(
@@ -2682,9 +2662,8 @@ public class SegmentsEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2777,9 +2756,8 @@ public class SegmentsEntryRelPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsEntryRel.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

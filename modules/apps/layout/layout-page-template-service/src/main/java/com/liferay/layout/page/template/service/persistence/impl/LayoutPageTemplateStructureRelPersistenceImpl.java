@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -174,9 +173,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutPageTemplateStructureRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutPageTemplateStructureRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -597,9 +595,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutPageTemplateStructureRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutPageTemplateStructureRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -732,9 +729,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutPageTemplateStructureRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutPageTemplateStructureRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -860,9 +856,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutPageTemplateStructureRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutPageTemplateStructureRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1017,9 +1012,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutPageTemplateStructureRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutPageTemplateStructureRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1468,9 +1462,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutPageTemplateStructureRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutPageTemplateStructureRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1630,9 +1623,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 			boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutPageTemplateStructureRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutPageTemplateStructureRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2058,9 +2050,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 		long layoutPageTemplateStructureId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutPageTemplateStructureRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutPageTemplateStructureRel.class)) {
 
 			FinderPath finderPath =
 				_finderPathCountByLayoutPageTemplateStructureId;
@@ -2192,9 +2183,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutPageTemplateStructureRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutPageTemplateStructureRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2603,9 +2593,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 	@Override
 	public int countBySegmentsExperienceId(long segmentsExperienceId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutPageTemplateStructureRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutPageTemplateStructureRel.class)) {
 
 			FinderPath finderPath = _finderPathCountBySegmentsExperienceId;
 
@@ -2726,9 +2715,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutPageTemplateStructureRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutPageTemplateStructureRel.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2848,9 +2836,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 		long layoutPageTemplateStructureId, long segmentsExperienceId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutPageTemplateStructureRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutPageTemplateStructureRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByL_S;
 
@@ -2943,8 +2930,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					layoutPageTemplateStructureRel.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					layoutPageTemplateStructureRel.getCtCollectionId())) {
 
 			entityCache.putResult(
 				LayoutPageTemplateStructureRelImpl.class,
@@ -3000,9 +2987,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						layoutPageTemplateStructureRel.getCtCollectionId() !=
-							0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						layoutPageTemplateStructureRel.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						LayoutPageTemplateStructureRelImpl.class,
@@ -3081,9 +3067,9 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
 					layoutPageTemplateStructureRelModelImpl.
-						getCtCollectionId() != 0)) {
+						getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				layoutPageTemplateStructureRelModelImpl.getUuid(),
@@ -3234,114 +3220,105 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 	public LayoutPageTemplateStructureRel updateImpl(
 		LayoutPageTemplateStructureRel layoutPageTemplateStructureRel) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = layoutPageTemplateStructureRel.isNew();
 
-			boolean isNew = layoutPageTemplateStructureRel.isNew();
+		if (!(layoutPageTemplateStructureRel instanceof
+				LayoutPageTemplateStructureRelModelImpl)) {
 
-			if (!(layoutPageTemplateStructureRel instanceof
-					LayoutPageTemplateStructureRelModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
+			if (ProxyUtil.isProxyClass(
+					layoutPageTemplateStructureRel.getClass())) {
 
-				if (ProxyUtil.isProxyClass(
-						layoutPageTemplateStructureRel.getClass())) {
-
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						layoutPageTemplateStructureRel);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in layoutPageTemplateStructureRel proxy " +
-							invocationHandler.getClass());
-				}
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					layoutPageTemplateStructureRel);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom LayoutPageTemplateStructureRel implementation " +
-						layoutPageTemplateStructureRel.getClass());
+					"Implement ModelWrapper in layoutPageTemplateStructureRel proxy " +
+						invocationHandler.getClass());
 			}
 
-			LayoutPageTemplateStructureRelModelImpl
-				layoutPageTemplateStructureRelModelImpl =
-					(LayoutPageTemplateStructureRelModelImpl)
-						layoutPageTemplateStructureRel;
-
-			if (Validator.isNull(layoutPageTemplateStructureRel.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				layoutPageTemplateStructureRel.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew &&
-				(layoutPageTemplateStructureRel.getCreateDate() == null)) {
-
-				if (serviceContext == null) {
-					layoutPageTemplateStructureRel.setCreateDate(date);
-				}
-				else {
-					layoutPageTemplateStructureRel.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!layoutPageTemplateStructureRelModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					layoutPageTemplateStructureRel.setModifiedDate(date);
-				}
-				else {
-					layoutPageTemplateStructureRel.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(
-						layoutPageTemplateStructureRel)) {
-
-					if (!isNew) {
-						session.evict(
-							LayoutPageTemplateStructureRelImpl.class,
-							layoutPageTemplateStructureRel.getPrimaryKeyObj());
-					}
-
-					session.save(layoutPageTemplateStructureRel);
-				}
-				else {
-					layoutPageTemplateStructureRel =
-						(LayoutPageTemplateStructureRel)session.merge(
-							layoutPageTemplateStructureRel);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				LayoutPageTemplateStructureRelImpl.class,
-				layoutPageTemplateStructureRelModelImpl, false, true);
-
-			cacheUniqueFindersCache(layoutPageTemplateStructureRelModelImpl);
-
-			if (isNew) {
-				layoutPageTemplateStructureRel.setNew(false);
-			}
-
-			layoutPageTemplateStructureRel.resetOriginalValues();
-
-			return layoutPageTemplateStructureRel;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom LayoutPageTemplateStructureRel implementation " +
+					layoutPageTemplateStructureRel.getClass());
 		}
+
+		LayoutPageTemplateStructureRelModelImpl
+			layoutPageTemplateStructureRelModelImpl =
+				(LayoutPageTemplateStructureRelModelImpl)
+					layoutPageTemplateStructureRel;
+
+		if (Validator.isNull(layoutPageTemplateStructureRel.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			layoutPageTemplateStructureRel.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (layoutPageTemplateStructureRel.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				layoutPageTemplateStructureRel.setCreateDate(date);
+			}
+			else {
+				layoutPageTemplateStructureRel.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!layoutPageTemplateStructureRelModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				layoutPageTemplateStructureRel.setModifiedDate(date);
+			}
+			else {
+				layoutPageTemplateStructureRel.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(layoutPageTemplateStructureRel)) {
+				if (!isNew) {
+					session.evict(
+						LayoutPageTemplateStructureRelImpl.class,
+						layoutPageTemplateStructureRel.getPrimaryKeyObj());
+				}
+
+				session.save(layoutPageTemplateStructureRel);
+			}
+			else {
+				layoutPageTemplateStructureRel =
+					(LayoutPageTemplateStructureRel)session.merge(
+						layoutPageTemplateStructureRel);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			LayoutPageTemplateStructureRelImpl.class,
+			layoutPageTemplateStructureRelModelImpl, false, true);
+
+		cacheUniqueFindersCache(layoutPageTemplateStructureRelModelImpl);
+
+		if (isNew) {
+			layoutPageTemplateStructureRel.setNew(false);
+		}
+
+		layoutPageTemplateStructureRel.resetOriginalValues();
+
+		return layoutPageTemplateStructureRel;
 	}
 
 	/**
@@ -3400,46 +3377,42 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 				LayoutPageTemplateStructureRel.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		LayoutPageTemplateStructureRel layoutPageTemplateStructureRel =
+			(LayoutPageTemplateStructureRel)entityCache.getResult(
+				LayoutPageTemplateStructureRelImpl.class, primaryKey);
 
-			LayoutPageTemplateStructureRel layoutPageTemplateStructureRel =
-				(LayoutPageTemplateStructureRel)entityCache.getResult(
+		if (layoutPageTemplateStructureRel != null) {
+			return layoutPageTemplateStructureRel;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			layoutPageTemplateStructureRel =
+				(LayoutPageTemplateStructureRel)session.get(
 					LayoutPageTemplateStructureRelImpl.class, primaryKey);
 
 			if (layoutPageTemplateStructureRel != null) {
-				return layoutPageTemplateStructureRel;
+				cacheResult(layoutPageTemplateStructureRel);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				layoutPageTemplateStructureRel =
-					(LayoutPageTemplateStructureRel)session.get(
-						LayoutPageTemplateStructureRelImpl.class, primaryKey);
-
-				if (layoutPageTemplateStructureRel != null) {
-					cacheResult(layoutPageTemplateStructureRel);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return layoutPageTemplateStructureRel;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return layoutPageTemplateStructureRel;
 	}
 
 	/**
@@ -3464,8 +3437,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 				LayoutPageTemplateStructureRel.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3499,10 +3472,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							LayoutPageTemplateStructureRel.class,
-							primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						LayoutPageTemplateStructureRel.class, primaryKey)) {
 
 				LayoutPageTemplateStructureRel layoutPageTemplateStructureRel =
 					(LayoutPageTemplateStructureRel)entityCache.getResult(
@@ -3657,9 +3628,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutPageTemplateStructureRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutPageTemplateStructureRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3756,9 +3726,8 @@ public class LayoutPageTemplateStructureRelPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutPageTemplateStructureRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutPageTemplateStructureRel.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

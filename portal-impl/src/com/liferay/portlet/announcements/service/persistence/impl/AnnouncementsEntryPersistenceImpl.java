@@ -14,7 +14,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -173,9 +172,8 @@ public class AnnouncementsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -941,9 +939,8 @@ public class AnnouncementsEntryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1156,9 +1153,8 @@ public class AnnouncementsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1972,9 +1968,8 @@ public class AnnouncementsEntryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -2194,9 +2189,8 @@ public class AnnouncementsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2920,9 +2914,8 @@ public class AnnouncementsEntryPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -3094,9 +3087,8 @@ public class AnnouncementsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3813,9 +3805,8 @@ public class AnnouncementsEntryPersistenceImpl
 	@Override
 	public int countByUserId(long userId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByUserId;
 
@@ -3993,9 +3984,8 @@ public class AnnouncementsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4761,9 +4751,8 @@ public class AnnouncementsEntryPersistenceImpl
 	@Override
 	public int countByC_C(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -4961,9 +4950,8 @@ public class AnnouncementsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5767,9 +5755,8 @@ public class AnnouncementsEntryPersistenceImpl
 	@Override
 	public int countByC_C_C(long companyId, long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_C;
 
@@ -5982,9 +5969,8 @@ public class AnnouncementsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6785,9 +6771,8 @@ public class AnnouncementsEntryPersistenceImpl
 	@Override
 	public int countByC_C_A(long classNameId, long classPK, boolean alert) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_A;
 
@@ -7007,9 +6992,8 @@ public class AnnouncementsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7859,9 +7843,8 @@ public class AnnouncementsEntryPersistenceImpl
 		long companyId, long classNameId, long classPK, boolean alert) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_C_A;
 
@@ -8028,8 +8011,8 @@ public class AnnouncementsEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					announcementsEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					announcementsEntry.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				AnnouncementsEntryImpl.class,
@@ -8063,8 +8046,8 @@ public class AnnouncementsEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						announcementsEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						announcementsEntry.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						AnnouncementsEntryImpl.class,
@@ -8236,127 +8219,122 @@ public class AnnouncementsEntryPersistenceImpl
 	public AnnouncementsEntry updateImpl(
 		AnnouncementsEntry announcementsEntry) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = announcementsEntry.isNew();
 
-			boolean isNew = announcementsEntry.isNew();
+		if (!(announcementsEntry instanceof AnnouncementsEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(announcementsEntry instanceof AnnouncementsEntryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(announcementsEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						announcementsEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in announcementsEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(announcementsEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					announcementsEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom AnnouncementsEntry implementation " +
-						announcementsEntry.getClass());
+					"Implement ModelWrapper in announcementsEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			AnnouncementsEntryModelImpl announcementsEntryModelImpl =
-				(AnnouncementsEntryModelImpl)announcementsEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom AnnouncementsEntry implementation " +
+					announcementsEntry.getClass());
+		}
 
-			if (Validator.isNull(announcementsEntry.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		AnnouncementsEntryModelImpl announcementsEntryModelImpl =
+			(AnnouncementsEntryModelImpl)announcementsEntry;
 
-				announcementsEntry.setUuid(uuid);
+		if (Validator.isNull(announcementsEntry.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			announcementsEntry.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (announcementsEntry.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				announcementsEntry.setCreateDate(date);
 			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (announcementsEntry.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					announcementsEntry.setCreateDate(date);
-				}
-				else {
-					announcementsEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
+			else {
+				announcementsEntry.setCreateDate(
+					serviceContext.getCreateDate(date));
 			}
+		}
 
-			if (!announcementsEntryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					announcementsEntry.setModifiedDate(date);
-				}
-				else {
-					announcementsEntry.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
+		if (!announcementsEntryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				announcementsEntry.setModifiedDate(date);
 			}
-
-			long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
-
-			if (userId > 0) {
-				long companyId = announcementsEntry.getCompanyId();
-
-				long groupId = 0;
-
-				long entryId = 0;
-
-				if (!isNew) {
-					entryId = announcementsEntry.getPrimaryKey();
-				}
-
-				try {
-					announcementsEntry.setContent(
-						SanitizerUtil.sanitize(
-							companyId, groupId, userId,
-							AnnouncementsEntry.class.getName(), entryId,
-							ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-							announcementsEntry.getContent(), null));
-				}
-				catch (SanitizerException sanitizerException) {
-					throw new SystemException(sanitizerException);
-				}
+			else {
+				announcementsEntry.setModifiedDate(
+					serviceContext.getModifiedDate(date));
 			}
+		}
 
-			Session session = null;
+		long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
+
+		if (userId > 0) {
+			long companyId = announcementsEntry.getCompanyId();
+
+			long groupId = 0;
+
+			long entryId = 0;
+
+			if (!isNew) {
+				entryId = announcementsEntry.getPrimaryKey();
+			}
 
 			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(announcementsEntry)) {
-					if (!isNew) {
-						session.evict(
-							AnnouncementsEntryImpl.class,
-							announcementsEntry.getPrimaryKeyObj());
-					}
-
-					session.save(announcementsEntry);
-				}
-				else {
-					announcementsEntry = (AnnouncementsEntry)session.merge(
-						announcementsEntry);
-				}
+				announcementsEntry.setContent(
+					SanitizerUtil.sanitize(
+						companyId, groupId, userId,
+						AnnouncementsEntry.class.getName(), entryId,
+						ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+						announcementsEntry.getContent(), null));
 			}
-			catch (Exception exception) {
-				throw processException(exception);
+			catch (SanitizerException sanitizerException) {
+				throw new SystemException(sanitizerException);
 			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				AnnouncementsEntryImpl.class, announcementsEntryModelImpl,
-				false, true);
-
-			if (isNew) {
-				announcementsEntry.setNew(false);
-			}
-
-			announcementsEntry.resetOriginalValues();
-
-			return announcementsEntry;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(announcementsEntry)) {
+				if (!isNew) {
+					session.evict(
+						AnnouncementsEntryImpl.class,
+						announcementsEntry.getPrimaryKeyObj());
+				}
+
+				session.save(announcementsEntry);
+			}
+			else {
+				announcementsEntry = (AnnouncementsEntry)session.merge(
+					announcementsEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			AnnouncementsEntryImpl.class, announcementsEntryModelImpl, false,
+			true);
+
+		if (isNew) {
+			announcementsEntry.setNew(false);
+		}
+
+		announcementsEntry.resetOriginalValues();
+
+		return announcementsEntry;
 	}
 
 	/**
@@ -8410,45 +8388,41 @@ public class AnnouncementsEntryPersistenceImpl
 				AnnouncementsEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		AnnouncementsEntry announcementsEntry =
+			(AnnouncementsEntry)EntityCacheUtil.getResult(
+				AnnouncementsEntryImpl.class, primaryKey);
 
-			AnnouncementsEntry announcementsEntry =
-				(AnnouncementsEntry)EntityCacheUtil.getResult(
-					AnnouncementsEntryImpl.class, primaryKey);
-
-			if (announcementsEntry != null) {
-				return announcementsEntry;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				announcementsEntry = (AnnouncementsEntry)session.get(
-					AnnouncementsEntryImpl.class, primaryKey);
-
-				if (announcementsEntry != null) {
-					cacheResult(announcementsEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (announcementsEntry != null) {
 			return announcementsEntry;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			announcementsEntry = (AnnouncementsEntry)session.get(
+				AnnouncementsEntryImpl.class, primaryKey);
+
+			if (announcementsEntry != null) {
+				cacheResult(announcementsEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return announcementsEntry;
 	}
 
 	/**
@@ -8470,8 +8444,8 @@ public class AnnouncementsEntryPersistenceImpl
 				AnnouncementsEntry.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -8505,9 +8479,8 @@ public class AnnouncementsEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							AnnouncementsEntry.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						AnnouncementsEntry.class, primaryKey)) {
 
 				AnnouncementsEntry announcementsEntry =
 					(AnnouncementsEntry)EntityCacheUtil.getResult(
@@ -8661,9 +8634,8 @@ public class AnnouncementsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -8756,9 +8728,8 @@ public class AnnouncementsEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AnnouncementsEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AnnouncementsEntry.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

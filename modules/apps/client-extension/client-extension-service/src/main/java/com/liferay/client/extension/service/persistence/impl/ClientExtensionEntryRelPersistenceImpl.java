@@ -18,7 +18,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -181,9 +180,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntryRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -599,9 +597,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntryRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -731,9 +728,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntryRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -857,9 +853,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntryRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1014,9 +1009,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntryRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1460,9 +1454,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntryRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1620,9 +1613,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntryRel.class)) {
 
 			cetExternalReferenceCode = Objects.toString(
 				cetExternalReferenceCode, "");
@@ -2081,9 +2073,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 		long companyId, String cetExternalReferenceCode) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntryRel.class)) {
 
 			cetExternalReferenceCode = Objects.toString(
 				cetExternalReferenceCode, "");
@@ -2245,9 +2236,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2665,9 +2655,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 	@Override
 	public int countByC_C(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntryRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -2811,9 +2800,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntryRel.class)) {
 
 			type = Objects.toString(type, "");
 
@@ -3280,9 +3268,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 	@Override
 	public int countByC_C_T(long classNameId, long classPK, String type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntryRel.class)) {
 
 			type = Objects.toString(type, "");
 
@@ -3429,9 +3416,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 		String externalReferenceCode, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntryRel.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -3558,9 +3544,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 	@Override
 	public int countByERC_G(String externalReferenceCode, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntryRel.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -3662,8 +3647,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					clientExtensionEntryRel.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					clientExtensionEntryRel.getCtCollectionId())) {
 
 			entityCache.putResult(
 				ClientExtensionEntryRelImpl.class,
@@ -3718,8 +3703,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						clientExtensionEntryRel.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						clientExtensionEntryRel.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						ClientExtensionEntryRelImpl.class,
@@ -3791,9 +3776,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					clientExtensionEntryRelModelImpl.getCtCollectionId() !=
-						0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					clientExtensionEntryRelModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				clientExtensionEntryRelModelImpl.getUuid(),
@@ -3937,181 +3921,172 @@ public class ClientExtensionEntryRelPersistenceImpl
 	public ClientExtensionEntryRel updateImpl(
 		ClientExtensionEntryRel clientExtensionEntryRel) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = clientExtensionEntryRel.isNew();
 
-			boolean isNew = clientExtensionEntryRel.isNew();
+		if (!(clientExtensionEntryRel instanceof
+				ClientExtensionEntryRelModelImpl)) {
 
-			if (!(clientExtensionEntryRel instanceof
-					ClientExtensionEntryRelModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(
-						clientExtensionEntryRel.getClass())) {
-
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						clientExtensionEntryRel);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in clientExtensionEntryRel proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(clientExtensionEntryRel.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					clientExtensionEntryRel);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom ClientExtensionEntryRel implementation " +
-						clientExtensionEntryRel.getClass());
+					"Implement ModelWrapper in clientExtensionEntryRel proxy " +
+						invocationHandler.getClass());
 			}
 
-			ClientExtensionEntryRelModelImpl clientExtensionEntryRelModelImpl =
-				(ClientExtensionEntryRelModelImpl)clientExtensionEntryRel;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom ClientExtensionEntryRel implementation " +
+					clientExtensionEntryRel.getClass());
+		}
 
-			if (Validator.isNull(clientExtensionEntryRel.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		ClientExtensionEntryRelModelImpl clientExtensionEntryRelModelImpl =
+			(ClientExtensionEntryRelModelImpl)clientExtensionEntryRel;
 
-				clientExtensionEntryRel.setUuid(uuid);
-			}
+		if (Validator.isNull(clientExtensionEntryRel.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
 
-			if (Validator.isNull(
+			clientExtensionEntryRel.setUuid(uuid);
+		}
+
+		if (Validator.isNull(
+				clientExtensionEntryRel.getExternalReferenceCode())) {
+
+			clientExtensionEntryRel.setExternalReferenceCode(
+				clientExtensionEntryRel.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					clientExtensionEntryRelModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
 					clientExtensionEntryRel.getExternalReferenceCode())) {
 
-				clientExtensionEntryRel.setExternalReferenceCode(
-					clientExtensionEntryRel.getUuid());
-			}
-			else {
-				if (!Objects.equals(
-						clientExtensionEntryRelModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						clientExtensionEntryRel.getExternalReferenceCode())) {
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
 
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
+				if (userId > 0) {
+					long companyId = clientExtensionEntryRel.getCompanyId();
 
-					if (userId > 0) {
-						long companyId = clientExtensionEntryRel.getCompanyId();
+					long groupId = clientExtensionEntryRel.getGroupId();
 
-						long groupId = clientExtensionEntryRel.getGroupId();
+					long classPK = 0;
 
-						long classPK = 0;
-
-						if (!isNew) {
-							classPK = clientExtensionEntryRel.getPrimaryKey();
-						}
-
-						try {
-							clientExtensionEntryRel.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									ClientExtensionEntryRel.class.getName(),
-									classPK, ContentTypes.TEXT_HTML,
-									Sanitizer.MODE_ALL,
-									clientExtensionEntryRel.
-										getExternalReferenceCode(),
-									null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
-
-				ClientExtensionEntryRel ercClientExtensionEntryRel =
-					fetchByERC_G(
-						clientExtensionEntryRel.getExternalReferenceCode(),
-						clientExtensionEntryRel.getGroupId());
-
-				if (isNew) {
-					if (ercClientExtensionEntryRel != null) {
-						throw new DuplicateClientExtensionEntryRelExternalReferenceCodeException(
-							"Duplicate client extension entry rel with external reference code " +
-								clientExtensionEntryRel.
-									getExternalReferenceCode() + " and group " +
-										clientExtensionEntryRel.getGroupId());
-					}
-				}
-				else {
-					if ((ercClientExtensionEntryRel != null) &&
-						(clientExtensionEntryRel.
-							getClientExtensionEntryRelId() !=
-								ercClientExtensionEntryRel.
-									getClientExtensionEntryRelId())) {
-
-						throw new DuplicateClientExtensionEntryRelExternalReferenceCodeException(
-							"Duplicate client extension entry rel with external reference code " +
-								clientExtensionEntryRel.
-									getExternalReferenceCode() + " and group " +
-										clientExtensionEntryRel.getGroupId());
-					}
-				}
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (clientExtensionEntryRel.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					clientExtensionEntryRel.setCreateDate(date);
-				}
-				else {
-					clientExtensionEntryRel.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!clientExtensionEntryRelModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					clientExtensionEntryRel.setModifiedDate(date);
-				}
-				else {
-					clientExtensionEntryRel.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(clientExtensionEntryRel)) {
 					if (!isNew) {
-						session.evict(
-							ClientExtensionEntryRelImpl.class,
-							clientExtensionEntryRel.getPrimaryKeyObj());
+						classPK = clientExtensionEntryRel.getPrimaryKey();
 					}
 
-					session.save(clientExtensionEntryRel);
+					try {
+						clientExtensionEntryRel.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								ClientExtensionEntryRel.class.getName(),
+								classPK, ContentTypes.TEXT_HTML,
+								Sanitizer.MODE_ALL,
+								clientExtensionEntryRel.
+									getExternalReferenceCode(),
+								null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
 				}
-				else {
-					clientExtensionEntryRel =
-						(ClientExtensionEntryRel)session.merge(
-							clientExtensionEntryRel);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
 			}
 
-			entityCache.putResult(
-				ClientExtensionEntryRelImpl.class,
-				clientExtensionEntryRelModelImpl, false, true);
-
-			cacheUniqueFindersCache(clientExtensionEntryRelModelImpl);
+			ClientExtensionEntryRel ercClientExtensionEntryRel = fetchByERC_G(
+				clientExtensionEntryRel.getExternalReferenceCode(),
+				clientExtensionEntryRel.getGroupId());
 
 			if (isNew) {
-				clientExtensionEntryRel.setNew(false);
+				if (ercClientExtensionEntryRel != null) {
+					throw new DuplicateClientExtensionEntryRelExternalReferenceCodeException(
+						"Duplicate client extension entry rel with external reference code " +
+							clientExtensionEntryRel.getExternalReferenceCode() +
+								" and group " +
+									clientExtensionEntryRel.getGroupId());
+				}
 			}
+			else {
+				if ((ercClientExtensionEntryRel != null) &&
+					(clientExtensionEntryRel.getClientExtensionEntryRelId() !=
+						ercClientExtensionEntryRel.
+							getClientExtensionEntryRelId())) {
 
-			clientExtensionEntryRel.resetOriginalValues();
-
-			return clientExtensionEntryRel;
+					throw new DuplicateClientExtensionEntryRelExternalReferenceCodeException(
+						"Duplicate client extension entry rel with external reference code " +
+							clientExtensionEntryRel.getExternalReferenceCode() +
+								" and group " +
+									clientExtensionEntryRel.getGroupId());
+				}
+			}
 		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (clientExtensionEntryRel.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				clientExtensionEntryRel.setCreateDate(date);
+			}
+			else {
+				clientExtensionEntryRel.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!clientExtensionEntryRelModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				clientExtensionEntryRel.setModifiedDate(date);
+			}
+			else {
+				clientExtensionEntryRel.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(clientExtensionEntryRel)) {
+				if (!isNew) {
+					session.evict(
+						ClientExtensionEntryRelImpl.class,
+						clientExtensionEntryRel.getPrimaryKeyObj());
+				}
+
+				session.save(clientExtensionEntryRel);
+			}
+			else {
+				clientExtensionEntryRel =
+					(ClientExtensionEntryRel)session.merge(
+						clientExtensionEntryRel);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			ClientExtensionEntryRelImpl.class, clientExtensionEntryRelModelImpl,
+			false, true);
+
+		cacheUniqueFindersCache(clientExtensionEntryRelModelImpl);
+
+		if (isNew) {
+			clientExtensionEntryRel.setNew(false);
+		}
+
+		clientExtensionEntryRel.resetOriginalValues();
+
+		return clientExtensionEntryRel;
 	}
 
 	/**
@@ -4167,45 +4142,41 @@ public class ClientExtensionEntryRelPersistenceImpl
 				ClientExtensionEntryRel.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		ClientExtensionEntryRel clientExtensionEntryRel =
+			(ClientExtensionEntryRel)entityCache.getResult(
+				ClientExtensionEntryRelImpl.class, primaryKey);
 
-			ClientExtensionEntryRel clientExtensionEntryRel =
-				(ClientExtensionEntryRel)entityCache.getResult(
-					ClientExtensionEntryRelImpl.class, primaryKey);
-
-			if (clientExtensionEntryRel != null) {
-				return clientExtensionEntryRel;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				clientExtensionEntryRel = (ClientExtensionEntryRel)session.get(
-					ClientExtensionEntryRelImpl.class, primaryKey);
-
-				if (clientExtensionEntryRel != null) {
-					cacheResult(clientExtensionEntryRel);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (clientExtensionEntryRel != null) {
 			return clientExtensionEntryRel;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			clientExtensionEntryRel = (ClientExtensionEntryRel)session.get(
+				ClientExtensionEntryRelImpl.class, primaryKey);
+
+			if (clientExtensionEntryRel != null) {
+				cacheResult(clientExtensionEntryRel);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return clientExtensionEntryRel;
 	}
 
 	/**
@@ -4229,8 +4200,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 				ClientExtensionEntryRel.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -4264,9 +4235,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							ClientExtensionEntryRel.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						ClientExtensionEntryRel.class, primaryKey)) {
 
 				ClientExtensionEntryRel clientExtensionEntryRel =
 					(ClientExtensionEntryRel)entityCache.getResult(
@@ -4421,9 +4391,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4517,9 +4486,8 @@ public class ClientExtensionEntryRelPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntryRel.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

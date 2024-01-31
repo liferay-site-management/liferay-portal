@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -165,9 +164,8 @@ public class LayoutPrototypePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutPrototype.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutPrototype.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -929,9 +927,8 @@ public class LayoutPrototypePersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutPrototype.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutPrototype.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1144,9 +1141,8 @@ public class LayoutPrototypePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutPrototype.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutPrototype.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1958,9 +1954,8 @@ public class LayoutPrototypePersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutPrototype.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutPrototype.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -2180,9 +2175,8 @@ public class LayoutPrototypePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutPrototype.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutPrototype.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2898,9 +2892,8 @@ public class LayoutPrototypePersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutPrototype.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutPrototype.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -3078,9 +3071,8 @@ public class LayoutPrototypePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutPrototype.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutPrototype.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3840,9 +3832,8 @@ public class LayoutPrototypePersistenceImpl
 	@Override
 	public int countByC_A(long companyId, boolean active) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutPrototype.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutPrototype.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_A;
 
@@ -3985,8 +3976,8 @@ public class LayoutPrototypePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					layoutPrototype.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					layoutPrototype.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				LayoutPrototypeImpl.class, layoutPrototype.getPrimaryKey(),
@@ -4020,8 +4011,8 @@ public class LayoutPrototypePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						layoutPrototype.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						layoutPrototype.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						LayoutPrototypeImpl.class,
@@ -4189,101 +4180,95 @@ public class LayoutPrototypePersistenceImpl
 
 	@Override
 	public LayoutPrototype updateImpl(LayoutPrototype layoutPrototype) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = layoutPrototype.isNew();
 
-			boolean isNew = layoutPrototype.isNew();
+		if (!(layoutPrototype instanceof LayoutPrototypeModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(layoutPrototype instanceof LayoutPrototypeModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(layoutPrototype.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						layoutPrototype);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in layoutPrototype proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(layoutPrototype.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					layoutPrototype);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom LayoutPrototype implementation " +
-						layoutPrototype.getClass());
+					"Implement ModelWrapper in layoutPrototype proxy " +
+						invocationHandler.getClass());
 			}
 
-			LayoutPrototypeModelImpl layoutPrototypeModelImpl =
-				(LayoutPrototypeModelImpl)layoutPrototype;
-
-			if (Validator.isNull(layoutPrototype.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				layoutPrototype.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (layoutPrototype.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					layoutPrototype.setCreateDate(date);
-				}
-				else {
-					layoutPrototype.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!layoutPrototypeModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					layoutPrototype.setModifiedDate(date);
-				}
-				else {
-					layoutPrototype.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(layoutPrototype)) {
-					if (!isNew) {
-						session.evict(
-							LayoutPrototypeImpl.class,
-							layoutPrototype.getPrimaryKeyObj());
-					}
-
-					session.save(layoutPrototype);
-				}
-				else {
-					layoutPrototype = (LayoutPrototype)session.merge(
-						layoutPrototype);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				LayoutPrototypeImpl.class, layoutPrototypeModelImpl, false,
-				true);
-
-			if (isNew) {
-				layoutPrototype.setNew(false);
-			}
-
-			layoutPrototype.resetOriginalValues();
-
-			return layoutPrototype;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom LayoutPrototype implementation " +
+					layoutPrototype.getClass());
 		}
+
+		LayoutPrototypeModelImpl layoutPrototypeModelImpl =
+			(LayoutPrototypeModelImpl)layoutPrototype;
+
+		if (Validator.isNull(layoutPrototype.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			layoutPrototype.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (layoutPrototype.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				layoutPrototype.setCreateDate(date);
+			}
+			else {
+				layoutPrototype.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!layoutPrototypeModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				layoutPrototype.setModifiedDate(date);
+			}
+			else {
+				layoutPrototype.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(layoutPrototype)) {
+				if (!isNew) {
+					session.evict(
+						LayoutPrototypeImpl.class,
+						layoutPrototype.getPrimaryKeyObj());
+				}
+
+				session.save(layoutPrototype);
+			}
+			else {
+				layoutPrototype = (LayoutPrototype)session.merge(
+					layoutPrototype);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			LayoutPrototypeImpl.class, layoutPrototypeModelImpl, false, true);
+
+		if (isNew) {
+			layoutPrototype.setNew(false);
+		}
+
+		layoutPrototype.resetOriginalValues();
+
+		return layoutPrototype;
 	}
 
 	/**
@@ -4337,45 +4322,41 @@ public class LayoutPrototypePersistenceImpl
 				LayoutPrototype.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		LayoutPrototype layoutPrototype =
+			(LayoutPrototype)EntityCacheUtil.getResult(
+				LayoutPrototypeImpl.class, primaryKey);
 
-			LayoutPrototype layoutPrototype =
-				(LayoutPrototype)EntityCacheUtil.getResult(
-					LayoutPrototypeImpl.class, primaryKey);
-
-			if (layoutPrototype != null) {
-				return layoutPrototype;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				layoutPrototype = (LayoutPrototype)session.get(
-					LayoutPrototypeImpl.class, primaryKey);
-
-				if (layoutPrototype != null) {
-					cacheResult(layoutPrototype);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (layoutPrototype != null) {
 			return layoutPrototype;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			layoutPrototype = (LayoutPrototype)session.get(
+				LayoutPrototypeImpl.class, primaryKey);
+
+			if (layoutPrototype != null) {
+				cacheResult(layoutPrototype);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return layoutPrototype;
 	}
 
 	/**
@@ -4395,8 +4376,8 @@ public class LayoutPrototypePersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(LayoutPrototype.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -4429,9 +4410,8 @@ public class LayoutPrototypePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							LayoutPrototype.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						LayoutPrototype.class, primaryKey)) {
 
 				LayoutPrototype layoutPrototype =
 					(LayoutPrototype)EntityCacheUtil.getResult(
@@ -4584,9 +4564,8 @@ public class LayoutPrototypePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutPrototype.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutPrototype.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4679,9 +4658,8 @@ public class LayoutPrototypePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						LayoutPrototype.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					LayoutPrototype.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -172,9 +171,8 @@ public class CSDiagramSettingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CSDiagramSetting.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CSDiagramSetting.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -579,9 +577,8 @@ public class CSDiagramSettingPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CSDiagramSetting.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CSDiagramSetting.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -727,9 +724,8 @@ public class CSDiagramSettingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CSDiagramSetting.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CSDiagramSetting.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1168,9 +1164,8 @@ public class CSDiagramSettingPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CSDiagramSetting.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CSDiagramSetting.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1301,9 +1296,8 @@ public class CSDiagramSettingPersistenceImpl
 		long CPDefinitionId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CSDiagramSetting.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CSDiagramSetting.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1405,9 +1399,8 @@ public class CSDiagramSettingPersistenceImpl
 	@Override
 	public int countByCPDefinitionId(long CPDefinitionId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CSDiagramSetting.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CSDiagramSetting.class)) {
 
 			FinderPath finderPath = _finderPathCountByCPDefinitionId;
 
@@ -1486,8 +1479,8 @@ public class CSDiagramSettingPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					csDiagramSetting.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					csDiagramSetting.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CSDiagramSettingImpl.class, csDiagramSetting.getPrimaryKey(),
@@ -1526,8 +1519,8 @@ public class CSDiagramSettingPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						csDiagramSetting.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						csDiagramSetting.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CSDiagramSettingImpl.class,
@@ -1593,8 +1586,8 @@ public class CSDiagramSettingPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					csDiagramSettingModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					csDiagramSettingModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				csDiagramSettingModelImpl.getCPDefinitionId()
@@ -1720,103 +1713,97 @@ public class CSDiagramSettingPersistenceImpl
 
 	@Override
 	public CSDiagramSetting updateImpl(CSDiagramSetting csDiagramSetting) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = csDiagramSetting.isNew();
 
-			boolean isNew = csDiagramSetting.isNew();
+		if (!(csDiagramSetting instanceof CSDiagramSettingModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(csDiagramSetting instanceof CSDiagramSettingModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(csDiagramSetting.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						csDiagramSetting);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in csDiagramSetting proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(csDiagramSetting.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					csDiagramSetting);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CSDiagramSetting implementation " +
-						csDiagramSetting.getClass());
+					"Implement ModelWrapper in csDiagramSetting proxy " +
+						invocationHandler.getClass());
 			}
 
-			CSDiagramSettingModelImpl csDiagramSettingModelImpl =
-				(CSDiagramSettingModelImpl)csDiagramSetting;
-
-			if (Validator.isNull(csDiagramSetting.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				csDiagramSetting.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (csDiagramSetting.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					csDiagramSetting.setCreateDate(date);
-				}
-				else {
-					csDiagramSetting.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!csDiagramSettingModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					csDiagramSetting.setModifiedDate(date);
-				}
-				else {
-					csDiagramSetting.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(csDiagramSetting)) {
-					if (!isNew) {
-						session.evict(
-							CSDiagramSettingImpl.class,
-							csDiagramSetting.getPrimaryKeyObj());
-					}
-
-					session.save(csDiagramSetting);
-				}
-				else {
-					csDiagramSetting = (CSDiagramSetting)session.merge(
-						csDiagramSetting);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				CSDiagramSettingImpl.class, csDiagramSettingModelImpl, false,
-				true);
-
-			cacheUniqueFindersCache(csDiagramSettingModelImpl);
-
-			if (isNew) {
-				csDiagramSetting.setNew(false);
-			}
-
-			csDiagramSetting.resetOriginalValues();
-
-			return csDiagramSetting;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CSDiagramSetting implementation " +
+					csDiagramSetting.getClass());
 		}
+
+		CSDiagramSettingModelImpl csDiagramSettingModelImpl =
+			(CSDiagramSettingModelImpl)csDiagramSetting;
+
+		if (Validator.isNull(csDiagramSetting.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			csDiagramSetting.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (csDiagramSetting.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				csDiagramSetting.setCreateDate(date);
+			}
+			else {
+				csDiagramSetting.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!csDiagramSettingModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				csDiagramSetting.setModifiedDate(date);
+			}
+			else {
+				csDiagramSetting.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(csDiagramSetting)) {
+				if (!isNew) {
+					session.evict(
+						CSDiagramSettingImpl.class,
+						csDiagramSetting.getPrimaryKeyObj());
+				}
+
+				session.save(csDiagramSetting);
+			}
+			else {
+				csDiagramSetting = (CSDiagramSetting)session.merge(
+					csDiagramSetting);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CSDiagramSettingImpl.class, csDiagramSettingModelImpl, false, true);
+
+		cacheUniqueFindersCache(csDiagramSettingModelImpl);
+
+		if (isNew) {
+			csDiagramSetting.setNew(false);
+		}
+
+		csDiagramSetting.resetOriginalValues();
+
+		return csDiagramSetting;
 	}
 
 	/**
@@ -1870,45 +1857,41 @@ public class CSDiagramSettingPersistenceImpl
 				CSDiagramSetting.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CSDiagramSetting csDiagramSetting =
+			(CSDiagramSetting)entityCache.getResult(
+				CSDiagramSettingImpl.class, primaryKey);
 
-			CSDiagramSetting csDiagramSetting =
-				(CSDiagramSetting)entityCache.getResult(
-					CSDiagramSettingImpl.class, primaryKey);
-
-			if (csDiagramSetting != null) {
-				return csDiagramSetting;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				csDiagramSetting = (CSDiagramSetting)session.get(
-					CSDiagramSettingImpl.class, primaryKey);
-
-				if (csDiagramSetting != null) {
-					cacheResult(csDiagramSetting);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (csDiagramSetting != null) {
 			return csDiagramSetting;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			csDiagramSetting = (CSDiagramSetting)session.get(
+				CSDiagramSettingImpl.class, primaryKey);
+
+			if (csDiagramSetting != null) {
+				cacheResult(csDiagramSetting);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return csDiagramSetting;
 	}
 
 	/**
@@ -1928,8 +1911,8 @@ public class CSDiagramSettingPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(CSDiagramSetting.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -1962,9 +1945,8 @@ public class CSDiagramSettingPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CSDiagramSetting.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CSDiagramSetting.class, primaryKey)) {
 
 				CSDiagramSetting csDiagramSetting =
 					(CSDiagramSetting)entityCache.getResult(
@@ -2117,9 +2099,8 @@ public class CSDiagramSettingPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CSDiagramSetting.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CSDiagramSetting.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2212,9 +2193,8 @@ public class CSDiagramSettingPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CSDiagramSetting.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CSDiagramSetting.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

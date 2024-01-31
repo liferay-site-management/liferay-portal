@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -172,9 +171,8 @@ public class LayoutSEOEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutSEOEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutSEOEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -577,9 +575,8 @@ public class LayoutSEOEntryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutSEOEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutSEOEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -708,9 +705,8 @@ public class LayoutSEOEntryPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutSEOEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutSEOEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -831,9 +827,8 @@ public class LayoutSEOEntryPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutSEOEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutSEOEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -986,9 +981,8 @@ public class LayoutSEOEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutSEOEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutSEOEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1426,9 +1420,8 @@ public class LayoutSEOEntryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutSEOEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutSEOEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1575,9 +1568,8 @@ public class LayoutSEOEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutSEOEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutSEOEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1696,9 +1688,8 @@ public class LayoutSEOEntryPersistenceImpl
 		long groupId, boolean privateLayout, long layoutId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutSEOEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutSEOEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P_L;
 
@@ -1792,8 +1783,8 @@ public class LayoutSEOEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					layoutSEOEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					layoutSEOEntry.getCtCollectionId())) {
 
 			entityCache.putResult(
 				LayoutSEOEntryImpl.class, layoutSEOEntry.getPrimaryKey(),
@@ -1843,8 +1834,8 @@ public class LayoutSEOEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						layoutSEOEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						layoutSEOEntry.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						LayoutSEOEntryImpl.class,
@@ -1909,8 +1900,8 @@ public class LayoutSEOEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					layoutSEOEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					layoutSEOEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				layoutSEOEntryModelImpl.getUuid(),
@@ -2047,102 +2038,96 @@ public class LayoutSEOEntryPersistenceImpl
 
 	@Override
 	public LayoutSEOEntry updateImpl(LayoutSEOEntry layoutSEOEntry) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = layoutSEOEntry.isNew();
 
-			boolean isNew = layoutSEOEntry.isNew();
+		if (!(layoutSEOEntry instanceof LayoutSEOEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(layoutSEOEntry instanceof LayoutSEOEntryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(layoutSEOEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						layoutSEOEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in layoutSEOEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(layoutSEOEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					layoutSEOEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom LayoutSEOEntry implementation " +
-						layoutSEOEntry.getClass());
+					"Implement ModelWrapper in layoutSEOEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			LayoutSEOEntryModelImpl layoutSEOEntryModelImpl =
-				(LayoutSEOEntryModelImpl)layoutSEOEntry;
-
-			if (Validator.isNull(layoutSEOEntry.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				layoutSEOEntry.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (layoutSEOEntry.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					layoutSEOEntry.setCreateDate(date);
-				}
-				else {
-					layoutSEOEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!layoutSEOEntryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					layoutSEOEntry.setModifiedDate(date);
-				}
-				else {
-					layoutSEOEntry.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(layoutSEOEntry)) {
-					if (!isNew) {
-						session.evict(
-							LayoutSEOEntryImpl.class,
-							layoutSEOEntry.getPrimaryKeyObj());
-					}
-
-					session.save(layoutSEOEntry);
-				}
-				else {
-					layoutSEOEntry = (LayoutSEOEntry)session.merge(
-						layoutSEOEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				LayoutSEOEntryImpl.class, layoutSEOEntryModelImpl, false, true);
-
-			cacheUniqueFindersCache(layoutSEOEntryModelImpl);
-
-			if (isNew) {
-				layoutSEOEntry.setNew(false);
-			}
-
-			layoutSEOEntry.resetOriginalValues();
-
-			return layoutSEOEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom LayoutSEOEntry implementation " +
+					layoutSEOEntry.getClass());
 		}
+
+		LayoutSEOEntryModelImpl layoutSEOEntryModelImpl =
+			(LayoutSEOEntryModelImpl)layoutSEOEntry;
+
+		if (Validator.isNull(layoutSEOEntry.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			layoutSEOEntry.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (layoutSEOEntry.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				layoutSEOEntry.setCreateDate(date);
+			}
+			else {
+				layoutSEOEntry.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!layoutSEOEntryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				layoutSEOEntry.setModifiedDate(date);
+			}
+			else {
+				layoutSEOEntry.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(layoutSEOEntry)) {
+				if (!isNew) {
+					session.evict(
+						LayoutSEOEntryImpl.class,
+						layoutSEOEntry.getPrimaryKeyObj());
+				}
+
+				session.save(layoutSEOEntry);
+			}
+			else {
+				layoutSEOEntry = (LayoutSEOEntry)session.merge(layoutSEOEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			LayoutSEOEntryImpl.class, layoutSEOEntryModelImpl, false, true);
+
+		cacheUniqueFindersCache(layoutSEOEntryModelImpl);
+
+		if (isNew) {
+			layoutSEOEntry.setNew(false);
+		}
+
+		layoutSEOEntry.resetOriginalValues();
+
+		return layoutSEOEntry;
 	}
 
 	/**
@@ -2196,45 +2181,40 @@ public class LayoutSEOEntryPersistenceImpl
 				LayoutSEOEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		LayoutSEOEntry layoutSEOEntry = (LayoutSEOEntry)entityCache.getResult(
+			LayoutSEOEntryImpl.class, primaryKey);
 
-			LayoutSEOEntry layoutSEOEntry =
-				(LayoutSEOEntry)entityCache.getResult(
-					LayoutSEOEntryImpl.class, primaryKey);
-
-			if (layoutSEOEntry != null) {
-				return layoutSEOEntry;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				layoutSEOEntry = (LayoutSEOEntry)session.get(
-					LayoutSEOEntryImpl.class, primaryKey);
-
-				if (layoutSEOEntry != null) {
-					cacheResult(layoutSEOEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (layoutSEOEntry != null) {
 			return layoutSEOEntry;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			layoutSEOEntry = (LayoutSEOEntry)session.get(
+				LayoutSEOEntryImpl.class, primaryKey);
+
+			if (layoutSEOEntry != null) {
+				cacheResult(layoutSEOEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return layoutSEOEntry;
 	}
 
 	/**
@@ -2254,8 +2234,8 @@ public class LayoutSEOEntryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(LayoutSEOEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2288,9 +2268,8 @@ public class LayoutSEOEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							LayoutSEOEntry.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						LayoutSEOEntry.class, primaryKey)) {
 
 				LayoutSEOEntry layoutSEOEntry =
 					(LayoutSEOEntry)entityCache.getResult(
@@ -2442,9 +2421,8 @@ public class LayoutSEOEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutSEOEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutSEOEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2537,9 +2515,8 @@ public class LayoutSEOEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutSEOEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutSEOEntry.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

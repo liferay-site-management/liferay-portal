@@ -18,7 +18,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -180,9 +179,8 @@ public class CPMeasurementUnitPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -588,9 +586,8 @@ public class CPMeasurementUnitPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -719,9 +716,8 @@ public class CPMeasurementUnitPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -842,9 +838,8 @@ public class CPMeasurementUnitPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -997,9 +992,8 @@ public class CPMeasurementUnitPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1438,9 +1432,8 @@ public class CPMeasurementUnitPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1588,9 +1581,8 @@ public class CPMeasurementUnitPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1978,9 +1970,8 @@ public class CPMeasurementUnitPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2093,9 +2084,8 @@ public class CPMeasurementUnitPersistenceImpl
 		long companyId, String key, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			key = Objects.toString(key, "");
 
@@ -2216,9 +2206,8 @@ public class CPMeasurementUnitPersistenceImpl
 	@Override
 	public int countByC_K(long companyId, String key) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			key = Objects.toString(key, "");
 
@@ -2370,9 +2359,8 @@ public class CPMeasurementUnitPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2785,9 +2773,8 @@ public class CPMeasurementUnitPersistenceImpl
 	@Override
 	public int countByC_T(long companyId, int type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_T;
 
@@ -2931,9 +2918,8 @@ public class CPMeasurementUnitPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3369,9 +3355,8 @@ public class CPMeasurementUnitPersistenceImpl
 	@Override
 	public int countByC_P_T(long companyId, boolean primary, int type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_P_T;
 
@@ -3502,9 +3487,8 @@ public class CPMeasurementUnitPersistenceImpl
 		String externalReferenceCode, long companyId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -3629,9 +3613,8 @@ public class CPMeasurementUnitPersistenceImpl
 	@Override
 	public int countByERC_C(String externalReferenceCode, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -3737,8 +3720,8 @@ public class CPMeasurementUnitPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cpMeasurementUnit.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cpMeasurementUnit.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CPMeasurementUnitImpl.class, cpMeasurementUnit.getPrimaryKey(),
@@ -3794,8 +3777,8 @@ public class CPMeasurementUnitPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						cpMeasurementUnit.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						cpMeasurementUnit.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CPMeasurementUnitImpl.class,
@@ -3862,8 +3845,8 @@ public class CPMeasurementUnitPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cpMeasurementUnitModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cpMeasurementUnitModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				cpMeasurementUnitModelImpl.getUuid(),
@@ -4011,172 +3994,164 @@ public class CPMeasurementUnitPersistenceImpl
 
 	@Override
 	public CPMeasurementUnit updateImpl(CPMeasurementUnit cpMeasurementUnit) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = cpMeasurementUnit.isNew();
 
-			boolean isNew = cpMeasurementUnit.isNew();
+		if (!(cpMeasurementUnit instanceof CPMeasurementUnitModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(cpMeasurementUnit instanceof CPMeasurementUnitModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(cpMeasurementUnit.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						cpMeasurementUnit);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in cpMeasurementUnit proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(cpMeasurementUnit.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					cpMeasurementUnit);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CPMeasurementUnit implementation " +
-						cpMeasurementUnit.getClass());
+					"Implement ModelWrapper in cpMeasurementUnit proxy " +
+						invocationHandler.getClass());
 			}
 
-			CPMeasurementUnitModelImpl cpMeasurementUnitModelImpl =
-				(CPMeasurementUnitModelImpl)cpMeasurementUnit;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CPMeasurementUnit implementation " +
+					cpMeasurementUnit.getClass());
+		}
 
-			if (Validator.isNull(cpMeasurementUnit.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		CPMeasurementUnitModelImpl cpMeasurementUnitModelImpl =
+			(CPMeasurementUnitModelImpl)cpMeasurementUnit;
 
-				cpMeasurementUnit.setUuid(uuid);
-			}
+		if (Validator.isNull(cpMeasurementUnit.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
 
-			if (Validator.isNull(
+			cpMeasurementUnit.setUuid(uuid);
+		}
+
+		if (Validator.isNull(cpMeasurementUnit.getExternalReferenceCode())) {
+			cpMeasurementUnit.setExternalReferenceCode(
+				cpMeasurementUnit.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					cpMeasurementUnitModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
 					cpMeasurementUnit.getExternalReferenceCode())) {
 
-				cpMeasurementUnit.setExternalReferenceCode(
-					cpMeasurementUnit.getUuid());
-			}
-			else {
-				if (!Objects.equals(
-						cpMeasurementUnitModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						cpMeasurementUnit.getExternalReferenceCode())) {
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
 
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
+				if (userId > 0) {
+					long companyId = cpMeasurementUnit.getCompanyId();
 
-					if (userId > 0) {
-						long companyId = cpMeasurementUnit.getCompanyId();
+					long groupId = cpMeasurementUnit.getGroupId();
 
-						long groupId = cpMeasurementUnit.getGroupId();
+					long classPK = 0;
 
-						long classPK = 0;
-
-						if (!isNew) {
-							classPK = cpMeasurementUnit.getPrimaryKey();
-						}
-
-						try {
-							cpMeasurementUnit.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									CPMeasurementUnit.class.getName(), classPK,
-									ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-									cpMeasurementUnit.
-										getExternalReferenceCode(),
-									null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
-
-				CPMeasurementUnit ercCPMeasurementUnit = fetchByERC_C(
-					cpMeasurementUnit.getExternalReferenceCode(),
-					cpMeasurementUnit.getCompanyId());
-
-				if (isNew) {
-					if (ercCPMeasurementUnit != null) {
-						throw new DuplicateCPMeasurementUnitExternalReferenceCodeException(
-							"Duplicate cp measurement unit with external reference code " +
-								cpMeasurementUnit.getExternalReferenceCode() +
-									" and company " +
-										cpMeasurementUnit.getCompanyId());
-					}
-				}
-				else {
-					if ((ercCPMeasurementUnit != null) &&
-						(cpMeasurementUnit.getCPMeasurementUnitId() !=
-							ercCPMeasurementUnit.getCPMeasurementUnitId())) {
-
-						throw new DuplicateCPMeasurementUnitExternalReferenceCodeException(
-							"Duplicate cp measurement unit with external reference code " +
-								cpMeasurementUnit.getExternalReferenceCode() +
-									" and company " +
-										cpMeasurementUnit.getCompanyId());
-					}
-				}
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (cpMeasurementUnit.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					cpMeasurementUnit.setCreateDate(date);
-				}
-				else {
-					cpMeasurementUnit.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!cpMeasurementUnitModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					cpMeasurementUnit.setModifiedDate(date);
-				}
-				else {
-					cpMeasurementUnit.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(cpMeasurementUnit)) {
 					if (!isNew) {
-						session.evict(
-							CPMeasurementUnitImpl.class,
-							cpMeasurementUnit.getPrimaryKeyObj());
+						classPK = cpMeasurementUnit.getPrimaryKey();
 					}
 
-					session.save(cpMeasurementUnit);
+					try {
+						cpMeasurementUnit.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								CPMeasurementUnit.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								cpMeasurementUnit.getExternalReferenceCode(),
+								null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
 				}
-				else {
-					cpMeasurementUnit = (CPMeasurementUnit)session.merge(
-						cpMeasurementUnit);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
 			}
 
-			entityCache.putResult(
-				CPMeasurementUnitImpl.class, cpMeasurementUnitModelImpl, false,
-				true);
-
-			cacheUniqueFindersCache(cpMeasurementUnitModelImpl);
+			CPMeasurementUnit ercCPMeasurementUnit = fetchByERC_C(
+				cpMeasurementUnit.getExternalReferenceCode(),
+				cpMeasurementUnit.getCompanyId());
 
 			if (isNew) {
-				cpMeasurementUnit.setNew(false);
+				if (ercCPMeasurementUnit != null) {
+					throw new DuplicateCPMeasurementUnitExternalReferenceCodeException(
+						"Duplicate cp measurement unit with external reference code " +
+							cpMeasurementUnit.getExternalReferenceCode() +
+								" and company " +
+									cpMeasurementUnit.getCompanyId());
+				}
 			}
+			else {
+				if ((ercCPMeasurementUnit != null) &&
+					(cpMeasurementUnit.getCPMeasurementUnitId() !=
+						ercCPMeasurementUnit.getCPMeasurementUnitId())) {
 
-			cpMeasurementUnit.resetOriginalValues();
-
-			return cpMeasurementUnit;
+					throw new DuplicateCPMeasurementUnitExternalReferenceCodeException(
+						"Duplicate cp measurement unit with external reference code " +
+							cpMeasurementUnit.getExternalReferenceCode() +
+								" and company " +
+									cpMeasurementUnit.getCompanyId());
+				}
+			}
 		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (cpMeasurementUnit.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				cpMeasurementUnit.setCreateDate(date);
+			}
+			else {
+				cpMeasurementUnit.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!cpMeasurementUnitModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				cpMeasurementUnit.setModifiedDate(date);
+			}
+			else {
+				cpMeasurementUnit.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(cpMeasurementUnit)) {
+				if (!isNew) {
+					session.evict(
+						CPMeasurementUnitImpl.class,
+						cpMeasurementUnit.getPrimaryKeyObj());
+				}
+
+				session.save(cpMeasurementUnit);
+			}
+			else {
+				cpMeasurementUnit = (CPMeasurementUnit)session.merge(
+					cpMeasurementUnit);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CPMeasurementUnitImpl.class, cpMeasurementUnitModelImpl, false,
+			true);
+
+		cacheUniqueFindersCache(cpMeasurementUnitModelImpl);
+
+		if (isNew) {
+			cpMeasurementUnit.setNew(false);
+		}
+
+		cpMeasurementUnit.resetOriginalValues();
+
+		return cpMeasurementUnit;
 	}
 
 	/**
@@ -4230,45 +4205,41 @@ public class CPMeasurementUnitPersistenceImpl
 				CPMeasurementUnit.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CPMeasurementUnit cpMeasurementUnit =
+			(CPMeasurementUnit)entityCache.getResult(
+				CPMeasurementUnitImpl.class, primaryKey);
 
-			CPMeasurementUnit cpMeasurementUnit =
-				(CPMeasurementUnit)entityCache.getResult(
-					CPMeasurementUnitImpl.class, primaryKey);
-
-			if (cpMeasurementUnit != null) {
-				return cpMeasurementUnit;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				cpMeasurementUnit = (CPMeasurementUnit)session.get(
-					CPMeasurementUnitImpl.class, primaryKey);
-
-				if (cpMeasurementUnit != null) {
-					cacheResult(cpMeasurementUnit);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (cpMeasurementUnit != null) {
 			return cpMeasurementUnit;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			cpMeasurementUnit = (CPMeasurementUnit)session.get(
+				CPMeasurementUnitImpl.class, primaryKey);
+
+			if (cpMeasurementUnit != null) {
+				cacheResult(cpMeasurementUnit);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return cpMeasurementUnit;
 	}
 
 	/**
@@ -4288,8 +4259,8 @@ public class CPMeasurementUnitPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(CPMeasurementUnit.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -4322,9 +4293,8 @@ public class CPMeasurementUnitPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CPMeasurementUnit.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CPMeasurementUnit.class, primaryKey)) {
 
 				CPMeasurementUnit cpMeasurementUnit =
 					(CPMeasurementUnit)entityCache.getResult(
@@ -4478,9 +4448,8 @@ public class CPMeasurementUnitPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4573,9 +4542,8 @@ public class CPMeasurementUnitPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPMeasurementUnit.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPMeasurementUnit.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

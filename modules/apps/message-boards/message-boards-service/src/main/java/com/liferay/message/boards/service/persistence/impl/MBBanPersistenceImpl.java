@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -170,8 +169,8 @@ public class MBBanPersistenceImpl
 		OrderByComparator<MBBan> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBBan.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -570,8 +569,8 @@ public class MBBanPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBBan.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -699,8 +698,8 @@ public class MBBanPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBBan.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -821,8 +820,8 @@ public class MBBanPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBBan.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -974,8 +973,8 @@ public class MBBanPersistenceImpl
 		OrderByComparator<MBBan> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBBan.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1407,8 +1406,8 @@ public class MBBanPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBBan.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1553,8 +1552,8 @@ public class MBBanPersistenceImpl
 		OrderByComparator<MBBan> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBBan.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1931,8 +1930,8 @@ public class MBBanPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBBan.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2053,8 +2052,8 @@ public class MBBanPersistenceImpl
 		OrderByComparator<MBBan> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBBan.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2430,8 +2429,8 @@ public class MBBanPersistenceImpl
 	@Override
 	public int countByUserId(long userId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBBan.class)) {
 
 			FinderPath finderPath = _finderPathCountByUserId;
 
@@ -2553,8 +2552,8 @@ public class MBBanPersistenceImpl
 		OrderByComparator<MBBan> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBBan.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2931,8 +2930,8 @@ public class MBBanPersistenceImpl
 	@Override
 	public int countByBanUserId(long banUserId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBBan.class)) {
 
 			FinderPath finderPath = _finderPathCountByBanUserId;
 
@@ -3045,8 +3044,8 @@ public class MBBanPersistenceImpl
 		long groupId, long banUserId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBBan.class)) {
 
 			Object[] finderArgs = null;
 
@@ -3154,8 +3153,8 @@ public class MBBanPersistenceImpl
 	@Override
 	public int countByG_B(long groupId, long banUserId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBBan.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_B;
 
@@ -3240,8 +3239,8 @@ public class MBBanPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					mbBan.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					mbBan.getCtCollectionId())) {
 
 			entityCache.putResult(
 				MBBanImpl.class, mbBan.getPrimaryKey(), mbBan);
@@ -3281,8 +3280,8 @@ public class MBBanPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						mbBan.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						mbBan.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						MBBanImpl.class, mbBan.getPrimaryKey()) == null) {
@@ -3344,8 +3343,8 @@ public class MBBanPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					mbBanModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					mbBanModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				mbBanModelImpl.getUuid(), mbBanModelImpl.getGroupId()
@@ -3469,95 +3468,89 @@ public class MBBanPersistenceImpl
 
 	@Override
 	public MBBan updateImpl(MBBan mbBan) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = mbBan.isNew();
 
-			boolean isNew = mbBan.isNew();
+		if (!(mbBan instanceof MBBanModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(mbBan instanceof MBBanModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(mbBan.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(mbBan);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in mbBan proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(mbBan.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(mbBan);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom MBBan implementation " +
-						mbBan.getClass());
+					"Implement ModelWrapper in mbBan proxy " +
+						invocationHandler.getClass());
 			}
 
-			MBBanModelImpl mbBanModelImpl = (MBBanModelImpl)mbBan;
-
-			if (Validator.isNull(mbBan.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				mbBan.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (mbBan.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					mbBan.setCreateDate(date);
-				}
-				else {
-					mbBan.setCreateDate(serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!mbBanModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					mbBan.setModifiedDate(date);
-				}
-				else {
-					mbBan.setModifiedDate(serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(mbBan)) {
-					if (!isNew) {
-						session.evict(
-							MBBanImpl.class, mbBan.getPrimaryKeyObj());
-					}
-
-					session.save(mbBan);
-				}
-				else {
-					mbBan = (MBBan)session.merge(mbBan);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(MBBanImpl.class, mbBanModelImpl, false, true);
-
-			cacheUniqueFindersCache(mbBanModelImpl);
-
-			if (isNew) {
-				mbBan.setNew(false);
-			}
-
-			mbBan.resetOriginalValues();
-
-			return mbBan;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom MBBan implementation " +
+					mbBan.getClass());
 		}
+
+		MBBanModelImpl mbBanModelImpl = (MBBanModelImpl)mbBan;
+
+		if (Validator.isNull(mbBan.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			mbBan.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (mbBan.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				mbBan.setCreateDate(date);
+			}
+			else {
+				mbBan.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!mbBanModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				mbBan.setModifiedDate(date);
+			}
+			else {
+				mbBan.setModifiedDate(serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(mbBan)) {
+				if (!isNew) {
+					session.evict(MBBanImpl.class, mbBan.getPrimaryKeyObj());
+				}
+
+				session.save(mbBan);
+			}
+			else {
+				mbBan = (MBBan)session.merge(mbBan);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(MBBanImpl.class, mbBanModelImpl, false, true);
+
+		cacheUniqueFindersCache(mbBanModelImpl);
+
+		if (isNew) {
+			mbBan.setNew(false);
+		}
+
+		mbBan.resetOriginalValues();
+
+		return mbBan;
 	}
 
 	/**
@@ -3607,43 +3600,38 @@ public class MBBanPersistenceImpl
 	public MBBan fetchByPrimaryKey(Serializable primaryKey) {
 		if (ctPersistenceHelper.isProductionMode(MBBan.class, primaryKey)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		MBBan mbBan = (MBBan)entityCache.getResult(MBBanImpl.class, primaryKey);
 
-			MBBan mbBan = (MBBan)entityCache.getResult(
-				MBBanImpl.class, primaryKey);
-
-			if (mbBan != null) {
-				return mbBan;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				mbBan = (MBBan)session.get(MBBanImpl.class, primaryKey);
-
-				if (mbBan != null) {
-					cacheResult(mbBan);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (mbBan != null) {
 			return mbBan;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			mbBan = (MBBan)session.get(MBBanImpl.class, primaryKey);
+
+			if (mbBan != null) {
+				cacheResult(mbBan);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return mbBan;
 	}
 
 	/**
@@ -3663,8 +3651,8 @@ public class MBBanPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(MBBan.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3696,9 +3684,8 @@ public class MBBanPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							MBBan.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						MBBan.class, primaryKey)) {
 
 				MBBan mbBan = (MBBan)entityCache.getResult(
 					MBBanImpl.class, primaryKey);
@@ -3846,8 +3833,8 @@ public class MBBanPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBBan.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3940,8 +3927,8 @@ public class MBBanPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBBan.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBBan.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

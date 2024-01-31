@@ -14,7 +14,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -166,9 +165,8 @@ public class ExpandoColumnPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ExpandoColumn.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ExpandoColumn.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -880,9 +878,8 @@ public class ExpandoColumnPersistenceImpl
 	@Override
 	public int countByTableId(long tableId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ExpandoColumn.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ExpandoColumn.class)) {
 
 			FinderPath finderPath = _finderPathCountByTableId;
 
@@ -1091,9 +1088,8 @@ public class ExpandoColumnPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ExpandoColumn.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ExpandoColumn.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1277,9 +1273,8 @@ public class ExpandoColumnPersistenceImpl
 		long tableId, String name, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ExpandoColumn.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ExpandoColumn.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -1400,9 +1395,8 @@ public class ExpandoColumnPersistenceImpl
 	@Override
 	public int countByT_N(long tableId, String name) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ExpandoColumn.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ExpandoColumn.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -1485,9 +1479,8 @@ public class ExpandoColumnPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ExpandoColumn.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ExpandoColumn.class)) {
 
 			Object[] finderArgs = new Object[] {
 				tableId, StringUtil.merge(names)
@@ -1759,8 +1752,8 @@ public class ExpandoColumnPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					expandoColumn.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					expandoColumn.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				ExpandoColumnImpl.class, expandoColumn.getPrimaryKey(),
@@ -1800,8 +1793,8 @@ public class ExpandoColumnPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						expandoColumn.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						expandoColumn.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						ExpandoColumnImpl.class,
@@ -1867,8 +1860,8 @@ public class ExpandoColumnPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					expandoColumnModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					expandoColumnModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				expandoColumnModelImpl.getTableId(),
@@ -1987,85 +1980,80 @@ public class ExpandoColumnPersistenceImpl
 
 	@Override
 	public ExpandoColumn updateImpl(ExpandoColumn expandoColumn) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = expandoColumn.isNew();
 
-			boolean isNew = expandoColumn.isNew();
+		if (!(expandoColumn instanceof ExpandoColumnModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(expandoColumn instanceof ExpandoColumnModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(expandoColumn.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						expandoColumn);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in expandoColumn proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(expandoColumn.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					expandoColumn);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom ExpandoColumn implementation " +
-						expandoColumn.getClass());
+					"Implement ModelWrapper in expandoColumn proxy " +
+						invocationHandler.getClass());
 			}
 
-			ExpandoColumnModelImpl expandoColumnModelImpl =
-				(ExpandoColumnModelImpl)expandoColumn;
-
-			if (!expandoColumnModelImpl.hasSetModifiedDate()) {
-				ServiceContext serviceContext =
-					ServiceContextThreadLocal.getServiceContext();
-
-				Date date = new Date();
-
-				if (serviceContext == null) {
-					expandoColumn.setModifiedDate(date);
-				}
-				else {
-					expandoColumn.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(expandoColumn)) {
-					if (!isNew) {
-						session.evict(
-							ExpandoColumnImpl.class,
-							expandoColumn.getPrimaryKeyObj());
-					}
-
-					session.save(expandoColumn);
-				}
-				else {
-					expandoColumn = (ExpandoColumn)session.merge(expandoColumn);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				ExpandoColumnImpl.class, expandoColumnModelImpl, false, true);
-
-			cacheUniqueFindersCache(expandoColumnModelImpl);
-
-			if (isNew) {
-				expandoColumn.setNew(false);
-			}
-
-			expandoColumn.resetOriginalValues();
-
-			return expandoColumn;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom ExpandoColumn implementation " +
+					expandoColumn.getClass());
 		}
+
+		ExpandoColumnModelImpl expandoColumnModelImpl =
+			(ExpandoColumnModelImpl)expandoColumn;
+
+		if (!expandoColumnModelImpl.hasSetModifiedDate()) {
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (serviceContext == null) {
+				expandoColumn.setModifiedDate(date);
+			}
+			else {
+				expandoColumn.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(expandoColumn)) {
+				if (!isNew) {
+					session.evict(
+						ExpandoColumnImpl.class,
+						expandoColumn.getPrimaryKeyObj());
+				}
+
+				session.save(expandoColumn);
+			}
+			else {
+				expandoColumn = (ExpandoColumn)session.merge(expandoColumn);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			ExpandoColumnImpl.class, expandoColumnModelImpl, false, true);
+
+		cacheUniqueFindersCache(expandoColumnModelImpl);
+
+		if (isNew) {
+			expandoColumn.setNew(false);
+		}
+
+		expandoColumn.resetOriginalValues();
+
+		return expandoColumn;
 	}
 
 	/**
@@ -2119,45 +2107,40 @@ public class ExpandoColumnPersistenceImpl
 				ExpandoColumn.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		ExpandoColumn expandoColumn = (ExpandoColumn)EntityCacheUtil.getResult(
+			ExpandoColumnImpl.class, primaryKey);
 
-			ExpandoColumn expandoColumn =
-				(ExpandoColumn)EntityCacheUtil.getResult(
-					ExpandoColumnImpl.class, primaryKey);
-
-			if (expandoColumn != null) {
-				return expandoColumn;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				expandoColumn = (ExpandoColumn)session.get(
-					ExpandoColumnImpl.class, primaryKey);
-
-				if (expandoColumn != null) {
-					cacheResult(expandoColumn);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (expandoColumn != null) {
 			return expandoColumn;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			expandoColumn = (ExpandoColumn)session.get(
+				ExpandoColumnImpl.class, primaryKey);
+
+			if (expandoColumn != null) {
+				cacheResult(expandoColumn);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return expandoColumn;
 	}
 
 	/**
@@ -2177,8 +2160,8 @@ public class ExpandoColumnPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(ExpandoColumn.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2211,9 +2194,8 @@ public class ExpandoColumnPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							ExpandoColumn.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						ExpandoColumn.class, primaryKey)) {
 
 				ExpandoColumn expandoColumn =
 					(ExpandoColumn)EntityCacheUtil.getResult(
@@ -2365,9 +2347,8 @@ public class ExpandoColumnPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ExpandoColumn.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ExpandoColumn.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2460,9 +2441,8 @@ public class ExpandoColumnPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						ExpandoColumn.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					ExpandoColumn.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

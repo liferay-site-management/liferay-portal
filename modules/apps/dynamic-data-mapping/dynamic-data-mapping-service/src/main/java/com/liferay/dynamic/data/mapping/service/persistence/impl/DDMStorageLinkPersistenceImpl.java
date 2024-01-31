@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -171,9 +170,8 @@ public class DDMStorageLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStorageLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStorageLink.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -576,9 +574,8 @@ public class DDMStorageLinkPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStorageLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStorageLink.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -724,9 +721,8 @@ public class DDMStorageLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStorageLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStorageLink.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1164,9 +1160,8 @@ public class DDMStorageLinkPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStorageLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStorageLink.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1294,9 +1289,8 @@ public class DDMStorageLinkPersistenceImpl
 	@Override
 	public DDMStorageLink fetchByClassPK(long classPK, boolean useFinderCache) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStorageLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStorageLink.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1396,9 +1390,8 @@ public class DDMStorageLinkPersistenceImpl
 	@Override
 	public int countByClassPK(long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStorageLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStorageLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByClassPK;
 
@@ -1524,9 +1517,8 @@ public class DDMStorageLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStorageLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStorageLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1909,9 +1901,8 @@ public class DDMStorageLinkPersistenceImpl
 	@Override
 	public int countByStructureId(long structureId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStorageLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStorageLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByStructureId;
 
@@ -2040,9 +2031,8 @@ public class DDMStorageLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStorageLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStorageLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2501,9 +2491,8 @@ public class DDMStorageLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStorageLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStorageLink.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2673,9 +2662,8 @@ public class DDMStorageLinkPersistenceImpl
 	@Override
 	public int countByStructureVersionId(long structureVersionId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStorageLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStorageLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByStructureVersionId;
 
@@ -2737,9 +2725,8 @@ public class DDMStorageLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStorageLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStorageLink.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(structureVersionIds)
@@ -2868,8 +2855,8 @@ public class DDMStorageLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmStorageLink.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmStorageLink.getCtCollectionId())) {
 
 			entityCache.putResult(
 				DDMStorageLinkImpl.class, ddmStorageLink.getPrimaryKey(),
@@ -2906,8 +2893,8 @@ public class DDMStorageLinkPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						ddmStorageLink.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ddmStorageLink.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						DDMStorageLinkImpl.class,
@@ -2972,8 +2959,8 @@ public class DDMStorageLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmStorageLinkModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmStorageLinkModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {ddmStorageLinkModelImpl.getClassPK()};
 
@@ -3096,77 +3083,71 @@ public class DDMStorageLinkPersistenceImpl
 
 	@Override
 	public DDMStorageLink updateImpl(DDMStorageLink ddmStorageLink) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = ddmStorageLink.isNew();
 
-			boolean isNew = ddmStorageLink.isNew();
+		if (!(ddmStorageLink instanceof DDMStorageLinkModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(ddmStorageLink instanceof DDMStorageLinkModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(ddmStorageLink.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						ddmStorageLink);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in ddmStorageLink proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(ddmStorageLink.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					ddmStorageLink);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DDMStorageLink implementation " +
-						ddmStorageLink.getClass());
+					"Implement ModelWrapper in ddmStorageLink proxy " +
+						invocationHandler.getClass());
 			}
 
-			DDMStorageLinkModelImpl ddmStorageLinkModelImpl =
-				(DDMStorageLinkModelImpl)ddmStorageLink;
-
-			if (Validator.isNull(ddmStorageLink.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				ddmStorageLink.setUuid(uuid);
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(ddmStorageLink)) {
-					if (!isNew) {
-						session.evict(
-							DDMStorageLinkImpl.class,
-							ddmStorageLink.getPrimaryKeyObj());
-					}
-
-					session.save(ddmStorageLink);
-				}
-				else {
-					ddmStorageLink = (DDMStorageLink)session.merge(
-						ddmStorageLink);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				DDMStorageLinkImpl.class, ddmStorageLinkModelImpl, false, true);
-
-			cacheUniqueFindersCache(ddmStorageLinkModelImpl);
-
-			if (isNew) {
-				ddmStorageLink.setNew(false);
-			}
-
-			ddmStorageLink.resetOriginalValues();
-
-			return ddmStorageLink;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DDMStorageLink implementation " +
+					ddmStorageLink.getClass());
 		}
+
+		DDMStorageLinkModelImpl ddmStorageLinkModelImpl =
+			(DDMStorageLinkModelImpl)ddmStorageLink;
+
+		if (Validator.isNull(ddmStorageLink.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			ddmStorageLink.setUuid(uuid);
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(ddmStorageLink)) {
+				if (!isNew) {
+					session.evict(
+						DDMStorageLinkImpl.class,
+						ddmStorageLink.getPrimaryKeyObj());
+				}
+
+				session.save(ddmStorageLink);
+			}
+			else {
+				ddmStorageLink = (DDMStorageLink)session.merge(ddmStorageLink);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			DDMStorageLinkImpl.class, ddmStorageLinkModelImpl, false, true);
+
+		cacheUniqueFindersCache(ddmStorageLinkModelImpl);
+
+		if (isNew) {
+			ddmStorageLink.setNew(false);
+		}
+
+		ddmStorageLink.resetOriginalValues();
+
+		return ddmStorageLink;
 	}
 
 	/**
@@ -3220,45 +3201,40 @@ public class DDMStorageLinkPersistenceImpl
 				DDMStorageLink.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DDMStorageLink ddmStorageLink = (DDMStorageLink)entityCache.getResult(
+			DDMStorageLinkImpl.class, primaryKey);
 
-			DDMStorageLink ddmStorageLink =
-				(DDMStorageLink)entityCache.getResult(
-					DDMStorageLinkImpl.class, primaryKey);
-
-			if (ddmStorageLink != null) {
-				return ddmStorageLink;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ddmStorageLink = (DDMStorageLink)session.get(
-					DDMStorageLinkImpl.class, primaryKey);
-
-				if (ddmStorageLink != null) {
-					cacheResult(ddmStorageLink);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (ddmStorageLink != null) {
 			return ddmStorageLink;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			ddmStorageLink = (DDMStorageLink)session.get(
+				DDMStorageLinkImpl.class, primaryKey);
+
+			if (ddmStorageLink != null) {
+				cacheResult(ddmStorageLink);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return ddmStorageLink;
 	}
 
 	/**
@@ -3278,8 +3254,8 @@ public class DDMStorageLinkPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(DDMStorageLink.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3312,9 +3288,8 @@ public class DDMStorageLinkPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							DDMStorageLink.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						DDMStorageLink.class, primaryKey)) {
 
 				DDMStorageLink ddmStorageLink =
 					(DDMStorageLink)entityCache.getResult(
@@ -3466,9 +3441,8 @@ public class DDMStorageLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStorageLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStorageLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3561,9 +3535,8 @@ public class DDMStorageLinkPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DDMStorageLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMStorageLink.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

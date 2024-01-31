@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -161,8 +160,8 @@ public class PhonePersistenceImpl
 		OrderByComparator<Phone> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Phone.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Phone.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -562,8 +561,8 @@ public class PhonePersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Phone.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Phone.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -707,8 +706,8 @@ public class PhonePersistenceImpl
 		OrderByComparator<Phone> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Phone.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Phone.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1140,8 +1139,8 @@ public class PhonePersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Phone.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Phone.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1286,8 +1285,8 @@ public class PhonePersistenceImpl
 		OrderByComparator<Phone> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Phone.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Phone.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1664,8 +1663,8 @@ public class PhonePersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Phone.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Phone.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -1786,8 +1785,8 @@ public class PhonePersistenceImpl
 		OrderByComparator<Phone> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Phone.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Phone.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2164,8 +2163,8 @@ public class PhonePersistenceImpl
 	@Override
 	public int countByUserId(long userId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Phone.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Phone.class)) {
 
 			FinderPath finderPath = _finderPathCountByUserId;
 
@@ -2294,8 +2293,8 @@ public class PhonePersistenceImpl
 		OrderByComparator<Phone> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Phone.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Phone.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2705,8 +2704,8 @@ public class PhonePersistenceImpl
 	@Override
 	public int countByC_C(long companyId, long classNameId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Phone.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Phone.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -2850,8 +2849,8 @@ public class PhonePersistenceImpl
 		OrderByComparator<Phone> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Phone.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Phone.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3286,8 +3285,8 @@ public class PhonePersistenceImpl
 	@Override
 	public int countByC_C_C(long companyId, long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Phone.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Phone.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_C;
 
@@ -3447,8 +3446,8 @@ public class PhonePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Phone.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Phone.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3911,8 +3910,8 @@ public class PhonePersistenceImpl
 		long companyId, long classNameId, long classPK, boolean primary) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Phone.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Phone.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_C_P;
 
@@ -4015,8 +4014,8 @@ public class PhonePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					phone.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					phone.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				PhoneImpl.class, phone.getPrimaryKey(), phone);
@@ -4048,8 +4047,8 @@ public class PhonePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						phone.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						phone.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						PhoneImpl.class, phone.getPrimaryKey()) == null) {
@@ -4206,94 +4205,87 @@ public class PhonePersistenceImpl
 
 	@Override
 	public Phone updateImpl(Phone phone) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = phone.isNew();
 
-			boolean isNew = phone.isNew();
+		if (!(phone instanceof PhoneModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(phone instanceof PhoneModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(phone.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(phone);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in phone proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(phone.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(phone);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom Phone implementation " +
-						phone.getClass());
+					"Implement ModelWrapper in phone proxy " +
+						invocationHandler.getClass());
 			}
 
-			PhoneModelImpl phoneModelImpl = (PhoneModelImpl)phone;
-
-			if (Validator.isNull(phone.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				phone.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (phone.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					phone.setCreateDate(date);
-				}
-				else {
-					phone.setCreateDate(serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!phoneModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					phone.setModifiedDate(date);
-				}
-				else {
-					phone.setModifiedDate(serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(phone)) {
-					if (!isNew) {
-						session.evict(
-							PhoneImpl.class, phone.getPrimaryKeyObj());
-					}
-
-					session.save(phone);
-				}
-				else {
-					phone = (Phone)session.merge(phone);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				PhoneImpl.class, phoneModelImpl, false, true);
-
-			if (isNew) {
-				phone.setNew(false);
-			}
-
-			phone.resetOriginalValues();
-
-			return phone;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom Phone implementation " +
+					phone.getClass());
 		}
+
+		PhoneModelImpl phoneModelImpl = (PhoneModelImpl)phone;
+
+		if (Validator.isNull(phone.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			phone.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (phone.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				phone.setCreateDate(date);
+			}
+			else {
+				phone.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!phoneModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				phone.setModifiedDate(date);
+			}
+			else {
+				phone.setModifiedDate(serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(phone)) {
+				if (!isNew) {
+					session.evict(PhoneImpl.class, phone.getPrimaryKeyObj());
+				}
+
+				session.save(phone);
+			}
+			else {
+				phone = (Phone)session.merge(phone);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(PhoneImpl.class, phoneModelImpl, false, true);
+
+		if (isNew) {
+			phone.setNew(false);
+		}
+
+		phone.resetOriginalValues();
+
+		return phone;
 	}
 
 	/**
@@ -4343,43 +4335,39 @@ public class PhonePersistenceImpl
 	public Phone fetchByPrimaryKey(Serializable primaryKey) {
 		if (CTPersistenceHelperUtil.isProductionMode(Phone.class, primaryKey)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		Phone phone = (Phone)EntityCacheUtil.getResult(
+			PhoneImpl.class, primaryKey);
 
-			Phone phone = (Phone)EntityCacheUtil.getResult(
-				PhoneImpl.class, primaryKey);
-
-			if (phone != null) {
-				return phone;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				phone = (Phone)session.get(PhoneImpl.class, primaryKey);
-
-				if (phone != null) {
-					cacheResult(phone);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (phone != null) {
 			return phone;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			phone = (Phone)session.get(PhoneImpl.class, primaryKey);
+
+			if (phone != null) {
+				cacheResult(phone);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return phone;
 	}
 
 	/**
@@ -4399,8 +4387,8 @@ public class PhonePersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(Phone.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -4432,9 +4420,8 @@ public class PhonePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							Phone.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						Phone.class, primaryKey)) {
 
 				Phone phone = (Phone)EntityCacheUtil.getResult(
 					PhoneImpl.class, primaryKey);
@@ -4582,8 +4569,8 @@ public class PhonePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Phone.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Phone.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4676,8 +4663,8 @@ public class PhonePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Phone.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Phone.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

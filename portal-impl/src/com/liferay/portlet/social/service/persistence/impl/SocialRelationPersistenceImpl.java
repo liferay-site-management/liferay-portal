@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -160,9 +159,8 @@ public class SocialRelationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -565,9 +563,8 @@ public class SocialRelationPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -713,9 +710,8 @@ public class SocialRelationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1153,9 +1149,8 @@ public class SocialRelationPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1303,9 +1298,8 @@ public class SocialRelationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1686,9 +1680,8 @@ public class SocialRelationPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -1813,9 +1806,8 @@ public class SocialRelationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2196,9 +2188,8 @@ public class SocialRelationPersistenceImpl
 	@Override
 	public int countByUserId1(long userId1) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = _finderPathCountByUserId1;
 
@@ -2323,9 +2314,8 @@ public class SocialRelationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2706,9 +2696,8 @@ public class SocialRelationPersistenceImpl
 	@Override
 	public int countByUserId2(long userId2) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = _finderPathCountByUserId2;
 
@@ -2830,9 +2819,8 @@ public class SocialRelationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3209,9 +3197,8 @@ public class SocialRelationPersistenceImpl
 	@Override
 	public int countByType(int type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = _finderPathCountByType;
 
@@ -3340,9 +3327,8 @@ public class SocialRelationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3754,9 +3740,8 @@ public class SocialRelationPersistenceImpl
 	@Override
 	public int countByC_T(long companyId, int type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_T;
 
@@ -3893,9 +3878,8 @@ public class SocialRelationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4307,9 +4291,8 @@ public class SocialRelationPersistenceImpl
 	@Override
 	public int countByU1_U2(long userId1, long userId2) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = _finderPathCountByU1_U2;
 
@@ -4445,9 +4428,8 @@ public class SocialRelationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4858,9 +4840,8 @@ public class SocialRelationPersistenceImpl
 	@Override
 	public int countByU1_T(long userId1, int type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = _finderPathCountByU1_T;
 
@@ -4996,9 +4977,8 @@ public class SocialRelationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5409,9 +5389,8 @@ public class SocialRelationPersistenceImpl
 	@Override
 	public int countByU2_T(long userId2, int type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = _finderPathCountByU2_T;
 
@@ -5537,9 +5516,8 @@ public class SocialRelationPersistenceImpl
 		long userId1, long userId2, int type, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			Object[] finderArgs = null;
 
@@ -5654,9 +5632,8 @@ public class SocialRelationPersistenceImpl
 	@Override
 	public int countByU1_U2_T(long userId1, long userId2, int type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = _finderPathCountByU1_U2_T;
 
@@ -5749,8 +5726,8 @@ public class SocialRelationPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					socialRelation.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					socialRelation.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				SocialRelationImpl.class, socialRelation.getPrimaryKey(),
@@ -5791,8 +5768,8 @@ public class SocialRelationPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						socialRelation.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						socialRelation.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						SocialRelationImpl.class,
@@ -5858,8 +5835,8 @@ public class SocialRelationPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					socialRelationModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					socialRelationModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				socialRelationModelImpl.getUserId1(),
@@ -5986,77 +5963,71 @@ public class SocialRelationPersistenceImpl
 
 	@Override
 	public SocialRelation updateImpl(SocialRelation socialRelation) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = socialRelation.isNew();
 
-			boolean isNew = socialRelation.isNew();
+		if (!(socialRelation instanceof SocialRelationModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(socialRelation instanceof SocialRelationModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(socialRelation.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						socialRelation);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in socialRelation proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(socialRelation.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					socialRelation);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom SocialRelation implementation " +
-						socialRelation.getClass());
+					"Implement ModelWrapper in socialRelation proxy " +
+						invocationHandler.getClass());
 			}
 
-			SocialRelationModelImpl socialRelationModelImpl =
-				(SocialRelationModelImpl)socialRelation;
-
-			if (Validator.isNull(socialRelation.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				socialRelation.setUuid(uuid);
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(socialRelation)) {
-					if (!isNew) {
-						session.evict(
-							SocialRelationImpl.class,
-							socialRelation.getPrimaryKeyObj());
-					}
-
-					session.save(socialRelation);
-				}
-				else {
-					socialRelation = (SocialRelation)session.merge(
-						socialRelation);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				SocialRelationImpl.class, socialRelationModelImpl, false, true);
-
-			cacheUniqueFindersCache(socialRelationModelImpl);
-
-			if (isNew) {
-				socialRelation.setNew(false);
-			}
-
-			socialRelation.resetOriginalValues();
-
-			return socialRelation;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom SocialRelation implementation " +
+					socialRelation.getClass());
 		}
+
+		SocialRelationModelImpl socialRelationModelImpl =
+			(SocialRelationModelImpl)socialRelation;
+
+		if (Validator.isNull(socialRelation.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			socialRelation.setUuid(uuid);
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(socialRelation)) {
+				if (!isNew) {
+					session.evict(
+						SocialRelationImpl.class,
+						socialRelation.getPrimaryKeyObj());
+				}
+
+				session.save(socialRelation);
+			}
+			else {
+				socialRelation = (SocialRelation)session.merge(socialRelation);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			SocialRelationImpl.class, socialRelationModelImpl, false, true);
+
+		cacheUniqueFindersCache(socialRelationModelImpl);
+
+		if (isNew) {
+			socialRelation.setNew(false);
+		}
+
+		socialRelation.resetOriginalValues();
+
+		return socialRelation;
 	}
 
 	/**
@@ -6110,45 +6081,41 @@ public class SocialRelationPersistenceImpl
 				SocialRelation.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		SocialRelation socialRelation =
+			(SocialRelation)EntityCacheUtil.getResult(
+				SocialRelationImpl.class, primaryKey);
 
-			SocialRelation socialRelation =
-				(SocialRelation)EntityCacheUtil.getResult(
-					SocialRelationImpl.class, primaryKey);
-
-			if (socialRelation != null) {
-				return socialRelation;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				socialRelation = (SocialRelation)session.get(
-					SocialRelationImpl.class, primaryKey);
-
-				if (socialRelation != null) {
-					cacheResult(socialRelation);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (socialRelation != null) {
 			return socialRelation;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			socialRelation = (SocialRelation)session.get(
+				SocialRelationImpl.class, primaryKey);
+
+			if (socialRelation != null) {
+				cacheResult(socialRelation);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return socialRelation;
 	}
 
 	/**
@@ -6168,8 +6135,8 @@ public class SocialRelationPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(SocialRelation.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -6202,9 +6169,8 @@ public class SocialRelationPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							SocialRelation.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						SocialRelation.class, primaryKey)) {
 
 				SocialRelation socialRelation =
 					(SocialRelation)EntityCacheUtil.getResult(
@@ -6356,9 +6322,8 @@ public class SocialRelationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6451,9 +6416,8 @@ public class SocialRelationPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialRelation.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialRelation.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

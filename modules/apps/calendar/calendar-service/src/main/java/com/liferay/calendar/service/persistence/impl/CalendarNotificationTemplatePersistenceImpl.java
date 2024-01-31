@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -175,9 +174,8 @@ public class CalendarNotificationTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarNotificationTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarNotificationTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -597,9 +595,8 @@ public class CalendarNotificationTemplatePersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarNotificationTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarNotificationTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -731,9 +728,8 @@ public class CalendarNotificationTemplatePersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarNotificationTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarNotificationTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -859,9 +855,8 @@ public class CalendarNotificationTemplatePersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarNotificationTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarNotificationTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1016,9 +1011,8 @@ public class CalendarNotificationTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarNotificationTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarNotificationTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1466,9 +1460,8 @@ public class CalendarNotificationTemplatePersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarNotificationTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarNotificationTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1619,9 +1612,8 @@ public class CalendarNotificationTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarNotificationTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarNotificationTemplate.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2019,9 +2011,8 @@ public class CalendarNotificationTemplatePersistenceImpl
 	@Override
 	public int countByCalendarId(long calendarId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarNotificationTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarNotificationTemplate.class)) {
 
 			FinderPath finderPath = _finderPathCountByCalendarId;
 
@@ -2149,9 +2140,8 @@ public class CalendarNotificationTemplatePersistenceImpl
 		String notificationTemplateType, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarNotificationTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarNotificationTemplate.class)) {
 
 			notificationType = Objects.toString(notificationType, "");
 			notificationTemplateType = Objects.toString(
@@ -2329,9 +2319,8 @@ public class CalendarNotificationTemplatePersistenceImpl
 		String notificationTemplateType) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarNotificationTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarNotificationTemplate.class)) {
 
 			notificationType = Objects.toString(notificationType, "");
 			notificationTemplateType = Objects.toString(
@@ -2463,8 +2452,8 @@ public class CalendarNotificationTemplatePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					calendarNotificationTemplate.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					calendarNotificationTemplate.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CalendarNotificationTemplateImpl.class,
@@ -2520,9 +2509,8 @@ public class CalendarNotificationTemplatePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						calendarNotificationTemplate.getCtCollectionId() !=
-							0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						calendarNotificationTemplate.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CalendarNotificationTemplateImpl.class,
@@ -2599,9 +2587,9 @@ public class CalendarNotificationTemplatePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					calendarNotificationTemplateModelImpl.getCtCollectionId() !=
-						0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					calendarNotificationTemplateModelImpl.
+						getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				calendarNotificationTemplateModelImpl.getUuid(),
@@ -2753,114 +2741,105 @@ public class CalendarNotificationTemplatePersistenceImpl
 	public CalendarNotificationTemplate updateImpl(
 		CalendarNotificationTemplate calendarNotificationTemplate) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = calendarNotificationTemplate.isNew();
 
-			boolean isNew = calendarNotificationTemplate.isNew();
+		if (!(calendarNotificationTemplate instanceof
+				CalendarNotificationTemplateModelImpl)) {
 
-			if (!(calendarNotificationTemplate instanceof
-					CalendarNotificationTemplateModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
+			if (ProxyUtil.isProxyClass(
+					calendarNotificationTemplate.getClass())) {
 
-				if (ProxyUtil.isProxyClass(
-						calendarNotificationTemplate.getClass())) {
-
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						calendarNotificationTemplate);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in calendarNotificationTemplate proxy " +
-							invocationHandler.getClass());
-				}
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					calendarNotificationTemplate);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CalendarNotificationTemplate implementation " +
-						calendarNotificationTemplate.getClass());
+					"Implement ModelWrapper in calendarNotificationTemplate proxy " +
+						invocationHandler.getClass());
 			}
 
-			CalendarNotificationTemplateModelImpl
-				calendarNotificationTemplateModelImpl =
-					(CalendarNotificationTemplateModelImpl)
-						calendarNotificationTemplate;
-
-			if (Validator.isNull(calendarNotificationTemplate.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				calendarNotificationTemplate.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew &&
-				(calendarNotificationTemplate.getCreateDate() == null)) {
-
-				if (serviceContext == null) {
-					calendarNotificationTemplate.setCreateDate(date);
-				}
-				else {
-					calendarNotificationTemplate.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!calendarNotificationTemplateModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					calendarNotificationTemplate.setModifiedDate(date);
-				}
-				else {
-					calendarNotificationTemplate.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(
-						calendarNotificationTemplate)) {
-
-					if (!isNew) {
-						session.evict(
-							CalendarNotificationTemplateImpl.class,
-							calendarNotificationTemplate.getPrimaryKeyObj());
-					}
-
-					session.save(calendarNotificationTemplate);
-				}
-				else {
-					calendarNotificationTemplate =
-						(CalendarNotificationTemplate)session.merge(
-							calendarNotificationTemplate);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				CalendarNotificationTemplateImpl.class,
-				calendarNotificationTemplateModelImpl, false, true);
-
-			cacheUniqueFindersCache(calendarNotificationTemplateModelImpl);
-
-			if (isNew) {
-				calendarNotificationTemplate.setNew(false);
-			}
-
-			calendarNotificationTemplate.resetOriginalValues();
-
-			return calendarNotificationTemplate;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CalendarNotificationTemplate implementation " +
+					calendarNotificationTemplate.getClass());
 		}
+
+		CalendarNotificationTemplateModelImpl
+			calendarNotificationTemplateModelImpl =
+				(CalendarNotificationTemplateModelImpl)
+					calendarNotificationTemplate;
+
+		if (Validator.isNull(calendarNotificationTemplate.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			calendarNotificationTemplate.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (calendarNotificationTemplate.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				calendarNotificationTemplate.setCreateDate(date);
+			}
+			else {
+				calendarNotificationTemplate.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!calendarNotificationTemplateModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				calendarNotificationTemplate.setModifiedDate(date);
+			}
+			else {
+				calendarNotificationTemplate.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(calendarNotificationTemplate)) {
+				if (!isNew) {
+					session.evict(
+						CalendarNotificationTemplateImpl.class,
+						calendarNotificationTemplate.getPrimaryKeyObj());
+				}
+
+				session.save(calendarNotificationTemplate);
+			}
+			else {
+				calendarNotificationTemplate =
+					(CalendarNotificationTemplate)session.merge(
+						calendarNotificationTemplate);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CalendarNotificationTemplateImpl.class,
+			calendarNotificationTemplateModelImpl, false, true);
+
+		cacheUniqueFindersCache(calendarNotificationTemplateModelImpl);
+
+		if (isNew) {
+			calendarNotificationTemplate.setNew(false);
+		}
+
+		calendarNotificationTemplate.resetOriginalValues();
+
+		return calendarNotificationTemplate;
 	}
 
 	/**
@@ -2919,46 +2898,42 @@ public class CalendarNotificationTemplatePersistenceImpl
 				CalendarNotificationTemplate.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CalendarNotificationTemplate calendarNotificationTemplate =
+			(CalendarNotificationTemplate)entityCache.getResult(
+				CalendarNotificationTemplateImpl.class, primaryKey);
 
-			CalendarNotificationTemplate calendarNotificationTemplate =
-				(CalendarNotificationTemplate)entityCache.getResult(
+		if (calendarNotificationTemplate != null) {
+			return calendarNotificationTemplate;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			calendarNotificationTemplate =
+				(CalendarNotificationTemplate)session.get(
 					CalendarNotificationTemplateImpl.class, primaryKey);
 
 			if (calendarNotificationTemplate != null) {
-				return calendarNotificationTemplate;
+				cacheResult(calendarNotificationTemplate);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				calendarNotificationTemplate =
-					(CalendarNotificationTemplate)session.get(
-						CalendarNotificationTemplateImpl.class, primaryKey);
-
-				if (calendarNotificationTemplate != null) {
-					cacheResult(calendarNotificationTemplate);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return calendarNotificationTemplate;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return calendarNotificationTemplate;
 	}
 
 	/**
@@ -2982,8 +2957,8 @@ public class CalendarNotificationTemplatePersistenceImpl
 				CalendarNotificationTemplate.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3017,9 +2992,8 @@ public class CalendarNotificationTemplatePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CalendarNotificationTemplate.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CalendarNotificationTemplate.class, primaryKey)) {
 
 				CalendarNotificationTemplate calendarNotificationTemplate =
 					(CalendarNotificationTemplate)entityCache.getResult(
@@ -3174,9 +3148,8 @@ public class CalendarNotificationTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarNotificationTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarNotificationTemplate.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3273,9 +3246,8 @@ public class CalendarNotificationTemplatePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CalendarNotificationTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CalendarNotificationTemplate.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

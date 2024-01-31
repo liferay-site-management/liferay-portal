@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -163,9 +162,8 @@ public class RepositoryEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RepositoryEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RepositoryEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -569,9 +567,8 @@ public class RepositoryEntryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RepositoryEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RepositoryEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -700,9 +697,8 @@ public class RepositoryEntryPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RepositoryEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RepositoryEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -823,9 +819,8 @@ public class RepositoryEntryPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RepositoryEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RepositoryEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -978,9 +973,8 @@ public class RepositoryEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RepositoryEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RepositoryEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1418,9 +1412,8 @@ public class RepositoryEntryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RepositoryEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RepositoryEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1569,9 +1562,8 @@ public class RepositoryEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RepositoryEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RepositoryEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1959,9 +1951,8 @@ public class RepositoryEntryPersistenceImpl
 	@Override
 	public int countByRepositoryId(long repositoryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RepositoryEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RepositoryEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByRepositoryId;
 
@@ -2074,9 +2065,8 @@ public class RepositoryEntryPersistenceImpl
 		long repositoryId, String mappedId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RepositoryEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RepositoryEntry.class)) {
 
 			mappedId = Objects.toString(mappedId, "");
 
@@ -2197,9 +2187,8 @@ public class RepositoryEntryPersistenceImpl
 	@Override
 	public int countByR_M(long repositoryId, String mappedId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RepositoryEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RepositoryEntry.class)) {
 
 			mappedId = Objects.toString(mappedId, "");
 
@@ -2300,8 +2289,8 @@ public class RepositoryEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					repositoryEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					repositoryEntry.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				RepositoryEntryImpl.class, repositoryEntry.getPrimaryKey(),
@@ -2350,8 +2339,8 @@ public class RepositoryEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						repositoryEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						repositoryEntry.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						RepositoryEntryImpl.class,
@@ -2418,8 +2407,8 @@ public class RepositoryEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					repositoryEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					repositoryEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				repositoryEntryModelImpl.getUuid(),
@@ -2555,103 +2544,97 @@ public class RepositoryEntryPersistenceImpl
 
 	@Override
 	public RepositoryEntry updateImpl(RepositoryEntry repositoryEntry) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = repositoryEntry.isNew();
 
-			boolean isNew = repositoryEntry.isNew();
+		if (!(repositoryEntry instanceof RepositoryEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(repositoryEntry instanceof RepositoryEntryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(repositoryEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						repositoryEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in repositoryEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(repositoryEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					repositoryEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom RepositoryEntry implementation " +
-						repositoryEntry.getClass());
+					"Implement ModelWrapper in repositoryEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			RepositoryEntryModelImpl repositoryEntryModelImpl =
-				(RepositoryEntryModelImpl)repositoryEntry;
-
-			if (Validator.isNull(repositoryEntry.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				repositoryEntry.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (repositoryEntry.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					repositoryEntry.setCreateDate(date);
-				}
-				else {
-					repositoryEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!repositoryEntryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					repositoryEntry.setModifiedDate(date);
-				}
-				else {
-					repositoryEntry.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(repositoryEntry)) {
-					if (!isNew) {
-						session.evict(
-							RepositoryEntryImpl.class,
-							repositoryEntry.getPrimaryKeyObj());
-					}
-
-					session.save(repositoryEntry);
-				}
-				else {
-					repositoryEntry = (RepositoryEntry)session.merge(
-						repositoryEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				RepositoryEntryImpl.class, repositoryEntryModelImpl, false,
-				true);
-
-			cacheUniqueFindersCache(repositoryEntryModelImpl);
-
-			if (isNew) {
-				repositoryEntry.setNew(false);
-			}
-
-			repositoryEntry.resetOriginalValues();
-
-			return repositoryEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom RepositoryEntry implementation " +
+					repositoryEntry.getClass());
 		}
+
+		RepositoryEntryModelImpl repositoryEntryModelImpl =
+			(RepositoryEntryModelImpl)repositoryEntry;
+
+		if (Validator.isNull(repositoryEntry.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			repositoryEntry.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (repositoryEntry.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				repositoryEntry.setCreateDate(date);
+			}
+			else {
+				repositoryEntry.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!repositoryEntryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				repositoryEntry.setModifiedDate(date);
+			}
+			else {
+				repositoryEntry.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(repositoryEntry)) {
+				if (!isNew) {
+					session.evict(
+						RepositoryEntryImpl.class,
+						repositoryEntry.getPrimaryKeyObj());
+				}
+
+				session.save(repositoryEntry);
+			}
+			else {
+				repositoryEntry = (RepositoryEntry)session.merge(
+					repositoryEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			RepositoryEntryImpl.class, repositoryEntryModelImpl, false, true);
+
+		cacheUniqueFindersCache(repositoryEntryModelImpl);
+
+		if (isNew) {
+			repositoryEntry.setNew(false);
+		}
+
+		repositoryEntry.resetOriginalValues();
+
+		return repositoryEntry;
 	}
 
 	/**
@@ -2705,45 +2688,41 @@ public class RepositoryEntryPersistenceImpl
 				RepositoryEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		RepositoryEntry repositoryEntry =
+			(RepositoryEntry)EntityCacheUtil.getResult(
+				RepositoryEntryImpl.class, primaryKey);
 
-			RepositoryEntry repositoryEntry =
-				(RepositoryEntry)EntityCacheUtil.getResult(
-					RepositoryEntryImpl.class, primaryKey);
-
-			if (repositoryEntry != null) {
-				return repositoryEntry;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				repositoryEntry = (RepositoryEntry)session.get(
-					RepositoryEntryImpl.class, primaryKey);
-
-				if (repositoryEntry != null) {
-					cacheResult(repositoryEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (repositoryEntry != null) {
 			return repositoryEntry;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			repositoryEntry = (RepositoryEntry)session.get(
+				RepositoryEntryImpl.class, primaryKey);
+
+			if (repositoryEntry != null) {
+				cacheResult(repositoryEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return repositoryEntry;
 	}
 
 	/**
@@ -2763,8 +2742,8 @@ public class RepositoryEntryPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(RepositoryEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2797,9 +2776,8 @@ public class RepositoryEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							RepositoryEntry.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						RepositoryEntry.class, primaryKey)) {
 
 				RepositoryEntry repositoryEntry =
 					(RepositoryEntry)EntityCacheUtil.getResult(
@@ -2952,9 +2930,8 @@ public class RepositoryEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RepositoryEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RepositoryEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3047,9 +3024,8 @@ public class RepositoryEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						RepositoryEntry.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					RepositoryEntry.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

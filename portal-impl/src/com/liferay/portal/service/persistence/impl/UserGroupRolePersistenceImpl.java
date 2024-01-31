@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -156,9 +155,8 @@ public class UserGroupRolePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						UserGroupRole.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					UserGroupRole.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -539,9 +537,8 @@ public class UserGroupRolePersistenceImpl
 	@Override
 	public int countByUserId(long userId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						UserGroupRole.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					UserGroupRole.class)) {
 
 			FinderPath finderPath = _finderPathCountByUserId;
 
@@ -664,9 +661,8 @@ public class UserGroupRolePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						UserGroupRole.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					UserGroupRole.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1047,9 +1043,8 @@ public class UserGroupRolePersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						UserGroupRole.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					UserGroupRole.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -1171,9 +1166,8 @@ public class UserGroupRolePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						UserGroupRole.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					UserGroupRole.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1554,9 +1548,8 @@ public class UserGroupRolePersistenceImpl
 	@Override
 	public int countByRoleId(long roleId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						UserGroupRole.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					UserGroupRole.class)) {
 
 			FinderPath finderPath = _finderPathCountByRoleId;
 
@@ -1685,9 +1678,8 @@ public class UserGroupRolePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						UserGroupRole.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					UserGroupRole.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2098,9 +2090,8 @@ public class UserGroupRolePersistenceImpl
 	@Override
 	public int countByU_G(long userId, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						UserGroupRole.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					UserGroupRole.class)) {
 
 			FinderPath finderPath = _finderPathCountByU_G;
 
@@ -2236,9 +2227,8 @@ public class UserGroupRolePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						UserGroupRole.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					UserGroupRole.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2649,9 +2639,8 @@ public class UserGroupRolePersistenceImpl
 	@Override
 	public int countByG_R(long groupId, long roleId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						UserGroupRole.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					UserGroupRole.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_R;
 
@@ -2777,9 +2766,8 @@ public class UserGroupRolePersistenceImpl
 		long userId, long groupId, long roleId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						UserGroupRole.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					UserGroupRole.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2894,9 +2882,8 @@ public class UserGroupRolePersistenceImpl
 	@Override
 	public int countByU_G_R(long userId, long groupId, long roleId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						UserGroupRole.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					UserGroupRole.class)) {
 
 			FinderPath finderPath = _finderPathCountByU_G_R;
 
@@ -2982,8 +2969,8 @@ public class UserGroupRolePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					userGroupRole.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					userGroupRole.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				UserGroupRoleImpl.class, userGroupRole.getPrimaryKey(),
@@ -3024,8 +3011,8 @@ public class UserGroupRolePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						userGroupRole.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						userGroupRole.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						UserGroupRoleImpl.class,
@@ -3091,8 +3078,8 @@ public class UserGroupRolePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					userGroupRoleModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					userGroupRoleModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				userGroupRoleModelImpl.getUserId(),
@@ -3214,70 +3201,65 @@ public class UserGroupRolePersistenceImpl
 
 	@Override
 	public UserGroupRole updateImpl(UserGroupRole userGroupRole) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = userGroupRole.isNew();
 
-			boolean isNew = userGroupRole.isNew();
+		if (!(userGroupRole instanceof UserGroupRoleModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(userGroupRole instanceof UserGroupRoleModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(userGroupRole.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						userGroupRole);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in userGroupRole proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(userGroupRole.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					userGroupRole);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom UserGroupRole implementation " +
-						userGroupRole.getClass());
+					"Implement ModelWrapper in userGroupRole proxy " +
+						invocationHandler.getClass());
 			}
 
-			UserGroupRoleModelImpl userGroupRoleModelImpl =
-				(UserGroupRoleModelImpl)userGroupRole;
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(userGroupRole)) {
-					if (!isNew) {
-						session.evict(
-							UserGroupRoleImpl.class,
-							userGroupRole.getPrimaryKeyObj());
-					}
-
-					session.save(userGroupRole);
-				}
-				else {
-					userGroupRole = (UserGroupRole)session.merge(userGroupRole);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				UserGroupRoleImpl.class, userGroupRoleModelImpl, false, true);
-
-			cacheUniqueFindersCache(userGroupRoleModelImpl);
-
-			if (isNew) {
-				userGroupRole.setNew(false);
-			}
-
-			userGroupRole.resetOriginalValues();
-
-			return userGroupRole;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom UserGroupRole implementation " +
+					userGroupRole.getClass());
 		}
+
+		UserGroupRoleModelImpl userGroupRoleModelImpl =
+			(UserGroupRoleModelImpl)userGroupRole;
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(userGroupRole)) {
+				if (!isNew) {
+					session.evict(
+						UserGroupRoleImpl.class,
+						userGroupRole.getPrimaryKeyObj());
+				}
+
+				session.save(userGroupRole);
+			}
+			else {
+				userGroupRole = (UserGroupRole)session.merge(userGroupRole);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			UserGroupRoleImpl.class, userGroupRoleModelImpl, false, true);
+
+		cacheUniqueFindersCache(userGroupRoleModelImpl);
+
+		if (isNew) {
+			userGroupRole.setNew(false);
+		}
+
+		userGroupRole.resetOriginalValues();
+
+		return userGroupRole;
 	}
 
 	/**
@@ -3331,45 +3313,40 @@ public class UserGroupRolePersistenceImpl
 				UserGroupRole.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		UserGroupRole userGroupRole = (UserGroupRole)EntityCacheUtil.getResult(
+			UserGroupRoleImpl.class, primaryKey);
 
-			UserGroupRole userGroupRole =
-				(UserGroupRole)EntityCacheUtil.getResult(
-					UserGroupRoleImpl.class, primaryKey);
-
-			if (userGroupRole != null) {
-				return userGroupRole;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				userGroupRole = (UserGroupRole)session.get(
-					UserGroupRoleImpl.class, primaryKey);
-
-				if (userGroupRole != null) {
-					cacheResult(userGroupRole);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (userGroupRole != null) {
 			return userGroupRole;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			userGroupRole = (UserGroupRole)session.get(
+				UserGroupRoleImpl.class, primaryKey);
+
+			if (userGroupRole != null) {
+				cacheResult(userGroupRole);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return userGroupRole;
 	}
 
 	/**
@@ -3389,8 +3366,8 @@ public class UserGroupRolePersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(UserGroupRole.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3423,9 +3400,8 @@ public class UserGroupRolePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							UserGroupRole.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						UserGroupRole.class, primaryKey)) {
 
 				UserGroupRole userGroupRole =
 					(UserGroupRole)EntityCacheUtil.getResult(
@@ -3577,9 +3553,8 @@ public class UserGroupRolePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						UserGroupRole.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					UserGroupRole.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3672,9 +3647,8 @@ public class UserGroupRolePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						UserGroupRole.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					UserGroupRole.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -173,9 +172,8 @@ public class StyleBookEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -578,9 +576,8 @@ public class StyleBookEntryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -725,9 +722,8 @@ public class StyleBookEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1162,9 +1158,8 @@ public class StyleBookEntryPersistenceImpl
 	@Override
 	public int countByUuid_Head(String uuid, boolean head) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1316,9 +1311,8 @@ public class StyleBookEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1756,9 +1750,8 @@ public class StyleBookEntryPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1903,9 +1896,8 @@ public class StyleBookEntryPersistenceImpl
 		String uuid, long groupId, boolean head, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -2035,9 +2027,8 @@ public class StyleBookEntryPersistenceImpl
 	@Override
 	public int countByUUID_G_Head(String uuid, long groupId, boolean head) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -2197,9 +2188,8 @@ public class StyleBookEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -2637,9 +2627,8 @@ public class StyleBookEntryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -2798,9 +2787,8 @@ public class StyleBookEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -3260,9 +3248,8 @@ public class StyleBookEntryPersistenceImpl
 	@Override
 	public int countByUuid_C_Head(String uuid, long companyId, boolean head) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -3417,9 +3404,8 @@ public class StyleBookEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3800,9 +3786,8 @@ public class StyleBookEntryPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -3932,9 +3917,8 @@ public class StyleBookEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4346,9 +4330,8 @@ public class StyleBookEntryPersistenceImpl
 	@Override
 	public int countByGroupId_Head(long groupId, boolean head) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId_Head;
 
@@ -4489,9 +4472,8 @@ public class StyleBookEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4906,9 +4888,8 @@ public class StyleBookEntryPersistenceImpl
 	@Override
 	public int countByG_D(long groupId, boolean defaultStyleBookEntry) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_D;
 
@@ -5055,9 +5036,8 @@ public class StyleBookEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5500,9 +5480,8 @@ public class StyleBookEntryPersistenceImpl
 		long groupId, boolean defaultStyleBookEntry, boolean head) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_D_Head;
 
@@ -5648,9 +5627,8 @@ public class StyleBookEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -6080,9 +6058,8 @@ public class StyleBookEntryPersistenceImpl
 	@Override
 	public int countByG_LikeN(long groupId, String name) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -6240,9 +6217,8 @@ public class StyleBookEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -6694,9 +6670,8 @@ public class StyleBookEntryPersistenceImpl
 	@Override
 	public int countByG_LikeN_Head(long groupId, String name, boolean head) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -6860,9 +6835,8 @@ public class StyleBookEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			styleBookEntryKey = Objects.toString(styleBookEntryKey, "");
 
@@ -7301,9 +7275,8 @@ public class StyleBookEntryPersistenceImpl
 	@Override
 	public int countByG_SBEK(long groupId, String styleBookEntryKey) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			styleBookEntryKey = Objects.toString(styleBookEntryKey, "");
 
@@ -7450,9 +7423,8 @@ public class StyleBookEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			styleBookEntryKey = Objects.toString(styleBookEntryKey, "");
 
@@ -7587,9 +7559,8 @@ public class StyleBookEntryPersistenceImpl
 		long groupId, String styleBookEntryKey, boolean head) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			styleBookEntryKey = Objects.toString(styleBookEntryKey, "");
 
@@ -7726,9 +7697,8 @@ public class StyleBookEntryPersistenceImpl
 	@Override
 	public StyleBookEntry fetchByHeadId(long headId, boolean useFinderCache) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -7828,9 +7798,8 @@ public class StyleBookEntryPersistenceImpl
 	@Override
 	public int countByHeadId(long headId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByHeadId;
 
@@ -7908,8 +7877,8 @@ public class StyleBookEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					styleBookEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					styleBookEntry.getCtCollectionId())) {
 
 			entityCache.putResult(
 				StyleBookEntryImpl.class, styleBookEntry.getPrimaryKey(),
@@ -7964,8 +7933,8 @@ public class StyleBookEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						styleBookEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						styleBookEntry.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						StyleBookEntryImpl.class,
@@ -8030,8 +7999,8 @@ public class StyleBookEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					styleBookEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					styleBookEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				styleBookEntryModelImpl.getUuid(),
@@ -8176,102 +8145,96 @@ public class StyleBookEntryPersistenceImpl
 
 	@Override
 	public StyleBookEntry updateImpl(StyleBookEntry styleBookEntry) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = styleBookEntry.isNew();
 
-			boolean isNew = styleBookEntry.isNew();
+		if (!(styleBookEntry instanceof StyleBookEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(styleBookEntry instanceof StyleBookEntryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(styleBookEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						styleBookEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in styleBookEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(styleBookEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					styleBookEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom StyleBookEntry implementation " +
-						styleBookEntry.getClass());
+					"Implement ModelWrapper in styleBookEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			StyleBookEntryModelImpl styleBookEntryModelImpl =
-				(StyleBookEntryModelImpl)styleBookEntry;
-
-			if (Validator.isNull(styleBookEntry.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				styleBookEntry.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (styleBookEntry.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					styleBookEntry.setCreateDate(date);
-				}
-				else {
-					styleBookEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!styleBookEntryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					styleBookEntry.setModifiedDate(date);
-				}
-				else {
-					styleBookEntry.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(styleBookEntry)) {
-					if (!isNew) {
-						session.evict(
-							StyleBookEntryImpl.class,
-							styleBookEntry.getPrimaryKeyObj());
-					}
-
-					session.save(styleBookEntry);
-				}
-				else {
-					styleBookEntry = (StyleBookEntry)session.merge(
-						styleBookEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				StyleBookEntryImpl.class, styleBookEntryModelImpl, false, true);
-
-			cacheUniqueFindersCache(styleBookEntryModelImpl);
-
-			if (isNew) {
-				styleBookEntry.setNew(false);
-			}
-
-			styleBookEntry.resetOriginalValues();
-
-			return styleBookEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom StyleBookEntry implementation " +
+					styleBookEntry.getClass());
 		}
+
+		StyleBookEntryModelImpl styleBookEntryModelImpl =
+			(StyleBookEntryModelImpl)styleBookEntry;
+
+		if (Validator.isNull(styleBookEntry.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			styleBookEntry.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (styleBookEntry.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				styleBookEntry.setCreateDate(date);
+			}
+			else {
+				styleBookEntry.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!styleBookEntryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				styleBookEntry.setModifiedDate(date);
+			}
+			else {
+				styleBookEntry.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(styleBookEntry)) {
+				if (!isNew) {
+					session.evict(
+						StyleBookEntryImpl.class,
+						styleBookEntry.getPrimaryKeyObj());
+				}
+
+				session.save(styleBookEntry);
+			}
+			else {
+				styleBookEntry = (StyleBookEntry)session.merge(styleBookEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			StyleBookEntryImpl.class, styleBookEntryModelImpl, false, true);
+
+		cacheUniqueFindersCache(styleBookEntryModelImpl);
+
+		if (isNew) {
+			styleBookEntry.setNew(false);
+		}
+
+		styleBookEntry.resetOriginalValues();
+
+		return styleBookEntry;
 	}
 
 	/**
@@ -8325,45 +8288,40 @@ public class StyleBookEntryPersistenceImpl
 				StyleBookEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		StyleBookEntry styleBookEntry = (StyleBookEntry)entityCache.getResult(
+			StyleBookEntryImpl.class, primaryKey);
 
-			StyleBookEntry styleBookEntry =
-				(StyleBookEntry)entityCache.getResult(
-					StyleBookEntryImpl.class, primaryKey);
-
-			if (styleBookEntry != null) {
-				return styleBookEntry;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				styleBookEntry = (StyleBookEntry)session.get(
-					StyleBookEntryImpl.class, primaryKey);
-
-				if (styleBookEntry != null) {
-					cacheResult(styleBookEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (styleBookEntry != null) {
 			return styleBookEntry;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			styleBookEntry = (StyleBookEntry)session.get(
+				StyleBookEntryImpl.class, primaryKey);
+
+			if (styleBookEntry != null) {
+				cacheResult(styleBookEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return styleBookEntry;
 	}
 
 	/**
@@ -8383,8 +8341,8 @@ public class StyleBookEntryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(StyleBookEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -8417,9 +8375,8 @@ public class StyleBookEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							StyleBookEntry.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						StyleBookEntry.class, primaryKey)) {
 
 				StyleBookEntry styleBookEntry =
 					(StyleBookEntry)entityCache.getResult(
@@ -8571,9 +8528,8 @@ public class StyleBookEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -8666,9 +8622,8 @@ public class StyleBookEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						StyleBookEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					StyleBookEntry.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

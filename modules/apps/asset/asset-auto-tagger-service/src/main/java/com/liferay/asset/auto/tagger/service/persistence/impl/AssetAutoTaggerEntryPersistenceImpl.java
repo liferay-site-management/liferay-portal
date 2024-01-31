@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -172,9 +171,8 @@ public class AssetAutoTaggerEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetAutoTaggerEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetAutoTaggerEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -566,9 +564,8 @@ public class AssetAutoTaggerEntryPersistenceImpl
 	@Override
 	public int countByAssetEntryId(long assetEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetAutoTaggerEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetAutoTaggerEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByAssetEntryId;
 
@@ -694,9 +691,8 @@ public class AssetAutoTaggerEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetAutoTaggerEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetAutoTaggerEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1088,9 +1084,8 @@ public class AssetAutoTaggerEntryPersistenceImpl
 	@Override
 	public int countByAssetTagId(long assetTagId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetAutoTaggerEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetAutoTaggerEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByAssetTagId;
 
@@ -1204,9 +1199,8 @@ public class AssetAutoTaggerEntryPersistenceImpl
 		long assetEntryId, long assetTagId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetAutoTaggerEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetAutoTaggerEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1316,9 +1310,8 @@ public class AssetAutoTaggerEntryPersistenceImpl
 	@Override
 	public int countByA_A(long assetEntryId, long assetTagId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetAutoTaggerEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetAutoTaggerEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByA_A;
 
@@ -1397,8 +1390,8 @@ public class AssetAutoTaggerEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					assetAutoTaggerEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					assetAutoTaggerEntry.getCtCollectionId())) {
 
 			entityCache.putResult(
 				AssetAutoTaggerEntryImpl.class,
@@ -1442,8 +1435,8 @@ public class AssetAutoTaggerEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						assetAutoTaggerEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						assetAutoTaggerEntry.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						AssetAutoTaggerEntryImpl.class,
@@ -1513,8 +1506,8 @@ public class AssetAutoTaggerEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					assetAutoTaggerEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					assetAutoTaggerEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				assetAutoTaggerEntryModelImpl.getAssetEntryId(),
@@ -1641,99 +1634,92 @@ public class AssetAutoTaggerEntryPersistenceImpl
 	public AssetAutoTaggerEntry updateImpl(
 		AssetAutoTaggerEntry assetAutoTaggerEntry) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = assetAutoTaggerEntry.isNew();
 
-			boolean isNew = assetAutoTaggerEntry.isNew();
+		if (!(assetAutoTaggerEntry instanceof AssetAutoTaggerEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(assetAutoTaggerEntry instanceof
-					AssetAutoTaggerEntryModelImpl)) {
-
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(assetAutoTaggerEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						assetAutoTaggerEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in assetAutoTaggerEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(assetAutoTaggerEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					assetAutoTaggerEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom AssetAutoTaggerEntry implementation " +
-						assetAutoTaggerEntry.getClass());
+					"Implement ModelWrapper in assetAutoTaggerEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			AssetAutoTaggerEntryModelImpl assetAutoTaggerEntryModelImpl =
-				(AssetAutoTaggerEntryModelImpl)assetAutoTaggerEntry;
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (assetAutoTaggerEntry.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					assetAutoTaggerEntry.setCreateDate(date);
-				}
-				else {
-					assetAutoTaggerEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!assetAutoTaggerEntryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					assetAutoTaggerEntry.setModifiedDate(date);
-				}
-				else {
-					assetAutoTaggerEntry.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(assetAutoTaggerEntry)) {
-					if (!isNew) {
-						session.evict(
-							AssetAutoTaggerEntryImpl.class,
-							assetAutoTaggerEntry.getPrimaryKeyObj());
-					}
-
-					session.save(assetAutoTaggerEntry);
-				}
-				else {
-					assetAutoTaggerEntry = (AssetAutoTaggerEntry)session.merge(
-						assetAutoTaggerEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				AssetAutoTaggerEntryImpl.class, assetAutoTaggerEntryModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(assetAutoTaggerEntryModelImpl);
-
-			if (isNew) {
-				assetAutoTaggerEntry.setNew(false);
-			}
-
-			assetAutoTaggerEntry.resetOriginalValues();
-
-			return assetAutoTaggerEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom AssetAutoTaggerEntry implementation " +
+					assetAutoTaggerEntry.getClass());
 		}
+
+		AssetAutoTaggerEntryModelImpl assetAutoTaggerEntryModelImpl =
+			(AssetAutoTaggerEntryModelImpl)assetAutoTaggerEntry;
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (assetAutoTaggerEntry.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				assetAutoTaggerEntry.setCreateDate(date);
+			}
+			else {
+				assetAutoTaggerEntry.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!assetAutoTaggerEntryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				assetAutoTaggerEntry.setModifiedDate(date);
+			}
+			else {
+				assetAutoTaggerEntry.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(assetAutoTaggerEntry)) {
+				if (!isNew) {
+					session.evict(
+						AssetAutoTaggerEntryImpl.class,
+						assetAutoTaggerEntry.getPrimaryKeyObj());
+				}
+
+				session.save(assetAutoTaggerEntry);
+			}
+			else {
+				assetAutoTaggerEntry = (AssetAutoTaggerEntry)session.merge(
+					assetAutoTaggerEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			AssetAutoTaggerEntryImpl.class, assetAutoTaggerEntryModelImpl,
+			false, true);
+
+		cacheUniqueFindersCache(assetAutoTaggerEntryModelImpl);
+
+		if (isNew) {
+			assetAutoTaggerEntry.setNew(false);
+		}
+
+		assetAutoTaggerEntry.resetOriginalValues();
+
+		return assetAutoTaggerEntry;
 	}
 
 	/**
@@ -1788,45 +1774,41 @@ public class AssetAutoTaggerEntryPersistenceImpl
 				AssetAutoTaggerEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		AssetAutoTaggerEntry assetAutoTaggerEntry =
+			(AssetAutoTaggerEntry)entityCache.getResult(
+				AssetAutoTaggerEntryImpl.class, primaryKey);
 
-			AssetAutoTaggerEntry assetAutoTaggerEntry =
-				(AssetAutoTaggerEntry)entityCache.getResult(
-					AssetAutoTaggerEntryImpl.class, primaryKey);
-
-			if (assetAutoTaggerEntry != null) {
-				return assetAutoTaggerEntry;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				assetAutoTaggerEntry = (AssetAutoTaggerEntry)session.get(
-					AssetAutoTaggerEntryImpl.class, primaryKey);
-
-				if (assetAutoTaggerEntry != null) {
-					cacheResult(assetAutoTaggerEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (assetAutoTaggerEntry != null) {
 			return assetAutoTaggerEntry;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			assetAutoTaggerEntry = (AssetAutoTaggerEntry)session.get(
+				AssetAutoTaggerEntryImpl.class, primaryKey);
+
+			if (assetAutoTaggerEntry != null) {
+				cacheResult(assetAutoTaggerEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return assetAutoTaggerEntry;
 	}
 
 	/**
@@ -1846,8 +1828,8 @@ public class AssetAutoTaggerEntryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(AssetAutoTaggerEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -1881,9 +1863,8 @@ public class AssetAutoTaggerEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							AssetAutoTaggerEntry.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						AssetAutoTaggerEntry.class, primaryKey)) {
 
 				AssetAutoTaggerEntry assetAutoTaggerEntry =
 					(AssetAutoTaggerEntry)entityCache.getResult(
@@ -2038,9 +2019,8 @@ public class AssetAutoTaggerEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetAutoTaggerEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetAutoTaggerEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2134,9 +2114,8 @@ public class AssetAutoTaggerEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						AssetAutoTaggerEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetAutoTaggerEntry.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

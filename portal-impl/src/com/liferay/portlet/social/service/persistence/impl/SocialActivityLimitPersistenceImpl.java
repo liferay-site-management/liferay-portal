@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -160,9 +159,8 @@ public class SocialActivityLimitPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivityLimit.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivityLimit.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -550,9 +548,8 @@ public class SocialActivityLimitPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivityLimit.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivityLimit.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -676,9 +673,8 @@ public class SocialActivityLimitPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivityLimit.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivityLimit.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1063,9 +1059,8 @@ public class SocialActivityLimitPersistenceImpl
 	@Override
 	public int countByUserId(long userId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivityLimit.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivityLimit.class)) {
 
 			FinderPath finderPath = _finderPathCountByUserId;
 
@@ -1195,9 +1190,8 @@ public class SocialActivityLimitPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivityLimit.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivityLimit.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1612,9 +1606,8 @@ public class SocialActivityLimitPersistenceImpl
 	@Override
 	public int countByC_C(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivityLimit.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivityLimit.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -1768,9 +1761,8 @@ public class SocialActivityLimitPersistenceImpl
 		int activityType, String activityCounterName, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivityLimit.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivityLimit.class)) {
 
 			activityCounterName = Objects.toString(activityCounterName, "");
 
@@ -1933,9 +1925,8 @@ public class SocialActivityLimitPersistenceImpl
 		int activityType, String activityCounterName) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivityLimit.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivityLimit.class)) {
 
 			activityCounterName = Objects.toString(activityCounterName, "");
 
@@ -2063,8 +2054,8 @@ public class SocialActivityLimitPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					socialActivityLimit.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					socialActivityLimit.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				SocialActivityLimitImpl.class,
@@ -2110,8 +2101,8 @@ public class SocialActivityLimitPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						socialActivityLimit.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						socialActivityLimit.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						SocialActivityLimitImpl.class,
@@ -2179,8 +2170,8 @@ public class SocialActivityLimitPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					socialActivityLimitModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					socialActivityLimitModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				socialActivityLimitModelImpl.getGroupId(),
@@ -2312,74 +2303,67 @@ public class SocialActivityLimitPersistenceImpl
 	public SocialActivityLimit updateImpl(
 		SocialActivityLimit socialActivityLimit) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = socialActivityLimit.isNew();
 
-			boolean isNew = socialActivityLimit.isNew();
+		if (!(socialActivityLimit instanceof SocialActivityLimitModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(socialActivityLimit instanceof
-					SocialActivityLimitModelImpl)) {
-
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(socialActivityLimit.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						socialActivityLimit);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in socialActivityLimit proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(socialActivityLimit.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					socialActivityLimit);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom SocialActivityLimit implementation " +
-						socialActivityLimit.getClass());
+					"Implement ModelWrapper in socialActivityLimit proxy " +
+						invocationHandler.getClass());
 			}
 
-			SocialActivityLimitModelImpl socialActivityLimitModelImpl =
-				(SocialActivityLimitModelImpl)socialActivityLimit;
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(socialActivityLimit)) {
-					if (!isNew) {
-						session.evict(
-							SocialActivityLimitImpl.class,
-							socialActivityLimit.getPrimaryKeyObj());
-					}
-
-					session.save(socialActivityLimit);
-				}
-				else {
-					socialActivityLimit = (SocialActivityLimit)session.merge(
-						socialActivityLimit);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				SocialActivityLimitImpl.class, socialActivityLimitModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(socialActivityLimitModelImpl);
-
-			if (isNew) {
-				socialActivityLimit.setNew(false);
-			}
-
-			socialActivityLimit.resetOriginalValues();
-
-			return socialActivityLimit;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom SocialActivityLimit implementation " +
+					socialActivityLimit.getClass());
 		}
+
+		SocialActivityLimitModelImpl socialActivityLimitModelImpl =
+			(SocialActivityLimitModelImpl)socialActivityLimit;
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(socialActivityLimit)) {
+				if (!isNew) {
+					session.evict(
+						SocialActivityLimitImpl.class,
+						socialActivityLimit.getPrimaryKeyObj());
+				}
+
+				session.save(socialActivityLimit);
+			}
+			else {
+				socialActivityLimit = (SocialActivityLimit)session.merge(
+					socialActivityLimit);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			SocialActivityLimitImpl.class, socialActivityLimitModelImpl, false,
+			true);
+
+		cacheUniqueFindersCache(socialActivityLimitModelImpl);
+
+		if (isNew) {
+			socialActivityLimit.setNew(false);
+		}
+
+		socialActivityLimit.resetOriginalValues();
+
+		return socialActivityLimit;
 	}
 
 	/**
@@ -2433,45 +2417,41 @@ public class SocialActivityLimitPersistenceImpl
 				SocialActivityLimit.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		SocialActivityLimit socialActivityLimit =
+			(SocialActivityLimit)EntityCacheUtil.getResult(
+				SocialActivityLimitImpl.class, primaryKey);
 
-			SocialActivityLimit socialActivityLimit =
-				(SocialActivityLimit)EntityCacheUtil.getResult(
-					SocialActivityLimitImpl.class, primaryKey);
-
-			if (socialActivityLimit != null) {
-				return socialActivityLimit;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				socialActivityLimit = (SocialActivityLimit)session.get(
-					SocialActivityLimitImpl.class, primaryKey);
-
-				if (socialActivityLimit != null) {
-					cacheResult(socialActivityLimit);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (socialActivityLimit != null) {
 			return socialActivityLimit;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			socialActivityLimit = (SocialActivityLimit)session.get(
+				SocialActivityLimitImpl.class, primaryKey);
+
+			if (socialActivityLimit != null) {
+				cacheResult(socialActivityLimit);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return socialActivityLimit;
 	}
 
 	/**
@@ -2493,8 +2473,8 @@ public class SocialActivityLimitPersistenceImpl
 				SocialActivityLimit.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2528,9 +2508,8 @@ public class SocialActivityLimitPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							SocialActivityLimit.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						SocialActivityLimit.class, primaryKey)) {
 
 				SocialActivityLimit socialActivityLimit =
 					(SocialActivityLimit)EntityCacheUtil.getResult(
@@ -2685,9 +2664,8 @@ public class SocialActivityLimitPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivityLimit.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivityLimit.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2781,9 +2759,8 @@ public class SocialActivityLimitPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						SocialActivityLimit.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					SocialActivityLimit.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

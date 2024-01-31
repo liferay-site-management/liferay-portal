@@ -14,7 +14,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -165,9 +164,8 @@ public class DLFileShortcutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -570,9 +568,8 @@ public class DLFileShortcutPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -701,9 +698,8 @@ public class DLFileShortcutPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -824,9 +820,8 @@ public class DLFileShortcutPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -979,9 +974,8 @@ public class DLFileShortcutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1419,9 +1413,8 @@ public class DLFileShortcutPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1569,9 +1562,8 @@ public class DLFileShortcutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1952,9 +1944,8 @@ public class DLFileShortcutPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2080,9 +2071,8 @@ public class DLFileShortcutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2473,9 +2463,8 @@ public class DLFileShortcutPersistenceImpl
 	@Override
 	public int countByToFileEntryId(long toFileEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			FinderPath finderPath = _finderPathCountByToFileEntryId;
 
@@ -2605,9 +2594,8 @@ public class DLFileShortcutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3365,9 +3353,8 @@ public class DLFileShortcutPersistenceImpl
 	@Override
 	public int countByG_F(long groupId, long folderId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_F;
 
@@ -3556,9 +3543,8 @@ public class DLFileShortcutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3960,9 +3946,8 @@ public class DLFileShortcutPersistenceImpl
 	@Override
 	public int countByC_NotS(long companyId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByC_NotS;
 
@@ -4106,9 +4091,8 @@ public class DLFileShortcutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4904,9 +4888,8 @@ public class DLFileShortcutPersistenceImpl
 	@Override
 	public int countByG_F_A(long groupId, long folderId, boolean active) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_F_A;
 
@@ -5125,9 +5108,8 @@ public class DLFileShortcutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5969,9 +5951,8 @@ public class DLFileShortcutPersistenceImpl
 		long groupId, long folderId, boolean active, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_F_A_S;
 
@@ -6141,8 +6122,8 @@ public class DLFileShortcutPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					dlFileShortcut.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					dlFileShortcut.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				DLFileShortcutImpl.class, dlFileShortcut.getPrimaryKey(),
@@ -6182,8 +6163,8 @@ public class DLFileShortcutPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						dlFileShortcut.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						dlFileShortcut.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						DLFileShortcutImpl.class,
@@ -6249,8 +6230,8 @@ public class DLFileShortcutPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					dlFileShortcutModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					dlFileShortcutModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				dlFileShortcutModelImpl.getUuid(),
@@ -6376,102 +6357,96 @@ public class DLFileShortcutPersistenceImpl
 
 	@Override
 	public DLFileShortcut updateImpl(DLFileShortcut dlFileShortcut) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = dlFileShortcut.isNew();
 
-			boolean isNew = dlFileShortcut.isNew();
+		if (!(dlFileShortcut instanceof DLFileShortcutModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(dlFileShortcut instanceof DLFileShortcutModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(dlFileShortcut.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						dlFileShortcut);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in dlFileShortcut proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(dlFileShortcut.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					dlFileShortcut);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DLFileShortcut implementation " +
-						dlFileShortcut.getClass());
+					"Implement ModelWrapper in dlFileShortcut proxy " +
+						invocationHandler.getClass());
 			}
 
-			DLFileShortcutModelImpl dlFileShortcutModelImpl =
-				(DLFileShortcutModelImpl)dlFileShortcut;
-
-			if (Validator.isNull(dlFileShortcut.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				dlFileShortcut.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (dlFileShortcut.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					dlFileShortcut.setCreateDate(date);
-				}
-				else {
-					dlFileShortcut.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!dlFileShortcutModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					dlFileShortcut.setModifiedDate(date);
-				}
-				else {
-					dlFileShortcut.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(dlFileShortcut)) {
-					if (!isNew) {
-						session.evict(
-							DLFileShortcutImpl.class,
-							dlFileShortcut.getPrimaryKeyObj());
-					}
-
-					session.save(dlFileShortcut);
-				}
-				else {
-					dlFileShortcut = (DLFileShortcut)session.merge(
-						dlFileShortcut);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				DLFileShortcutImpl.class, dlFileShortcutModelImpl, false, true);
-
-			cacheUniqueFindersCache(dlFileShortcutModelImpl);
-
-			if (isNew) {
-				dlFileShortcut.setNew(false);
-			}
-
-			dlFileShortcut.resetOriginalValues();
-
-			return dlFileShortcut;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DLFileShortcut implementation " +
+					dlFileShortcut.getClass());
 		}
+
+		DLFileShortcutModelImpl dlFileShortcutModelImpl =
+			(DLFileShortcutModelImpl)dlFileShortcut;
+
+		if (Validator.isNull(dlFileShortcut.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			dlFileShortcut.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (dlFileShortcut.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				dlFileShortcut.setCreateDate(date);
+			}
+			else {
+				dlFileShortcut.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!dlFileShortcutModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				dlFileShortcut.setModifiedDate(date);
+			}
+			else {
+				dlFileShortcut.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(dlFileShortcut)) {
+				if (!isNew) {
+					session.evict(
+						DLFileShortcutImpl.class,
+						dlFileShortcut.getPrimaryKeyObj());
+				}
+
+				session.save(dlFileShortcut);
+			}
+			else {
+				dlFileShortcut = (DLFileShortcut)session.merge(dlFileShortcut);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			DLFileShortcutImpl.class, dlFileShortcutModelImpl, false, true);
+
+		cacheUniqueFindersCache(dlFileShortcutModelImpl);
+
+		if (isNew) {
+			dlFileShortcut.setNew(false);
+		}
+
+		dlFileShortcut.resetOriginalValues();
+
+		return dlFileShortcut;
 	}
 
 	/**
@@ -6525,45 +6500,41 @@ public class DLFileShortcutPersistenceImpl
 				DLFileShortcut.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DLFileShortcut dlFileShortcut =
+			(DLFileShortcut)EntityCacheUtil.getResult(
+				DLFileShortcutImpl.class, primaryKey);
 
-			DLFileShortcut dlFileShortcut =
-				(DLFileShortcut)EntityCacheUtil.getResult(
-					DLFileShortcutImpl.class, primaryKey);
-
-			if (dlFileShortcut != null) {
-				return dlFileShortcut;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				dlFileShortcut = (DLFileShortcut)session.get(
-					DLFileShortcutImpl.class, primaryKey);
-
-				if (dlFileShortcut != null) {
-					cacheResult(dlFileShortcut);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (dlFileShortcut != null) {
 			return dlFileShortcut;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			dlFileShortcut = (DLFileShortcut)session.get(
+				DLFileShortcutImpl.class, primaryKey);
+
+			if (dlFileShortcut != null) {
+				cacheResult(dlFileShortcut);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return dlFileShortcut;
 	}
 
 	/**
@@ -6583,8 +6554,8 @@ public class DLFileShortcutPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(DLFileShortcut.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -6617,9 +6588,8 @@ public class DLFileShortcutPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							DLFileShortcut.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						DLFileShortcut.class, primaryKey)) {
 
 				DLFileShortcut dlFileShortcut =
 					(DLFileShortcut)EntityCacheUtil.getResult(
@@ -6771,9 +6741,8 @@ public class DLFileShortcutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6866,9 +6835,8 @@ public class DLFileShortcutPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileShortcut.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileShortcut.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -170,8 +169,8 @@ public class AddressPersistenceImpl
 		OrderByComparator<Address> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -571,8 +570,8 @@ public class AddressPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -716,8 +715,8 @@ public class AddressPersistenceImpl
 		OrderByComparator<Address> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1151,8 +1150,8 @@ public class AddressPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1297,8 +1296,8 @@ public class AddressPersistenceImpl
 		OrderByComparator<Address> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1676,8 +1675,8 @@ public class AddressPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -1798,8 +1797,8 @@ public class AddressPersistenceImpl
 		OrderByComparator<Address> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2176,8 +2175,8 @@ public class AddressPersistenceImpl
 	@Override
 	public int countByUserId(long userId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = _finderPathCountByUserId;
 
@@ -2299,8 +2298,8 @@ public class AddressPersistenceImpl
 		OrderByComparator<Address> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2678,8 +2677,8 @@ public class AddressPersistenceImpl
 	@Override
 	public int countByCountryId(long countryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = _finderPathCountByCountryId;
 
@@ -2801,8 +2800,8 @@ public class AddressPersistenceImpl
 		OrderByComparator<Address> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3179,8 +3178,8 @@ public class AddressPersistenceImpl
 	@Override
 	public int countByRegionId(long regionId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = _finderPathCountByRegionId;
 
@@ -3309,8 +3308,8 @@ public class AddressPersistenceImpl
 		OrderByComparator<Address> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3720,8 +3719,8 @@ public class AddressPersistenceImpl
 	@Override
 	public int countByC_C(long companyId, long classNameId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -3865,8 +3864,8 @@ public class AddressPersistenceImpl
 		OrderByComparator<Address> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4301,8 +4300,8 @@ public class AddressPersistenceImpl
 	@Override
 	public int countByC_C_C(long companyId, long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_C;
 
@@ -4463,8 +4462,8 @@ public class AddressPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5002,8 +5001,8 @@ public class AddressPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			Object[] finderArgs = null;
 
@@ -5156,8 +5155,8 @@ public class AddressPersistenceImpl
 		long companyId, long classNameId, long classPK, long listTypeId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_C_L;
 
@@ -5237,8 +5236,8 @@ public class AddressPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			Object[] finderArgs = new Object[] {
 				companyId, classNameId, classPK, StringUtil.merge(listTypeIds)
@@ -5420,8 +5419,8 @@ public class AddressPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5884,8 +5883,8 @@ public class AddressPersistenceImpl
 		long companyId, long classNameId, long classPK, boolean mailing) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_C_M;
 
@@ -6052,8 +6051,8 @@ public class AddressPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6516,8 +6515,8 @@ public class AddressPersistenceImpl
 		long companyId, long classNameId, long classPK, boolean primary) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_C_P;
 
@@ -6653,8 +6652,8 @@ public class AddressPersistenceImpl
 		String externalReferenceCode, long companyId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -6777,8 +6776,8 @@ public class AddressPersistenceImpl
 	@Override
 	public int countByERC_C(String externalReferenceCode, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -6882,8 +6881,8 @@ public class AddressPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					address.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					address.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				AddressImpl.class, address.getPrimaryKey(), address);
@@ -6922,8 +6921,8 @@ public class AddressPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						address.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						address.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						AddressImpl.class, address.getPrimaryKey()) == null) {
@@ -6985,8 +6984,8 @@ public class AddressPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					addressModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					addressModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				addressModelImpl.getExternalReferenceCode(),
@@ -7109,157 +7108,151 @@ public class AddressPersistenceImpl
 
 	@Override
 	public Address updateImpl(Address address) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = address.isNew();
 
-			boolean isNew = address.isNew();
+		if (!(address instanceof AddressModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(address instanceof AddressModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(address.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(address);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in address proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(address.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(address);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom Address implementation " +
-						address.getClass());
+					"Implement ModelWrapper in address proxy " +
+						invocationHandler.getClass());
 			}
 
-			AddressModelImpl addressModelImpl = (AddressModelImpl)address;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom Address implementation " +
+					address.getClass());
+		}
 
-			if (Validator.isNull(address.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		AddressModelImpl addressModelImpl = (AddressModelImpl)address;
 
-				address.setUuid(uuid);
-			}
+		if (Validator.isNull(address.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
 
-			if (Validator.isNull(address.getExternalReferenceCode())) {
-				address.setExternalReferenceCode(address.getUuid());
-			}
-			else {
-				if (!Objects.equals(
-						addressModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						address.getExternalReferenceCode())) {
+			address.setUuid(uuid);
+		}
 
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
+		if (Validator.isNull(address.getExternalReferenceCode())) {
+			address.setExternalReferenceCode(address.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					addressModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
+					address.getExternalReferenceCode())) {
 
-					if (userId > 0) {
-						long companyId = address.getCompanyId();
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
 
-						long groupId = 0;
+				if (userId > 0) {
+					long companyId = address.getCompanyId();
 
-						long classPK = 0;
+					long groupId = 0;
 
-						if (!isNew) {
-							classPK = address.getPrimaryKey();
-						}
+					long classPK = 0;
 
-						try {
-							address.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									Address.class.getName(), classPK,
-									ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-									address.getExternalReferenceCode(), null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
-
-				Address ercAddress = fetchByERC_C(
-					address.getExternalReferenceCode(), address.getCompanyId());
-
-				if (isNew) {
-					if (ercAddress != null) {
-						throw new DuplicateAddressExternalReferenceCodeException(
-							"Duplicate address with external reference code " +
-								address.getExternalReferenceCode() +
-									" and company " + address.getCompanyId());
-					}
-				}
-				else {
-					if ((ercAddress != null) &&
-						(address.getAddressId() != ercAddress.getAddressId())) {
-
-						throw new DuplicateAddressExternalReferenceCodeException(
-							"Duplicate address with external reference code " +
-								address.getExternalReferenceCode() +
-									" and company " + address.getCompanyId());
-					}
-				}
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (address.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					address.setCreateDate(date);
-				}
-				else {
-					address.setCreateDate(serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!addressModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					address.setModifiedDate(date);
-				}
-				else {
-					address.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(address)) {
 					if (!isNew) {
-						session.evict(
-							AddressImpl.class, address.getPrimaryKeyObj());
+						classPK = address.getPrimaryKey();
 					}
 
-					session.save(address);
+					try {
+						address.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								Address.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								address.getExternalReferenceCode(), null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
 				}
-				else {
-					address = (Address)session.merge(address);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
 			}
 
-			EntityCacheUtil.putResult(
-				AddressImpl.class, addressModelImpl, false, true);
-
-			cacheUniqueFindersCache(addressModelImpl);
+			Address ercAddress = fetchByERC_C(
+				address.getExternalReferenceCode(), address.getCompanyId());
 
 			if (isNew) {
-				address.setNew(false);
+				if (ercAddress != null) {
+					throw new DuplicateAddressExternalReferenceCodeException(
+						"Duplicate address with external reference code " +
+							address.getExternalReferenceCode() +
+								" and company " + address.getCompanyId());
+				}
 			}
+			else {
+				if ((ercAddress != null) &&
+					(address.getAddressId() != ercAddress.getAddressId())) {
 
-			address.resetOriginalValues();
-
-			return address;
+					throw new DuplicateAddressExternalReferenceCodeException(
+						"Duplicate address with external reference code " +
+							address.getExternalReferenceCode() +
+								" and company " + address.getCompanyId());
+				}
+			}
 		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (address.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				address.setCreateDate(date);
+			}
+			else {
+				address.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!addressModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				address.setModifiedDate(date);
+			}
+			else {
+				address.setModifiedDate(serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(address)) {
+				if (!isNew) {
+					session.evict(
+						AddressImpl.class, address.getPrimaryKeyObj());
+				}
+
+				session.save(address);
+			}
+			else {
+				address = (Address)session.merge(address);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			AddressImpl.class, addressModelImpl, false, true);
+
+		cacheUniqueFindersCache(addressModelImpl);
+
+		if (isNew) {
+			address.setNew(false);
+		}
+
+		address.resetOriginalValues();
+
+		return address;
 	}
 
 	/**
@@ -7313,43 +7306,39 @@ public class AddressPersistenceImpl
 				Address.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		Address address = (Address)EntityCacheUtil.getResult(
+			AddressImpl.class, primaryKey);
 
-			Address address = (Address)EntityCacheUtil.getResult(
-				AddressImpl.class, primaryKey);
-
-			if (address != null) {
-				return address;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				address = (Address)session.get(AddressImpl.class, primaryKey);
-
-				if (address != null) {
-					cacheResult(address);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (address != null) {
 			return address;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			address = (Address)session.get(AddressImpl.class, primaryKey);
+
+			if (address != null) {
+				cacheResult(address);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return address;
 	}
 
 	/**
@@ -7369,8 +7358,8 @@ public class AddressPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(Address.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -7402,9 +7391,8 @@ public class AddressPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							Address.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						Address.class, primaryKey)) {
 
 				Address address = (Address)EntityCacheUtil.getResult(
 					AddressImpl.class, primaryKey);
@@ -7552,8 +7540,8 @@ public class AddressPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7646,8 +7634,8 @@ public class AddressPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Address.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Address.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

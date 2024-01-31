@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -169,8 +168,8 @@ public class AssetLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(AssetLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -549,8 +548,8 @@ public class AssetLinkPersistenceImpl
 	@Override
 	public int countByEntryId1(long entryId1) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(AssetLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByEntryId1;
 
@@ -673,8 +672,8 @@ public class AssetLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(AssetLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1053,8 +1052,8 @@ public class AssetLinkPersistenceImpl
 	@Override
 	public int countByEntryId2(long entryId2) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(AssetLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByEntryId2;
 
@@ -1184,8 +1183,8 @@ public class AssetLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(AssetLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1595,8 +1594,8 @@ public class AssetLinkPersistenceImpl
 	@Override
 	public int countByE_E(long entryId1, long entryId2) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(AssetLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByE_E;
 
@@ -1732,8 +1731,8 @@ public class AssetLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(AssetLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2141,8 +2140,8 @@ public class AssetLinkPersistenceImpl
 	@Override
 	public int countByE1_T(long entryId1, int type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(AssetLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByE1_T;
 
@@ -2278,8 +2277,8 @@ public class AssetLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(AssetLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2687,8 +2686,8 @@ public class AssetLinkPersistenceImpl
 	@Override
 	public int countByE2_T(long entryId2, int type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(AssetLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByE2_T;
 
@@ -2814,8 +2813,8 @@ public class AssetLinkPersistenceImpl
 		long entryId1, long entryId2, int type, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(AssetLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetLink.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2930,8 +2929,8 @@ public class AssetLinkPersistenceImpl
 	@Override
 	public int countByE_E_T(long entryId1, long entryId2, int type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(AssetLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByE_E_T;
 
@@ -3023,8 +3022,8 @@ public class AssetLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					assetLink.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					assetLink.getCtCollectionId())) {
 
 			entityCache.putResult(
 				AssetLinkImpl.class, assetLink.getPrimaryKey(), assetLink);
@@ -3064,8 +3063,8 @@ public class AssetLinkPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						assetLink.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						assetLink.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						AssetLinkImpl.class, assetLink.getPrimaryKey()) ==
@@ -3130,8 +3129,8 @@ public class AssetLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					assetLinkModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					assetLinkModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				assetLinkModelImpl.getEntryId1(),
@@ -3250,83 +3249,76 @@ public class AssetLinkPersistenceImpl
 
 	@Override
 	public AssetLink updateImpl(AssetLink assetLink) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = assetLink.isNew();
 
-			boolean isNew = assetLink.isNew();
+		if (!(assetLink instanceof AssetLinkModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(assetLink instanceof AssetLinkModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(assetLink.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						assetLink);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in assetLink proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(assetLink.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(assetLink);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom AssetLink implementation " +
-						assetLink.getClass());
+					"Implement ModelWrapper in assetLink proxy " +
+						invocationHandler.getClass());
 			}
 
-			AssetLinkModelImpl assetLinkModelImpl =
-				(AssetLinkModelImpl)assetLink;
-
-			if (isNew && (assetLink.getCreateDate() == null)) {
-				ServiceContext serviceContext =
-					ServiceContextThreadLocal.getServiceContext();
-
-				Date date = new Date();
-
-				if (serviceContext == null) {
-					assetLink.setCreateDate(date);
-				}
-				else {
-					assetLink.setCreateDate(serviceContext.getCreateDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(assetLink)) {
-					if (!isNew) {
-						session.evict(
-							AssetLinkImpl.class, assetLink.getPrimaryKeyObj());
-					}
-
-					session.save(assetLink);
-				}
-				else {
-					assetLink = (AssetLink)session.merge(assetLink);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				AssetLinkImpl.class, assetLinkModelImpl, false, true);
-
-			cacheUniqueFindersCache(assetLinkModelImpl);
-
-			if (isNew) {
-				assetLink.setNew(false);
-			}
-
-			assetLink.resetOriginalValues();
-
-			return assetLink;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom AssetLink implementation " +
+					assetLink.getClass());
 		}
+
+		AssetLinkModelImpl assetLinkModelImpl = (AssetLinkModelImpl)assetLink;
+
+		if (isNew && (assetLink.getCreateDate() == null)) {
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (serviceContext == null) {
+				assetLink.setCreateDate(date);
+			}
+			else {
+				assetLink.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(assetLink)) {
+				if (!isNew) {
+					session.evict(
+						AssetLinkImpl.class, assetLink.getPrimaryKeyObj());
+				}
+
+				session.save(assetLink);
+			}
+			else {
+				assetLink = (AssetLink)session.merge(assetLink);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			AssetLinkImpl.class, assetLinkModelImpl, false, true);
+
+		cacheUniqueFindersCache(assetLinkModelImpl);
+
+		if (isNew) {
+			assetLink.setNew(false);
+		}
+
+		assetLink.resetOriginalValues();
+
+		return assetLink;
 	}
 
 	/**
@@ -3376,44 +3368,39 @@ public class AssetLinkPersistenceImpl
 	public AssetLink fetchByPrimaryKey(Serializable primaryKey) {
 		if (ctPersistenceHelper.isProductionMode(AssetLink.class, primaryKey)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		AssetLink assetLink = (AssetLink)entityCache.getResult(
+			AssetLinkImpl.class, primaryKey);
 
-			AssetLink assetLink = (AssetLink)entityCache.getResult(
-				AssetLinkImpl.class, primaryKey);
-
-			if (assetLink != null) {
-				return assetLink;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				assetLink = (AssetLink)session.get(
-					AssetLinkImpl.class, primaryKey);
-
-				if (assetLink != null) {
-					cacheResult(assetLink);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (assetLink != null) {
 			return assetLink;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			assetLink = (AssetLink)session.get(AssetLinkImpl.class, primaryKey);
+
+			if (assetLink != null) {
+				cacheResult(assetLink);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return assetLink;
 	}
 
 	/**
@@ -3433,8 +3420,8 @@ public class AssetLinkPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(AssetLink.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3467,9 +3454,8 @@ public class AssetLinkPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							AssetLink.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						AssetLink.class, primaryKey)) {
 
 				AssetLink assetLink = (AssetLink)entityCache.getResult(
 					AssetLinkImpl.class, primaryKey);
@@ -3617,8 +3603,8 @@ public class AssetLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(AssetLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3711,8 +3697,8 @@ public class AssetLinkPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(AssetLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					AssetLink.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

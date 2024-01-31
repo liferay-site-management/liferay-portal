@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -175,8 +174,8 @@ public class MBCategoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -576,8 +575,8 @@ public class MBCategoryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -706,8 +705,8 @@ public class MBCategoryPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -828,8 +827,8 @@ public class MBCategoryPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -982,8 +981,8 @@ public class MBCategoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1417,8 +1416,8 @@ public class MBCategoryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1564,8 +1563,8 @@ public class MBCategoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2267,8 +2266,8 @@ public class MBCategoryPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2441,8 +2440,8 @@ public class MBCategoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2822,8 +2821,8 @@ public class MBCategoryPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2955,8 +2954,8 @@ public class MBCategoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3928,8 +3927,8 @@ public class MBCategoryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			Object[] finderArgs = null;
 
@@ -4064,8 +4063,8 @@ public class MBCategoryPersistenceImpl
 	@Override
 	public int countByG_P(long groupId, long parentCategoryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P;
 
@@ -4131,8 +4130,8 @@ public class MBCategoryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(parentCategoryIds)
@@ -4392,8 +4391,8 @@ public class MBCategoryPersistenceImpl
 		long groupId, String friendlyURL, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			friendlyURL = Objects.toString(friendlyURL, "");
 
@@ -4514,8 +4513,8 @@ public class MBCategoryPersistenceImpl
 	@Override
 	public int countByG_F(long groupId, String friendlyURL) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			friendlyURL = Objects.toString(friendlyURL, "");
 
@@ -4667,8 +4666,8 @@ public class MBCategoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5412,8 +5411,8 @@ public class MBCategoryPersistenceImpl
 	@Override
 	public int countByG_S(long groupId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_S;
 
@@ -5603,8 +5602,8 @@ public class MBCategoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6014,8 +6013,8 @@ public class MBCategoryPersistenceImpl
 	@Override
 	public int countByC_S(long companyId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_S;
 
@@ -6161,8 +6160,8 @@ public class MBCategoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6833,8 +6832,8 @@ public class MBCategoryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			Object[] finderArgs = null;
 
@@ -6993,8 +6992,8 @@ public class MBCategoryPersistenceImpl
 		long categoryId, long groupId, long parentCategoryId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByNotC_G_P;
 
@@ -7076,8 +7075,8 @@ public class MBCategoryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(categoryIds), groupId,
@@ -7416,8 +7415,8 @@ public class MBCategoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -8450,8 +8449,8 @@ public class MBCategoryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			Object[] finderArgs = null;
 
@@ -8595,8 +8594,8 @@ public class MBCategoryPersistenceImpl
 	@Override
 	public int countByG_P_S(long groupId, long parentCategoryId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P_S;
 
@@ -8671,8 +8670,8 @@ public class MBCategoryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(parentCategoryIds), status
@@ -8983,8 +8982,8 @@ public class MBCategoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -10004,8 +10003,8 @@ public class MBCategoryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			Object[] finderArgs = null;
 
@@ -10153,8 +10152,8 @@ public class MBCategoryPersistenceImpl
 		long groupId, long parentCategoryId, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_P_NotS;
 
@@ -10229,8 +10228,8 @@ public class MBCategoryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(parentCategoryIds), status
@@ -10546,8 +10545,8 @@ public class MBCategoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -11257,8 +11256,8 @@ public class MBCategoryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			Object[] finderArgs = null;
 
@@ -11427,8 +11426,8 @@ public class MBCategoryPersistenceImpl
 		long categoryId, long groupId, long parentCategoryId, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByNotC_G_P_S;
 
@@ -11516,8 +11515,8 @@ public class MBCategoryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(categoryIds), groupId,
@@ -11819,8 +11818,8 @@ public class MBCategoryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					mbCategory.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					mbCategory.getCtCollectionId())) {
 
 			entityCache.putResult(
 				MBCategoryImpl.class, mbCategory.getPrimaryKey(), mbCategory);
@@ -11864,8 +11863,8 @@ public class MBCategoryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						mbCategory.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						mbCategory.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						MBCategoryImpl.class, mbCategory.getPrimaryKey()) ==
@@ -11930,8 +11929,8 @@ public class MBCategoryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					mbCategoryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					mbCategoryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				mbCategoryModelImpl.getUuid(), mbCategoryModelImpl.getGroupId()
@@ -12062,101 +12061,93 @@ public class MBCategoryPersistenceImpl
 
 	@Override
 	public MBCategory updateImpl(MBCategory mbCategory) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = mbCategory.isNew();
 
-			boolean isNew = mbCategory.isNew();
+		if (!(mbCategory instanceof MBCategoryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(mbCategory instanceof MBCategoryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(mbCategory.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						mbCategory);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in mbCategory proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(mbCategory.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(mbCategory);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom MBCategory implementation " +
-						mbCategory.getClass());
+					"Implement ModelWrapper in mbCategory proxy " +
+						invocationHandler.getClass());
 			}
 
-			MBCategoryModelImpl mbCategoryModelImpl =
-				(MBCategoryModelImpl)mbCategory;
-
-			if (Validator.isNull(mbCategory.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				mbCategory.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (mbCategory.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					mbCategory.setCreateDate(date);
-				}
-				else {
-					mbCategory.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!mbCategoryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					mbCategory.setModifiedDate(date);
-				}
-				else {
-					mbCategory.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(mbCategory)) {
-					if (!isNew) {
-						session.evict(
-							MBCategoryImpl.class,
-							mbCategory.getPrimaryKeyObj());
-					}
-
-					session.save(mbCategory);
-				}
-				else {
-					mbCategory = (MBCategory)session.merge(mbCategory);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				MBCategoryImpl.class, mbCategoryModelImpl, false, true);
-
-			cacheUniqueFindersCache(mbCategoryModelImpl);
-
-			if (isNew) {
-				mbCategory.setNew(false);
-			}
-
-			mbCategory.resetOriginalValues();
-
-			return mbCategory;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom MBCategory implementation " +
+					mbCategory.getClass());
 		}
+
+		MBCategoryModelImpl mbCategoryModelImpl =
+			(MBCategoryModelImpl)mbCategory;
+
+		if (Validator.isNull(mbCategory.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			mbCategory.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (mbCategory.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				mbCategory.setCreateDate(date);
+			}
+			else {
+				mbCategory.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!mbCategoryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				mbCategory.setModifiedDate(date);
+			}
+			else {
+				mbCategory.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(mbCategory)) {
+				if (!isNew) {
+					session.evict(
+						MBCategoryImpl.class, mbCategory.getPrimaryKeyObj());
+				}
+
+				session.save(mbCategory);
+			}
+			else {
+				mbCategory = (MBCategory)session.merge(mbCategory);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			MBCategoryImpl.class, mbCategoryModelImpl, false, true);
+
+		cacheUniqueFindersCache(mbCategoryModelImpl);
+
+		if (isNew) {
+			mbCategory.setNew(false);
+		}
+
+		mbCategory.resetOriginalValues();
+
+		return mbCategory;
 	}
 
 	/**
@@ -12210,44 +12201,40 @@ public class MBCategoryPersistenceImpl
 				MBCategory.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		MBCategory mbCategory = (MBCategory)entityCache.getResult(
+			MBCategoryImpl.class, primaryKey);
 
-			MBCategory mbCategory = (MBCategory)entityCache.getResult(
+		if (mbCategory != null) {
+			return mbCategory;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			mbCategory = (MBCategory)session.get(
 				MBCategoryImpl.class, primaryKey);
 
 			if (mbCategory != null) {
-				return mbCategory;
+				cacheResult(mbCategory);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				mbCategory = (MBCategory)session.get(
-					MBCategoryImpl.class, primaryKey);
-
-				if (mbCategory != null) {
-					cacheResult(mbCategory);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return mbCategory;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return mbCategory;
 	}
 
 	/**
@@ -12267,8 +12254,8 @@ public class MBCategoryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(MBCategory.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -12301,9 +12288,8 @@ public class MBCategoryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							MBCategory.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						MBCategory.class, primaryKey)) {
 
 				MBCategory mbCategory = (MBCategory)entityCache.getResult(
 					MBCategoryImpl.class, primaryKey);
@@ -12451,8 +12437,8 @@ public class MBCategoryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -12545,8 +12531,8 @@ public class MBCategoryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(MBCategory.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBCategory.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

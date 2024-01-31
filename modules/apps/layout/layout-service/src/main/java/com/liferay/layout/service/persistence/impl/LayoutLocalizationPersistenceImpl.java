@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -174,9 +173,8 @@ public class LayoutLocalizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutLocalization.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -584,9 +582,8 @@ public class LayoutLocalizationPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutLocalization.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -715,9 +712,8 @@ public class LayoutLocalizationPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutLocalization.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -839,9 +835,8 @@ public class LayoutLocalizationPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutLocalization.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -994,9 +989,8 @@ public class LayoutLocalizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutLocalization.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1435,9 +1429,8 @@ public class LayoutLocalizationPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutLocalization.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1582,9 +1575,8 @@ public class LayoutLocalizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutLocalization.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1964,9 +1956,8 @@ public class LayoutLocalizationPersistenceImpl
 	@Override
 	public int countByPlid(long plid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutLocalization.class)) {
 
 			FinderPath finderPath = _finderPathCountByPlid;
 
@@ -2079,9 +2070,8 @@ public class LayoutLocalizationPersistenceImpl
 		String languageId, long plid, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -2204,9 +2194,8 @@ public class LayoutLocalizationPersistenceImpl
 	@Override
 	public int countByL_P(String languageId, long plid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -2352,9 +2341,8 @@ public class LayoutLocalizationPersistenceImpl
 		long groupId, String languageId, long plid, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -2486,9 +2474,8 @@ public class LayoutLocalizationPersistenceImpl
 	@Override
 	public int countByG_L_P(long groupId, String languageId, long plid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutLocalization.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -2596,8 +2583,8 @@ public class LayoutLocalizationPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					layoutLocalization.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					layoutLocalization.getCtCollectionId())) {
 
 			entityCache.putResult(
 				LayoutLocalizationImpl.class,
@@ -2656,8 +2643,8 @@ public class LayoutLocalizationPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						layoutLocalization.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						layoutLocalization.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						LayoutLocalizationImpl.class,
@@ -2724,8 +2711,8 @@ public class LayoutLocalizationPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					layoutLocalizationModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					layoutLocalizationModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				layoutLocalizationModelImpl.getUuid(),
@@ -2876,103 +2863,98 @@ public class LayoutLocalizationPersistenceImpl
 	public LayoutLocalization updateImpl(
 		LayoutLocalization layoutLocalization) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = layoutLocalization.isNew();
 
-			boolean isNew = layoutLocalization.isNew();
+		if (!(layoutLocalization instanceof LayoutLocalizationModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(layoutLocalization instanceof LayoutLocalizationModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(layoutLocalization.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						layoutLocalization);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in layoutLocalization proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(layoutLocalization.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					layoutLocalization);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom LayoutLocalization implementation " +
-						layoutLocalization.getClass());
+					"Implement ModelWrapper in layoutLocalization proxy " +
+						invocationHandler.getClass());
 			}
 
-			LayoutLocalizationModelImpl layoutLocalizationModelImpl =
-				(LayoutLocalizationModelImpl)layoutLocalization;
-
-			if (Validator.isNull(layoutLocalization.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				layoutLocalization.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (layoutLocalization.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					layoutLocalization.setCreateDate(date);
-				}
-				else {
-					layoutLocalization.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!layoutLocalizationModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					layoutLocalization.setModifiedDate(date);
-				}
-				else {
-					layoutLocalization.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(layoutLocalization)) {
-					if (!isNew) {
-						session.evict(
-							LayoutLocalizationImpl.class,
-							layoutLocalization.getPrimaryKeyObj());
-					}
-
-					session.save(layoutLocalization);
-				}
-				else {
-					layoutLocalization = (LayoutLocalization)session.merge(
-						layoutLocalization);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				LayoutLocalizationImpl.class, layoutLocalizationModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(layoutLocalizationModelImpl);
-
-			if (isNew) {
-				layoutLocalization.setNew(false);
-			}
-
-			layoutLocalization.resetOriginalValues();
-
-			return layoutLocalization;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom LayoutLocalization implementation " +
+					layoutLocalization.getClass());
 		}
+
+		LayoutLocalizationModelImpl layoutLocalizationModelImpl =
+			(LayoutLocalizationModelImpl)layoutLocalization;
+
+		if (Validator.isNull(layoutLocalization.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			layoutLocalization.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (layoutLocalization.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				layoutLocalization.setCreateDate(date);
+			}
+			else {
+				layoutLocalization.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!layoutLocalizationModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				layoutLocalization.setModifiedDate(date);
+			}
+			else {
+				layoutLocalization.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(layoutLocalization)) {
+				if (!isNew) {
+					session.evict(
+						LayoutLocalizationImpl.class,
+						layoutLocalization.getPrimaryKeyObj());
+				}
+
+				session.save(layoutLocalization);
+			}
+			else {
+				layoutLocalization = (LayoutLocalization)session.merge(
+					layoutLocalization);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			LayoutLocalizationImpl.class, layoutLocalizationModelImpl, false,
+			true);
+
+		cacheUniqueFindersCache(layoutLocalizationModelImpl);
+
+		if (isNew) {
+			layoutLocalization.setNew(false);
+		}
+
+		layoutLocalization.resetOriginalValues();
+
+		return layoutLocalization;
 	}
 
 	/**
@@ -3026,45 +3008,41 @@ public class LayoutLocalizationPersistenceImpl
 				LayoutLocalization.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		LayoutLocalization layoutLocalization =
+			(LayoutLocalization)entityCache.getResult(
+				LayoutLocalizationImpl.class, primaryKey);
 
-			LayoutLocalization layoutLocalization =
-				(LayoutLocalization)entityCache.getResult(
-					LayoutLocalizationImpl.class, primaryKey);
-
-			if (layoutLocalization != null) {
-				return layoutLocalization;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				layoutLocalization = (LayoutLocalization)session.get(
-					LayoutLocalizationImpl.class, primaryKey);
-
-				if (layoutLocalization != null) {
-					cacheResult(layoutLocalization);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (layoutLocalization != null) {
 			return layoutLocalization;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			layoutLocalization = (LayoutLocalization)session.get(
+				LayoutLocalizationImpl.class, primaryKey);
+
+			if (layoutLocalization != null) {
+				cacheResult(layoutLocalization);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return layoutLocalization;
 	}
 
 	/**
@@ -3084,8 +3062,8 @@ public class LayoutLocalizationPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(LayoutLocalization.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3119,9 +3097,8 @@ public class LayoutLocalizationPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							LayoutLocalization.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						LayoutLocalization.class, primaryKey)) {
 
 				LayoutLocalization layoutLocalization =
 					(LayoutLocalization)entityCache.getResult(
@@ -3275,9 +3252,8 @@ public class LayoutLocalizationPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutLocalization.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3370,9 +3346,8 @@ public class LayoutLocalizationPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						LayoutLocalization.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					LayoutLocalization.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

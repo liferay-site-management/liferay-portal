@@ -14,7 +14,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -162,9 +161,8 @@ public class DLFileEntryMetadataPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntryMetadata.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileEntryMetadata.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -572,9 +570,8 @@ public class DLFileEntryMetadataPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntryMetadata.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileEntryMetadata.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -720,9 +717,8 @@ public class DLFileEntryMetadataPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntryMetadata.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileEntryMetadata.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1162,9 +1158,8 @@ public class DLFileEntryMetadataPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntryMetadata.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileEntryMetadata.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1313,9 +1308,8 @@ public class DLFileEntryMetadataPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntryMetadata.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileEntryMetadata.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1707,9 +1701,8 @@ public class DLFileEntryMetadataPersistenceImpl
 	@Override
 	public int countByFileEntryId(long fileEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntryMetadata.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileEntryMetadata.class)) {
 
 			FinderPath finderPath = _finderPathCountByFileEntryId;
 
@@ -1835,9 +1828,8 @@ public class DLFileEntryMetadataPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntryMetadata.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileEntryMetadata.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2231,9 +2223,8 @@ public class DLFileEntryMetadataPersistenceImpl
 	@Override
 	public int countByFileVersionId(long fileVersionId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntryMetadata.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileEntryMetadata.class)) {
 
 			FinderPath finderPath = _finderPathCountByFileVersionId;
 
@@ -2350,9 +2341,8 @@ public class DLFileEntryMetadataPersistenceImpl
 		long DDMStructureId, long fileVersionId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntryMetadata.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileEntryMetadata.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2464,9 +2454,8 @@ public class DLFileEntryMetadataPersistenceImpl
 	@Override
 	public int countByD_F(long DDMStructureId, long fileVersionId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntryMetadata.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileEntryMetadata.class)) {
 
 			FinderPath finderPath = _finderPathCountByD_F;
 
@@ -2551,8 +2540,8 @@ public class DLFileEntryMetadataPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					dlFileEntryMetadata.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					dlFileEntryMetadata.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				DLFileEntryMetadataImpl.class,
@@ -2594,8 +2583,8 @@ public class DLFileEntryMetadataPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						dlFileEntryMetadata.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						dlFileEntryMetadata.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						DLFileEntryMetadataImpl.class,
@@ -2663,8 +2652,8 @@ public class DLFileEntryMetadataPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					dlFileEntryMetadataModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					dlFileEntryMetadataModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				dlFileEntryMetadataModelImpl.getDDMStructureId(),
@@ -2795,80 +2784,73 @@ public class DLFileEntryMetadataPersistenceImpl
 	public DLFileEntryMetadata updateImpl(
 		DLFileEntryMetadata dlFileEntryMetadata) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = dlFileEntryMetadata.isNew();
 
-			boolean isNew = dlFileEntryMetadata.isNew();
+		if (!(dlFileEntryMetadata instanceof DLFileEntryMetadataModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(dlFileEntryMetadata instanceof
-					DLFileEntryMetadataModelImpl)) {
-
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(dlFileEntryMetadata.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						dlFileEntryMetadata);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in dlFileEntryMetadata proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(dlFileEntryMetadata.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					dlFileEntryMetadata);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DLFileEntryMetadata implementation " +
-						dlFileEntryMetadata.getClass());
+					"Implement ModelWrapper in dlFileEntryMetadata proxy " +
+						invocationHandler.getClass());
 			}
 
-			DLFileEntryMetadataModelImpl dlFileEntryMetadataModelImpl =
-				(DLFileEntryMetadataModelImpl)dlFileEntryMetadata;
-
-			if (Validator.isNull(dlFileEntryMetadata.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				dlFileEntryMetadata.setUuid(uuid);
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(dlFileEntryMetadata)) {
-					if (!isNew) {
-						session.evict(
-							DLFileEntryMetadataImpl.class,
-							dlFileEntryMetadata.getPrimaryKeyObj());
-					}
-
-					session.save(dlFileEntryMetadata);
-				}
-				else {
-					dlFileEntryMetadata = (DLFileEntryMetadata)session.merge(
-						dlFileEntryMetadata);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				DLFileEntryMetadataImpl.class, dlFileEntryMetadataModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(dlFileEntryMetadataModelImpl);
-
-			if (isNew) {
-				dlFileEntryMetadata.setNew(false);
-			}
-
-			dlFileEntryMetadata.resetOriginalValues();
-
-			return dlFileEntryMetadata;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DLFileEntryMetadata implementation " +
+					dlFileEntryMetadata.getClass());
 		}
+
+		DLFileEntryMetadataModelImpl dlFileEntryMetadataModelImpl =
+			(DLFileEntryMetadataModelImpl)dlFileEntryMetadata;
+
+		if (Validator.isNull(dlFileEntryMetadata.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			dlFileEntryMetadata.setUuid(uuid);
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(dlFileEntryMetadata)) {
+				if (!isNew) {
+					session.evict(
+						DLFileEntryMetadataImpl.class,
+						dlFileEntryMetadata.getPrimaryKeyObj());
+				}
+
+				session.save(dlFileEntryMetadata);
+			}
+			else {
+				dlFileEntryMetadata = (DLFileEntryMetadata)session.merge(
+					dlFileEntryMetadata);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			DLFileEntryMetadataImpl.class, dlFileEntryMetadataModelImpl, false,
+			true);
+
+		cacheUniqueFindersCache(dlFileEntryMetadataModelImpl);
+
+		if (isNew) {
+			dlFileEntryMetadata.setNew(false);
+		}
+
+		dlFileEntryMetadata.resetOriginalValues();
+
+		return dlFileEntryMetadata;
 	}
 
 	/**
@@ -2922,45 +2904,41 @@ public class DLFileEntryMetadataPersistenceImpl
 				DLFileEntryMetadata.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DLFileEntryMetadata dlFileEntryMetadata =
+			(DLFileEntryMetadata)EntityCacheUtil.getResult(
+				DLFileEntryMetadataImpl.class, primaryKey);
 
-			DLFileEntryMetadata dlFileEntryMetadata =
-				(DLFileEntryMetadata)EntityCacheUtil.getResult(
-					DLFileEntryMetadataImpl.class, primaryKey);
-
-			if (dlFileEntryMetadata != null) {
-				return dlFileEntryMetadata;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				dlFileEntryMetadata = (DLFileEntryMetadata)session.get(
-					DLFileEntryMetadataImpl.class, primaryKey);
-
-				if (dlFileEntryMetadata != null) {
-					cacheResult(dlFileEntryMetadata);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (dlFileEntryMetadata != null) {
 			return dlFileEntryMetadata;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			dlFileEntryMetadata = (DLFileEntryMetadata)session.get(
+				DLFileEntryMetadataImpl.class, primaryKey);
+
+			if (dlFileEntryMetadata != null) {
+				cacheResult(dlFileEntryMetadata);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return dlFileEntryMetadata;
 	}
 
 	/**
@@ -2982,8 +2960,8 @@ public class DLFileEntryMetadataPersistenceImpl
 				DLFileEntryMetadata.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3017,9 +2995,8 @@ public class DLFileEntryMetadataPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							DLFileEntryMetadata.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						DLFileEntryMetadata.class, primaryKey)) {
 
 				DLFileEntryMetadata dlFileEntryMetadata =
 					(DLFileEntryMetadata)EntityCacheUtil.getResult(
@@ -3174,9 +3151,8 @@ public class DLFileEntryMetadataPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntryMetadata.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileEntryMetadata.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3270,9 +3246,8 @@ public class DLFileEntryMetadataPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						DLFileEntryMetadata.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					DLFileEntryMetadata.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

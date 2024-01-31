@@ -18,7 +18,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -179,9 +178,8 @@ public class CPOptionValuePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPOptionValue.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPOptionValue.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -583,9 +581,8 @@ public class CPOptionValuePersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPOptionValue.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPOptionValue.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -731,9 +728,8 @@ public class CPOptionValuePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPOptionValue.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPOptionValue.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1171,9 +1167,8 @@ public class CPOptionValuePersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPOptionValue.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPOptionValue.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1321,9 +1316,8 @@ public class CPOptionValuePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPOptionValue.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPOptionValue.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1704,9 +1698,8 @@ public class CPOptionValuePersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPOptionValue.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPOptionValue.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -1832,9 +1825,8 @@ public class CPOptionValuePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPOptionValue.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPOptionValue.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2215,9 +2207,8 @@ public class CPOptionValuePersistenceImpl
 	@Override
 	public int countByCPOptionId(long CPOptionId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPOptionValue.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPOptionValue.class)) {
 
 			FinderPath finderPath = _finderPathCountByCPOptionId;
 
@@ -2330,9 +2321,8 @@ public class CPOptionValuePersistenceImpl
 		long CPOptionId, String key, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPOptionValue.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPOptionValue.class)) {
 
 			key = Objects.toString(key, "");
 
@@ -2453,9 +2443,8 @@ public class CPOptionValuePersistenceImpl
 	@Override
 	public int countByC_K(long CPOptionId, String key) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPOptionValue.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPOptionValue.class)) {
 
 			key = Objects.toString(key, "");
 
@@ -2595,9 +2584,8 @@ public class CPOptionValuePersistenceImpl
 		String externalReferenceCode, long companyId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPOptionValue.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPOptionValue.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -2722,9 +2710,8 @@ public class CPOptionValuePersistenceImpl
 	@Override
 	public int countByERC_C(String externalReferenceCode, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPOptionValue.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPOptionValue.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -2828,8 +2815,8 @@ public class CPOptionValuePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cpOptionValue.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cpOptionValue.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CPOptionValueImpl.class, cpOptionValue.getPrimaryKey(),
@@ -2877,8 +2864,8 @@ public class CPOptionValuePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						cpOptionValue.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						cpOptionValue.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CPOptionValueImpl.class,
@@ -2943,8 +2930,8 @@ public class CPOptionValuePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					cpOptionValueModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					cpOptionValueModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				cpOptionValueModelImpl.getCPOptionId(),
@@ -3078,166 +3065,158 @@ public class CPOptionValuePersistenceImpl
 
 	@Override
 	public CPOptionValue updateImpl(CPOptionValue cpOptionValue) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = cpOptionValue.isNew();
 
-			boolean isNew = cpOptionValue.isNew();
+		if (!(cpOptionValue instanceof CPOptionValueModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(cpOptionValue instanceof CPOptionValueModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(cpOptionValue.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						cpOptionValue);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in cpOptionValue proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(cpOptionValue.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					cpOptionValue);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CPOptionValue implementation " +
-						cpOptionValue.getClass());
+					"Implement ModelWrapper in cpOptionValue proxy " +
+						invocationHandler.getClass());
 			}
 
-			CPOptionValueModelImpl cpOptionValueModelImpl =
-				(CPOptionValueModelImpl)cpOptionValue;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CPOptionValue implementation " +
+					cpOptionValue.getClass());
+		}
 
-			if (Validator.isNull(cpOptionValue.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		CPOptionValueModelImpl cpOptionValueModelImpl =
+			(CPOptionValueModelImpl)cpOptionValue;
 
-				cpOptionValue.setUuid(uuid);
-			}
+		if (Validator.isNull(cpOptionValue.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
 
-			if (Validator.isNull(cpOptionValue.getExternalReferenceCode())) {
-				cpOptionValue.setExternalReferenceCode(cpOptionValue.getUuid());
-			}
-			else {
-				if (!Objects.equals(
-						cpOptionValueModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						cpOptionValue.getExternalReferenceCode())) {
+			cpOptionValue.setUuid(uuid);
+		}
 
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
+		if (Validator.isNull(cpOptionValue.getExternalReferenceCode())) {
+			cpOptionValue.setExternalReferenceCode(cpOptionValue.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					cpOptionValueModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
+					cpOptionValue.getExternalReferenceCode())) {
 
-					if (userId > 0) {
-						long companyId = cpOptionValue.getCompanyId();
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
 
-						long groupId = 0;
+				if (userId > 0) {
+					long companyId = cpOptionValue.getCompanyId();
 
-						long classPK = 0;
+					long groupId = 0;
 
-						if (!isNew) {
-							classPK = cpOptionValue.getPrimaryKey();
-						}
+					long classPK = 0;
 
-						try {
-							cpOptionValue.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									CPOptionValue.class.getName(), classPK,
-									ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-									cpOptionValue.getExternalReferenceCode(),
-									null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
-
-				CPOptionValue ercCPOptionValue = fetchByERC_C(
-					cpOptionValue.getExternalReferenceCode(),
-					cpOptionValue.getCompanyId());
-
-				if (isNew) {
-					if (ercCPOptionValue != null) {
-						throw new DuplicateCPOptionValueExternalReferenceCodeException(
-							"Duplicate cp option value with external reference code " +
-								cpOptionValue.getExternalReferenceCode() +
-									" and company " +
-										cpOptionValue.getCompanyId());
-					}
-				}
-				else {
-					if ((ercCPOptionValue != null) &&
-						(cpOptionValue.getCPOptionValueId() !=
-							ercCPOptionValue.getCPOptionValueId())) {
-
-						throw new DuplicateCPOptionValueExternalReferenceCodeException(
-							"Duplicate cp option value with external reference code " +
-								cpOptionValue.getExternalReferenceCode() +
-									" and company " +
-										cpOptionValue.getCompanyId());
-					}
-				}
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (cpOptionValue.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					cpOptionValue.setCreateDate(date);
-				}
-				else {
-					cpOptionValue.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!cpOptionValueModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					cpOptionValue.setModifiedDate(date);
-				}
-				else {
-					cpOptionValue.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(cpOptionValue)) {
 					if (!isNew) {
-						session.evict(
-							CPOptionValueImpl.class,
-							cpOptionValue.getPrimaryKeyObj());
+						classPK = cpOptionValue.getPrimaryKey();
 					}
 
-					session.save(cpOptionValue);
+					try {
+						cpOptionValue.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								CPOptionValue.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								cpOptionValue.getExternalReferenceCode(),
+								null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
 				}
-				else {
-					cpOptionValue = (CPOptionValue)session.merge(cpOptionValue);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
 			}
 
-			entityCache.putResult(
-				CPOptionValueImpl.class, cpOptionValueModelImpl, false, true);
-
-			cacheUniqueFindersCache(cpOptionValueModelImpl);
+			CPOptionValue ercCPOptionValue = fetchByERC_C(
+				cpOptionValue.getExternalReferenceCode(),
+				cpOptionValue.getCompanyId());
 
 			if (isNew) {
-				cpOptionValue.setNew(false);
+				if (ercCPOptionValue != null) {
+					throw new DuplicateCPOptionValueExternalReferenceCodeException(
+						"Duplicate cp option value with external reference code " +
+							cpOptionValue.getExternalReferenceCode() +
+								" and company " + cpOptionValue.getCompanyId());
+				}
 			}
+			else {
+				if ((ercCPOptionValue != null) &&
+					(cpOptionValue.getCPOptionValueId() !=
+						ercCPOptionValue.getCPOptionValueId())) {
 
-			cpOptionValue.resetOriginalValues();
-
-			return cpOptionValue;
+					throw new DuplicateCPOptionValueExternalReferenceCodeException(
+						"Duplicate cp option value with external reference code " +
+							cpOptionValue.getExternalReferenceCode() +
+								" and company " + cpOptionValue.getCompanyId());
+				}
+			}
 		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (cpOptionValue.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				cpOptionValue.setCreateDate(date);
+			}
+			else {
+				cpOptionValue.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!cpOptionValueModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				cpOptionValue.setModifiedDate(date);
+			}
+			else {
+				cpOptionValue.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(cpOptionValue)) {
+				if (!isNew) {
+					session.evict(
+						CPOptionValueImpl.class,
+						cpOptionValue.getPrimaryKeyObj());
+				}
+
+				session.save(cpOptionValue);
+			}
+			else {
+				cpOptionValue = (CPOptionValue)session.merge(cpOptionValue);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CPOptionValueImpl.class, cpOptionValueModelImpl, false, true);
+
+		cacheUniqueFindersCache(cpOptionValueModelImpl);
+
+		if (isNew) {
+			cpOptionValue.setNew(false);
+		}
+
+		cpOptionValue.resetOriginalValues();
+
+		return cpOptionValue;
 	}
 
 	/**
@@ -3291,44 +3270,40 @@ public class CPOptionValuePersistenceImpl
 				CPOptionValue.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CPOptionValue cpOptionValue = (CPOptionValue)entityCache.getResult(
+			CPOptionValueImpl.class, primaryKey);
 
-			CPOptionValue cpOptionValue = (CPOptionValue)entityCache.getResult(
+		if (cpOptionValue != null) {
+			return cpOptionValue;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			cpOptionValue = (CPOptionValue)session.get(
 				CPOptionValueImpl.class, primaryKey);
 
 			if (cpOptionValue != null) {
-				return cpOptionValue;
+				cacheResult(cpOptionValue);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				cpOptionValue = (CPOptionValue)session.get(
-					CPOptionValueImpl.class, primaryKey);
-
-				if (cpOptionValue != null) {
-					cacheResult(cpOptionValue);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return cpOptionValue;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return cpOptionValue;
 	}
 
 	/**
@@ -3348,8 +3323,8 @@ public class CPOptionValuePersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(CPOptionValue.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3382,9 +3357,8 @@ public class CPOptionValuePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CPOptionValue.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CPOptionValue.class, primaryKey)) {
 
 				CPOptionValue cpOptionValue =
 					(CPOptionValue)entityCache.getResult(
@@ -3536,9 +3510,8 @@ public class CPOptionValuePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPOptionValue.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPOptionValue.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3631,9 +3604,8 @@ public class CPOptionValuePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CPOptionValue.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CPOptionValue.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

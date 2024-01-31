@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -176,9 +175,8 @@ public class SegmentsExperimentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperiment.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -586,9 +584,8 @@ public class SegmentsExperimentPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperiment.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -717,9 +714,8 @@ public class SegmentsExperimentPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperiment.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -841,9 +837,8 @@ public class SegmentsExperimentPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperiment.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -996,9 +991,8 @@ public class SegmentsExperimentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperiment.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1437,9 +1431,8 @@ public class SegmentsExperimentPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperiment.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1587,9 +1580,8 @@ public class SegmentsExperimentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperiment.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2309,9 +2301,8 @@ public class SegmentsExperimentPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperiment.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2488,9 +2479,8 @@ public class SegmentsExperimentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperiment.class)) {
 
 			segmentsExperimentKey = Objects.toString(segmentsExperimentKey, "");
 
@@ -2918,9 +2908,8 @@ public class SegmentsExperimentPersistenceImpl
 	@Override
 	public int countBySegmentsExperimentKey(String segmentsExperimentKey) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperiment.class)) {
 
 			segmentsExperimentKey = Objects.toString(segmentsExperimentKey, "");
 
@@ -3057,9 +3046,8 @@ public class SegmentsExperimentPersistenceImpl
 		long groupId, String segmentsExperimentKey, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperiment.class)) {
 
 			segmentsExperimentKey = Objects.toString(segmentsExperimentKey, "");
 
@@ -3185,9 +3173,8 @@ public class SegmentsExperimentPersistenceImpl
 	@Override
 	public int countByG_S(long groupId, String segmentsExperimentKey) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperiment.class)) {
 
 			segmentsExperimentKey = Objects.toString(segmentsExperimentKey, "");
 
@@ -3334,9 +3321,8 @@ public class SegmentsExperimentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperiment.class)) {
 
 			Object[] finderArgs = null;
 
@@ -3457,9 +3443,8 @@ public class SegmentsExperimentPersistenceImpl
 		long groupId, long segmentsExperienceId, long plid) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperiment.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_S_P;
 
@@ -3553,8 +3538,8 @@ public class SegmentsExperimentPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					segmentsExperiment.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					segmentsExperiment.getCtCollectionId())) {
 
 			entityCache.putResult(
 				SegmentsExperimentImpl.class,
@@ -3613,8 +3598,8 @@ public class SegmentsExperimentPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						segmentsExperiment.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						segmentsExperiment.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						SegmentsExperimentImpl.class,
@@ -3681,8 +3666,8 @@ public class SegmentsExperimentPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					segmentsExperimentModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					segmentsExperimentModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				segmentsExperimentModelImpl.getUuid(),
@@ -3833,103 +3818,98 @@ public class SegmentsExperimentPersistenceImpl
 	public SegmentsExperiment updateImpl(
 		SegmentsExperiment segmentsExperiment) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = segmentsExperiment.isNew();
 
-			boolean isNew = segmentsExperiment.isNew();
+		if (!(segmentsExperiment instanceof SegmentsExperimentModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(segmentsExperiment instanceof SegmentsExperimentModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(segmentsExperiment.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						segmentsExperiment);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in segmentsExperiment proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(segmentsExperiment.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					segmentsExperiment);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom SegmentsExperiment implementation " +
-						segmentsExperiment.getClass());
+					"Implement ModelWrapper in segmentsExperiment proxy " +
+						invocationHandler.getClass());
 			}
 
-			SegmentsExperimentModelImpl segmentsExperimentModelImpl =
-				(SegmentsExperimentModelImpl)segmentsExperiment;
-
-			if (Validator.isNull(segmentsExperiment.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				segmentsExperiment.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (segmentsExperiment.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					segmentsExperiment.setCreateDate(date);
-				}
-				else {
-					segmentsExperiment.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!segmentsExperimentModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					segmentsExperiment.setModifiedDate(date);
-				}
-				else {
-					segmentsExperiment.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(segmentsExperiment)) {
-					if (!isNew) {
-						session.evict(
-							SegmentsExperimentImpl.class,
-							segmentsExperiment.getPrimaryKeyObj());
-					}
-
-					session.save(segmentsExperiment);
-				}
-				else {
-					segmentsExperiment = (SegmentsExperiment)session.merge(
-						segmentsExperiment);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				SegmentsExperimentImpl.class, segmentsExperimentModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(segmentsExperimentModelImpl);
-
-			if (isNew) {
-				segmentsExperiment.setNew(false);
-			}
-
-			segmentsExperiment.resetOriginalValues();
-
-			return segmentsExperiment;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom SegmentsExperiment implementation " +
+					segmentsExperiment.getClass());
 		}
+
+		SegmentsExperimentModelImpl segmentsExperimentModelImpl =
+			(SegmentsExperimentModelImpl)segmentsExperiment;
+
+		if (Validator.isNull(segmentsExperiment.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			segmentsExperiment.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (segmentsExperiment.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				segmentsExperiment.setCreateDate(date);
+			}
+			else {
+				segmentsExperiment.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!segmentsExperimentModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				segmentsExperiment.setModifiedDate(date);
+			}
+			else {
+				segmentsExperiment.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(segmentsExperiment)) {
+				if (!isNew) {
+					session.evict(
+						SegmentsExperimentImpl.class,
+						segmentsExperiment.getPrimaryKeyObj());
+				}
+
+				session.save(segmentsExperiment);
+			}
+			else {
+				segmentsExperiment = (SegmentsExperiment)session.merge(
+					segmentsExperiment);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			SegmentsExperimentImpl.class, segmentsExperimentModelImpl, false,
+			true);
+
+		cacheUniqueFindersCache(segmentsExperimentModelImpl);
+
+		if (isNew) {
+			segmentsExperiment.setNew(false);
+		}
+
+		segmentsExperiment.resetOriginalValues();
+
+		return segmentsExperiment;
 	}
 
 	/**
@@ -3983,45 +3963,41 @@ public class SegmentsExperimentPersistenceImpl
 				SegmentsExperiment.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		SegmentsExperiment segmentsExperiment =
+			(SegmentsExperiment)entityCache.getResult(
+				SegmentsExperimentImpl.class, primaryKey);
 
-			SegmentsExperiment segmentsExperiment =
-				(SegmentsExperiment)entityCache.getResult(
-					SegmentsExperimentImpl.class, primaryKey);
-
-			if (segmentsExperiment != null) {
-				return segmentsExperiment;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				segmentsExperiment = (SegmentsExperiment)session.get(
-					SegmentsExperimentImpl.class, primaryKey);
-
-				if (segmentsExperiment != null) {
-					cacheResult(segmentsExperiment);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (segmentsExperiment != null) {
 			return segmentsExperiment;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			segmentsExperiment = (SegmentsExperiment)session.get(
+				SegmentsExperimentImpl.class, primaryKey);
+
+			if (segmentsExperiment != null) {
+				cacheResult(segmentsExperiment);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return segmentsExperiment;
 	}
 
 	/**
@@ -4041,8 +4017,8 @@ public class SegmentsExperimentPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(SegmentsExperiment.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -4076,9 +4052,8 @@ public class SegmentsExperimentPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							SegmentsExperiment.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						SegmentsExperiment.class, primaryKey)) {
 
 				SegmentsExperiment segmentsExperiment =
 					(SegmentsExperiment)entityCache.getResult(
@@ -4232,9 +4207,8 @@ public class SegmentsExperimentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperiment.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4327,9 +4301,8 @@ public class SegmentsExperimentPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						SegmentsExperiment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					SegmentsExperiment.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

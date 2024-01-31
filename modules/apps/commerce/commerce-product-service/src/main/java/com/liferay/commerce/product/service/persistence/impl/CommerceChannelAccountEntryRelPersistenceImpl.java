@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -175,9 +174,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -578,9 +576,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	@Override
 	public int countByAccountEntryId(long accountEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByAccountEntryId;
 
@@ -708,9 +705,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1112,9 +1108,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	@Override
 	public int countByCommerceChannelId(long commerceChannelId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByCommerceChannelId;
 
@@ -1247,9 +1242,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1673,9 +1667,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	@Override
 	public int countByA_T(long accountEntryId, int type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByA_T;
 
@@ -1814,9 +1807,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2240,9 +2232,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	@Override
 	public int countByC_C(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -2382,9 +2373,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2808,9 +2798,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	@Override
 	public int countByC_T(long commerceChannelId, int type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_T;
 
@@ -2959,9 +2948,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3419,9 +3407,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		long accountEntryId, long commerceChannelId, int type) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByA_C_T;
 
@@ -3583,9 +3570,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4070,9 +4056,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		long classNameId, long classPK, long commerceChannelId, int type) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_C_T;
 
@@ -4236,9 +4221,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		long commerceChannelId, int type, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			Object[] finderArgs = null;
 
@@ -4383,9 +4367,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		long commerceChannelId, int type) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByA_C_C_C_T;
 
@@ -4497,8 +4480,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					commerceChannelAccountEntryRel.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					commerceChannelAccountEntryRel.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CommerceChannelAccountEntryRelImpl.class,
@@ -4548,9 +4531,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						commerceChannelAccountEntryRel.getCtCollectionId() !=
-							0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						commerceChannelAccountEntryRel.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CommerceChannelAccountEntryRelImpl.class,
@@ -4629,9 +4611,9 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
 					commerceChannelAccountEntryRelModelImpl.
-						getCtCollectionId() != 0)) {
+						getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				commerceChannelAccountEntryRelModelImpl.getAccountEntryId(),
@@ -4769,108 +4751,99 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	public CommerceChannelAccountEntryRel updateImpl(
 		CommerceChannelAccountEntryRel commerceChannelAccountEntryRel) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = commerceChannelAccountEntryRel.isNew();
 
-			boolean isNew = commerceChannelAccountEntryRel.isNew();
+		if (!(commerceChannelAccountEntryRel instanceof
+				CommerceChannelAccountEntryRelModelImpl)) {
 
-			if (!(commerceChannelAccountEntryRel instanceof
-					CommerceChannelAccountEntryRelModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
+			if (ProxyUtil.isProxyClass(
+					commerceChannelAccountEntryRel.getClass())) {
 
-				if (ProxyUtil.isProxyClass(
-						commerceChannelAccountEntryRel.getClass())) {
-
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						commerceChannelAccountEntryRel);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in commerceChannelAccountEntryRel proxy " +
-							invocationHandler.getClass());
-				}
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					commerceChannelAccountEntryRel);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CommerceChannelAccountEntryRel implementation " +
-						commerceChannelAccountEntryRel.getClass());
+					"Implement ModelWrapper in commerceChannelAccountEntryRel proxy " +
+						invocationHandler.getClass());
 			}
 
-			CommerceChannelAccountEntryRelModelImpl
-				commerceChannelAccountEntryRelModelImpl =
-					(CommerceChannelAccountEntryRelModelImpl)
-						commerceChannelAccountEntryRel;
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew &&
-				(commerceChannelAccountEntryRel.getCreateDate() == null)) {
-
-				if (serviceContext == null) {
-					commerceChannelAccountEntryRel.setCreateDate(date);
-				}
-				else {
-					commerceChannelAccountEntryRel.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!commerceChannelAccountEntryRelModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					commerceChannelAccountEntryRel.setModifiedDate(date);
-				}
-				else {
-					commerceChannelAccountEntryRel.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(
-						commerceChannelAccountEntryRel)) {
-
-					if (!isNew) {
-						session.evict(
-							CommerceChannelAccountEntryRelImpl.class,
-							commerceChannelAccountEntryRel.getPrimaryKeyObj());
-					}
-
-					session.save(commerceChannelAccountEntryRel);
-				}
-				else {
-					commerceChannelAccountEntryRel =
-						(CommerceChannelAccountEntryRel)session.merge(
-							commerceChannelAccountEntryRel);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				CommerceChannelAccountEntryRelImpl.class,
-				commerceChannelAccountEntryRelModelImpl, false, true);
-
-			cacheUniqueFindersCache(commerceChannelAccountEntryRelModelImpl);
-
-			if (isNew) {
-				commerceChannelAccountEntryRel.setNew(false);
-			}
-
-			commerceChannelAccountEntryRel.resetOriginalValues();
-
-			return commerceChannelAccountEntryRel;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CommerceChannelAccountEntryRel implementation " +
+					commerceChannelAccountEntryRel.getClass());
 		}
+
+		CommerceChannelAccountEntryRelModelImpl
+			commerceChannelAccountEntryRelModelImpl =
+				(CommerceChannelAccountEntryRelModelImpl)
+					commerceChannelAccountEntryRel;
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (commerceChannelAccountEntryRel.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				commerceChannelAccountEntryRel.setCreateDate(date);
+			}
+			else {
+				commerceChannelAccountEntryRel.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!commerceChannelAccountEntryRelModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				commerceChannelAccountEntryRel.setModifiedDate(date);
+			}
+			else {
+				commerceChannelAccountEntryRel.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(commerceChannelAccountEntryRel)) {
+				if (!isNew) {
+					session.evict(
+						CommerceChannelAccountEntryRelImpl.class,
+						commerceChannelAccountEntryRel.getPrimaryKeyObj());
+				}
+
+				session.save(commerceChannelAccountEntryRel);
+			}
+			else {
+				commerceChannelAccountEntryRel =
+					(CommerceChannelAccountEntryRel)session.merge(
+						commerceChannelAccountEntryRel);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CommerceChannelAccountEntryRelImpl.class,
+			commerceChannelAccountEntryRelModelImpl, false, true);
+
+		cacheUniqueFindersCache(commerceChannelAccountEntryRelModelImpl);
+
+		if (isNew) {
+			commerceChannelAccountEntryRel.setNew(false);
+		}
+
+		commerceChannelAccountEntryRel.resetOriginalValues();
+
+		return commerceChannelAccountEntryRel;
 	}
 
 	/**
@@ -4929,46 +4902,42 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 				CommerceChannelAccountEntryRel.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CommerceChannelAccountEntryRel commerceChannelAccountEntryRel =
+			(CommerceChannelAccountEntryRel)entityCache.getResult(
+				CommerceChannelAccountEntryRelImpl.class, primaryKey);
 
-			CommerceChannelAccountEntryRel commerceChannelAccountEntryRel =
-				(CommerceChannelAccountEntryRel)entityCache.getResult(
+		if (commerceChannelAccountEntryRel != null) {
+			return commerceChannelAccountEntryRel;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			commerceChannelAccountEntryRel =
+				(CommerceChannelAccountEntryRel)session.get(
 					CommerceChannelAccountEntryRelImpl.class, primaryKey);
 
 			if (commerceChannelAccountEntryRel != null) {
-				return commerceChannelAccountEntryRel;
+				cacheResult(commerceChannelAccountEntryRel);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				commerceChannelAccountEntryRel =
-					(CommerceChannelAccountEntryRel)session.get(
-						CommerceChannelAccountEntryRelImpl.class, primaryKey);
-
-				if (commerceChannelAccountEntryRel != null) {
-					cacheResult(commerceChannelAccountEntryRel);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return commerceChannelAccountEntryRel;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return commerceChannelAccountEntryRel;
 	}
 
 	/**
@@ -4993,8 +4962,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 				CommerceChannelAccountEntryRel.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -5028,10 +4997,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CommerceChannelAccountEntryRel.class,
-							primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CommerceChannelAccountEntryRel.class, primaryKey)) {
 
 				CommerceChannelAccountEntryRel commerceChannelAccountEntryRel =
 					(CommerceChannelAccountEntryRel)entityCache.getResult(
@@ -5186,9 +5153,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5285,9 +5251,8 @@ public class CommerceChannelAccountEntryRelPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommerceChannelAccountEntryRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommerceChannelAccountEntryRel.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

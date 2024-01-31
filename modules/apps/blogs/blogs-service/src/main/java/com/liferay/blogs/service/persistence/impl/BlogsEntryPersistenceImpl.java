@@ -18,7 +18,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -184,8 +183,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -585,8 +584,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -715,8 +714,8 @@ public class BlogsEntryPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -837,8 +836,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -991,8 +990,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1426,8 +1425,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1573,8 +1572,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2276,8 +2275,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2450,8 +2449,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2831,8 +2830,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2945,8 +2944,8 @@ public class BlogsEntryPersistenceImpl
 		long groupId, String urlTitle, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			urlTitle = Objects.toString(urlTitle, "");
 
@@ -3067,8 +3066,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByG_UT(long groupId, String urlTitle) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			urlTitle = Objects.toString(urlTitle, "");
 
@@ -3220,8 +3219,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4005,8 +4004,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByG_LtD(long groupId, Date displayDate) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_LtD;
 
@@ -4220,8 +4219,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4965,8 +4964,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByG_S(long groupId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_S;
 
@@ -5155,8 +5154,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5890,8 +5889,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByG_NotS(long groupId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_NotS;
 
@@ -6081,8 +6080,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6492,8 +6491,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByC_U(long companyId, long userId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_U;
 
@@ -6629,8 +6628,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7054,8 +7053,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByC_LtD(long companyId, Date displayDate) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByC_LtD;
 
@@ -7208,8 +7207,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7619,8 +7618,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByC_S(long companyId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_S;
 
@@ -7756,8 +7755,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -8157,8 +8156,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByC_NotS(long companyId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByC_NotS;
 
@@ -8294,8 +8293,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -8718,8 +8717,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByLtD_S(Date displayDate, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByLtD_S;
 
@@ -8876,8 +8875,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -9702,8 +9701,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByG_U_LtD(long groupId, long userId, Date displayDate) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_U_LtD;
 
@@ -9940,8 +9939,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -10957,8 +10956,8 @@ public class BlogsEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -11099,8 +11098,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByG_U_S(long groupId, long userId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_U_S;
 
@@ -11171,8 +11170,8 @@ public class BlogsEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, userId, StringUtil.merge(statuses)
@@ -11473,8 +11472,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -12252,8 +12251,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByG_U_NotS(long groupId, long userId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_U_NotS;
 
@@ -12462,8 +12461,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -13300,8 +13299,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByG_D_S(long groupId, Date displayDate, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_D_S;
 
@@ -13536,8 +13535,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -14362,8 +14361,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByG_GtD_S(long groupId, Date displayDate, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_GtD_S;
 
@@ -14600,8 +14599,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -15426,8 +15425,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByG_LtD_S(long groupId, Date displayDate, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_LtD_S;
 
@@ -15664,8 +15663,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -16490,8 +16489,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByG_LtD_NotS(long groupId, Date displayDate, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_LtD_NotS;
 
@@ -16729,8 +16728,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -17163,8 +17162,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByC_U_S(long companyId, long userId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_U_S;
 
@@ -17314,8 +17313,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -17738,8 +17737,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByC_U_NotS(long companyId, long userId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByC_U_NotS;
 
@@ -17890,8 +17889,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -18339,8 +18338,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByC_LtD_S(long companyId, Date displayDate, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByC_LtD_S;
 
@@ -18508,8 +18507,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -18959,8 +18958,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByC_LtD_NotS(long companyId, Date displayDate, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByC_LtD_NotS;
 
@@ -19133,8 +19132,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -20001,8 +20000,8 @@ public class BlogsEntryPersistenceImpl
 		long groupId, long userId, Date displayDate, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_U_LtD_S;
 
@@ -20258,8 +20257,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -21126,8 +21125,8 @@ public class BlogsEntryPersistenceImpl
 		long groupId, long userId, Date displayDate, int status) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath =
 				_finderPathWithPaginationCountByG_U_LtD_NotS;
@@ -21354,8 +21353,8 @@ public class BlogsEntryPersistenceImpl
 		String externalReferenceCode, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -21478,8 +21477,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countByERC_G(String externalReferenceCode, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -21580,8 +21579,8 @@ public class BlogsEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					blogsEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					blogsEntry.getCtCollectionId())) {
 
 			entityCache.putResult(
 				BlogsEntryImpl.class, blogsEntry.getPrimaryKey(), blogsEntry);
@@ -21633,8 +21632,8 @@ public class BlogsEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						blogsEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						blogsEntry.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						BlogsEntryImpl.class, blogsEntry.getPrimaryKey()) ==
@@ -21699,8 +21698,8 @@ public class BlogsEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					blogsEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					blogsEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				blogsEntryModelImpl.getUuid(), blogsEntryModelImpl.getGroupId()
@@ -21842,204 +21841,190 @@ public class BlogsEntryPersistenceImpl
 
 	@Override
 	public BlogsEntry updateImpl(BlogsEntry blogsEntry) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = blogsEntry.isNew();
 
-			boolean isNew = blogsEntry.isNew();
+		if (!(blogsEntry instanceof BlogsEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(blogsEntry instanceof BlogsEntryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(blogsEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						blogsEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in blogsEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(blogsEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(blogsEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom BlogsEntry implementation " +
-						blogsEntry.getClass());
+					"Implement ModelWrapper in blogsEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			BlogsEntryModelImpl blogsEntryModelImpl =
-				(BlogsEntryModelImpl)blogsEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom BlogsEntry implementation " +
+					blogsEntry.getClass());
+		}
 
-			if (Validator.isNull(blogsEntry.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		BlogsEntryModelImpl blogsEntryModelImpl =
+			(BlogsEntryModelImpl)blogsEntry;
 
-				blogsEntry.setUuid(uuid);
-			}
+		if (Validator.isNull(blogsEntry.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
 
-			if (Validator.isNull(blogsEntry.getExternalReferenceCode())) {
-				blogsEntry.setExternalReferenceCode(blogsEntry.getUuid());
-			}
-			else {
-				if (!Objects.equals(
-						blogsEntryModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						blogsEntry.getExternalReferenceCode())) {
+			blogsEntry.setUuid(uuid);
+		}
 
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
+		if (Validator.isNull(blogsEntry.getExternalReferenceCode())) {
+			blogsEntry.setExternalReferenceCode(blogsEntry.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					blogsEntryModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
+					blogsEntry.getExternalReferenceCode())) {
 
-					if (userId > 0) {
-						long companyId = blogsEntry.getCompanyId();
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
 
-						long groupId = blogsEntry.getGroupId();
+				if (userId > 0) {
+					long companyId = blogsEntry.getCompanyId();
 
-						long classPK = 0;
+					long groupId = blogsEntry.getGroupId();
 
-						if (!isNew) {
-							classPK = blogsEntry.getPrimaryKey();
-						}
+					long classPK = 0;
 
-						try {
-							blogsEntry.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									BlogsEntry.class.getName(), classPK,
-									ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-									blogsEntry.getExternalReferenceCode(),
-									null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
-
-				BlogsEntry ercBlogsEntry = fetchByERC_G(
-					blogsEntry.getExternalReferenceCode(),
-					blogsEntry.getGroupId());
-
-				if (isNew) {
-					if (ercBlogsEntry != null) {
-						throw new DuplicateBlogsEntryExternalReferenceCodeException(
-							"Duplicate blogs entry with external reference code " +
-								blogsEntry.getExternalReferenceCode() +
-									" and group " + blogsEntry.getGroupId());
-					}
-				}
-				else {
-					if ((ercBlogsEntry != null) &&
-						(blogsEntry.getEntryId() !=
-							ercBlogsEntry.getEntryId())) {
-
-						throw new DuplicateBlogsEntryExternalReferenceCodeException(
-							"Duplicate blogs entry with external reference code " +
-								blogsEntry.getExternalReferenceCode() +
-									" and group " + blogsEntry.getGroupId());
-					}
-				}
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (blogsEntry.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					blogsEntry.setCreateDate(date);
-				}
-				else {
-					blogsEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!blogsEntryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					blogsEntry.setModifiedDate(date);
-				}
-				else {
-					blogsEntry.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
-
-			if (userId > 0) {
-				long companyId = blogsEntry.getCompanyId();
-
-				long groupId = blogsEntry.getGroupId();
-
-				long entryId = 0;
-
-				if (!isNew) {
-					entryId = blogsEntry.getPrimaryKey();
-				}
-
-				try {
-					blogsEntry.setTitle(
-						SanitizerUtil.sanitize(
-							companyId, groupId, userId,
-							BlogsEntry.class.getName(), entryId,
-							ContentTypes.TEXT_PLAIN, Sanitizer.MODE_ALL,
-							blogsEntry.getTitle(), null));
-
-					blogsEntry.setContent(
-						SanitizerUtil.sanitize(
-							companyId, groupId, userId,
-							BlogsEntry.class.getName(), entryId,
-							ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-							blogsEntry.getContent(), null));
-
-					blogsEntry.setCoverImageCaption(
-						SanitizerUtil.sanitize(
-							companyId, groupId, userId,
-							BlogsEntry.class.getName(), entryId,
-							ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-							blogsEntry.getCoverImageCaption(), null));
-				}
-				catch (SanitizerException sanitizerException) {
-					throw new SystemException(sanitizerException);
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(blogsEntry)) {
 					if (!isNew) {
-						session.evict(
-							BlogsEntryImpl.class,
-							blogsEntry.getPrimaryKeyObj());
+						classPK = blogsEntry.getPrimaryKey();
 					}
 
-					session.save(blogsEntry);
+					try {
+						blogsEntry.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								BlogsEntry.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								blogsEntry.getExternalReferenceCode(), null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
 				}
-				else {
-					blogsEntry = (BlogsEntry)session.merge(blogsEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
 			}
 
-			entityCache.putResult(
-				BlogsEntryImpl.class, blogsEntryModelImpl, false, true);
-
-			cacheUniqueFindersCache(blogsEntryModelImpl);
+			BlogsEntry ercBlogsEntry = fetchByERC_G(
+				blogsEntry.getExternalReferenceCode(), blogsEntry.getGroupId());
 
 			if (isNew) {
-				blogsEntry.setNew(false);
+				if (ercBlogsEntry != null) {
+					throw new DuplicateBlogsEntryExternalReferenceCodeException(
+						"Duplicate blogs entry with external reference code " +
+							blogsEntry.getExternalReferenceCode() +
+								" and group " + blogsEntry.getGroupId());
+				}
+			}
+			else {
+				if ((ercBlogsEntry != null) &&
+					(blogsEntry.getEntryId() != ercBlogsEntry.getEntryId())) {
+
+					throw new DuplicateBlogsEntryExternalReferenceCodeException(
+						"Duplicate blogs entry with external reference code " +
+							blogsEntry.getExternalReferenceCode() +
+								" and group " + blogsEntry.getGroupId());
+				}
+			}
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (blogsEntry.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				blogsEntry.setCreateDate(date);
+			}
+			else {
+				blogsEntry.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!blogsEntryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				blogsEntry.setModifiedDate(date);
+			}
+			else {
+				blogsEntry.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
+
+		if (userId > 0) {
+			long companyId = blogsEntry.getCompanyId();
+
+			long groupId = blogsEntry.getGroupId();
+
+			long entryId = 0;
+
+			if (!isNew) {
+				entryId = blogsEntry.getPrimaryKey();
 			}
 
-			blogsEntry.resetOriginalValues();
+			try {
+				blogsEntry.setTitle(
+					SanitizerUtil.sanitize(
+						companyId, groupId, userId, BlogsEntry.class.getName(),
+						entryId, ContentTypes.TEXT_PLAIN, Sanitizer.MODE_ALL,
+						blogsEntry.getTitle(), null));
 
-			return blogsEntry;
+				blogsEntry.setContent(
+					SanitizerUtil.sanitize(
+						companyId, groupId, userId, BlogsEntry.class.getName(),
+						entryId, ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+						blogsEntry.getContent(), null));
+
+				blogsEntry.setCoverImageCaption(
+					SanitizerUtil.sanitize(
+						companyId, groupId, userId, BlogsEntry.class.getName(),
+						entryId, ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+						blogsEntry.getCoverImageCaption(), null));
+			}
+			catch (SanitizerException sanitizerException) {
+				throw new SystemException(sanitizerException);
+			}
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(blogsEntry)) {
+				if (!isNew) {
+					session.evict(
+						BlogsEntryImpl.class, blogsEntry.getPrimaryKeyObj());
+				}
+
+				session.save(blogsEntry);
+			}
+			else {
+				blogsEntry = (BlogsEntry)session.merge(blogsEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			BlogsEntryImpl.class, blogsEntryModelImpl, false, true);
+
+		cacheUniqueFindersCache(blogsEntryModelImpl);
+
+		if (isNew) {
+			blogsEntry.setNew(false);
+		}
+
+		blogsEntry.resetOriginalValues();
+
+		return blogsEntry;
 	}
 
 	/**
@@ -22093,44 +22078,40 @@ public class BlogsEntryPersistenceImpl
 				BlogsEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		BlogsEntry blogsEntry = (BlogsEntry)entityCache.getResult(
+			BlogsEntryImpl.class, primaryKey);
 
-			BlogsEntry blogsEntry = (BlogsEntry)entityCache.getResult(
+		if (blogsEntry != null) {
+			return blogsEntry;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			blogsEntry = (BlogsEntry)session.get(
 				BlogsEntryImpl.class, primaryKey);
 
 			if (blogsEntry != null) {
-				return blogsEntry;
+				cacheResult(blogsEntry);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				blogsEntry = (BlogsEntry)session.get(
-					BlogsEntryImpl.class, primaryKey);
-
-				if (blogsEntry != null) {
-					cacheResult(blogsEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return blogsEntry;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return blogsEntry;
 	}
 
 	/**
@@ -22150,8 +22131,8 @@ public class BlogsEntryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(BlogsEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -22184,9 +22165,8 @@ public class BlogsEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							BlogsEntry.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						BlogsEntry.class, primaryKey)) {
 
 				BlogsEntry blogsEntry = (BlogsEntry)entityCache.getResult(
 					BlogsEntryImpl.class, primaryKey);
@@ -22334,8 +22314,8 @@ public class BlogsEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -22428,8 +22408,8 @@ public class BlogsEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(BlogsEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					BlogsEntry.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

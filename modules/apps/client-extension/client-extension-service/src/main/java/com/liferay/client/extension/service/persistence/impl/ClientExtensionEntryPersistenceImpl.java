@@ -18,7 +18,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -183,9 +182,8 @@ public class ClientExtensionEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -956,9 +954,8 @@ public class ClientExtensionEntryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1173,9 +1170,8 @@ public class ClientExtensionEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1994,9 +1990,8 @@ public class ClientExtensionEntryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -2216,9 +2211,8 @@ public class ClientExtensionEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2946,9 +2940,8 @@ public class ClientExtensionEntryPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -3125,9 +3118,8 @@ public class ClientExtensionEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntry.class)) {
 
 			type = Objects.toString(type, "");
 
@@ -3946,9 +3938,8 @@ public class ClientExtensionEntryPersistenceImpl
 	@Override
 	public int countByC_T(long companyId, String type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntry.class)) {
 
 			type = Objects.toString(type, "");
 
@@ -4160,9 +4151,8 @@ public class ClientExtensionEntryPersistenceImpl
 		String externalReferenceCode, long companyId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntry.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -4288,9 +4278,8 @@ public class ClientExtensionEntryPersistenceImpl
 	@Override
 	public int countByERC_C(String externalReferenceCode, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntry.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -4394,8 +4383,8 @@ public class ClientExtensionEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					clientExtensionEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					clientExtensionEntry.getCtCollectionId())) {
 
 			entityCache.putResult(
 				ClientExtensionEntryImpl.class,
@@ -4439,8 +4428,8 @@ public class ClientExtensionEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						clientExtensionEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						clientExtensionEntry.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						ClientExtensionEntryImpl.class,
@@ -4510,8 +4499,8 @@ public class ClientExtensionEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					clientExtensionEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					clientExtensionEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				clientExtensionEntryModelImpl.getExternalReferenceCode(),
@@ -4643,208 +4632,191 @@ public class ClientExtensionEntryPersistenceImpl
 	public ClientExtensionEntry updateImpl(
 		ClientExtensionEntry clientExtensionEntry) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = clientExtensionEntry.isNew();
 
-			boolean isNew = clientExtensionEntry.isNew();
+		if (!(clientExtensionEntry instanceof ClientExtensionEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(clientExtensionEntry instanceof
-					ClientExtensionEntryModelImpl)) {
-
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(clientExtensionEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						clientExtensionEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in clientExtensionEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(clientExtensionEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					clientExtensionEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom ClientExtensionEntry implementation " +
-						clientExtensionEntry.getClass());
+					"Implement ModelWrapper in clientExtensionEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			ClientExtensionEntryModelImpl clientExtensionEntryModelImpl =
-				(ClientExtensionEntryModelImpl)clientExtensionEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom ClientExtensionEntry implementation " +
+					clientExtensionEntry.getClass());
+		}
 
-			if (Validator.isNull(clientExtensionEntry.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		ClientExtensionEntryModelImpl clientExtensionEntryModelImpl =
+			(ClientExtensionEntryModelImpl)clientExtensionEntry;
 
-				clientExtensionEntry.setUuid(uuid);
-			}
+		if (Validator.isNull(clientExtensionEntry.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
 
-			if (Validator.isNull(
+			clientExtensionEntry.setUuid(uuid);
+		}
+
+		if (Validator.isNull(clientExtensionEntry.getExternalReferenceCode())) {
+			clientExtensionEntry.setExternalReferenceCode(
+				clientExtensionEntry.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					clientExtensionEntryModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
 					clientExtensionEntry.getExternalReferenceCode())) {
 
-				clientExtensionEntry.setExternalReferenceCode(
-					clientExtensionEntry.getUuid());
-			}
-			else {
-				if (!Objects.equals(
-						clientExtensionEntryModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						clientExtensionEntry.getExternalReferenceCode())) {
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
 
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
+				if (userId > 0) {
+					long companyId = clientExtensionEntry.getCompanyId();
 
-					if (userId > 0) {
-						long companyId = clientExtensionEntry.getCompanyId();
+					long groupId = 0;
 
-						long groupId = 0;
+					long classPK = 0;
 
-						long classPK = 0;
-
-						if (!isNew) {
-							classPK = clientExtensionEntry.getPrimaryKey();
-						}
-
-						try {
-							clientExtensionEntry.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									ClientExtensionEntry.class.getName(),
-									classPK, ContentTypes.TEXT_HTML,
-									Sanitizer.MODE_ALL,
-									clientExtensionEntry.
-										getExternalReferenceCode(),
-									null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
-
-				ClientExtensionEntry ercClientExtensionEntry = fetchByERC_C(
-					clientExtensionEntry.getExternalReferenceCode(),
-					clientExtensionEntry.getCompanyId());
-
-				if (isNew) {
-					if (ercClientExtensionEntry != null) {
-						throw new DuplicateClientExtensionEntryExternalReferenceCodeException(
-							"Duplicate client extension entry with external reference code " +
-								clientExtensionEntry.
-									getExternalReferenceCode() +
-										" and company " +
-											clientExtensionEntry.
-												getCompanyId());
-					}
-				}
-				else {
-					if ((ercClientExtensionEntry != null) &&
-						(clientExtensionEntry.getClientExtensionEntryId() !=
-							ercClientExtensionEntry.
-								getClientExtensionEntryId())) {
-
-						throw new DuplicateClientExtensionEntryExternalReferenceCodeException(
-							"Duplicate client extension entry with external reference code " +
-								clientExtensionEntry.
-									getExternalReferenceCode() +
-										" and company " +
-											clientExtensionEntry.
-												getCompanyId());
-					}
-				}
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (clientExtensionEntry.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					clientExtensionEntry.setCreateDate(date);
-				}
-				else {
-					clientExtensionEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!clientExtensionEntryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					clientExtensionEntry.setModifiedDate(date);
-				}
-				else {
-					clientExtensionEntry.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
-
-			if (userId > 0) {
-				long companyId = clientExtensionEntry.getCompanyId();
-
-				long groupId = 0;
-
-				long clientExtensionEntryId = 0;
-
-				if (!isNew) {
-					clientExtensionEntryId =
-						clientExtensionEntry.getPrimaryKey();
-				}
-
-				try {
-					clientExtensionEntry.setDescription(
-						SanitizerUtil.sanitize(
-							companyId, groupId, userId,
-							ClientExtensionEntry.class.getName(),
-							clientExtensionEntryId, ContentTypes.TEXT_HTML,
-							Sanitizer.MODE_ALL,
-							clientExtensionEntry.getDescription(), null));
-				}
-				catch (SanitizerException sanitizerException) {
-					throw new SystemException(sanitizerException);
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(clientExtensionEntry)) {
 					if (!isNew) {
-						session.evict(
-							ClientExtensionEntryImpl.class,
-							clientExtensionEntry.getPrimaryKeyObj());
+						classPK = clientExtensionEntry.getPrimaryKey();
 					}
 
-					session.save(clientExtensionEntry);
+					try {
+						clientExtensionEntry.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								ClientExtensionEntry.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								clientExtensionEntry.getExternalReferenceCode(),
+								null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
 				}
-				else {
-					clientExtensionEntry = (ClientExtensionEntry)session.merge(
-						clientExtensionEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
 			}
 
-			entityCache.putResult(
-				ClientExtensionEntryImpl.class, clientExtensionEntryModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(clientExtensionEntryModelImpl);
+			ClientExtensionEntry ercClientExtensionEntry = fetchByERC_C(
+				clientExtensionEntry.getExternalReferenceCode(),
+				clientExtensionEntry.getCompanyId());
 
 			if (isNew) {
-				clientExtensionEntry.setNew(false);
+				if (ercClientExtensionEntry != null) {
+					throw new DuplicateClientExtensionEntryExternalReferenceCodeException(
+						"Duplicate client extension entry with external reference code " +
+							clientExtensionEntry.getExternalReferenceCode() +
+								" and company " +
+									clientExtensionEntry.getCompanyId());
+				}
+			}
+			else {
+				if ((ercClientExtensionEntry != null) &&
+					(clientExtensionEntry.getClientExtensionEntryId() !=
+						ercClientExtensionEntry.getClientExtensionEntryId())) {
+
+					throw new DuplicateClientExtensionEntryExternalReferenceCodeException(
+						"Duplicate client extension entry with external reference code " +
+							clientExtensionEntry.getExternalReferenceCode() +
+								" and company " +
+									clientExtensionEntry.getCompanyId());
+				}
+			}
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (clientExtensionEntry.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				clientExtensionEntry.setCreateDate(date);
+			}
+			else {
+				clientExtensionEntry.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!clientExtensionEntryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				clientExtensionEntry.setModifiedDate(date);
+			}
+			else {
+				clientExtensionEntry.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		long userId = GetterUtil.getLong(PrincipalThreadLocal.getName());
+
+		if (userId > 0) {
+			long companyId = clientExtensionEntry.getCompanyId();
+
+			long groupId = 0;
+
+			long clientExtensionEntryId = 0;
+
+			if (!isNew) {
+				clientExtensionEntryId = clientExtensionEntry.getPrimaryKey();
 			}
 
-			clientExtensionEntry.resetOriginalValues();
-
-			return clientExtensionEntry;
+			try {
+				clientExtensionEntry.setDescription(
+					SanitizerUtil.sanitize(
+						companyId, groupId, userId,
+						ClientExtensionEntry.class.getName(),
+						clientExtensionEntryId, ContentTypes.TEXT_HTML,
+						Sanitizer.MODE_ALL,
+						clientExtensionEntry.getDescription(), null));
+			}
+			catch (SanitizerException sanitizerException) {
+				throw new SystemException(sanitizerException);
+			}
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(clientExtensionEntry)) {
+				if (!isNew) {
+					session.evict(
+						ClientExtensionEntryImpl.class,
+						clientExtensionEntry.getPrimaryKeyObj());
+				}
+
+				session.save(clientExtensionEntry);
+			}
+			else {
+				clientExtensionEntry = (ClientExtensionEntry)session.merge(
+					clientExtensionEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			ClientExtensionEntryImpl.class, clientExtensionEntryModelImpl,
+			false, true);
+
+		cacheUniqueFindersCache(clientExtensionEntryModelImpl);
+
+		if (isNew) {
+			clientExtensionEntry.setNew(false);
+		}
+
+		clientExtensionEntry.resetOriginalValues();
+
+		return clientExtensionEntry;
 	}
 
 	/**
@@ -4899,45 +4871,41 @@ public class ClientExtensionEntryPersistenceImpl
 				ClientExtensionEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		ClientExtensionEntry clientExtensionEntry =
+			(ClientExtensionEntry)entityCache.getResult(
+				ClientExtensionEntryImpl.class, primaryKey);
 
-			ClientExtensionEntry clientExtensionEntry =
-				(ClientExtensionEntry)entityCache.getResult(
-					ClientExtensionEntryImpl.class, primaryKey);
-
-			if (clientExtensionEntry != null) {
-				return clientExtensionEntry;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				clientExtensionEntry = (ClientExtensionEntry)session.get(
-					ClientExtensionEntryImpl.class, primaryKey);
-
-				if (clientExtensionEntry != null) {
-					cacheResult(clientExtensionEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (clientExtensionEntry != null) {
 			return clientExtensionEntry;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			clientExtensionEntry = (ClientExtensionEntry)session.get(
+				ClientExtensionEntryImpl.class, primaryKey);
+
+			if (clientExtensionEntry != null) {
+				cacheResult(clientExtensionEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return clientExtensionEntry;
 	}
 
 	/**
@@ -4957,8 +4925,8 @@ public class ClientExtensionEntryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(ClientExtensionEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -4992,9 +4960,8 @@ public class ClientExtensionEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							ClientExtensionEntry.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						ClientExtensionEntry.class, primaryKey)) {
 
 				ClientExtensionEntry clientExtensionEntry =
 					(ClientExtensionEntry)entityCache.getResult(
@@ -5149,9 +5116,8 @@ public class ClientExtensionEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5245,9 +5211,8 @@ public class ClientExtensionEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ClientExtensionEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ClientExtensionEntry.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

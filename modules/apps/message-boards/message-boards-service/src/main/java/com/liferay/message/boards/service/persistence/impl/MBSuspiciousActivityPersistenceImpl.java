@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -175,9 +174,8 @@ public class MBSuspiciousActivityPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBSuspiciousActivity.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBSuspiciousActivity.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -587,9 +585,8 @@ public class MBSuspiciousActivityPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBSuspiciousActivity.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBSuspiciousActivity.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -719,9 +716,8 @@ public class MBSuspiciousActivityPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBSuspiciousActivity.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBSuspiciousActivity.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -843,9 +839,8 @@ public class MBSuspiciousActivityPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBSuspiciousActivity.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBSuspiciousActivity.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1000,9 +995,8 @@ public class MBSuspiciousActivityPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBSuspiciousActivity.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBSuspiciousActivity.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1443,9 +1437,8 @@ public class MBSuspiciousActivityPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBSuspiciousActivity.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBSuspiciousActivity.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1593,9 +1586,8 @@ public class MBSuspiciousActivityPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBSuspiciousActivity.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBSuspiciousActivity.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1985,9 +1977,8 @@ public class MBSuspiciousActivityPersistenceImpl
 	@Override
 	public int countByMessageId(long messageId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBSuspiciousActivity.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBSuspiciousActivity.class)) {
 
 			FinderPath finderPath = _finderPathCountByMessageId;
 
@@ -2112,9 +2103,8 @@ public class MBSuspiciousActivityPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBSuspiciousActivity.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBSuspiciousActivity.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2504,9 +2494,8 @@ public class MBSuspiciousActivityPersistenceImpl
 	@Override
 	public int countByThreadId(long threadId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBSuspiciousActivity.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBSuspiciousActivity.class)) {
 
 			FinderPath finderPath = _finderPathCountByThreadId;
 
@@ -2620,9 +2609,8 @@ public class MBSuspiciousActivityPersistenceImpl
 		long userId, long messageId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBSuspiciousActivity.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBSuspiciousActivity.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2749,9 +2737,8 @@ public class MBSuspiciousActivityPersistenceImpl
 	@Override
 	public int countByU_M(long userId, long messageId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBSuspiciousActivity.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBSuspiciousActivity.class)) {
 
 			FinderPath finderPath = _finderPathCountByU_M;
 
@@ -2872,9 +2859,8 @@ public class MBSuspiciousActivityPersistenceImpl
 		long userId, long threadId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBSuspiciousActivity.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBSuspiciousActivity.class)) {
 
 			Object[] finderArgs = null;
 
@@ -3000,9 +2986,8 @@ public class MBSuspiciousActivityPersistenceImpl
 	@Override
 	public int countByU_T(long userId, long threadId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBSuspiciousActivity.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBSuspiciousActivity.class)) {
 
 			FinderPath finderPath = _finderPathCountByU_T;
 
@@ -3087,8 +3072,8 @@ public class MBSuspiciousActivityPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					mbSuspiciousActivity.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					mbSuspiciousActivity.getCtCollectionId())) {
 
 			entityCache.putResult(
 				MBSuspiciousActivityImpl.class,
@@ -3148,8 +3133,8 @@ public class MBSuspiciousActivityPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						mbSuspiciousActivity.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						mbSuspiciousActivity.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						MBSuspiciousActivityImpl.class,
@@ -3219,8 +3204,8 @@ public class MBSuspiciousActivityPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					mbSuspiciousActivityModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					mbSuspiciousActivityModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				mbSuspiciousActivityModelImpl.getUuid(),
@@ -3370,105 +3355,98 @@ public class MBSuspiciousActivityPersistenceImpl
 	public MBSuspiciousActivity updateImpl(
 		MBSuspiciousActivity mbSuspiciousActivity) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = mbSuspiciousActivity.isNew();
 
-			boolean isNew = mbSuspiciousActivity.isNew();
+		if (!(mbSuspiciousActivity instanceof MBSuspiciousActivityModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(mbSuspiciousActivity instanceof
-					MBSuspiciousActivityModelImpl)) {
-
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(mbSuspiciousActivity.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						mbSuspiciousActivity);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in mbSuspiciousActivity proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(mbSuspiciousActivity.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					mbSuspiciousActivity);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom MBSuspiciousActivity implementation " +
-						mbSuspiciousActivity.getClass());
+					"Implement ModelWrapper in mbSuspiciousActivity proxy " +
+						invocationHandler.getClass());
 			}
 
-			MBSuspiciousActivityModelImpl mbSuspiciousActivityModelImpl =
-				(MBSuspiciousActivityModelImpl)mbSuspiciousActivity;
-
-			if (Validator.isNull(mbSuspiciousActivity.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				mbSuspiciousActivity.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (mbSuspiciousActivity.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					mbSuspiciousActivity.setCreateDate(date);
-				}
-				else {
-					mbSuspiciousActivity.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!mbSuspiciousActivityModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					mbSuspiciousActivity.setModifiedDate(date);
-				}
-				else {
-					mbSuspiciousActivity.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(mbSuspiciousActivity)) {
-					if (!isNew) {
-						session.evict(
-							MBSuspiciousActivityImpl.class,
-							mbSuspiciousActivity.getPrimaryKeyObj());
-					}
-
-					session.save(mbSuspiciousActivity);
-				}
-				else {
-					mbSuspiciousActivity = (MBSuspiciousActivity)session.merge(
-						mbSuspiciousActivity);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				MBSuspiciousActivityImpl.class, mbSuspiciousActivityModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(mbSuspiciousActivityModelImpl);
-
-			if (isNew) {
-				mbSuspiciousActivity.setNew(false);
-			}
-
-			mbSuspiciousActivity.resetOriginalValues();
-
-			return mbSuspiciousActivity;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom MBSuspiciousActivity implementation " +
+					mbSuspiciousActivity.getClass());
 		}
+
+		MBSuspiciousActivityModelImpl mbSuspiciousActivityModelImpl =
+			(MBSuspiciousActivityModelImpl)mbSuspiciousActivity;
+
+		if (Validator.isNull(mbSuspiciousActivity.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			mbSuspiciousActivity.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (mbSuspiciousActivity.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				mbSuspiciousActivity.setCreateDate(date);
+			}
+			else {
+				mbSuspiciousActivity.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!mbSuspiciousActivityModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				mbSuspiciousActivity.setModifiedDate(date);
+			}
+			else {
+				mbSuspiciousActivity.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(mbSuspiciousActivity)) {
+				if (!isNew) {
+					session.evict(
+						MBSuspiciousActivityImpl.class,
+						mbSuspiciousActivity.getPrimaryKeyObj());
+				}
+
+				session.save(mbSuspiciousActivity);
+			}
+			else {
+				mbSuspiciousActivity = (MBSuspiciousActivity)session.merge(
+					mbSuspiciousActivity);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			MBSuspiciousActivityImpl.class, mbSuspiciousActivityModelImpl,
+			false, true);
+
+		cacheUniqueFindersCache(mbSuspiciousActivityModelImpl);
+
+		if (isNew) {
+			mbSuspiciousActivity.setNew(false);
+		}
+
+		mbSuspiciousActivity.resetOriginalValues();
+
+		return mbSuspiciousActivity;
 	}
 
 	/**
@@ -3523,45 +3501,41 @@ public class MBSuspiciousActivityPersistenceImpl
 				MBSuspiciousActivity.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		MBSuspiciousActivity mbSuspiciousActivity =
+			(MBSuspiciousActivity)entityCache.getResult(
+				MBSuspiciousActivityImpl.class, primaryKey);
 
-			MBSuspiciousActivity mbSuspiciousActivity =
-				(MBSuspiciousActivity)entityCache.getResult(
-					MBSuspiciousActivityImpl.class, primaryKey);
-
-			if (mbSuspiciousActivity != null) {
-				return mbSuspiciousActivity;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				mbSuspiciousActivity = (MBSuspiciousActivity)session.get(
-					MBSuspiciousActivityImpl.class, primaryKey);
-
-				if (mbSuspiciousActivity != null) {
-					cacheResult(mbSuspiciousActivity);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (mbSuspiciousActivity != null) {
 			return mbSuspiciousActivity;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			mbSuspiciousActivity = (MBSuspiciousActivity)session.get(
+				MBSuspiciousActivityImpl.class, primaryKey);
+
+			if (mbSuspiciousActivity != null) {
+				cacheResult(mbSuspiciousActivity);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return mbSuspiciousActivity;
 	}
 
 	/**
@@ -3581,8 +3555,8 @@ public class MBSuspiciousActivityPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(MBSuspiciousActivity.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3616,9 +3590,8 @@ public class MBSuspiciousActivityPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							MBSuspiciousActivity.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						MBSuspiciousActivity.class, primaryKey)) {
 
 				MBSuspiciousActivity mbSuspiciousActivity =
 					(MBSuspiciousActivity)entityCache.getResult(
@@ -3773,9 +3746,8 @@ public class MBSuspiciousActivityPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBSuspiciousActivity.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBSuspiciousActivity.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3869,9 +3841,8 @@ public class MBSuspiciousActivityPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						MBSuspiciousActivity.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					MBSuspiciousActivity.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

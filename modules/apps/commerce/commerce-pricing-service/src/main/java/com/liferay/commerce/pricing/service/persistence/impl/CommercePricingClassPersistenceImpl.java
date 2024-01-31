@@ -18,7 +18,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -183,9 +182,8 @@ public class CommercePricingClassPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePricingClass.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePricingClass.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -956,9 +954,8 @@ public class CommercePricingClassPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePricingClass.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePricingClass.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1173,9 +1170,8 @@ public class CommercePricingClassPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePricingClass.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePricingClass.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1994,9 +1990,8 @@ public class CommercePricingClassPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePricingClass.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePricingClass.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -2216,9 +2211,8 @@ public class CommercePricingClassPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePricingClass.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePricingClass.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2946,9 +2940,8 @@ public class CommercePricingClassPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePricingClass.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePricingClass.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -3113,9 +3106,8 @@ public class CommercePricingClassPersistenceImpl
 		String externalReferenceCode, long companyId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePricingClass.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePricingClass.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -3241,9 +3233,8 @@ public class CommercePricingClassPersistenceImpl
 	@Override
 	public int countByERC_C(String externalReferenceCode, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePricingClass.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePricingClass.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -3346,8 +3337,8 @@ public class CommercePricingClassPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					commercePricingClass.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					commercePricingClass.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CommercePricingClassImpl.class,
@@ -3391,8 +3382,8 @@ public class CommercePricingClassPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						commercePricingClass.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						commercePricingClass.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CommercePricingClassImpl.class,
@@ -3462,8 +3453,8 @@ public class CommercePricingClassPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					commercePricingClassModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					commercePricingClassModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				commercePricingClassModelImpl.getExternalReferenceCode(),
@@ -3595,180 +3586,164 @@ public class CommercePricingClassPersistenceImpl
 	public CommercePricingClass updateImpl(
 		CommercePricingClass commercePricingClass) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = commercePricingClass.isNew();
 
-			boolean isNew = commercePricingClass.isNew();
+		if (!(commercePricingClass instanceof CommercePricingClassModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(commercePricingClass instanceof
-					CommercePricingClassModelImpl)) {
-
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(commercePricingClass.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						commercePricingClass);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in commercePricingClass proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(commercePricingClass.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					commercePricingClass);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CommercePricingClass implementation " +
-						commercePricingClass.getClass());
+					"Implement ModelWrapper in commercePricingClass proxy " +
+						invocationHandler.getClass());
 			}
 
-			CommercePricingClassModelImpl commercePricingClassModelImpl =
-				(CommercePricingClassModelImpl)commercePricingClass;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CommercePricingClass implementation " +
+					commercePricingClass.getClass());
+		}
 
-			if (Validator.isNull(commercePricingClass.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		CommercePricingClassModelImpl commercePricingClassModelImpl =
+			(CommercePricingClassModelImpl)commercePricingClass;
 
-				commercePricingClass.setUuid(uuid);
-			}
+		if (Validator.isNull(commercePricingClass.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
 
-			if (Validator.isNull(
+			commercePricingClass.setUuid(uuid);
+		}
+
+		if (Validator.isNull(commercePricingClass.getExternalReferenceCode())) {
+			commercePricingClass.setExternalReferenceCode(
+				commercePricingClass.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					commercePricingClassModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
 					commercePricingClass.getExternalReferenceCode())) {
 
-				commercePricingClass.setExternalReferenceCode(
-					commercePricingClass.getUuid());
-			}
-			else {
-				if (!Objects.equals(
-						commercePricingClassModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						commercePricingClass.getExternalReferenceCode())) {
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
 
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
+				if (userId > 0) {
+					long companyId = commercePricingClass.getCompanyId();
 
-					if (userId > 0) {
-						long companyId = commercePricingClass.getCompanyId();
+					long groupId = 0;
 
-						long groupId = 0;
+					long classPK = 0;
 
-						long classPK = 0;
-
-						if (!isNew) {
-							classPK = commercePricingClass.getPrimaryKey();
-						}
-
-						try {
-							commercePricingClass.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									CommercePricingClass.class.getName(),
-									classPK, ContentTypes.TEXT_HTML,
-									Sanitizer.MODE_ALL,
-									commercePricingClass.
-										getExternalReferenceCode(),
-									null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
-
-				CommercePricingClass ercCommercePricingClass = fetchByERC_C(
-					commercePricingClass.getExternalReferenceCode(),
-					commercePricingClass.getCompanyId());
-
-				if (isNew) {
-					if (ercCommercePricingClass != null) {
-						throw new DuplicateCommercePricingClassExternalReferenceCodeException(
-							"Duplicate commerce pricing class with external reference code " +
-								commercePricingClass.
-									getExternalReferenceCode() +
-										" and company " +
-											commercePricingClass.
-												getCompanyId());
-					}
-				}
-				else {
-					if ((ercCommercePricingClass != null) &&
-						(commercePricingClass.getCommercePricingClassId() !=
-							ercCommercePricingClass.
-								getCommercePricingClassId())) {
-
-						throw new DuplicateCommercePricingClassExternalReferenceCodeException(
-							"Duplicate commerce pricing class with external reference code " +
-								commercePricingClass.
-									getExternalReferenceCode() +
-										" and company " +
-											commercePricingClass.
-												getCompanyId());
-					}
-				}
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (commercePricingClass.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					commercePricingClass.setCreateDate(date);
-				}
-				else {
-					commercePricingClass.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!commercePricingClassModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					commercePricingClass.setModifiedDate(date);
-				}
-				else {
-					commercePricingClass.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(commercePricingClass)) {
 					if (!isNew) {
-						session.evict(
-							CommercePricingClassImpl.class,
-							commercePricingClass.getPrimaryKeyObj());
+						classPK = commercePricingClass.getPrimaryKey();
 					}
 
-					session.save(commercePricingClass);
+					try {
+						commercePricingClass.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								CommercePricingClass.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								commercePricingClass.getExternalReferenceCode(),
+								null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
 				}
-				else {
-					commercePricingClass = (CommercePricingClass)session.merge(
-						commercePricingClass);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
 			}
 
-			entityCache.putResult(
-				CommercePricingClassImpl.class, commercePricingClassModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(commercePricingClassModelImpl);
+			CommercePricingClass ercCommercePricingClass = fetchByERC_C(
+				commercePricingClass.getExternalReferenceCode(),
+				commercePricingClass.getCompanyId());
 
 			if (isNew) {
-				commercePricingClass.setNew(false);
+				if (ercCommercePricingClass != null) {
+					throw new DuplicateCommercePricingClassExternalReferenceCodeException(
+						"Duplicate commerce pricing class with external reference code " +
+							commercePricingClass.getExternalReferenceCode() +
+								" and company " +
+									commercePricingClass.getCompanyId());
+				}
 			}
+			else {
+				if ((ercCommercePricingClass != null) &&
+					(commercePricingClass.getCommercePricingClassId() !=
+						ercCommercePricingClass.getCommercePricingClassId())) {
 
-			commercePricingClass.resetOriginalValues();
-
-			return commercePricingClass;
+					throw new DuplicateCommercePricingClassExternalReferenceCodeException(
+						"Duplicate commerce pricing class with external reference code " +
+							commercePricingClass.getExternalReferenceCode() +
+								" and company " +
+									commercePricingClass.getCompanyId());
+				}
+			}
 		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (commercePricingClass.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				commercePricingClass.setCreateDate(date);
+			}
+			else {
+				commercePricingClass.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!commercePricingClassModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				commercePricingClass.setModifiedDate(date);
+			}
+			else {
+				commercePricingClass.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(commercePricingClass)) {
+				if (!isNew) {
+					session.evict(
+						CommercePricingClassImpl.class,
+						commercePricingClass.getPrimaryKeyObj());
+				}
+
+				session.save(commercePricingClass);
+			}
+			else {
+				commercePricingClass = (CommercePricingClass)session.merge(
+					commercePricingClass);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CommercePricingClassImpl.class, commercePricingClassModelImpl,
+			false, true);
+
+		cacheUniqueFindersCache(commercePricingClassModelImpl);
+
+		if (isNew) {
+			commercePricingClass.setNew(false);
+		}
+
+		commercePricingClass.resetOriginalValues();
+
+		return commercePricingClass;
 	}
 
 	/**
@@ -3823,45 +3798,41 @@ public class CommercePricingClassPersistenceImpl
 				CommercePricingClass.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CommercePricingClass commercePricingClass =
+			(CommercePricingClass)entityCache.getResult(
+				CommercePricingClassImpl.class, primaryKey);
 
-			CommercePricingClass commercePricingClass =
-				(CommercePricingClass)entityCache.getResult(
-					CommercePricingClassImpl.class, primaryKey);
-
-			if (commercePricingClass != null) {
-				return commercePricingClass;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				commercePricingClass = (CommercePricingClass)session.get(
-					CommercePricingClassImpl.class, primaryKey);
-
-				if (commercePricingClass != null) {
-					cacheResult(commercePricingClass);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (commercePricingClass != null) {
 			return commercePricingClass;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			commercePricingClass = (CommercePricingClass)session.get(
+				CommercePricingClassImpl.class, primaryKey);
+
+			if (commercePricingClass != null) {
+				cacheResult(commercePricingClass);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return commercePricingClass;
 	}
 
 	/**
@@ -3881,8 +3852,8 @@ public class CommercePricingClassPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(CommercePricingClass.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3916,9 +3887,8 @@ public class CommercePricingClassPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CommercePricingClass.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CommercePricingClass.class, primaryKey)) {
 
 				CommercePricingClass commercePricingClass =
 					(CommercePricingClass)entityCache.getResult(
@@ -4073,9 +4043,8 @@ public class CommercePricingClassPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePricingClass.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePricingClass.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4169,9 +4138,8 @@ public class CommercePricingClassPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePricingClass.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePricingClass.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

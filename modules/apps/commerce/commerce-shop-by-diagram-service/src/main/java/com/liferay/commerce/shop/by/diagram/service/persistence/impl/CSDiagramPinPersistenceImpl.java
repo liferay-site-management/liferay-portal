@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -172,9 +171,8 @@ public class CSDiagramPinPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CSDiagramPin.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CSDiagramPin.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -563,9 +561,8 @@ public class CSDiagramPinPersistenceImpl
 	@Override
 	public int countByCPDefinitionId(long CPDefinitionId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CSDiagramPin.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CSDiagramPin.class)) {
 
 			FinderPath finderPath = _finderPathCountByCPDefinitionId;
 
@@ -637,8 +634,8 @@ public class CSDiagramPinPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					csDiagramPin.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					csDiagramPin.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CSDiagramPinImpl.class, csDiagramPin.getPrimaryKey(),
@@ -671,8 +668,8 @@ public class CSDiagramPinPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						csDiagramPin.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						csDiagramPin.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CSDiagramPinImpl.class, csDiagramPin.getPrimaryKey()) ==
@@ -833,93 +830,87 @@ public class CSDiagramPinPersistenceImpl
 
 	@Override
 	public CSDiagramPin updateImpl(CSDiagramPin csDiagramPin) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = csDiagramPin.isNew();
 
-			boolean isNew = csDiagramPin.isNew();
+		if (!(csDiagramPin instanceof CSDiagramPinModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(csDiagramPin instanceof CSDiagramPinModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(csDiagramPin.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						csDiagramPin);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in csDiagramPin proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(csDiagramPin.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					csDiagramPin);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CSDiagramPin implementation " +
-						csDiagramPin.getClass());
+					"Implement ModelWrapper in csDiagramPin proxy " +
+						invocationHandler.getClass());
 			}
 
-			CSDiagramPinModelImpl csDiagramPinModelImpl =
-				(CSDiagramPinModelImpl)csDiagramPin;
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (csDiagramPin.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					csDiagramPin.setCreateDate(date);
-				}
-				else {
-					csDiagramPin.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!csDiagramPinModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					csDiagramPin.setModifiedDate(date);
-				}
-				else {
-					csDiagramPin.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(csDiagramPin)) {
-					if (!isNew) {
-						session.evict(
-							CSDiagramPinImpl.class,
-							csDiagramPin.getPrimaryKeyObj());
-					}
-
-					session.save(csDiagramPin);
-				}
-				else {
-					csDiagramPin = (CSDiagramPin)session.merge(csDiagramPin);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				CSDiagramPinImpl.class, csDiagramPinModelImpl, false, true);
-
-			if (isNew) {
-				csDiagramPin.setNew(false);
-			}
-
-			csDiagramPin.resetOriginalValues();
-
-			return csDiagramPin;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CSDiagramPin implementation " +
+					csDiagramPin.getClass());
 		}
+
+		CSDiagramPinModelImpl csDiagramPinModelImpl =
+			(CSDiagramPinModelImpl)csDiagramPin;
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (csDiagramPin.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				csDiagramPin.setCreateDate(date);
+			}
+			else {
+				csDiagramPin.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!csDiagramPinModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				csDiagramPin.setModifiedDate(date);
+			}
+			else {
+				csDiagramPin.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(csDiagramPin)) {
+				if (!isNew) {
+					session.evict(
+						CSDiagramPinImpl.class,
+						csDiagramPin.getPrimaryKeyObj());
+				}
+
+				session.save(csDiagramPin);
+			}
+			else {
+				csDiagramPin = (CSDiagramPin)session.merge(csDiagramPin);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CSDiagramPinImpl.class, csDiagramPinModelImpl, false, true);
+
+		if (isNew) {
+			csDiagramPin.setNew(false);
+		}
+
+		csDiagramPin.resetOriginalValues();
+
+		return csDiagramPin;
 	}
 
 	/**
@@ -973,44 +964,40 @@ public class CSDiagramPinPersistenceImpl
 				CSDiagramPin.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CSDiagramPin csDiagramPin = (CSDiagramPin)entityCache.getResult(
+			CSDiagramPinImpl.class, primaryKey);
 
-			CSDiagramPin csDiagramPin = (CSDiagramPin)entityCache.getResult(
+		if (csDiagramPin != null) {
+			return csDiagramPin;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			csDiagramPin = (CSDiagramPin)session.get(
 				CSDiagramPinImpl.class, primaryKey);
 
 			if (csDiagramPin != null) {
-				return csDiagramPin;
+				cacheResult(csDiagramPin);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				csDiagramPin = (CSDiagramPin)session.get(
-					CSDiagramPinImpl.class, primaryKey);
-
-				if (csDiagramPin != null) {
-					cacheResult(csDiagramPin);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return csDiagramPin;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return csDiagramPin;
 	}
 
 	/**
@@ -1030,8 +1017,8 @@ public class CSDiagramPinPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(CSDiagramPin.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -1064,9 +1051,8 @@ public class CSDiagramPinPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CSDiagramPin.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CSDiagramPin.class, primaryKey)) {
 
 				CSDiagramPin csDiagramPin = (CSDiagramPin)entityCache.getResult(
 					CSDiagramPinImpl.class, primaryKey);
@@ -1214,9 +1200,8 @@ public class CSDiagramPinPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CSDiagramPin.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CSDiagramPin.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1309,9 +1294,8 @@ public class CSDiagramPinPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CSDiagramPin.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CSDiagramPin.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

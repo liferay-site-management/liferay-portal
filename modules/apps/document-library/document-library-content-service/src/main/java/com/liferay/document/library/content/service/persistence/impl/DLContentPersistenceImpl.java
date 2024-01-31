@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -176,8 +175,8 @@ public class DLContentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DLContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLContent.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -587,8 +586,8 @@ public class DLContentPersistenceImpl
 	@Override
 	public int countByC_R(long companyId, long repositoryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DLContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLContent.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_R;
 
@@ -732,8 +731,8 @@ public class DLContentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DLContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLContent.class)) {
 
 			path = Objects.toString(path, "");
 
@@ -1192,8 +1191,8 @@ public class DLContentPersistenceImpl
 	@Override
 	public int countByC_R_P(long companyId, long repositoryId, String path) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DLContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLContent.class)) {
 
 			path = Objects.toString(path, "");
 
@@ -1359,8 +1358,8 @@ public class DLContentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DLContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLContent.class)) {
 
 			path = Objects.toString(path, "");
 
@@ -1815,8 +1814,8 @@ public class DLContentPersistenceImpl
 		long companyId, long repositoryId, String path) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DLContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLContent.class)) {
 
 			path = Objects.toString(path, "");
 
@@ -1976,8 +1975,8 @@ public class DLContentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DLContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLContent.class)) {
 
 			path = Objects.toString(path, "");
 			version = Objects.toString(version, "");
@@ -2130,8 +2129,8 @@ public class DLContentPersistenceImpl
 		long companyId, long repositoryId, String path, String version) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DLContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLContent.class)) {
 
 			path = Objects.toString(path, "");
 			version = Objects.toString(version, "");
@@ -2265,8 +2264,8 @@ public class DLContentPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					dlContent.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					dlContent.getCtCollectionId())) {
 
 			entityCache.putResult(
 				DLContentImpl.class, dlContent.getPrimaryKey(), dlContent);
@@ -2306,8 +2305,8 @@ public class DLContentPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						dlContent.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						dlContent.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						DLContentImpl.class, dlContent.getPrimaryKey()) ==
@@ -2372,8 +2371,8 @@ public class DLContentPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					dlContentModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					dlContentModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				dlContentModelImpl.getCompanyId(),
@@ -2493,75 +2492,68 @@ public class DLContentPersistenceImpl
 
 	@Override
 	public DLContent updateImpl(DLContent dlContent) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = dlContent.isNew();
 
-			boolean isNew = dlContent.isNew();
+		if (!(dlContent instanceof DLContentModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(dlContent instanceof DLContentModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(dlContent.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						dlContent);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in dlContent proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(dlContent.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(dlContent);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DLContent implementation " +
-						dlContent.getClass());
+					"Implement ModelWrapper in dlContent proxy " +
+						invocationHandler.getClass());
 			}
 
-			DLContentModelImpl dlContentModelImpl =
-				(DLContentModelImpl)dlContent;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DLContent implementation " +
+					dlContent.getClass());
+		}
 
-			Session session = null;
+		DLContentModelImpl dlContentModelImpl = (DLContentModelImpl)dlContent;
 
-			try {
-				session = openSession();
+		Session session = null;
 
-				if (ctPersistenceHelper.isInsert(dlContent)) {
-					if (!isNew) {
-						session.evict(
-							DLContentImpl.class, dlContent.getPrimaryKeyObj());
-					}
+		try {
+			session = openSession();
 
-					session.save(dlContent);
-				}
-				else {
+			if (ctPersistenceHelper.isInsert(dlContent)) {
+				if (!isNew) {
 					session.evict(
 						DLContentImpl.class, dlContent.getPrimaryKeyObj());
-
-					session.saveOrUpdate(dlContent);
 				}
 
-				session.flush();
-				session.clear();
+				session.save(dlContent);
 			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
+			else {
+				session.evict(
+					DLContentImpl.class, dlContent.getPrimaryKeyObj());
 
-			entityCache.putResult(
-				DLContentImpl.class, dlContentModelImpl, false, true);
-
-			cacheUniqueFindersCache(dlContentModelImpl);
-
-			if (isNew) {
-				dlContent.setNew(false);
+				session.saveOrUpdate(dlContent);
 			}
 
-			dlContent.resetOriginalValues();
-
-			return dlContent;
+			session.flush();
+			session.clear();
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			DLContentImpl.class, dlContentModelImpl, false, true);
+
+		cacheUniqueFindersCache(dlContentModelImpl);
+
+		if (isNew) {
+			dlContent.setNew(false);
+		}
+
+		dlContent.resetOriginalValues();
+
+		return dlContent;
 	}
 
 	/**
@@ -2613,44 +2605,39 @@ public class DLContentPersistenceImpl
 	public DLContent fetchByPrimaryKey(Serializable primaryKey) {
 		if (ctPersistenceHelper.isProductionMode(DLContent.class, primaryKey)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DLContent dlContent = (DLContent)entityCache.getResult(
+			DLContentImpl.class, primaryKey);
 
-			DLContent dlContent = (DLContent)entityCache.getResult(
-				DLContentImpl.class, primaryKey);
-
-			if (dlContent != null) {
-				return dlContent;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				dlContent = (DLContent)session.get(
-					DLContentImpl.class, primaryKey);
-
-				if (dlContent != null) {
-					cacheResult(dlContent);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (dlContent != null) {
 			return dlContent;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			dlContent = (DLContent)session.get(DLContentImpl.class, primaryKey);
+
+			if (dlContent != null) {
+				cacheResult(dlContent);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return dlContent;
 	}
 
 	/**
@@ -2670,8 +2657,8 @@ public class DLContentPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(DLContent.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2704,9 +2691,8 @@ public class DLContentPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							DLContent.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						DLContent.class, primaryKey)) {
 
 				DLContent dlContent = (DLContent)entityCache.getResult(
 					DLContentImpl.class, primaryKey);
@@ -2854,8 +2840,8 @@ public class DLContentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DLContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLContent.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2948,8 +2934,8 @@ public class DLContentPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DLContent.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLContent.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

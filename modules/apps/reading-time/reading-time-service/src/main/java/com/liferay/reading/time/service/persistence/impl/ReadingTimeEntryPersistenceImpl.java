@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -172,9 +171,8 @@ public class ReadingTimeEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ReadingTimeEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ReadingTimeEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -579,9 +577,8 @@ public class ReadingTimeEntryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ReadingTimeEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ReadingTimeEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -710,9 +707,8 @@ public class ReadingTimeEntryPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ReadingTimeEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ReadingTimeEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -833,9 +829,8 @@ public class ReadingTimeEntryPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ReadingTimeEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ReadingTimeEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -988,9 +983,8 @@ public class ReadingTimeEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ReadingTimeEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ReadingTimeEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1429,9 +1423,8 @@ public class ReadingTimeEntryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ReadingTimeEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ReadingTimeEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1577,9 +1570,8 @@ public class ReadingTimeEntryPersistenceImpl
 		long groupId, long classNameId, long classPK, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ReadingTimeEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ReadingTimeEntry.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1696,9 +1688,8 @@ public class ReadingTimeEntryPersistenceImpl
 	@Override
 	public int countByG_C_C(long groupId, long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ReadingTimeEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ReadingTimeEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_C;
 
@@ -1790,8 +1781,8 @@ public class ReadingTimeEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					readingTimeEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					readingTimeEntry.getCtCollectionId())) {
 
 			entityCache.putResult(
 				ReadingTimeEntryImpl.class, readingTimeEntry.getPrimaryKey(),
@@ -1841,8 +1832,8 @@ public class ReadingTimeEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						readingTimeEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						readingTimeEntry.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						ReadingTimeEntryImpl.class,
@@ -1908,8 +1899,8 @@ public class ReadingTimeEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					readingTimeEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					readingTimeEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				readingTimeEntryModelImpl.getUuid(),
@@ -2046,103 +2037,97 @@ public class ReadingTimeEntryPersistenceImpl
 
 	@Override
 	public ReadingTimeEntry updateImpl(ReadingTimeEntry readingTimeEntry) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = readingTimeEntry.isNew();
 
-			boolean isNew = readingTimeEntry.isNew();
+		if (!(readingTimeEntry instanceof ReadingTimeEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(readingTimeEntry instanceof ReadingTimeEntryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(readingTimeEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						readingTimeEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in readingTimeEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(readingTimeEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					readingTimeEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom ReadingTimeEntry implementation " +
-						readingTimeEntry.getClass());
+					"Implement ModelWrapper in readingTimeEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			ReadingTimeEntryModelImpl readingTimeEntryModelImpl =
-				(ReadingTimeEntryModelImpl)readingTimeEntry;
-
-			if (Validator.isNull(readingTimeEntry.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				readingTimeEntry.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (readingTimeEntry.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					readingTimeEntry.setCreateDate(date);
-				}
-				else {
-					readingTimeEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!readingTimeEntryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					readingTimeEntry.setModifiedDate(date);
-				}
-				else {
-					readingTimeEntry.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(readingTimeEntry)) {
-					if (!isNew) {
-						session.evict(
-							ReadingTimeEntryImpl.class,
-							readingTimeEntry.getPrimaryKeyObj());
-					}
-
-					session.save(readingTimeEntry);
-				}
-				else {
-					readingTimeEntry = (ReadingTimeEntry)session.merge(
-						readingTimeEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				ReadingTimeEntryImpl.class, readingTimeEntryModelImpl, false,
-				true);
-
-			cacheUniqueFindersCache(readingTimeEntryModelImpl);
-
-			if (isNew) {
-				readingTimeEntry.setNew(false);
-			}
-
-			readingTimeEntry.resetOriginalValues();
-
-			return readingTimeEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom ReadingTimeEntry implementation " +
+					readingTimeEntry.getClass());
 		}
+
+		ReadingTimeEntryModelImpl readingTimeEntryModelImpl =
+			(ReadingTimeEntryModelImpl)readingTimeEntry;
+
+		if (Validator.isNull(readingTimeEntry.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			readingTimeEntry.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (readingTimeEntry.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				readingTimeEntry.setCreateDate(date);
+			}
+			else {
+				readingTimeEntry.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!readingTimeEntryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				readingTimeEntry.setModifiedDate(date);
+			}
+			else {
+				readingTimeEntry.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(readingTimeEntry)) {
+				if (!isNew) {
+					session.evict(
+						ReadingTimeEntryImpl.class,
+						readingTimeEntry.getPrimaryKeyObj());
+				}
+
+				session.save(readingTimeEntry);
+			}
+			else {
+				readingTimeEntry = (ReadingTimeEntry)session.merge(
+					readingTimeEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			ReadingTimeEntryImpl.class, readingTimeEntryModelImpl, false, true);
+
+		cacheUniqueFindersCache(readingTimeEntryModelImpl);
+
+		if (isNew) {
+			readingTimeEntry.setNew(false);
+		}
+
+		readingTimeEntry.resetOriginalValues();
+
+		return readingTimeEntry;
 	}
 
 	/**
@@ -2196,45 +2181,41 @@ public class ReadingTimeEntryPersistenceImpl
 				ReadingTimeEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		ReadingTimeEntry readingTimeEntry =
+			(ReadingTimeEntry)entityCache.getResult(
+				ReadingTimeEntryImpl.class, primaryKey);
 
-			ReadingTimeEntry readingTimeEntry =
-				(ReadingTimeEntry)entityCache.getResult(
-					ReadingTimeEntryImpl.class, primaryKey);
-
-			if (readingTimeEntry != null) {
-				return readingTimeEntry;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				readingTimeEntry = (ReadingTimeEntry)session.get(
-					ReadingTimeEntryImpl.class, primaryKey);
-
-				if (readingTimeEntry != null) {
-					cacheResult(readingTimeEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (readingTimeEntry != null) {
 			return readingTimeEntry;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			readingTimeEntry = (ReadingTimeEntry)session.get(
+				ReadingTimeEntryImpl.class, primaryKey);
+
+			if (readingTimeEntry != null) {
+				cacheResult(readingTimeEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return readingTimeEntry;
 	}
 
 	/**
@@ -2254,8 +2235,8 @@ public class ReadingTimeEntryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(ReadingTimeEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2288,9 +2269,8 @@ public class ReadingTimeEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							ReadingTimeEntry.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						ReadingTimeEntry.class, primaryKey)) {
 
 				ReadingTimeEntry readingTimeEntry =
 					(ReadingTimeEntry)entityCache.getResult(
@@ -2443,9 +2423,8 @@ public class ReadingTimeEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ReadingTimeEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ReadingTimeEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2538,9 +2517,8 @@ public class ReadingTimeEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						ReadingTimeEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					ReadingTimeEntry.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

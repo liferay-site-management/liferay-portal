@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -174,9 +173,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -582,9 +580,8 @@ public class FragmentEntryLinkPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -713,9 +710,8 @@ public class FragmentEntryLinkPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -836,9 +832,8 @@ public class FragmentEntryLinkPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -991,9 +986,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1432,9 +1426,8 @@ public class FragmentEntryLinkPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1582,9 +1575,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1969,9 +1961,8 @@ public class FragmentEntryLinkPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2098,9 +2089,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2561,9 +2551,8 @@ public class FragmentEntryLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2690,9 +2679,8 @@ public class FragmentEntryLinkPersistenceImpl
 	@Override
 	public int countByFragmentEntryId(long fragmentEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByFragmentEntryId;
 
@@ -2753,9 +2741,8 @@ public class FragmentEntryLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(fragmentEntryIds)
@@ -2899,9 +2886,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			rendererKey = Objects.toString(rendererKey, "");
 
@@ -3319,9 +3305,8 @@ public class FragmentEntryLinkPersistenceImpl
 	@Override
 	public int countByRendererKey(String rendererKey) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			rendererKey = Objects.toString(rendererKey, "");
 
@@ -3470,9 +3455,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3887,9 +3871,8 @@ public class FragmentEntryLinkPersistenceImpl
 	@Override
 	public int countByG_F(long groupId, long fragmentEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_F;
 
@@ -4025,9 +4008,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4440,9 +4422,8 @@ public class FragmentEntryLinkPersistenceImpl
 	@Override
 	public int countByG_P(long groupId, long plid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P;
 
@@ -4582,9 +4563,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			rendererKey = Objects.toString(rendererKey, "");
 
@@ -5099,9 +5079,8 @@ public class FragmentEntryLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			Object[] finderArgs = null;
 
@@ -5251,9 +5230,8 @@ public class FragmentEntryLinkPersistenceImpl
 	@Override
 	public int countByC_R(long companyId, String rendererKey) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			rendererKey = Objects.toString(rendererKey, "");
 
@@ -5336,9 +5314,8 @@ public class FragmentEntryLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			Object[] finderArgs = new Object[] {
 				companyId, StringUtil.merge(rendererKeys)
@@ -5510,9 +5487,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5997,9 +5973,8 @@ public class FragmentEntryLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			Object[] finderArgs = null;
 
@@ -6136,9 +6111,8 @@ public class FragmentEntryLinkPersistenceImpl
 	@Override
 	public int countByF_D(long fragmentEntryId, boolean deleted) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByF_D;
 
@@ -6204,9 +6178,8 @@ public class FragmentEntryLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(fragmentEntryIds), deleted
@@ -6371,9 +6344,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6823,9 +6795,8 @@ public class FragmentEntryLinkPersistenceImpl
 		long groupId, long originalFragmentEntryLinkId, long plid) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_OFELI_P;
 
@@ -6983,9 +6954,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7432,9 +7402,8 @@ public class FragmentEntryLinkPersistenceImpl
 		long groupId, long fragmentEntryId, long classNameId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_F_C;
 
@@ -7588,9 +7557,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -8029,9 +7997,8 @@ public class FragmentEntryLinkPersistenceImpl
 	@Override
 	public int countByG_F_P(long groupId, long fragmentEntryId, long plid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_F_P;
 
@@ -8186,9 +8153,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -8706,9 +8672,8 @@ public class FragmentEntryLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			Object[] finderArgs = null;
 
@@ -8856,9 +8821,8 @@ public class FragmentEntryLinkPersistenceImpl
 		long groupId, long segmentsExperienceId, long plid) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_S_P;
 
@@ -8934,9 +8898,8 @@ public class FragmentEntryLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(segmentsExperienceIds), plid
@@ -9106,9 +9069,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -9546,9 +9508,8 @@ public class FragmentEntryLinkPersistenceImpl
 	@Override
 	public int countByG_C_C(long groupId, long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_C;
 
@@ -9698,9 +9659,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -10136,9 +10096,8 @@ public class FragmentEntryLinkPersistenceImpl
 	@Override
 	public int countByG_P_D(long groupId, long plid, boolean deleted) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P_D;
 
@@ -10298,9 +10257,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -10771,9 +10729,8 @@ public class FragmentEntryLinkPersistenceImpl
 		long groupId, long fragmentEntryId, long classNameId, long classPK) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_F_C_C;
 
@@ -10944,9 +10901,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -11423,9 +11379,8 @@ public class FragmentEntryLinkPersistenceImpl
 		long classPK) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_S_C_C;
 
@@ -11595,9 +11550,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -12145,9 +12099,8 @@ public class FragmentEntryLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			Object[] finderArgs = null;
 
@@ -12303,9 +12256,8 @@ public class FragmentEntryLinkPersistenceImpl
 		long groupId, long segmentsExperienceId, long plid, boolean deleted) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_S_P_D;
 
@@ -12387,9 +12339,8 @@ public class FragmentEntryLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, StringUtil.merge(segmentsExperienceIds), plid, deleted
@@ -12576,9 +12527,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			rendererKey = Objects.toString(rendererKey, "");
 
@@ -13081,9 +13031,8 @@ public class FragmentEntryLinkPersistenceImpl
 		String rendererKey) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			rendererKey = Objects.toString(rendererKey, "");
 
@@ -13201,8 +13150,8 @@ public class FragmentEntryLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					fragmentEntryLink.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					fragmentEntryLink.getCtCollectionId())) {
 
 			entityCache.putResult(
 				FragmentEntryLinkImpl.class, fragmentEntryLink.getPrimaryKey(),
@@ -13243,8 +13192,8 @@ public class FragmentEntryLinkPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						fragmentEntryLink.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						fragmentEntryLink.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						FragmentEntryLinkImpl.class,
@@ -13311,8 +13260,8 @@ public class FragmentEntryLinkPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					fragmentEntryLinkModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					fragmentEntryLinkModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				fragmentEntryLinkModelImpl.getUuid(),
@@ -13441,103 +13390,98 @@ public class FragmentEntryLinkPersistenceImpl
 
 	@Override
 	public FragmentEntryLink updateImpl(FragmentEntryLink fragmentEntryLink) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = fragmentEntryLink.isNew();
 
-			boolean isNew = fragmentEntryLink.isNew();
+		if (!(fragmentEntryLink instanceof FragmentEntryLinkModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(fragmentEntryLink instanceof FragmentEntryLinkModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(fragmentEntryLink.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						fragmentEntryLink);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in fragmentEntryLink proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(fragmentEntryLink.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					fragmentEntryLink);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom FragmentEntryLink implementation " +
-						fragmentEntryLink.getClass());
+					"Implement ModelWrapper in fragmentEntryLink proxy " +
+						invocationHandler.getClass());
 			}
 
-			FragmentEntryLinkModelImpl fragmentEntryLinkModelImpl =
-				(FragmentEntryLinkModelImpl)fragmentEntryLink;
-
-			if (Validator.isNull(fragmentEntryLink.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				fragmentEntryLink.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (fragmentEntryLink.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					fragmentEntryLink.setCreateDate(date);
-				}
-				else {
-					fragmentEntryLink.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!fragmentEntryLinkModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					fragmentEntryLink.setModifiedDate(date);
-				}
-				else {
-					fragmentEntryLink.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(fragmentEntryLink)) {
-					if (!isNew) {
-						session.evict(
-							FragmentEntryLinkImpl.class,
-							fragmentEntryLink.getPrimaryKeyObj());
-					}
-
-					session.save(fragmentEntryLink);
-				}
-				else {
-					fragmentEntryLink = (FragmentEntryLink)session.merge(
-						fragmentEntryLink);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				FragmentEntryLinkImpl.class, fragmentEntryLinkModelImpl, false,
-				true);
-
-			cacheUniqueFindersCache(fragmentEntryLinkModelImpl);
-
-			if (isNew) {
-				fragmentEntryLink.setNew(false);
-			}
-
-			fragmentEntryLink.resetOriginalValues();
-
-			return fragmentEntryLink;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom FragmentEntryLink implementation " +
+					fragmentEntryLink.getClass());
 		}
+
+		FragmentEntryLinkModelImpl fragmentEntryLinkModelImpl =
+			(FragmentEntryLinkModelImpl)fragmentEntryLink;
+
+		if (Validator.isNull(fragmentEntryLink.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			fragmentEntryLink.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (fragmentEntryLink.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				fragmentEntryLink.setCreateDate(date);
+			}
+			else {
+				fragmentEntryLink.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!fragmentEntryLinkModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				fragmentEntryLink.setModifiedDate(date);
+			}
+			else {
+				fragmentEntryLink.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(fragmentEntryLink)) {
+				if (!isNew) {
+					session.evict(
+						FragmentEntryLinkImpl.class,
+						fragmentEntryLink.getPrimaryKeyObj());
+				}
+
+				session.save(fragmentEntryLink);
+			}
+			else {
+				fragmentEntryLink = (FragmentEntryLink)session.merge(
+					fragmentEntryLink);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			FragmentEntryLinkImpl.class, fragmentEntryLinkModelImpl, false,
+			true);
+
+		cacheUniqueFindersCache(fragmentEntryLinkModelImpl);
+
+		if (isNew) {
+			fragmentEntryLink.setNew(false);
+		}
+
+		fragmentEntryLink.resetOriginalValues();
+
+		return fragmentEntryLink;
 	}
 
 	/**
@@ -13591,45 +13535,41 @@ public class FragmentEntryLinkPersistenceImpl
 				FragmentEntryLink.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		FragmentEntryLink fragmentEntryLink =
+			(FragmentEntryLink)entityCache.getResult(
+				FragmentEntryLinkImpl.class, primaryKey);
 
-			FragmentEntryLink fragmentEntryLink =
-				(FragmentEntryLink)entityCache.getResult(
-					FragmentEntryLinkImpl.class, primaryKey);
-
-			if (fragmentEntryLink != null) {
-				return fragmentEntryLink;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				fragmentEntryLink = (FragmentEntryLink)session.get(
-					FragmentEntryLinkImpl.class, primaryKey);
-
-				if (fragmentEntryLink != null) {
-					cacheResult(fragmentEntryLink);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (fragmentEntryLink != null) {
 			return fragmentEntryLink;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			fragmentEntryLink = (FragmentEntryLink)session.get(
+				FragmentEntryLinkImpl.class, primaryKey);
+
+			if (fragmentEntryLink != null) {
+				cacheResult(fragmentEntryLink);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return fragmentEntryLink;
 	}
 
 	/**
@@ -13649,8 +13589,8 @@ public class FragmentEntryLinkPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(FragmentEntryLink.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -13683,9 +13623,8 @@ public class FragmentEntryLinkPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							FragmentEntryLink.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						FragmentEntryLink.class, primaryKey)) {
 
 				FragmentEntryLink fragmentEntryLink =
 					(FragmentEntryLink)entityCache.getResult(
@@ -13839,9 +13778,8 @@ public class FragmentEntryLinkPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -13934,9 +13872,8 @@ public class FragmentEntryLinkPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						FragmentEntryLink.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					FragmentEntryLink.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

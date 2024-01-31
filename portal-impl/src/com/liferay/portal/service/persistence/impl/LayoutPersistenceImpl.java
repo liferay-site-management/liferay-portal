@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -165,8 +164,8 @@ public class LayoutPersistenceImpl
 		OrderByComparator<Layout> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -565,8 +564,8 @@ public class LayoutPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -704,8 +703,8 @@ public class LayoutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -836,8 +835,8 @@ public class LayoutPersistenceImpl
 		String uuid, long groupId, boolean privateLayout) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -996,8 +995,8 @@ public class LayoutPersistenceImpl
 		OrderByComparator<Layout> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1429,8 +1428,8 @@ public class LayoutPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1575,8 +1574,8 @@ public class LayoutPersistenceImpl
 		OrderByComparator<Layout> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2274,8 +2273,8 @@ public class LayoutPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2448,8 +2447,8 @@ public class LayoutPersistenceImpl
 		OrderByComparator<Layout> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2826,8 +2825,8 @@ public class LayoutPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -2950,8 +2949,8 @@ public class LayoutPersistenceImpl
 		OrderByComparator<Layout> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3329,8 +3328,8 @@ public class LayoutPersistenceImpl
 	@Override
 	public int countByParentPlid(long parentPlid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = _finderPathCountByParentPlid;
 
@@ -3435,8 +3434,8 @@ public class LayoutPersistenceImpl
 	@Override
 	public Layout fetchByIconImageId(long iconImageId, boolean useFinderCache) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			Object[] finderArgs = null;
 
@@ -3552,8 +3551,8 @@ public class LayoutPersistenceImpl
 	@Override
 	public int countByIconImageId(long iconImageId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = _finderPathCountByIconImageId;
 
@@ -3678,8 +3677,8 @@ public class LayoutPersistenceImpl
 		OrderByComparator<Layout> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			layoutPrototypeUuid = Objects.toString(layoutPrototypeUuid, "");
 
@@ -4095,8 +4094,8 @@ public class LayoutPersistenceImpl
 	@Override
 	public int countByLayoutPrototypeUuid(String layoutPrototypeUuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			layoutPrototypeUuid = Objects.toString(layoutPrototypeUuid, "");
 
@@ -4246,8 +4245,8 @@ public class LayoutPersistenceImpl
 		OrderByComparator<Layout> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			sourcePrototypeLayoutUuid = Objects.toString(
 				sourcePrototypeLayoutUuid, "");
@@ -4674,8 +4673,8 @@ public class LayoutPersistenceImpl
 		String sourcePrototypeLayoutUuid) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			sourcePrototypeLayoutUuid = Objects.toString(
 				sourcePrototypeLayoutUuid, "");
@@ -4825,8 +4824,8 @@ public class LayoutPersistenceImpl
 		OrderByComparator<Layout> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5575,8 +5574,8 @@ public class LayoutPersistenceImpl
 	@Override
 	public int countByG_P(long groupId, boolean privateLayout) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P;
 
@@ -5770,8 +5769,8 @@ public class LayoutPersistenceImpl
 		OrderByComparator<Layout> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			type = Objects.toString(type, "");
 
@@ -6564,8 +6563,8 @@ public class LayoutPersistenceImpl
 	@Override
 	public int countByG_T(long groupId, String type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			type = Objects.toString(type, "");
 
@@ -6793,8 +6792,8 @@ public class LayoutPersistenceImpl
 		OrderByComparator<Layout> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7545,8 +7544,8 @@ public class LayoutPersistenceImpl
 	@Override
 	public int countByG_MLP(long groupId, long masterLayoutPlid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_MLP;
 
@@ -7737,8 +7736,8 @@ public class LayoutPersistenceImpl
 		OrderByComparator<Layout> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			layoutPrototypeUuid = Objects.toString(layoutPrototypeUuid, "");
 
@@ -8178,8 +8177,8 @@ public class LayoutPersistenceImpl
 	@Override
 	public int countByC_L(long companyId, String layoutPrototypeUuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			layoutPrototypeUuid = Objects.toString(layoutPrototypeUuid, "");
 
@@ -8315,8 +8314,8 @@ public class LayoutPersistenceImpl
 		boolean privateLayout, long iconImageId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			Object[] finderArgs = null;
 
@@ -8441,8 +8440,8 @@ public class LayoutPersistenceImpl
 	@Override
 	public int countByP_I(boolean privateLayout, long iconImageId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = _finderPathCountByP_I;
 
@@ -8562,8 +8561,8 @@ public class LayoutPersistenceImpl
 		long classNameId, long classPK, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			Object[] finderArgs = null;
 
@@ -8688,8 +8687,8 @@ public class LayoutPersistenceImpl
 	@Override
 	public int countByC_C(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -8819,8 +8818,8 @@ public class LayoutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			Object[] finderArgs = null;
 
@@ -8938,8 +8937,8 @@ public class LayoutPersistenceImpl
 		long groupId, boolean privateLayout, long layoutId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P_L;
 
@@ -9096,8 +9095,8 @@ public class LayoutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -10130,8 +10129,8 @@ public class LayoutPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			Object[] finderArgs = null;
 
@@ -10322,8 +10321,8 @@ public class LayoutPersistenceImpl
 		long groupId, boolean privateLayout, long parentLayoutId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P_P;
 
@@ -10398,8 +10397,8 @@ public class LayoutPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, privateLayout, StringUtil.merge(parentLayoutIds)
@@ -10757,8 +10756,8 @@ public class LayoutPersistenceImpl
 		OrderByComparator<Layout> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			type = Objects.toString(type, "");
 
@@ -11855,8 +11854,8 @@ public class LayoutPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			Object[] finderArgs = null;
 
@@ -12015,8 +12014,8 @@ public class LayoutPersistenceImpl
 	@Override
 	public int countByG_P_T(long groupId, boolean privateLayout, String type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			type = Objects.toString(type, "");
 
@@ -12106,8 +12105,8 @@ public class LayoutPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, privateLayout, StringUtil.merge(types)
@@ -12474,8 +12473,8 @@ public class LayoutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			friendlyURL = Objects.toString(friendlyURL, "");
 
@@ -12606,8 +12605,8 @@ public class LayoutPersistenceImpl
 		long groupId, boolean privateLayout, String friendlyURL) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			friendlyURL = Objects.toString(friendlyURL, "");
 
@@ -12765,8 +12764,8 @@ public class LayoutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			sourcePrototypeLayoutUuid = Objects.toString(
 				sourcePrototypeLayoutUuid, "");
@@ -12924,8 +12923,8 @@ public class LayoutPersistenceImpl
 		long groupId, boolean privateLayout, String sourcePrototypeLayoutUuid) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			sourcePrototypeLayoutUuid = Objects.toString(
 				sourcePrototypeLayoutUuid, "");
@@ -13100,8 +13099,8 @@ public class LayoutPersistenceImpl
 		OrderByComparator<Layout> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -14127,8 +14126,8 @@ public class LayoutPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			Object[] finderArgs = null;
 
@@ -14272,8 +14271,8 @@ public class LayoutPersistenceImpl
 	@Override
 	public int countByG_P_ST(long groupId, boolean privateLayout, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P_ST;
 
@@ -14346,8 +14345,8 @@ public class LayoutPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, privateLayout, StringUtil.merge(statuses)
@@ -14679,8 +14678,8 @@ public class LayoutPersistenceImpl
 		OrderByComparator<Layout> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -15766,8 +15765,8 @@ public class LayoutPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			Object[] finderArgs = null;
 
@@ -15970,8 +15969,8 @@ public class LayoutPersistenceImpl
 		boolean hidden) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P_P_H;
 
@@ -16052,8 +16051,8 @@ public class LayoutPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, privateLayout, StringUtil.merge(parentLayoutIds),
@@ -16452,8 +16451,8 @@ public class LayoutPersistenceImpl
 		OrderByComparator<Layout> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -17537,8 +17536,8 @@ public class LayoutPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			Object[] finderArgs = null;
 
@@ -17739,8 +17738,8 @@ public class LayoutPersistenceImpl
 		boolean system) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_P_P_S;
 
@@ -17821,8 +17820,8 @@ public class LayoutPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			Object[] finderArgs = new Object[] {
 				groupId, privateLayout, StringUtil.merge(parentLayoutIds),
@@ -18202,8 +18201,8 @@ public class LayoutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -19032,8 +19031,8 @@ public class LayoutPersistenceImpl
 		int priority) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = _finderPathWithPaginationCountByG_P_P_LteP;
 
@@ -19216,8 +19215,8 @@ public class LayoutPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					layout.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					layout.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				LayoutImpl.class, layout.getPrimaryKey(), layout);
@@ -19297,8 +19296,8 @@ public class LayoutPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						layout.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						layout.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						LayoutImpl.class, layout.getPrimaryKey()) == null) {
@@ -19360,8 +19359,8 @@ public class LayoutPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					layoutModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					layoutModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				layoutModelImpl.getUuid(), layoutModelImpl.getGroupId(),
@@ -19535,97 +19534,90 @@ public class LayoutPersistenceImpl
 
 	@Override
 	public Layout updateImpl(Layout layout) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = layout.isNew();
 
-			boolean isNew = layout.isNew();
+		if (!(layout instanceof LayoutModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(layout instanceof LayoutModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(layout.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(layout);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in layout proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(layout.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(layout);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom Layout implementation " +
-						layout.getClass());
+					"Implement ModelWrapper in layout proxy " +
+						invocationHandler.getClass());
 			}
 
-			LayoutModelImpl layoutModelImpl = (LayoutModelImpl)layout;
-
-			if (Validator.isNull(layout.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				layout.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (layout.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					layout.setCreateDate(date);
-				}
-				else {
-					layout.setCreateDate(serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!layoutModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					layout.setModifiedDate(date);
-				}
-				else {
-					layout.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(layout)) {
-					if (!isNew) {
-						session.evict(
-							LayoutImpl.class, layout.getPrimaryKeyObj());
-					}
-
-					session.save(layout);
-				}
-				else {
-					layout = (Layout)session.merge(layout);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				LayoutImpl.class, layoutModelImpl, false, true);
-
-			cacheUniqueFindersCache(layoutModelImpl);
-
-			if (isNew) {
-				layout.setNew(false);
-			}
-
-			layout.resetOriginalValues();
-
-			return layout;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom Layout implementation " +
+					layout.getClass());
 		}
+
+		LayoutModelImpl layoutModelImpl = (LayoutModelImpl)layout;
+
+		if (Validator.isNull(layout.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			layout.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (layout.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				layout.setCreateDate(date);
+			}
+			else {
+				layout.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!layoutModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				layout.setModifiedDate(date);
+			}
+			else {
+				layout.setModifiedDate(serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(layout)) {
+				if (!isNew) {
+					session.evict(LayoutImpl.class, layout.getPrimaryKeyObj());
+				}
+
+				session.save(layout);
+			}
+			else {
+				layout = (Layout)session.merge(layout);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			LayoutImpl.class, layoutModelImpl, false, true);
+
+		cacheUniqueFindersCache(layoutModelImpl);
+
+		if (isNew) {
+			layout.setNew(false);
+		}
+
+		layout.resetOriginalValues();
+
+		return layout;
 	}
 
 	/**
@@ -19677,43 +19669,39 @@ public class LayoutPersistenceImpl
 				Layout.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		Layout layout = (Layout)EntityCacheUtil.getResult(
+			LayoutImpl.class, primaryKey);
 
-			Layout layout = (Layout)EntityCacheUtil.getResult(
-				LayoutImpl.class, primaryKey);
-
-			if (layout != null) {
-				return layout;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				layout = (Layout)session.get(LayoutImpl.class, primaryKey);
-
-				if (layout != null) {
-					cacheResult(layout);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (layout != null) {
 			return layout;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			layout = (Layout)session.get(LayoutImpl.class, primaryKey);
+
+			if (layout != null) {
+				cacheResult(layout);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return layout;
 	}
 
 	/**
@@ -19733,8 +19721,8 @@ public class LayoutPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(Layout.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -19766,9 +19754,8 @@ public class LayoutPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							Layout.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						Layout.class, primaryKey)) {
 
 				Layout layout = (Layout)EntityCacheUtil.getResult(
 					LayoutImpl.class, primaryKey);
@@ -19916,8 +19903,8 @@ public class LayoutPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -20010,8 +19997,8 @@ public class LayoutPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Layout.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Layout.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

@@ -15,7 +15,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -174,9 +173,8 @@ public class AssetVocabularyPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -580,9 +578,8 @@ public class AssetVocabularyPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -711,9 +708,8 @@ public class AssetVocabularyPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -834,9 +830,8 @@ public class AssetVocabularyPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -989,9 +984,8 @@ public class AssetVocabularyPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1429,9 +1423,8 @@ public class AssetVocabularyPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1580,9 +1573,8 @@ public class AssetVocabularyPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2500,9 +2492,8 @@ public class AssetVocabularyPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2623,9 +2614,8 @@ public class AssetVocabularyPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2686,9 +2676,8 @@ public class AssetVocabularyPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			Object[] finderArgs = new Object[] {StringUtil.merge(groupIds)};
 
@@ -2938,9 +2927,8 @@ public class AssetVocabularyPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3324,9 +3312,8 @@ public class AssetVocabularyPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -3439,9 +3426,8 @@ public class AssetVocabularyPersistenceImpl
 		long groupId, String name, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -3562,9 +3548,8 @@ public class AssetVocabularyPersistenceImpl
 	@Override
 	public int countByG_N(long groupId, String name) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -3716,9 +3701,8 @@ public class AssetVocabularyPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -4522,9 +4506,8 @@ public class AssetVocabularyPersistenceImpl
 	@Override
 	public int countByG_LikeN(long groupId, String name) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -4745,9 +4728,8 @@ public class AssetVocabularyPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5757,9 +5739,8 @@ public class AssetVocabularyPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			Object[] finderArgs = null;
 
@@ -5905,9 +5886,8 @@ public class AssetVocabularyPersistenceImpl
 	@Override
 	public int countByG_V(long groupId, int visibilityType) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_V;
 
@@ -5980,9 +5960,8 @@ public class AssetVocabularyPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(groupIds), StringUtil.merge(visibilityTypes)
@@ -6272,9 +6251,8 @@ public class AssetVocabularyPersistenceImpl
 		String externalReferenceCode, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -6399,9 +6377,8 @@ public class AssetVocabularyPersistenceImpl
 	@Override
 	public int countByERC_G(String externalReferenceCode, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			externalReferenceCode = Objects.toString(externalReferenceCode, "");
 
@@ -6503,8 +6480,8 @@ public class AssetVocabularyPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					assetVocabulary.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					assetVocabulary.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				AssetVocabularyImpl.class, assetVocabulary.getPrimaryKey(),
@@ -6560,8 +6537,8 @@ public class AssetVocabularyPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						assetVocabulary.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						assetVocabulary.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						AssetVocabularyImpl.class,
@@ -6628,8 +6605,8 @@ public class AssetVocabularyPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					assetVocabularyModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					assetVocabularyModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				assetVocabularyModelImpl.getUuid(),
@@ -6775,169 +6752,160 @@ public class AssetVocabularyPersistenceImpl
 
 	@Override
 	public AssetVocabulary updateImpl(AssetVocabulary assetVocabulary) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = assetVocabulary.isNew();
 
-			boolean isNew = assetVocabulary.isNew();
+		if (!(assetVocabulary instanceof AssetVocabularyModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(assetVocabulary instanceof AssetVocabularyModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(assetVocabulary.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						assetVocabulary);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in assetVocabulary proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(assetVocabulary.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					assetVocabulary);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom AssetVocabulary implementation " +
-						assetVocabulary.getClass());
+					"Implement ModelWrapper in assetVocabulary proxy " +
+						invocationHandler.getClass());
 			}
 
-			AssetVocabularyModelImpl assetVocabularyModelImpl =
-				(AssetVocabularyModelImpl)assetVocabulary;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom AssetVocabulary implementation " +
+					assetVocabulary.getClass());
+		}
 
-			if (Validator.isNull(assetVocabulary.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
+		AssetVocabularyModelImpl assetVocabularyModelImpl =
+			(AssetVocabularyModelImpl)assetVocabulary;
 
-				assetVocabulary.setUuid(uuid);
-			}
+		if (Validator.isNull(assetVocabulary.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
 
-			if (Validator.isNull(assetVocabulary.getExternalReferenceCode())) {
-				assetVocabulary.setExternalReferenceCode(
-					assetVocabulary.getUuid());
-			}
-			else {
-				if (!Objects.equals(
-						assetVocabularyModelImpl.getColumnOriginalValue(
-							"externalReferenceCode"),
-						assetVocabulary.getExternalReferenceCode())) {
+			assetVocabulary.setUuid(uuid);
+		}
 
-					long userId = GetterUtil.getLong(
-						PrincipalThreadLocal.getName());
+		if (Validator.isNull(assetVocabulary.getExternalReferenceCode())) {
+			assetVocabulary.setExternalReferenceCode(assetVocabulary.getUuid());
+		}
+		else {
+			if (!Objects.equals(
+					assetVocabularyModelImpl.getColumnOriginalValue(
+						"externalReferenceCode"),
+					assetVocabulary.getExternalReferenceCode())) {
 
-					if (userId > 0) {
-						long companyId = assetVocabulary.getCompanyId();
+				long userId = GetterUtil.getLong(
+					PrincipalThreadLocal.getName());
 
-						long groupId = assetVocabulary.getGroupId();
+				if (userId > 0) {
+					long companyId = assetVocabulary.getCompanyId();
 
-						long classPK = 0;
+					long groupId = assetVocabulary.getGroupId();
 
-						if (!isNew) {
-							classPK = assetVocabulary.getPrimaryKey();
-						}
+					long classPK = 0;
 
-						try {
-							assetVocabulary.setExternalReferenceCode(
-								SanitizerUtil.sanitize(
-									companyId, groupId, userId,
-									AssetVocabulary.class.getName(), classPK,
-									ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-									assetVocabulary.getExternalReferenceCode(),
-									null));
-						}
-						catch (SanitizerException sanitizerException) {
-							throw new SystemException(sanitizerException);
-						}
-					}
-				}
-
-				AssetVocabulary ercAssetVocabulary = fetchByERC_G(
-					assetVocabulary.getExternalReferenceCode(),
-					assetVocabulary.getGroupId());
-
-				if (isNew) {
-					if (ercAssetVocabulary != null) {
-						throw new DuplicateAssetVocabularyExternalReferenceCodeException(
-							"Duplicate asset vocabulary with external reference code " +
-								assetVocabulary.getExternalReferenceCode() +
-									" and group " +
-										assetVocabulary.getGroupId());
-					}
-				}
-				else {
-					if ((ercAssetVocabulary != null) &&
-						(assetVocabulary.getVocabularyId() !=
-							ercAssetVocabulary.getVocabularyId())) {
-
-						throw new DuplicateAssetVocabularyExternalReferenceCodeException(
-							"Duplicate asset vocabulary with external reference code " +
-								assetVocabulary.getExternalReferenceCode() +
-									" and group " +
-										assetVocabulary.getGroupId());
-					}
-				}
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (assetVocabulary.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					assetVocabulary.setCreateDate(date);
-				}
-				else {
-					assetVocabulary.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!assetVocabularyModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					assetVocabulary.setModifiedDate(date);
-				}
-				else {
-					assetVocabulary.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(assetVocabulary)) {
 					if (!isNew) {
-						session.evict(
-							AssetVocabularyImpl.class,
-							assetVocabulary.getPrimaryKeyObj());
+						classPK = assetVocabulary.getPrimaryKey();
 					}
 
-					session.save(assetVocabulary);
+					try {
+						assetVocabulary.setExternalReferenceCode(
+							SanitizerUtil.sanitize(
+								companyId, groupId, userId,
+								AssetVocabulary.class.getName(), classPK,
+								ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+								assetVocabulary.getExternalReferenceCode(),
+								null));
+					}
+					catch (SanitizerException sanitizerException) {
+						throw new SystemException(sanitizerException);
+					}
 				}
-				else {
-					assetVocabulary = (AssetVocabulary)session.merge(
-						assetVocabulary);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
 			}
 
-			EntityCacheUtil.putResult(
-				AssetVocabularyImpl.class, assetVocabularyModelImpl, false,
-				true);
-
-			cacheUniqueFindersCache(assetVocabularyModelImpl);
+			AssetVocabulary ercAssetVocabulary = fetchByERC_G(
+				assetVocabulary.getExternalReferenceCode(),
+				assetVocabulary.getGroupId());
 
 			if (isNew) {
-				assetVocabulary.setNew(false);
+				if (ercAssetVocabulary != null) {
+					throw new DuplicateAssetVocabularyExternalReferenceCodeException(
+						"Duplicate asset vocabulary with external reference code " +
+							assetVocabulary.getExternalReferenceCode() +
+								" and group " + assetVocabulary.getGroupId());
+				}
 			}
+			else {
+				if ((ercAssetVocabulary != null) &&
+					(assetVocabulary.getVocabularyId() !=
+						ercAssetVocabulary.getVocabularyId())) {
 
-			assetVocabulary.resetOriginalValues();
-
-			return assetVocabulary;
+					throw new DuplicateAssetVocabularyExternalReferenceCodeException(
+						"Duplicate asset vocabulary with external reference code " +
+							assetVocabulary.getExternalReferenceCode() +
+								" and group " + assetVocabulary.getGroupId());
+				}
+			}
 		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (assetVocabulary.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				assetVocabulary.setCreateDate(date);
+			}
+			else {
+				assetVocabulary.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!assetVocabularyModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				assetVocabulary.setModifiedDate(date);
+			}
+			else {
+				assetVocabulary.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(assetVocabulary)) {
+				if (!isNew) {
+					session.evict(
+						AssetVocabularyImpl.class,
+						assetVocabulary.getPrimaryKeyObj());
+				}
+
+				session.save(assetVocabulary);
+			}
+			else {
+				assetVocabulary = (AssetVocabulary)session.merge(
+					assetVocabulary);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			AssetVocabularyImpl.class, assetVocabularyModelImpl, false, true);
+
+		cacheUniqueFindersCache(assetVocabularyModelImpl);
+
+		if (isNew) {
+			assetVocabulary.setNew(false);
+		}
+
+		assetVocabulary.resetOriginalValues();
+
+		return assetVocabulary;
 	}
 
 	/**
@@ -6991,45 +6959,41 @@ public class AssetVocabularyPersistenceImpl
 				AssetVocabulary.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		AssetVocabulary assetVocabulary =
+			(AssetVocabulary)EntityCacheUtil.getResult(
+				AssetVocabularyImpl.class, primaryKey);
 
-			AssetVocabulary assetVocabulary =
-				(AssetVocabulary)EntityCacheUtil.getResult(
-					AssetVocabularyImpl.class, primaryKey);
-
-			if (assetVocabulary != null) {
-				return assetVocabulary;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				assetVocabulary = (AssetVocabulary)session.get(
-					AssetVocabularyImpl.class, primaryKey);
-
-				if (assetVocabulary != null) {
-					cacheResult(assetVocabulary);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (assetVocabulary != null) {
 			return assetVocabulary;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			assetVocabulary = (AssetVocabulary)session.get(
+				AssetVocabularyImpl.class, primaryKey);
+
+			if (assetVocabulary != null) {
+				cacheResult(assetVocabulary);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return assetVocabulary;
 	}
 
 	/**
@@ -7049,8 +7013,8 @@ public class AssetVocabularyPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(AssetVocabulary.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -7083,9 +7047,8 @@ public class AssetVocabularyPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							AssetVocabulary.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						AssetVocabulary.class, primaryKey)) {
 
 				AssetVocabulary assetVocabulary =
 					(AssetVocabulary)EntityCacheUtil.getResult(
@@ -7238,9 +7201,8 @@ public class AssetVocabularyPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -7333,9 +7295,8 @@ public class AssetVocabularyPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						AssetVocabulary.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					AssetVocabulary.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

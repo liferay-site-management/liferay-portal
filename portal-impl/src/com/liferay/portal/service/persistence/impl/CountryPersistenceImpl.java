@@ -10,7 +10,6 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -163,8 +162,8 @@ public class CountryPersistenceImpl
 		OrderByComparator<Country> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -564,8 +563,8 @@ public class CountryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -709,8 +708,8 @@ public class CountryPersistenceImpl
 		OrderByComparator<Country> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1144,8 +1143,8 @@ public class CountryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1290,8 +1289,8 @@ public class CountryPersistenceImpl
 		OrderByComparator<Country> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1669,8 +1668,8 @@ public class CountryPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -1791,8 +1790,8 @@ public class CountryPersistenceImpl
 		OrderByComparator<Country> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2169,8 +2168,8 @@ public class CountryPersistenceImpl
 	@Override
 	public int countByActive(boolean active) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			FinderPath finderPath = _finderPathCountByActive;
 
@@ -2283,8 +2282,8 @@ public class CountryPersistenceImpl
 		long companyId, String a2, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			a2 = Objects.toString(a2, "");
 
@@ -2405,8 +2404,8 @@ public class CountryPersistenceImpl
 	@Override
 	public int countByC_A2(long companyId, String a2) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			a2 = Objects.toString(a2, "");
 
@@ -2541,8 +2540,8 @@ public class CountryPersistenceImpl
 		long companyId, String a3, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			a3 = Objects.toString(a3, "");
 
@@ -2663,8 +2662,8 @@ public class CountryPersistenceImpl
 	@Override
 	public int countByC_A3(long companyId, String a3) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			a3 = Objects.toString(a3, "");
 
@@ -2815,8 +2814,8 @@ public class CountryPersistenceImpl
 		OrderByComparator<Country> orderByComparator, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3224,8 +3223,8 @@ public class CountryPersistenceImpl
 	@Override
 	public int countByC_Active(long companyId, boolean active) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_Active;
 
@@ -3345,8 +3344,8 @@ public class CountryPersistenceImpl
 		long companyId, String name, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -3467,8 +3466,8 @@ public class CountryPersistenceImpl
 	@Override
 	public int countByC_Name(long companyId, String name) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			name = Objects.toString(name, "");
 
@@ -3604,8 +3603,8 @@ public class CountryPersistenceImpl
 		long companyId, String number, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			number = Objects.toString(number, "");
 
@@ -3726,8 +3725,8 @@ public class CountryPersistenceImpl
 	@Override
 	public int countByC_Number(long companyId, String number) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			number = Objects.toString(number, "");
 
@@ -3889,8 +3888,8 @@ public class CountryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4332,8 +4331,8 @@ public class CountryPersistenceImpl
 		long companyId, boolean active, boolean billingAllowed) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_A_B;
 
@@ -4489,8 +4488,8 @@ public class CountryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4932,8 +4931,8 @@ public class CountryPersistenceImpl
 		long companyId, boolean active, boolean shippingAllowed) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_A_S;
 
@@ -5030,8 +5029,8 @@ public class CountryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					country.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					country.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				CountryImpl.class, country.getPrimaryKey(), country);
@@ -5083,8 +5082,8 @@ public class CountryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						country.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						country.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						CountryImpl.class, country.getPrimaryKey()) == null) {
@@ -5146,8 +5145,8 @@ public class CountryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					countryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					countryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				countryModelImpl.getCompanyId(), countryModelImpl.getA2()
@@ -5299,97 +5298,91 @@ public class CountryPersistenceImpl
 
 	@Override
 	public Country updateImpl(Country country) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = country.isNew();
 
-			boolean isNew = country.isNew();
+		if (!(country instanceof CountryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(country instanceof CountryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(country.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(country);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in country proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(country.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(country);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom Country implementation " +
-						country.getClass());
+					"Implement ModelWrapper in country proxy " +
+						invocationHandler.getClass());
 			}
 
-			CountryModelImpl countryModelImpl = (CountryModelImpl)country;
-
-			if (Validator.isNull(country.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				country.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (country.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					country.setCreateDate(date);
-				}
-				else {
-					country.setCreateDate(serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!countryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					country.setModifiedDate(date);
-				}
-				else {
-					country.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(country)) {
-					if (!isNew) {
-						session.evict(
-							CountryImpl.class, country.getPrimaryKeyObj());
-					}
-
-					session.save(country);
-				}
-				else {
-					country = (Country)session.merge(country);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				CountryImpl.class, countryModelImpl, false, true);
-
-			cacheUniqueFindersCache(countryModelImpl);
-
-			if (isNew) {
-				country.setNew(false);
-			}
-
-			country.resetOriginalValues();
-
-			return country;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom Country implementation " +
+					country.getClass());
 		}
+
+		CountryModelImpl countryModelImpl = (CountryModelImpl)country;
+
+		if (Validator.isNull(country.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			country.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (country.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				country.setCreateDate(date);
+			}
+			else {
+				country.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!countryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				country.setModifiedDate(date);
+			}
+			else {
+				country.setModifiedDate(serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(country)) {
+				if (!isNew) {
+					session.evict(
+						CountryImpl.class, country.getPrimaryKeyObj());
+				}
+
+				session.save(country);
+			}
+			else {
+				country = (Country)session.merge(country);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			CountryImpl.class, countryModelImpl, false, true);
+
+		cacheUniqueFindersCache(countryModelImpl);
+
+		if (isNew) {
+			country.setNew(false);
+		}
+
+		country.resetOriginalValues();
+
+		return country;
 	}
 
 	/**
@@ -5443,43 +5436,39 @@ public class CountryPersistenceImpl
 				Country.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		Country country = (Country)EntityCacheUtil.getResult(
+			CountryImpl.class, primaryKey);
 
-			Country country = (Country)EntityCacheUtil.getResult(
-				CountryImpl.class, primaryKey);
-
-			if (country != null) {
-				return country;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				country = (Country)session.get(CountryImpl.class, primaryKey);
-
-				if (country != null) {
-					cacheResult(country);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (country != null) {
 			return country;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			country = (Country)session.get(CountryImpl.class, primaryKey);
+
+			if (country != null) {
+				cacheResult(country);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return country;
 	}
 
 	/**
@@ -5499,8 +5488,8 @@ public class CountryPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(Country.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -5532,9 +5521,8 @@ public class CountryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							Country.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						Country.class, primaryKey)) {
 
 				Country country = (Country)EntityCacheUtil.getResult(
 					CountryImpl.class, primaryKey);
@@ -5682,8 +5670,8 @@ public class CountryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5776,8 +5764,8 @@ public class CountryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(Country.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					Country.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

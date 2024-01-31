@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -173,8 +172,8 @@ public class KBCommentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -574,8 +573,8 @@ public class KBCommentPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -704,8 +703,8 @@ public class KBCommentPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -826,8 +825,8 @@ public class KBCommentPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -980,8 +979,8 @@ public class KBCommentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1415,8 +1414,8 @@ public class KBCommentPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1562,8 +1561,8 @@ public class KBCommentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1940,8 +1939,8 @@ public class KBCommentPersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2071,8 +2070,8 @@ public class KBCommentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2482,8 +2481,8 @@ public class KBCommentPersistenceImpl
 	@Override
 	public int countByG_C(long groupId, long classNameId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C;
 
@@ -2619,8 +2618,8 @@ public class KBCommentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3028,8 +3027,8 @@ public class KBCommentPersistenceImpl
 	@Override
 	public int countByG_S(long groupId, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_S;
 
@@ -3166,8 +3165,8 @@ public class KBCommentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3577,8 +3576,8 @@ public class KBCommentPersistenceImpl
 	@Override
 	public int countByC_C(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -3722,8 +3721,8 @@ public class KBCommentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4156,8 +4155,8 @@ public class KBCommentPersistenceImpl
 	@Override
 	public int countByU_C_C(long userId, long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			FinderPath finderPath = _finderPathCountByU_C_C;
 
@@ -4309,8 +4308,8 @@ public class KBCommentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -4817,8 +4816,8 @@ public class KBCommentPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			Object[] finderArgs = null;
 
@@ -4959,8 +4958,8 @@ public class KBCommentPersistenceImpl
 	@Override
 	public int countByC_C_S(long classNameId, long classPK, int status) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C_S;
 
@@ -5031,8 +5030,8 @@ public class KBCommentPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			Object[] finderArgs = new Object[] {
 				classNameId, classPK, StringUtil.merge(statuses)
@@ -5141,8 +5140,8 @@ public class KBCommentPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					kbComment.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					kbComment.getCtCollectionId())) {
 
 			entityCache.putResult(
 				KBCommentImpl.class, kbComment.getPrimaryKey(), kbComment);
@@ -5179,8 +5178,8 @@ public class KBCommentPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						kbComment.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						kbComment.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						KBCommentImpl.class, kbComment.getPrimaryKey()) ==
@@ -5245,8 +5244,8 @@ public class KBCommentPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					kbCommentModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					kbCommentModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				kbCommentModelImpl.getUuid(), kbCommentModelImpl.getGroupId()
@@ -5368,99 +5367,91 @@ public class KBCommentPersistenceImpl
 
 	@Override
 	public KBComment updateImpl(KBComment kbComment) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = kbComment.isNew();
 
-			boolean isNew = kbComment.isNew();
+		if (!(kbComment instanceof KBCommentModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(kbComment instanceof KBCommentModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(kbComment.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						kbComment);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in kbComment proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(kbComment.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(kbComment);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom KBComment implementation " +
-						kbComment.getClass());
+					"Implement ModelWrapper in kbComment proxy " +
+						invocationHandler.getClass());
 			}
 
-			KBCommentModelImpl kbCommentModelImpl =
-				(KBCommentModelImpl)kbComment;
-
-			if (Validator.isNull(kbComment.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				kbComment.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (kbComment.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					kbComment.setCreateDate(date);
-				}
-				else {
-					kbComment.setCreateDate(serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!kbCommentModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					kbComment.setModifiedDate(date);
-				}
-				else {
-					kbComment.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(kbComment)) {
-					if (!isNew) {
-						session.evict(
-							KBCommentImpl.class, kbComment.getPrimaryKeyObj());
-					}
-
-					session.save(kbComment);
-				}
-				else {
-					kbComment = (KBComment)session.merge(kbComment);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				KBCommentImpl.class, kbCommentModelImpl, false, true);
-
-			cacheUniqueFindersCache(kbCommentModelImpl);
-
-			if (isNew) {
-				kbComment.setNew(false);
-			}
-
-			kbComment.resetOriginalValues();
-
-			return kbComment;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom KBComment implementation " +
+					kbComment.getClass());
 		}
+
+		KBCommentModelImpl kbCommentModelImpl = (KBCommentModelImpl)kbComment;
+
+		if (Validator.isNull(kbComment.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			kbComment.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (kbComment.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				kbComment.setCreateDate(date);
+			}
+			else {
+				kbComment.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!kbCommentModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				kbComment.setModifiedDate(date);
+			}
+			else {
+				kbComment.setModifiedDate(serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(kbComment)) {
+				if (!isNew) {
+					session.evict(
+						KBCommentImpl.class, kbComment.getPrimaryKeyObj());
+				}
+
+				session.save(kbComment);
+			}
+			else {
+				kbComment = (KBComment)session.merge(kbComment);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			KBCommentImpl.class, kbCommentModelImpl, false, true);
+
+		cacheUniqueFindersCache(kbCommentModelImpl);
+
+		if (isNew) {
+			kbComment.setNew(false);
+		}
+
+		kbComment.resetOriginalValues();
+
+		return kbComment;
 	}
 
 	/**
@@ -5512,44 +5503,39 @@ public class KBCommentPersistenceImpl
 	public KBComment fetchByPrimaryKey(Serializable primaryKey) {
 		if (ctPersistenceHelper.isProductionMode(KBComment.class, primaryKey)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		KBComment kbComment = (KBComment)entityCache.getResult(
+			KBCommentImpl.class, primaryKey);
 
-			KBComment kbComment = (KBComment)entityCache.getResult(
-				KBCommentImpl.class, primaryKey);
-
-			if (kbComment != null) {
-				return kbComment;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				kbComment = (KBComment)session.get(
-					KBCommentImpl.class, primaryKey);
-
-				if (kbComment != null) {
-					cacheResult(kbComment);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (kbComment != null) {
 			return kbComment;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			kbComment = (KBComment)session.get(KBCommentImpl.class, primaryKey);
+
+			if (kbComment != null) {
+				cacheResult(kbComment);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return kbComment;
 	}
 
 	/**
@@ -5569,8 +5555,8 @@ public class KBCommentPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(KBComment.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -5603,9 +5589,8 @@ public class KBCommentPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							KBComment.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						KBComment.class, primaryKey)) {
 
 				KBComment kbComment = (KBComment)entityCache.getResult(
 					KBCommentImpl.class, primaryKey);
@@ -5753,8 +5738,8 @@ public class KBCommentPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5847,8 +5832,8 @@ public class KBCommentPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KBComment.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KBComment.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

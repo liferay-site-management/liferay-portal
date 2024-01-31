@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -174,9 +173,8 @@ public class CommercePriceListDiscountRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceListDiscountRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceListDiscountRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -596,9 +594,8 @@ public class CommercePriceListDiscountRelPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceListDiscountRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceListDiscountRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -746,9 +743,8 @@ public class CommercePriceListDiscountRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceListDiscountRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceListDiscountRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1196,9 +1192,8 @@ public class CommercePriceListDiscountRelPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceListDiscountRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceListDiscountRel.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1349,9 +1344,8 @@ public class CommercePriceListDiscountRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceListDiscountRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceListDiscountRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1755,9 +1749,8 @@ public class CommercePriceListDiscountRelPersistenceImpl
 	@Override
 	public int countByCommercePriceListId(long commercePriceListId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceListDiscountRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceListDiscountRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByCommercePriceListId;
 
@@ -1877,9 +1870,8 @@ public class CommercePriceListDiscountRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceListDiscountRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceListDiscountRel.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1998,9 +1990,8 @@ public class CommercePriceListDiscountRelPersistenceImpl
 		long commerceDiscountId, long commercePriceListId) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceListDiscountRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceListDiscountRel.class)) {
 
 			FinderPath finderPath = _finderPathCountByCDI_CPI;
 
@@ -2090,8 +2081,8 @@ public class CommercePriceListDiscountRelPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					commercePriceListDiscountRel.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					commercePriceListDiscountRel.getCtCollectionId())) {
 
 			entityCache.putResult(
 				CommercePriceListDiscountRelImpl.class,
@@ -2138,9 +2129,8 @@ public class CommercePriceListDiscountRelPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						commercePriceListDiscountRel.getCtCollectionId() !=
-							0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						commercePriceListDiscountRel.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						CommercePriceListDiscountRelImpl.class,
@@ -2217,9 +2207,9 @@ public class CommercePriceListDiscountRelPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					commercePriceListDiscountRelModelImpl.getCtCollectionId() !=
-						0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					commercePriceListDiscountRelModelImpl.
+						getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				commercePriceListDiscountRelModelImpl.getCommerceDiscountId(),
@@ -2358,114 +2348,105 @@ public class CommercePriceListDiscountRelPersistenceImpl
 	public CommercePriceListDiscountRel updateImpl(
 		CommercePriceListDiscountRel commercePriceListDiscountRel) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = commercePriceListDiscountRel.isNew();
 
-			boolean isNew = commercePriceListDiscountRel.isNew();
+		if (!(commercePriceListDiscountRel instanceof
+				CommercePriceListDiscountRelModelImpl)) {
 
-			if (!(commercePriceListDiscountRel instanceof
-					CommercePriceListDiscountRelModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-				InvocationHandler invocationHandler = null;
+			if (ProxyUtil.isProxyClass(
+					commercePriceListDiscountRel.getClass())) {
 
-				if (ProxyUtil.isProxyClass(
-						commercePriceListDiscountRel.getClass())) {
-
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						commercePriceListDiscountRel);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in commercePriceListDiscountRel proxy " +
-							invocationHandler.getClass());
-				}
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					commercePriceListDiscountRel);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom CommercePriceListDiscountRel implementation " +
-						commercePriceListDiscountRel.getClass());
+					"Implement ModelWrapper in commercePriceListDiscountRel proxy " +
+						invocationHandler.getClass());
 			}
 
-			CommercePriceListDiscountRelModelImpl
-				commercePriceListDiscountRelModelImpl =
-					(CommercePriceListDiscountRelModelImpl)
-						commercePriceListDiscountRel;
-
-			if (Validator.isNull(commercePriceListDiscountRel.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				commercePriceListDiscountRel.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew &&
-				(commercePriceListDiscountRel.getCreateDate() == null)) {
-
-				if (serviceContext == null) {
-					commercePriceListDiscountRel.setCreateDate(date);
-				}
-				else {
-					commercePriceListDiscountRel.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!commercePriceListDiscountRelModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					commercePriceListDiscountRel.setModifiedDate(date);
-				}
-				else {
-					commercePriceListDiscountRel.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(
-						commercePriceListDiscountRel)) {
-
-					if (!isNew) {
-						session.evict(
-							CommercePriceListDiscountRelImpl.class,
-							commercePriceListDiscountRel.getPrimaryKeyObj());
-					}
-
-					session.save(commercePriceListDiscountRel);
-				}
-				else {
-					commercePriceListDiscountRel =
-						(CommercePriceListDiscountRel)session.merge(
-							commercePriceListDiscountRel);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				CommercePriceListDiscountRelImpl.class,
-				commercePriceListDiscountRelModelImpl, false, true);
-
-			cacheUniqueFindersCache(commercePriceListDiscountRelModelImpl);
-
-			if (isNew) {
-				commercePriceListDiscountRel.setNew(false);
-			}
-
-			commercePriceListDiscountRel.resetOriginalValues();
-
-			return commercePriceListDiscountRel;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom CommercePriceListDiscountRel implementation " +
+					commercePriceListDiscountRel.getClass());
 		}
+
+		CommercePriceListDiscountRelModelImpl
+			commercePriceListDiscountRelModelImpl =
+				(CommercePriceListDiscountRelModelImpl)
+					commercePriceListDiscountRel;
+
+		if (Validator.isNull(commercePriceListDiscountRel.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			commercePriceListDiscountRel.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (commercePriceListDiscountRel.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				commercePriceListDiscountRel.setCreateDate(date);
+			}
+			else {
+				commercePriceListDiscountRel.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!commercePriceListDiscountRelModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				commercePriceListDiscountRel.setModifiedDate(date);
+			}
+			else {
+				commercePriceListDiscountRel.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(commercePriceListDiscountRel)) {
+				if (!isNew) {
+					session.evict(
+						CommercePriceListDiscountRelImpl.class,
+						commercePriceListDiscountRel.getPrimaryKeyObj());
+				}
+
+				session.save(commercePriceListDiscountRel);
+			}
+			else {
+				commercePriceListDiscountRel =
+					(CommercePriceListDiscountRel)session.merge(
+						commercePriceListDiscountRel);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			CommercePriceListDiscountRelImpl.class,
+			commercePriceListDiscountRelModelImpl, false, true);
+
+		cacheUniqueFindersCache(commercePriceListDiscountRelModelImpl);
+
+		if (isNew) {
+			commercePriceListDiscountRel.setNew(false);
+		}
+
+		commercePriceListDiscountRel.resetOriginalValues();
+
+		return commercePriceListDiscountRel;
 	}
 
 	/**
@@ -2524,46 +2505,42 @@ public class CommercePriceListDiscountRelPersistenceImpl
 				CommercePriceListDiscountRel.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		CommercePriceListDiscountRel commercePriceListDiscountRel =
+			(CommercePriceListDiscountRel)entityCache.getResult(
+				CommercePriceListDiscountRelImpl.class, primaryKey);
 
-			CommercePriceListDiscountRel commercePriceListDiscountRel =
-				(CommercePriceListDiscountRel)entityCache.getResult(
+		if (commercePriceListDiscountRel != null) {
+			return commercePriceListDiscountRel;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			commercePriceListDiscountRel =
+				(CommercePriceListDiscountRel)session.get(
 					CommercePriceListDiscountRelImpl.class, primaryKey);
 
 			if (commercePriceListDiscountRel != null) {
-				return commercePriceListDiscountRel;
+				cacheResult(commercePriceListDiscountRel);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				commercePriceListDiscountRel =
-					(CommercePriceListDiscountRel)session.get(
-						CommercePriceListDiscountRelImpl.class, primaryKey);
-
-				if (commercePriceListDiscountRel != null) {
-					cacheResult(commercePriceListDiscountRel);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return commercePriceListDiscountRel;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return commercePriceListDiscountRel;
 	}
 
 	/**
@@ -2587,8 +2564,8 @@ public class CommercePriceListDiscountRelPersistenceImpl
 				CommercePriceListDiscountRel.class)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2622,9 +2599,8 @@ public class CommercePriceListDiscountRelPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							CommercePriceListDiscountRel.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						CommercePriceListDiscountRel.class, primaryKey)) {
 
 				CommercePriceListDiscountRel commercePriceListDiscountRel =
 					(CommercePriceListDiscountRel)entityCache.getResult(
@@ -2779,9 +2755,8 @@ public class CommercePriceListDiscountRelPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceListDiscountRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceListDiscountRel.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2878,9 +2853,8 @@ public class CommercePriceListDiscountRelPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						CommercePriceListDiscountRel.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					CommercePriceListDiscountRel.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -179,8 +178,8 @@ public class KaleoTimerPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KaleoTimer.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KaleoTimer.class)) {
 
 			kaleoClassName = Objects.toString(kaleoClassName, "");
 
@@ -618,8 +617,8 @@ public class KaleoTimerPersistenceImpl
 	@Override
 	public int countByKCN_KCPK(String kaleoClassName, long kaleoClassPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KaleoTimer.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KaleoTimer.class)) {
 
 			kaleoClassName = Objects.toString(kaleoClassName, "");
 
@@ -782,8 +781,8 @@ public class KaleoTimerPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KaleoTimer.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KaleoTimer.class)) {
 
 			kaleoClassName = Objects.toString(kaleoClassName, "");
 
@@ -1255,8 +1254,8 @@ public class KaleoTimerPersistenceImpl
 		String kaleoClassName, long kaleoClassPK, boolean blocking) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KaleoTimer.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KaleoTimer.class)) {
 
 			kaleoClassName = Objects.toString(kaleoClassName, "");
 
@@ -1365,8 +1364,8 @@ public class KaleoTimerPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					kaleoTimer.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					kaleoTimer.getCtCollectionId())) {
 
 			entityCache.putResult(
 				KaleoTimerImpl.class, kaleoTimer.getPrimaryKey(), kaleoTimer);
@@ -1398,8 +1397,8 @@ public class KaleoTimerPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						kaleoTimer.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						kaleoTimer.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						KaleoTimerImpl.class, kaleoTimer.getPrimaryKey()) ==
@@ -1558,93 +1557,85 @@ public class KaleoTimerPersistenceImpl
 
 	@Override
 	public KaleoTimer updateImpl(KaleoTimer kaleoTimer) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = kaleoTimer.isNew();
 
-			boolean isNew = kaleoTimer.isNew();
+		if (!(kaleoTimer instanceof KaleoTimerModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(kaleoTimer instanceof KaleoTimerModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(kaleoTimer.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						kaleoTimer);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in kaleoTimer proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(kaleoTimer.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(kaleoTimer);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom KaleoTimer implementation " +
-						kaleoTimer.getClass());
+					"Implement ModelWrapper in kaleoTimer proxy " +
+						invocationHandler.getClass());
 			}
 
-			KaleoTimerModelImpl kaleoTimerModelImpl =
-				(KaleoTimerModelImpl)kaleoTimer;
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (kaleoTimer.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					kaleoTimer.setCreateDate(date);
-				}
-				else {
-					kaleoTimer.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!kaleoTimerModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					kaleoTimer.setModifiedDate(date);
-				}
-				else {
-					kaleoTimer.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(kaleoTimer)) {
-					if (!isNew) {
-						session.evict(
-							KaleoTimerImpl.class,
-							kaleoTimer.getPrimaryKeyObj());
-					}
-
-					session.save(kaleoTimer);
-				}
-				else {
-					kaleoTimer = (KaleoTimer)session.merge(kaleoTimer);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				KaleoTimerImpl.class, kaleoTimerModelImpl, false, true);
-
-			if (isNew) {
-				kaleoTimer.setNew(false);
-			}
-
-			kaleoTimer.resetOriginalValues();
-
-			return kaleoTimer;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom KaleoTimer implementation " +
+					kaleoTimer.getClass());
 		}
+
+		KaleoTimerModelImpl kaleoTimerModelImpl =
+			(KaleoTimerModelImpl)kaleoTimer;
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (kaleoTimer.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				kaleoTimer.setCreateDate(date);
+			}
+			else {
+				kaleoTimer.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!kaleoTimerModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				kaleoTimer.setModifiedDate(date);
+			}
+			else {
+				kaleoTimer.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(kaleoTimer)) {
+				if (!isNew) {
+					session.evict(
+						KaleoTimerImpl.class, kaleoTimer.getPrimaryKeyObj());
+				}
+
+				session.save(kaleoTimer);
+			}
+			else {
+				kaleoTimer = (KaleoTimer)session.merge(kaleoTimer);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			KaleoTimerImpl.class, kaleoTimerModelImpl, false, true);
+
+		if (isNew) {
+			kaleoTimer.setNew(false);
+		}
+
+		kaleoTimer.resetOriginalValues();
+
+		return kaleoTimer;
 	}
 
 	/**
@@ -1698,44 +1689,40 @@ public class KaleoTimerPersistenceImpl
 				KaleoTimer.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		KaleoTimer kaleoTimer = (KaleoTimer)entityCache.getResult(
+			KaleoTimerImpl.class, primaryKey);
 
-			KaleoTimer kaleoTimer = (KaleoTimer)entityCache.getResult(
+		if (kaleoTimer != null) {
+			return kaleoTimer;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			kaleoTimer = (KaleoTimer)session.get(
 				KaleoTimerImpl.class, primaryKey);
 
 			if (kaleoTimer != null) {
-				return kaleoTimer;
+				cacheResult(kaleoTimer);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				kaleoTimer = (KaleoTimer)session.get(
-					KaleoTimerImpl.class, primaryKey);
-
-				if (kaleoTimer != null) {
-					cacheResult(kaleoTimer);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return kaleoTimer;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return kaleoTimer;
 	}
 
 	/**
@@ -1755,8 +1742,8 @@ public class KaleoTimerPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(KaleoTimer.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -1789,9 +1776,8 @@ public class KaleoTimerPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							KaleoTimer.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						KaleoTimer.class, primaryKey)) {
 
 				KaleoTimer kaleoTimer = (KaleoTimer)entityCache.getResult(
 					KaleoTimerImpl.class, primaryKey);
@@ -1939,8 +1925,8 @@ public class KaleoTimerPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KaleoTimer.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KaleoTimer.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2033,8 +2019,8 @@ public class KaleoTimerPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(KaleoTimer.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					KaleoTimer.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -160,9 +159,8 @@ public class VirtualHostPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						VirtualHost.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					VirtualHost.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -542,9 +540,8 @@ public class VirtualHostPersistenceImpl
 	@Override
 	public int countByCompanyId(long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						VirtualHost.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					VirtualHost.class)) {
 
 			FinderPath finderPath = _finderPathCountByCompanyId;
 
@@ -651,9 +648,8 @@ public class VirtualHostPersistenceImpl
 		String hostname, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						VirtualHost.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					VirtualHost.class)) {
 
 			hostname = Objects.toString(hostname, "");
 
@@ -766,9 +762,8 @@ public class VirtualHostPersistenceImpl
 	@Override
 	public int countByHostname(String hostname) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						VirtualHost.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					VirtualHost.class)) {
 
 			hostname = Objects.toString(hostname, "");
 
@@ -914,9 +909,8 @@ public class VirtualHostPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						VirtualHost.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					VirtualHost.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1327,9 +1321,8 @@ public class VirtualHostPersistenceImpl
 	@Override
 	public int countByC_L(long companyId, long layoutSetId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						VirtualHost.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					VirtualHost.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_L;
 
@@ -1465,9 +1458,8 @@ public class VirtualHostPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						VirtualHost.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					VirtualHost.class)) {
 
 			hostname = Objects.toString(hostname, "");
 
@@ -1967,9 +1959,8 @@ public class VirtualHostPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						VirtualHost.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					VirtualHost.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2118,9 +2109,8 @@ public class VirtualHostPersistenceImpl
 	@Override
 	public int countByNotL_H(long layoutSetId, String hostname) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						VirtualHost.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					VirtualHost.class)) {
 
 			hostname = Objects.toString(hostname, "");
 
@@ -2203,9 +2193,8 @@ public class VirtualHostPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						VirtualHost.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					VirtualHost.class)) {
 
 			Object[] finderArgs = new Object[] {
 				layoutSetId, StringUtil.merge(hostnames)
@@ -2368,9 +2357,8 @@ public class VirtualHostPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						VirtualHost.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					VirtualHost.class)) {
 
 			Object[] finderArgs = null;
 
@@ -2510,9 +2498,8 @@ public class VirtualHostPersistenceImpl
 		long companyId, long layoutSetId, boolean defaultVirtualHost) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						VirtualHost.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					VirtualHost.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_L_D;
 
@@ -2600,8 +2587,8 @@ public class VirtualHostPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					virtualHost.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					virtualHost.getCtCollectionId())) {
 
 			EntityCacheUtil.putResult(
 				VirtualHostImpl.class, virtualHost.getPrimaryKey(),
@@ -2646,8 +2633,8 @@ public class VirtualHostPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						virtualHost.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						virtualHost.getCtCollectionId())) {
 
 				if (EntityCacheUtil.getResult(
 						VirtualHostImpl.class, virtualHost.getPrimaryKey()) ==
@@ -2712,8 +2699,8 @@ public class VirtualHostPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					virtualHostModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					virtualHostModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {virtualHostModelImpl.getHostname()};
 
@@ -2840,70 +2827,63 @@ public class VirtualHostPersistenceImpl
 
 	@Override
 	public VirtualHost updateImpl(VirtualHost virtualHost) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = virtualHost.isNew();
 
-			boolean isNew = virtualHost.isNew();
+		if (!(virtualHost instanceof VirtualHostModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(virtualHost instanceof VirtualHostModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(virtualHost.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						virtualHost);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in virtualHost proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(virtualHost.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(virtualHost);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom VirtualHost implementation " +
-						virtualHost.getClass());
+					"Implement ModelWrapper in virtualHost proxy " +
+						invocationHandler.getClass());
 			}
 
-			VirtualHostModelImpl virtualHostModelImpl =
-				(VirtualHostModelImpl)virtualHost;
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (CTPersistenceHelperUtil.isInsert(virtualHost)) {
-					if (!isNew) {
-						session.evict(
-							VirtualHostImpl.class,
-							virtualHost.getPrimaryKeyObj());
-					}
-
-					session.save(virtualHost);
-				}
-				else {
-					virtualHost = (VirtualHost)session.merge(virtualHost);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			EntityCacheUtil.putResult(
-				VirtualHostImpl.class, virtualHostModelImpl, false, true);
-
-			cacheUniqueFindersCache(virtualHostModelImpl);
-
-			if (isNew) {
-				virtualHost.setNew(false);
-			}
-
-			virtualHost.resetOriginalValues();
-
-			return virtualHost;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom VirtualHost implementation " +
+					virtualHost.getClass());
 		}
+
+		VirtualHostModelImpl virtualHostModelImpl =
+			(VirtualHostModelImpl)virtualHost;
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (CTPersistenceHelperUtil.isInsert(virtualHost)) {
+				if (!isNew) {
+					session.evict(
+						VirtualHostImpl.class, virtualHost.getPrimaryKeyObj());
+				}
+
+				session.save(virtualHost);
+			}
+			else {
+				virtualHost = (VirtualHost)session.merge(virtualHost);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		EntityCacheUtil.putResult(
+			VirtualHostImpl.class, virtualHostModelImpl, false, true);
+
+		cacheUniqueFindersCache(virtualHostModelImpl);
+
+		if (isNew) {
+			virtualHost.setNew(false);
+		}
+
+		virtualHost.resetOriginalValues();
+
+		return virtualHost;
 	}
 
 	/**
@@ -2957,44 +2937,40 @@ public class VirtualHostPersistenceImpl
 				VirtualHost.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		VirtualHost virtualHost = (VirtualHost)EntityCacheUtil.getResult(
+			VirtualHostImpl.class, primaryKey);
 
-			VirtualHost virtualHost = (VirtualHost)EntityCacheUtil.getResult(
+		if (virtualHost != null) {
+			return virtualHost;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			virtualHost = (VirtualHost)session.get(
 				VirtualHostImpl.class, primaryKey);
 
 			if (virtualHost != null) {
-				return virtualHost;
+				cacheResult(virtualHost);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				virtualHost = (VirtualHost)session.get(
-					VirtualHostImpl.class, primaryKey);
-
-				if (virtualHost != null) {
-					cacheResult(virtualHost);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return virtualHost;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return virtualHost;
 	}
 
 	/**
@@ -3014,8 +2990,8 @@ public class VirtualHostPersistenceImpl
 
 		if (CTPersistenceHelperUtil.isProductionMode(VirtualHost.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -3048,9 +3024,8 @@ public class VirtualHostPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!CTPersistenceHelperUtil.isProductionMode(
-							VirtualHost.class, primaryKey))) {
+					CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+						VirtualHost.class, primaryKey)) {
 
 				VirtualHost virtualHost =
 					(VirtualHost)EntityCacheUtil.getResult(
@@ -3199,9 +3174,8 @@ public class VirtualHostPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						VirtualHost.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					VirtualHost.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3294,9 +3268,8 @@ public class VirtualHostPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTPersistenceHelperUtil.isProductionMode(
-						VirtualHost.class))) {
+				CTPersistenceHelperUtil.setCTCollectionIdWithSafeCloseable(
+					VirtualHost.class)) {
 
 			Long count = (Long)FinderCacheUtil.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -175,8 +174,8 @@ public class DDMTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -576,8 +575,8 @@ public class DDMTemplatePersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -706,8 +705,8 @@ public class DDMTemplatePersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -828,8 +827,8 @@ public class DDMTemplatePersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -982,8 +981,8 @@ public class DDMTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1418,8 +1417,8 @@ public class DDMTemplatePersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1565,8 +1564,8 @@ public class DDMTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2274,8 +2273,8 @@ public class DDMTemplatePersistenceImpl
 	@Override
 	public int countByGroupId(long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			FinderPath finderPath = _finderPathCountByGroupId;
 
@@ -2446,8 +2445,8 @@ public class DDMTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2827,8 +2826,8 @@ public class DDMTemplatePersistenceImpl
 	@Override
 	public int countByClassPK(long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			FinderPath finderPath = _finderPathCountByClassPK;
 
@@ -2954,8 +2953,8 @@ public class DDMTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			templateKey = Objects.toString(templateKey, "");
 
@@ -3363,8 +3362,8 @@ public class DDMTemplatePersistenceImpl
 	@Override
 	public int countByTemplateKey(String templateKey) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			templateKey = Objects.toString(templateKey, "");
 
@@ -3502,8 +3501,8 @@ public class DDMTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			type = Objects.toString(type, "");
 
@@ -3903,8 +3902,8 @@ public class DDMTemplatePersistenceImpl
 	@Override
 	public int countByType(String type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			type = Objects.toString(type, "");
 
@@ -4045,8 +4044,8 @@ public class DDMTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			language = Objects.toString(language, "");
 
@@ -4452,8 +4451,8 @@ public class DDMTemplatePersistenceImpl
 	@Override
 	public int countByLanguage(String language) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			language = Objects.toString(language, "");
 
@@ -4576,8 +4575,8 @@ public class DDMTemplatePersistenceImpl
 		long smallImageId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			Object[] finderArgs = null;
 
@@ -4693,8 +4692,8 @@ public class DDMTemplatePersistenceImpl
 	@Override
 	public int countBySmallImageId(long smallImageId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			FinderPath finderPath = _finderPathCountBySmallImageId;
 
@@ -4824,8 +4823,8 @@ public class DDMTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -5580,8 +5579,8 @@ public class DDMTemplatePersistenceImpl
 	@Override
 	public int countByG_C(long groupId, long classNameId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C;
 
@@ -5772,8 +5771,8 @@ public class DDMTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -6742,8 +6741,8 @@ public class DDMTemplatePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			Object[] finderArgs = null;
 
@@ -6879,8 +6878,8 @@ public class DDMTemplatePersistenceImpl
 	@Override
 	public int countByG_CPK(long groupId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_CPK;
 
@@ -6946,8 +6945,8 @@ public class DDMTemplatePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(groupIds), classPK
@@ -7237,8 +7236,8 @@ public class DDMTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -8266,8 +8265,8 @@ public class DDMTemplatePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			Object[] finderArgs = null;
 
@@ -8410,8 +8409,8 @@ public class DDMTemplatePersistenceImpl
 	@Override
 	public int countByG_C_C(long groupId, long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			FinderPath finderPath = _finderPathCountByG_C_C;
 
@@ -8482,8 +8481,8 @@ public class DDMTemplatePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			Object[] finderArgs = new Object[] {
 				StringUtil.merge(groupIds), classNameId, classPK
@@ -8780,8 +8779,8 @@ public class DDMTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			templateKey = Objects.toString(templateKey, "");
 
@@ -8914,8 +8913,8 @@ public class DDMTemplatePersistenceImpl
 		long groupId, long classNameId, String templateKey) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			templateKey = Objects.toString(templateKey, "");
 
@@ -9084,8 +9083,8 @@ public class DDMTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			type = Objects.toString(type, "");
 
@@ -9544,8 +9543,8 @@ public class DDMTemplatePersistenceImpl
 	@Override
 	public int countByC_C_T(long classNameId, long classPK, String type) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			type = Objects.toString(type, "");
 
@@ -9719,8 +9718,8 @@ public class DDMTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			type = Objects.toString(type, "");
 
@@ -10610,8 +10609,8 @@ public class DDMTemplatePersistenceImpl
 		long groupId, long classNameId, long classPK, String type) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			type = Objects.toString(type, "");
 
@@ -10883,8 +10882,8 @@ public class DDMTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			type = Objects.toString(type, "");
 			mode = Objects.toString(mode, "");
@@ -11861,8 +11860,8 @@ public class DDMTemplatePersistenceImpl
 		String mode) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			type = Objects.toString(type, "");
 			mode = Objects.toString(mode, "");
@@ -12111,8 +12110,8 @@ public class DDMTemplatePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmTemplate.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmTemplate.getCtCollectionId())) {
 
 			entityCache.putResult(
 				DDMTemplateImpl.class, ddmTemplate.getPrimaryKey(),
@@ -12162,8 +12161,8 @@ public class DDMTemplatePersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						ddmTemplate.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ddmTemplate.getCtCollectionId())) {
 
 				DDMTemplate cachedDDMTemplate =
 					(DDMTemplate)entityCache.getResult(
@@ -12238,8 +12237,8 @@ public class DDMTemplatePersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					ddmTemplateModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ddmTemplateModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				ddmTemplateModelImpl.getUuid(),
@@ -12380,101 +12379,93 @@ public class DDMTemplatePersistenceImpl
 
 	@Override
 	public DDMTemplate updateImpl(DDMTemplate ddmTemplate) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = ddmTemplate.isNew();
 
-			boolean isNew = ddmTemplate.isNew();
+		if (!(ddmTemplate instanceof DDMTemplateModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(ddmTemplate instanceof DDMTemplateModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(ddmTemplate.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						ddmTemplate);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in ddmTemplate proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(ddmTemplate.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(ddmTemplate);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DDMTemplate implementation " +
-						ddmTemplate.getClass());
+					"Implement ModelWrapper in ddmTemplate proxy " +
+						invocationHandler.getClass());
 			}
 
-			DDMTemplateModelImpl ddmTemplateModelImpl =
-				(DDMTemplateModelImpl)ddmTemplate;
-
-			if (Validator.isNull(ddmTemplate.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				ddmTemplate.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (ddmTemplate.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					ddmTemplate.setCreateDate(date);
-				}
-				else {
-					ddmTemplate.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!ddmTemplateModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					ddmTemplate.setModifiedDate(date);
-				}
-				else {
-					ddmTemplate.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(ddmTemplate)) {
-					if (!isNew) {
-						session.evict(
-							DDMTemplateImpl.class,
-							ddmTemplate.getPrimaryKeyObj());
-					}
-
-					session.save(ddmTemplate);
-				}
-				else {
-					ddmTemplate = (DDMTemplate)session.merge(ddmTemplate);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				DDMTemplateImpl.class, ddmTemplateModelImpl, false, true);
-
-			cacheUniqueFindersCache(ddmTemplateModelImpl);
-
-			if (isNew) {
-				ddmTemplate.setNew(false);
-			}
-
-			ddmTemplate.resetOriginalValues();
-
-			return ddmTemplate;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DDMTemplate implementation " +
+					ddmTemplate.getClass());
 		}
+
+		DDMTemplateModelImpl ddmTemplateModelImpl =
+			(DDMTemplateModelImpl)ddmTemplate;
+
+		if (Validator.isNull(ddmTemplate.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			ddmTemplate.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (ddmTemplate.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				ddmTemplate.setCreateDate(date);
+			}
+			else {
+				ddmTemplate.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!ddmTemplateModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				ddmTemplate.setModifiedDate(date);
+			}
+			else {
+				ddmTemplate.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(ddmTemplate)) {
+				if (!isNew) {
+					session.evict(
+						DDMTemplateImpl.class, ddmTemplate.getPrimaryKeyObj());
+				}
+
+				session.save(ddmTemplate);
+			}
+			else {
+				ddmTemplate = (DDMTemplate)session.merge(ddmTemplate);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			DDMTemplateImpl.class, ddmTemplateModelImpl, false, true);
+
+		cacheUniqueFindersCache(ddmTemplateModelImpl);
+
+		if (isNew) {
+			ddmTemplate.setNew(false);
+		}
+
+		ddmTemplate.resetOriginalValues();
+
+		return ddmTemplate;
 	}
 
 	/**
@@ -12528,44 +12519,40 @@ public class DDMTemplatePersistenceImpl
 				DDMTemplate.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DDMTemplate ddmTemplate = (DDMTemplate)entityCache.getResult(
+			DDMTemplateImpl.class, primaryKey);
 
-			DDMTemplate ddmTemplate = (DDMTemplate)entityCache.getResult(
+		if (ddmTemplate != null) {
+			return ddmTemplate;
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			ddmTemplate = (DDMTemplate)session.get(
 				DDMTemplateImpl.class, primaryKey);
 
 			if (ddmTemplate != null) {
-				return ddmTemplate;
+				cacheResult(ddmTemplate);
 			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ddmTemplate = (DDMTemplate)session.get(
-					DDMTemplateImpl.class, primaryKey);
-
-				if (ddmTemplate != null) {
-					cacheResult(ddmTemplate);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			return ddmTemplate;
 		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return ddmTemplate;
 	}
 
 	/**
@@ -12585,8 +12572,8 @@ public class DDMTemplatePersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(DDMTemplate.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -12619,9 +12606,8 @@ public class DDMTemplatePersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							DDMTemplate.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						DDMTemplate.class, primaryKey)) {
 
 				DDMTemplate ddmTemplate = (DDMTemplate)entityCache.getResult(
 					DDMTemplateImpl.class, primaryKey);
@@ -12769,8 +12755,8 @@ public class DDMTemplatePersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -12863,8 +12849,8 @@ public class DDMTemplatePersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(DDMTemplate.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DDMTemplate.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

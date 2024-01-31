@@ -9,7 +9,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -172,9 +171,8 @@ public class TranslationEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TranslationEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TranslationEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -579,9 +577,8 @@ public class TranslationEntryPersistenceImpl
 	@Override
 	public int countByUuid(String uuid) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TranslationEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TranslationEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -710,9 +707,8 @@ public class TranslationEntryPersistenceImpl
 		String uuid, long groupId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TranslationEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TranslationEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -833,9 +829,8 @@ public class TranslationEntryPersistenceImpl
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TranslationEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TranslationEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -988,9 +983,8 @@ public class TranslationEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TranslationEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TranslationEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1429,9 +1423,8 @@ public class TranslationEntryPersistenceImpl
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TranslationEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TranslationEntry.class)) {
 
 			uuid = Objects.toString(uuid, "");
 
@@ -1584,9 +1577,8 @@ public class TranslationEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TranslationEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TranslationEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2000,9 +1992,8 @@ public class TranslationEntryPersistenceImpl
 	@Override
 	public int countByC_C(long classNameId, long classPK) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TranslationEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TranslationEntry.class)) {
 
 			FinderPath finderPath = _finderPathCountByC_C;
 
@@ -2133,9 +2124,8 @@ public class TranslationEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TranslationEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TranslationEntry.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -2266,9 +2256,8 @@ public class TranslationEntryPersistenceImpl
 	@Override
 	public int countByC_C_L(long classNameId, long classPK, String languageId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TranslationEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TranslationEntry.class)) {
 
 			languageId = Objects.toString(languageId, "");
 
@@ -2378,8 +2367,8 @@ public class TranslationEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					translationEntry.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					translationEntry.getCtCollectionId())) {
 
 			entityCache.putResult(
 				TranslationEntryImpl.class, translationEntry.getPrimaryKey(),
@@ -2429,8 +2418,8 @@ public class TranslationEntryPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						translationEntry.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						translationEntry.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						TranslationEntryImpl.class,
@@ -2496,8 +2485,8 @@ public class TranslationEntryPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					translationEntryModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					translationEntryModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				translationEntryModelImpl.getUuid(),
@@ -2634,103 +2623,97 @@ public class TranslationEntryPersistenceImpl
 
 	@Override
 	public TranslationEntry updateImpl(TranslationEntry translationEntry) {
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = translationEntry.isNew();
 
-			boolean isNew = translationEntry.isNew();
+		if (!(translationEntry instanceof TranslationEntryModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(translationEntry instanceof TranslationEntryModelImpl)) {
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(translationEntry.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						translationEntry);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in translationEntry proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(translationEntry.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					translationEntry);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom TranslationEntry implementation " +
-						translationEntry.getClass());
+					"Implement ModelWrapper in translationEntry proxy " +
+						invocationHandler.getClass());
 			}
 
-			TranslationEntryModelImpl translationEntryModelImpl =
-				(TranslationEntryModelImpl)translationEntry;
-
-			if (Validator.isNull(translationEntry.getUuid())) {
-				String uuid = PortalUUIDUtil.generate();
-
-				translationEntry.setUuid(uuid);
-			}
-
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			Date date = new Date();
-
-			if (isNew && (translationEntry.getCreateDate() == null)) {
-				if (serviceContext == null) {
-					translationEntry.setCreateDate(date);
-				}
-				else {
-					translationEntry.setCreateDate(
-						serviceContext.getCreateDate(date));
-				}
-			}
-
-			if (!translationEntryModelImpl.hasSetModifiedDate()) {
-				if (serviceContext == null) {
-					translationEntry.setModifiedDate(date);
-				}
-				else {
-					translationEntry.setModifiedDate(
-						serviceContext.getModifiedDate(date));
-				}
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(translationEntry)) {
-					if (!isNew) {
-						session.evict(
-							TranslationEntryImpl.class,
-							translationEntry.getPrimaryKeyObj());
-					}
-
-					session.save(translationEntry);
-				}
-				else {
-					translationEntry = (TranslationEntry)session.merge(
-						translationEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				TranslationEntryImpl.class, translationEntryModelImpl, false,
-				true);
-
-			cacheUniqueFindersCache(translationEntryModelImpl);
-
-			if (isNew) {
-				translationEntry.setNew(false);
-			}
-
-			translationEntry.resetOriginalValues();
-
-			return translationEntry;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom TranslationEntry implementation " +
+					translationEntry.getClass());
 		}
+
+		TranslationEntryModelImpl translationEntryModelImpl =
+			(TranslationEntryModelImpl)translationEntry;
+
+		if (Validator.isNull(translationEntry.getUuid())) {
+			String uuid = PortalUUIDUtil.generate();
+
+			translationEntry.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		Date date = new Date();
+
+		if (isNew && (translationEntry.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				translationEntry.setCreateDate(date);
+			}
+			else {
+				translationEntry.setCreateDate(
+					serviceContext.getCreateDate(date));
+			}
+		}
+
+		if (!translationEntryModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				translationEntry.setModifiedDate(date);
+			}
+			else {
+				translationEntry.setModifiedDate(
+					serviceContext.getModifiedDate(date));
+			}
+		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(translationEntry)) {
+				if (!isNew) {
+					session.evict(
+						TranslationEntryImpl.class,
+						translationEntry.getPrimaryKeyObj());
+				}
+
+				session.save(translationEntry);
+			}
+			else {
+				translationEntry = (TranslationEntry)session.merge(
+					translationEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			TranslationEntryImpl.class, translationEntryModelImpl, false, true);
+
+		cacheUniqueFindersCache(translationEntryModelImpl);
+
+		if (isNew) {
+			translationEntry.setNew(false);
+		}
+
+		translationEntry.resetOriginalValues();
+
+		return translationEntry;
 	}
 
 	/**
@@ -2784,45 +2767,41 @@ public class TranslationEntryPersistenceImpl
 				TranslationEntry.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		TranslationEntry translationEntry =
+			(TranslationEntry)entityCache.getResult(
+				TranslationEntryImpl.class, primaryKey);
 
-			TranslationEntry translationEntry =
-				(TranslationEntry)entityCache.getResult(
-					TranslationEntryImpl.class, primaryKey);
-
-			if (translationEntry != null) {
-				return translationEntry;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				translationEntry = (TranslationEntry)session.get(
-					TranslationEntryImpl.class, primaryKey);
-
-				if (translationEntry != null) {
-					cacheResult(translationEntry);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (translationEntry != null) {
 			return translationEntry;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			translationEntry = (TranslationEntry)session.get(
+				TranslationEntryImpl.class, primaryKey);
+
+			if (translationEntry != null) {
+				cacheResult(translationEntry);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return translationEntry;
 	}
 
 	/**
@@ -2842,8 +2821,8 @@ public class TranslationEntryPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(TranslationEntry.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2876,9 +2855,8 @@ public class TranslationEntryPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							TranslationEntry.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						TranslationEntry.class, primaryKey)) {
 
 				TranslationEntry translationEntry =
 					(TranslationEntry)entityCache.getResult(
@@ -3031,9 +3009,8 @@ public class TranslationEntryPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TranslationEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TranslationEntry.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -3126,9 +3103,8 @@ public class TranslationEntryPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						TranslationEntry.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					TranslationEntry.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);

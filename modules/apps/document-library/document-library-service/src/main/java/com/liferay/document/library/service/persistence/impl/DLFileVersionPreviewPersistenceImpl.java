@@ -17,7 +17,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
@@ -169,9 +168,8 @@ public class DLFileVersionPreviewPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DLFileVersionPreview.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLFileVersionPreview.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -563,9 +561,8 @@ public class DLFileVersionPreviewPersistenceImpl
 	@Override
 	public int countByFileEntryId(long fileEntryId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DLFileVersionPreview.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLFileVersionPreview.class)) {
 
 			FinderPath finderPath = _finderPathCountByFileEntryId;
 
@@ -691,9 +688,8 @@ public class DLFileVersionPreviewPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DLFileVersionPreview.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLFileVersionPreview.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -1087,9 +1083,8 @@ public class DLFileVersionPreviewPersistenceImpl
 	@Override
 	public int countByFileVersionId(long fileVersionId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DLFileVersionPreview.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLFileVersionPreview.class)) {
 
 			FinderPath finderPath = _finderPathCountByFileVersionId;
 
@@ -1205,9 +1200,8 @@ public class DLFileVersionPreviewPersistenceImpl
 		long fileEntryId, long fileVersionId, boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DLFileVersionPreview.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLFileVersionPreview.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1319,9 +1313,8 @@ public class DLFileVersionPreviewPersistenceImpl
 	@Override
 	public int countByF_F(long fileEntryId, long fileVersionId) {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DLFileVersionPreview.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLFileVersionPreview.class)) {
 
 			FinderPath finderPath = _finderPathCountByF_F;
 
@@ -1452,9 +1445,8 @@ public class DLFileVersionPreviewPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DLFileVersionPreview.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLFileVersionPreview.class)) {
 
 			Object[] finderArgs = null;
 
@@ -1578,9 +1570,8 @@ public class DLFileVersionPreviewPersistenceImpl
 		long fileEntryId, long fileVersionId, int previewStatus) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DLFileVersionPreview.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLFileVersionPreview.class)) {
 
 			FinderPath finderPath = _finderPathCountByF_F_P;
 
@@ -1668,8 +1659,8 @@ public class DLFileVersionPreviewPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					dlFileVersionPreview.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					dlFileVersionPreview.getCtCollectionId())) {
 
 			entityCache.putResult(
 				DLFileVersionPreviewImpl.class,
@@ -1722,8 +1713,8 @@ public class DLFileVersionPreviewPersistenceImpl
 			}
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						dlFileVersionPreview.getCtCollectionId() != 0)) {
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						dlFileVersionPreview.getCtCollectionId())) {
 
 				if (entityCache.getResult(
 						DLFileVersionPreviewImpl.class,
@@ -1793,8 +1784,8 @@ public class DLFileVersionPreviewPersistenceImpl
 		}
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					dlFileVersionPreviewModelImpl.getCtCollectionId() != 0)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					dlFileVersionPreviewModelImpl.getCtCollectionId())) {
 
 			Object[] args = new Object[] {
 				dlFileVersionPreviewModelImpl.getFileEntryId(),
@@ -1932,74 +1923,67 @@ public class DLFileVersionPreviewPersistenceImpl
 	public DLFileVersionPreview updateImpl(
 		DLFileVersionPreview dlFileVersionPreview) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!CTCollectionThreadLocal.isProductionMode())) {
+		boolean isNew = dlFileVersionPreview.isNew();
 
-			boolean isNew = dlFileVersionPreview.isNew();
+		if (!(dlFileVersionPreview instanceof DLFileVersionPreviewModelImpl)) {
+			InvocationHandler invocationHandler = null;
 
-			if (!(dlFileVersionPreview instanceof
-					DLFileVersionPreviewModelImpl)) {
-
-				InvocationHandler invocationHandler = null;
-
-				if (ProxyUtil.isProxyClass(dlFileVersionPreview.getClass())) {
-					invocationHandler = ProxyUtil.getInvocationHandler(
-						dlFileVersionPreview);
-
-					throw new IllegalArgumentException(
-						"Implement ModelWrapper in dlFileVersionPreview proxy " +
-							invocationHandler.getClass());
-				}
+			if (ProxyUtil.isProxyClass(dlFileVersionPreview.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(
+					dlFileVersionPreview);
 
 				throw new IllegalArgumentException(
-					"Implement ModelWrapper in custom DLFileVersionPreview implementation " +
-						dlFileVersionPreview.getClass());
+					"Implement ModelWrapper in dlFileVersionPreview proxy " +
+						invocationHandler.getClass());
 			}
 
-			DLFileVersionPreviewModelImpl dlFileVersionPreviewModelImpl =
-				(DLFileVersionPreviewModelImpl)dlFileVersionPreview;
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				if (ctPersistenceHelper.isInsert(dlFileVersionPreview)) {
-					if (!isNew) {
-						session.evict(
-							DLFileVersionPreviewImpl.class,
-							dlFileVersionPreview.getPrimaryKeyObj());
-					}
-
-					session.save(dlFileVersionPreview);
-				}
-				else {
-					dlFileVersionPreview = (DLFileVersionPreview)session.merge(
-						dlFileVersionPreview);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
-			entityCache.putResult(
-				DLFileVersionPreviewImpl.class, dlFileVersionPreviewModelImpl,
-				false, true);
-
-			cacheUniqueFindersCache(dlFileVersionPreviewModelImpl);
-
-			if (isNew) {
-				dlFileVersionPreview.setNew(false);
-			}
-
-			dlFileVersionPreview.resetOriginalValues();
-
-			return dlFileVersionPreview;
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DLFileVersionPreview implementation " +
+					dlFileVersionPreview.getClass());
 		}
+
+		DLFileVersionPreviewModelImpl dlFileVersionPreviewModelImpl =
+			(DLFileVersionPreviewModelImpl)dlFileVersionPreview;
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			if (ctPersistenceHelper.isInsert(dlFileVersionPreview)) {
+				if (!isNew) {
+					session.evict(
+						DLFileVersionPreviewImpl.class,
+						dlFileVersionPreview.getPrimaryKeyObj());
+				}
+
+				session.save(dlFileVersionPreview);
+			}
+			else {
+				dlFileVersionPreview = (DLFileVersionPreview)session.merge(
+					dlFileVersionPreview);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		entityCache.putResult(
+			DLFileVersionPreviewImpl.class, dlFileVersionPreviewModelImpl,
+			false, true);
+
+		cacheUniqueFindersCache(dlFileVersionPreviewModelImpl);
+
+		if (isNew) {
+			dlFileVersionPreview.setNew(false);
+		}
+
+		dlFileVersionPreview.resetOriginalValues();
+
+		return dlFileVersionPreview;
 	}
 
 	/**
@@ -2054,45 +2038,41 @@ public class DLFileVersionPreviewPersistenceImpl
 				DLFileVersionPreview.class, primaryKey)) {
 
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKey(primaryKey);
 			}
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(true)) {
+		DLFileVersionPreview dlFileVersionPreview =
+			(DLFileVersionPreview)entityCache.getResult(
+				DLFileVersionPreviewImpl.class, primaryKey);
 
-			DLFileVersionPreview dlFileVersionPreview =
-				(DLFileVersionPreview)entityCache.getResult(
-					DLFileVersionPreviewImpl.class, primaryKey);
-
-			if (dlFileVersionPreview != null) {
-				return dlFileVersionPreview;
-			}
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				dlFileVersionPreview = (DLFileVersionPreview)session.get(
-					DLFileVersionPreviewImpl.class, primaryKey);
-
-				if (dlFileVersionPreview != null) {
-					cacheResult(dlFileVersionPreview);
-				}
-			}
-			catch (Exception exception) {
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-
+		if (dlFileVersionPreview != null) {
 			return dlFileVersionPreview;
 		}
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			dlFileVersionPreview = (DLFileVersionPreview)session.get(
+				DLFileVersionPreviewImpl.class, primaryKey);
+
+			if (dlFileVersionPreview != null) {
+				cacheResult(dlFileVersionPreview);
+			}
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return dlFileVersionPreview;
 	}
 
 	/**
@@ -2112,8 +2092,8 @@ public class DLFileVersionPreviewPersistenceImpl
 
 		if (ctPersistenceHelper.isProductionMode(DLFileVersionPreview.class)) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						false)) {
+					CTCollectionThreadLocal.
+						setProductionModeWithSafeCloseable()) {
 
 				return super.fetchByPrimaryKeys(primaryKeys);
 			}
@@ -2147,9 +2127,8 @@ public class DLFileVersionPreviewPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			try (SafeCloseable safeCloseable =
-					CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-						!ctPersistenceHelper.isProductionMode(
-							DLFileVersionPreview.class, primaryKey))) {
+					ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+						DLFileVersionPreview.class, primaryKey)) {
 
 				DLFileVersionPreview dlFileVersionPreview =
 					(DLFileVersionPreview)entityCache.getResult(
@@ -2304,9 +2283,8 @@ public class DLFileVersionPreviewPersistenceImpl
 		boolean useFinderCache) {
 
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DLFileVersionPreview.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLFileVersionPreview.class)) {
 
 			FinderPath finderPath = null;
 			Object[] finderArgs = null;
@@ -2400,9 +2378,8 @@ public class DLFileVersionPreviewPersistenceImpl
 	@Override
 	public int countAll() {
 		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-					!ctPersistenceHelper.isProductionMode(
-						DLFileVersionPreview.class))) {
+				ctPersistenceHelper.setCTCollectionIdWithSafeCloseable(
+					DLFileVersionPreview.class)) {
 
 			Long count = (Long)finderCache.getResult(
 				_finderPathCountAll, FINDER_ARGS_EMPTY, this);
