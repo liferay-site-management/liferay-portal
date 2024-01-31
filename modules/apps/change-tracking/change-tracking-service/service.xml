@@ -187,6 +187,12 @@
 			<finder-column name="modelClassNameId" />
 			<finder-column arrayable-operator="OR" name="modelClassPK" />
 		</finder>
+		<finder name="NotC_MCNI_MCPK_CT" return-type="Collection">
+			<finder-column comparator="!=" name="ctCollectionId" />
+			<finder-column name="modelClassNameId" />
+			<finder-column name="modelClassPK" />
+			<finder-column name="changeType" />
+		</finder>
 	</entity>
 	<entity local-service="true" name="CTMessage" remote-service="false" trash-enabled="false" uuid="false">
 
