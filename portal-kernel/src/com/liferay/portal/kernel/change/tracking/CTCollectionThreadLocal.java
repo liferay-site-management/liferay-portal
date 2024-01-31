@@ -7,7 +7,6 @@ package com.liferay.portal.kernel.change.tracking;
 
 import com.liferay.petra.lang.CentralizedThreadLocal;
 import com.liferay.petra.lang.SafeCloseable;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.module.service.Snapshot;
 
 /**
@@ -36,18 +35,7 @@ public class CTCollectionThreadLocal {
 	public static SafeCloseable setCTCollectionIdWithSafeCloseable(
 		long ctCollectionId) {
 
-		SafeCloseable ctCacheSafeCloseable =
-			CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(
-				ctCollectionId != CT_COLLECTION_ID_PRODUCTION);
-
-		SafeCloseable ctCollectionIdSafeCloseable =
-			_ctCollectionId.setWithSafeCloseable(ctCollectionId);
-
-		return () -> {
-			ctCacheSafeCloseable.close();
-
-			ctCollectionIdSafeCloseable.close();
-		};
+		return _ctCollectionId.setWithSafeCloseable(ctCollectionId);
 	}
 
 	public static SafeCloseable setProductionModeWithSafeCloseable() {
@@ -59,16 +47,10 @@ public class CTCollectionThreadLocal {
 			_ctCollectionIdSupplierSnapshot.get();
 
 		if (ctCollectionIdSupplier == null) {
-			CTCacheThreadLocal.setCTCacheEnabled(false);
-
 			return CT_COLLECTION_ID_PRODUCTION;
 		}
 
-		long ctCollectionId = ctCollectionIdSupplier.getCTCollectionId();
-
-		CTCacheThreadLocal.setCTCacheEnabled(ctCollectionId != 0);
-
-		return ctCollectionId;
+		return ctCollectionIdSupplier.getCTCollectionId();
 	}
 
 	private CTCollectionThreadLocal() {

@@ -6,7 +6,6 @@
 package com.liferay.portal.kernel.service.persistence.impl;
 
 import com.liferay.expando.kernel.model.ExpandoBridge;
-import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.sql.dsl.Column;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.petra.sql.dsl.Table;
@@ -30,8 +29,6 @@ import com.liferay.petra.sql.dsl.spi.query.Select;
 import com.liferay.petra.sql.dsl.spi.query.SetOperation;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.configuration.Filter;
 import com.liferay.portal.kernel.dao.db.DB;
@@ -221,8 +218,7 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 
 		Object[] arguments = _getArguments(defaultASTNodeListener);
 
-		Object cacheResult = finderCache.getResult(
-			finderPath, arguments, this);
+		Object cacheResult = finderCache.getResult(finderPath, arguments, this);
 
 		if (cacheResult != null) {
 			return (R)cacheResult;

@@ -11,7 +11,6 @@ import com.liferay.portal.kernel.cache.PortalCacheListener;
 import com.liferay.portal.kernel.cache.PortalCacheListenerScope;
 import com.liferay.portal.kernel.cache.PortalCacheManager;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
@@ -102,13 +101,6 @@ public class CTAwarePortalCache
 
 	@Override
 	public void put(Serializable key, Serializable value, int timeToLive) {
-		long ctCollectionId = CTCollectionThreadLocal.getCTCollectionId();
-
-		if (!CTCacheThreadLocal.isCTCacheEnabled()) {
-			ctCollectionId =
-				CTCollectionThreadLocal.CT_COLLECTION_ID_PRODUCTION;
-		}
-
 		if (value instanceof CacheModel<?>) {
 			CacheModel<?> cacheModel = (CacheModel<?>)value;
 
@@ -117,7 +109,9 @@ public class CTAwarePortalCache
 			if (baseModel instanceof CTModel<?>) {
 				CTModel<?> ctModel = (CTModel<?>)baseModel;
 
-				if (ctCollectionId != ctModel.getCtCollectionId()) {
+				if (CTCollectionThreadLocal.getCTCollectionId() !=
+						ctModel.getCtCollectionId()) {
+
 					System.out.println("fix this");
 				}
 			}

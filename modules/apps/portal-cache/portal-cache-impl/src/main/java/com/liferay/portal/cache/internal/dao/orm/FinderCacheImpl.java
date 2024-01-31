@@ -20,7 +20,6 @@ import com.liferay.portal.kernel.cache.PortalCacheManager;
 import com.liferay.portal.kernel.cache.PortalCacheManagerListener;
 import com.liferay.portal.kernel.cache.key.CacheKeyGenerator;
 import com.liferay.portal.kernel.cache.key.CacheKeyGeneratorUtil;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.cluster.ClusterExecutor;
 import com.liferay.portal.kernel.cluster.ClusterInvokeThreadLocal;
 import com.liferay.portal.kernel.cluster.ClusterRequest;
@@ -711,9 +710,7 @@ public class FinderCacheImpl
 			return false;
 		}
 
-		if (ThreadLocalFilterThreadLocal.isFilterInvoked() &&
-			!CTCacheThreadLocal.isCTCacheEnabled()) {
-
+		if (ThreadLocalFilterThreadLocal.isFilterInvoked()) {
 			return true;
 		}
 

@@ -15,7 +15,6 @@ import com.liferay.portal.kernel.cache.PortalCache;
 import com.liferay.portal.kernel.cache.PortalCacheHelperUtil;
 import com.liferay.portal.kernel.cache.PortalCacheManager;
 import com.liferay.portal.kernel.cache.PortalCacheManagerListener;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.cluster.ClusterExecutor;
 import com.liferay.portal.kernel.cluster.ClusterInvokeThreadLocal;
 import com.liferay.portal.kernel.cluster.ClusterRequest;
@@ -321,9 +320,7 @@ public class EntityCacheImpl
 			return false;
 		}
 
-		if (ThreadLocalFilterThreadLocal.isFilterInvoked() &&
-			!CTCacheThreadLocal.isCTCacheEnabled()) {
-
+		if (ThreadLocalFilterThreadLocal.isFilterInvoked()) {
 			return true;
 		}
 

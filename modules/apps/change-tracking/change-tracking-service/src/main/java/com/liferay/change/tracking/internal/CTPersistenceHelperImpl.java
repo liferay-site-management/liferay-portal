@@ -10,7 +10,6 @@ import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
-import com.liferay.portal.kernel.change.tracking.cache.CTCacheThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
@@ -39,46 +38,42 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 			return ctModel.isNew();
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(false)) {
+		long modelClassNameId = _classNameLocalService.getClassNameId(
+			ctModel.getModelClass());
 
-			long modelClassNameId = _classNameLocalService.getClassNameId(
-				ctModel.getModelClass());
+		long modelClassPK = ctModel.getPrimaryKey();
 
-			long modelClassPK = ctModel.getPrimaryKey();
+		CTEntry ctEntry = _ctEntryLocalService.fetchCTEntry(
+			ctCollectionId, modelClassNameId, modelClassPK);
 
-			CTEntry ctEntry = _ctEntryLocalService.fetchCTEntry(
-				ctCollectionId, modelClassNameId, modelClassPK);
+		long userId = PrincipalThreadLocal.getUserId();
 
-			long userId = PrincipalThreadLocal.getUserId();
+		try {
+			if (ctEntry == null) {
+				int changeType = CTConstants.CT_CHANGE_TYPE_MODIFICATION;
 
-			try {
-				if (ctEntry == null) {
-					int changeType = CTConstants.CT_CHANGE_TYPE_MODIFICATION;
-
-					if (ctModel.isNew()) {
-						changeType = CTConstants.CT_CHANGE_TYPE_ADDITION;
-					}
-
-					_ctEntryLocalService.addCTEntry(
-						null, ctCollectionId, modelClassNameId, ctModel, userId,
-						changeType);
-
-					return true;
+				if (ctModel.isNew()) {
+					changeType = CTConstants.CT_CHANGE_TYPE_ADDITION;
 				}
 
-				if (userId != ctEntry.getUserId()) {
-					ctEntry.setUserId(userId);
-				}
+				_ctEntryLocalService.addCTEntry(
+					null, ctCollectionId, modelClassNameId, ctModel, userId,
+					changeType);
 
-				_ctEntryLocalService.updateCTEntry(ctEntry);
-			}
-			catch (PortalException portalException) {
-				throw new SystemException(portalException);
+				return true;
 			}
 
-			return false;
+			if (userId != ctEntry.getUserId()) {
+				ctEntry.setUserId(userId);
+			}
+
+			_ctEntryLocalService.updateCTEntry(ctEntry);
 		}
+		catch (PortalException portalException) {
+			throw new SystemException(portalException);
+		}
+
+		return false;
 	}
 
 	@Override
@@ -88,41 +83,36 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 		return isProductionMode(ctModelClass, null);
 	}
 
-
 	@Override
 	public <T extends CTModel<T>> boolean isProductionMode(
 		Class<T> ctModelClass, Serializable primaryKey) {
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(false)) {
+		long ctCollectionId = CTCollectionThreadLocal.getCTCollectionId();
 
-			long ctCollectionId = CTCollectionThreadLocal.getCTCollectionId();
+		if (ctCollectionId == CTConstants.CT_COLLECTION_ID_PRODUCTION) {
+			return true;
+		}
 
-			if (ctCollectionId == CTConstants.CT_COLLECTION_ID_PRODUCTION) {
-				return true;
-			}
+		long modelClassNameId = _classNameLocalService.getClassNameId(
+			ctModelClass);
 
-			long modelClassNameId = _classNameLocalService.getClassNameId(
-				ctModelClass);
-
-			if (primaryKey instanceof Long) {
-				if (_ctEntryLocalService.hasCTEntry(
-						ctCollectionId, modelClassNameId, (Long)primaryKey)) {
-
-					return false;
-				}
-
-				return true;
-			}
-
-			if (_ctEntryLocalService.hasCTEntries(
-					ctCollectionId, modelClassNameId)) {
+		if (primaryKey instanceof Long) {
+			if (_ctEntryLocalService.hasCTEntry(
+					ctCollectionId, modelClassNameId, (Long)primaryKey)) {
 
 				return false;
 			}
 
 			return true;
 		}
+
+		if (_ctEntryLocalService.hasCTEntries(
+				ctCollectionId, modelClassNameId)) {
+
+			return false;
+		}
+
+		return true;
 	}
 
 	@Override
@@ -137,62 +127,55 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 			return true;
 		}
 
-		try (SafeCloseable safeCloseable =
-				CTCacheThreadLocal.setCTCacheEnabledWithSafeCloseable(false)) {
+		long modelClassNameId = _classNameLocalService.getClassNameId(
+			ctModel.getModelClass());
 
-			long modelClassNameId = _classNameLocalService.getClassNameId(
-				ctModel.getModelClass());
+		long modelClassPK = ctModel.getPrimaryKey();
 
-			long modelClassPK = ctModel.getPrimaryKey();
+		CTEntry ctEntry = _ctEntryLocalService.fetchCTEntry(
+			ctCollectionId, modelClassNameId, modelClassPK);
 
-			CTEntry ctEntry = _ctEntryLocalService.fetchCTEntry(
-				ctCollectionId, modelClassNameId, modelClassPK);
+		try {
+			if (ctEntry == null) {
+				_ctEntryLocalService.addCTEntry(
+					null, ctCollectionId, modelClassNameId, ctModel,
+					PrincipalThreadLocal.getUserId(),
+					CTConstants.CT_CHANGE_TYPE_DELETION);
+			}
+			else {
+				int changeType = ctEntry.getChangeType();
 
-			try {
-				if (ctEntry == null) {
-					_ctEntryLocalService.addCTEntry(
-						null, ctCollectionId, modelClassNameId, ctModel,
-						PrincipalThreadLocal.getUserId(),
-						CTConstants.CT_CHANGE_TYPE_DELETION);
+				if (changeType == CTConstants.CT_CHANGE_TYPE_ADDITION) {
+					_ctEntryLocalService.deleteCTEntry(ctEntry);
+
+					return true;
 				}
-				else {
-					int changeType = ctEntry.getChangeType();
 
-					if (changeType == CTConstants.CT_CHANGE_TYPE_ADDITION) {
-						_ctEntryLocalService.deleteCTEntry(ctEntry);
+				ctEntry.setChangeType(CTConstants.CT_CHANGE_TYPE_DELETION);
 
-						return true;
-					}
+				_ctEntryLocalService.updateCTEntry(ctEntry);
 
-					ctEntry.setChangeType(CTConstants.CT_CHANGE_TYPE_DELETION);
+				if ((changeType == CTConstants.CT_CHANGE_TYPE_MODIFICATION) &&
+					(ctModel.getCtCollectionId() !=
+						CTConstants.CT_COLLECTION_ID_PRODUCTION)) {
 
-					_ctEntryLocalService.updateCTEntry(ctEntry);
-
-					if ((changeType ==
-							CTConstants.CT_CHANGE_TYPE_MODIFICATION) &&
-						(ctModel.getCtCollectionId() !=
-							CTConstants.CT_COLLECTION_ID_PRODUCTION)) {
-
-						return true;
-					}
+					return true;
 				}
 			}
-			catch (PortalException portalException) {
-				throw new SystemException(portalException);
-			}
-
-			return false;
 		}
+		catch (PortalException portalException) {
+			throw new SystemException(portalException);
+		}
+
+		return false;
 	}
 
 	@Override
 	public <T extends CTModel<T>> SafeCloseable
-		setCTCollectionIdWithSafeCloseable(
-			Class<T> ctModelClass) {
+		setCTCollectionIdWithSafeCloseable(Class<T> ctModelClass) {
 
 		return setCTCollectionIdWithSafeCloseable(ctModelClass, null);
 	}
-
 
 	@Override
 	public <T extends CTModel<T>> SafeCloseable
@@ -204,8 +187,7 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 		}
 
 		return CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
-			CTCollectionThreadLocal.getCTCollectionId()
-		);
+			CTCollectionThreadLocal.getCTCollectionId());
 	}
 
 	@Reference
