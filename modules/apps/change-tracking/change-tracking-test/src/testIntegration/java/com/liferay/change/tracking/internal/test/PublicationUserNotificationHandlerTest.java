@@ -131,7 +131,7 @@ public class PublicationUserNotificationHandlerTest {
 			Assert.assertEquals(
 				StringBundler.concat(
 					"<div class=\"title\">", ctCollection.getName(),
-					" scheduled publication failed</div><div class=\"body\">",
+					" scheduled publication failed.</div><div class=\"body\">",
 					"Click on this notification to see the list of conflicts ",
 					"that need to be manually resolved.</div>"),
 				userNotificationFeedEntry.getBody());
@@ -211,10 +211,8 @@ public class PublicationUserNotificationHandlerTest {
 				Assert.assertEquals(
 					StringBundler.concat(
 						"<div class=\"title\">", ctCollection.getName(),
-						" scheduled publication failed</div><div class=",
-						"\"body\">Unexpected system error occurred. Please ",
-						"contact your System Administrator to solve this ",
-						"issue.</div>"),
+						" scheduled publication failed.</div><div class=",
+						"\"body\">An unexpected error occurred.</div>"),
 					userNotificationFeedEntry.getBody());
 			}
 		}
