@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
+import com.liferay.portal.kernel.test.util.PropsValuesTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.test.rule.Inject;
@@ -141,32 +142,37 @@ public class CTEntryLocalServiceTest {
 
 		CTCollection ctCollection3 = _createCTCollection();
 
-		try (SafeCloseable safeCloseable =
-				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
-					ctCollection3.getCtCollectionId())) {
+		try (SafeCloseable safeCloseable1 =
+				PropsValuesTestUtil.swapWithSafeCloseable(
+					"CHANGE_TRACKING_DELETION_PROTECTION_ENABLED", false)) {
+
+			try (SafeCloseable safeCloseable2 =
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ctCollection3.getCtCollectionId())) {
+
+				_assertCTRowCTCollectionId(
+					ctCollection2.getCtCollectionId(), ctEntry1,
+					journalFolder.getFolderId(), folderName1);
+
+				_journalFolderLocalService.deleteFolder(
+					journalFolder.getFolderId());
+
+				_assertCTRowCTCollectionId(
+					ctCollection2.getCtCollectionId(), ctEntry1,
+					journalFolder.getFolderId(), folderName1);
+			}
+
+			_ctProcessLocalService.addCTProcess(
+				TestPropsValues.getUserId(), ctCollection3.getCtCollectionId());
 
 			_assertCTRowCTCollectionId(
 				ctCollection2.getCtCollectionId(), ctEntry1,
 				journalFolder.getFolderId(), folderName1);
 
-			_journalFolderLocalService.deleteFolder(
-				journalFolder.getFolderId());
-
 			_assertCTRowCTCollectionId(
-				ctCollection2.getCtCollectionId(), ctEntry1,
-				journalFolder.getFolderId(), folderName1);
+				ctCollection3.getCtCollectionId(), ctEntry2,
+				journalFolder.getFolderId(), folderName2);
 		}
-
-		_ctProcessLocalService.addCTProcess(
-			TestPropsValues.getUserId(), ctCollection3.getCtCollectionId());
-
-		_assertCTRowCTCollectionId(
-			ctCollection2.getCtCollectionId(), ctEntry1,
-			journalFolder.getFolderId(), folderName1);
-
-		_assertCTRowCTCollectionId(
-			ctCollection3.getCtCollectionId(), ctEntry2,
-			journalFolder.getFolderId(), folderName2);
 	}
 
 	private void _assertCTRowCTCollectionId(

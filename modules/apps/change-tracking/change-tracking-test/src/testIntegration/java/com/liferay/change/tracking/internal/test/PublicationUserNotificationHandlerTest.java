@@ -10,9 +10,12 @@ import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTCollectionService;
+import com.liferay.journal.constants.JournalFolderConstants;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.model.JournalFolder;
 import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.journal.service.JournalArticleService;
+import com.liferay.journal.service.JournalFolderLocalService;
 import com.liferay.journal.test.util.JournalTestUtil;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
@@ -91,8 +94,15 @@ public class PublicationUserNotificationHandlerTest {
 				journalArticle.getId(), RandomTestUtil.randomString());
 		}
 
-		_journalArticleLocalService.deleteArticle(
+		JournalFolder journalFolder = _journalFolderLocalService.addFolder(
+			null, TestPropsValues.getUserId(), _group.getGroupId(),
+			JournalFolderConstants.DEFAULT_PARENT_FOLDER_ID,
+			RandomTestUtil.randomString(), null,
+			ServiceContextTestUtil.getServiceContext());
+
+		_journalArticleLocalService.moveArticle(
 			_group.getGroupId(), journalArticle.getArticleId(),
+			journalFolder.getFolderId(),
 			ServiceContextTestUtil.getServiceContext());
 
 		_publishCTCollection(ctCollection.getCtCollectionId());
@@ -136,6 +146,8 @@ public class PublicationUserNotificationHandlerTest {
 					"that need to be manually resolved.</div>"),
 				userNotificationFeedEntry.getBody());
 		}
+
+		_ctCollectionLocalService.deleteCTCollection(ctCollection);
 	}
 
 	@Test
@@ -256,6 +268,9 @@ public class PublicationUserNotificationHandlerTest {
 
 	@Inject
 	private JournalArticleLocalService _journalArticleLocalService;
+
+	@Inject
+	private JournalFolderLocalService _journalFolderLocalService;
 
 	@Inject
 	private JSONFactory _jsonFactory;

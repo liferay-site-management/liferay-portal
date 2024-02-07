@@ -1013,29 +1013,37 @@ public class LayoutCTTest {
 			layout = _layoutLocalService.updateLayout(layout);
 		}
 
-		_layoutLocalService.deleteLayout(layout);
+		try (SafeCloseable safeCloseable1 =
+				PropsValuesTestUtil.swapWithSafeCloseable(
+					"CHANGE_TRACKING_DELETION_PROTECTION_ENABLED", false)) {
 
-		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
-				"com.liferay.portal.background.task.internal.messaging." +
-					"BackgroundTaskMessageListener",
-				LoggerTestUtil.ERROR)) {
+			_layoutLocalService.deleteLayout(layout);
 
-			_ctProcessLocalService.addCTProcess(
-				_ctCollection.getUserId(), _ctCollection.getCtCollectionId());
+			try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
+					"com.liferay.portal.background.task.internal.messaging." +
+						"BackgroundTaskMessageListener",
+					LoggerTestUtil.ERROR)) {
 
-			List<LogEntry> logEntries = logCapture.getLogEntries();
+				_ctProcessLocalService.addCTProcess(
+					_ctCollection.getUserId(),
+					_ctCollection.getCtCollectionId());
 
-			Assert.assertEquals(logEntries.toString(), 1, logEntries.size());
+				List<LogEntry> logEntries = logCapture.getLogEntries();
 
-			LogEntry logEntry = logEntries.get(0);
+				Assert.assertEquals(
+					logEntries.toString(), 1, logEntries.size());
 
-			Throwable throwable = logEntry.getThrowable();
+				LogEntry logEntry = logEntries.get(0);
 
-			Assert.assertNotNull(throwable);
+				Throwable throwable = logEntry.getThrowable();
 
-			String message = throwable.toString();
+				Assert.assertNotNull(throwable);
 
-			Assert.assertTrue(message, message.contains("Unable to publish "));
+				String message = throwable.toString();
+
+				Assert.assertTrue(
+					message, message.contains("Unable to publish "));
+			}
 		}
 	}
 
