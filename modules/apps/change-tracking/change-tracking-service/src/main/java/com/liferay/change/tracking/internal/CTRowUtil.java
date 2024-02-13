@@ -120,7 +120,7 @@ public class CTRowUtil {
 		long targetCTCollectionId) {
 
 		StringBundler sb = new StringBundler(
-			(9 * uniqueIndexColumnNames.length) + 17);
+			(4 * uniqueIndexColumnNames.length) + 17);
 
 		sb.append("select sourceTable.");
 		sb.append(primaryColumnName);
@@ -140,15 +140,10 @@ public class CTRowUtil {
 		sb.append(targetCTCollectionId);
 
 		for (String uniqueIndexColumnName : uniqueIndexColumnNames) {
-			sb.append(" and ((sourceTable.");
+			sb.append(" and sourceTable.");
 			sb.append(uniqueIndexColumnName);
 			sb.append(" = targetTable.");
 			sb.append(uniqueIndexColumnName);
-			sb.append(") or (sourceTable.");
-			sb.append(uniqueIndexColumnName);
-			sb.append(" is null and targetTable.");
-			sb.append(uniqueIndexColumnName);
-			sb.append(" is null))");
 		}
 
 		return sb.toString();
