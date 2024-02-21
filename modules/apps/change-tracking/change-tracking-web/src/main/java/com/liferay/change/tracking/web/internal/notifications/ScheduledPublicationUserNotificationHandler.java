@@ -53,7 +53,9 @@ public class ScheduledPublicationUserNotificationHandler
 		String body = null;
 
 		if (Objects.equals(userNotificationEvent.getUserId(), adminUserId)) {
-			body = "Click on this notification to see the stack trace.";
+			body = _language.get(
+				serviceContext.getLocale(),
+				"click-on-this-notification-to-see-the-stack-trace");
 
 			return StringUtil.replace(
 				getBodyTemplate(), new String[] {"[$BODY$]", "[$TITLE$]"},
@@ -61,8 +63,8 @@ public class ScheduledPublicationUserNotificationHandler
 					body,
 					_language.format(
 						serviceContext.getLocale(),
-						"P1 scheduled publication failed with an unexpected +" +
-							"system error.",
+						"x-scheduled-publication-failed-with-an-unexpected-" +
+							"system-error",
 						new Object[] {jsonObject.getString("ctCollectionName")},
 						false)
 				});
