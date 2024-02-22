@@ -9,12 +9,18 @@
 
 <%
 long backgroundTaskId = GetterUtil.getLong(renderRequest.getParameter("backgroundTaskId"));
+String ctCollectionName = GetterUtil.getString(renderRequest.getParameter("ctCollectionName"));
 
 BackgroundTask backgroundTask = BackgroundTaskLocalServiceUtil.getBackgroundTask(backgroundTaskId);
 %>
 
-<clay:container-fluid>
-	<div>
-		<liferay-ui:message key="<%= backgroundTask.getStatusMessage() %>" />
-	</div>
-</clay:container-fluid>
+<div class="sheet sheet-lg">
+	<clay:container-fluid>
+		<div class="sheet-header">
+			<h6 class="sheet-title"> <%= ctCollectionName %> failed to publish </h6>
+			<div class="sheet-text">
+				<liferay-ui:message key="<%= backgroundTask.getStatusMessage() %>" />
+			</div>
+		</div>
+	</clay:container-fluid>
+</div>
