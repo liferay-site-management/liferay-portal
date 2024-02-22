@@ -144,6 +144,13 @@ public class ScheduledPublicationUserNotificationHandler
 				).getLong(
 					"backgroundTaskId"
 				)
+			).setParameter(
+				"ctCollectionName",
+				_jsonFactory.createJSONObject(
+					userNotificationEvent.getPayload()
+				).getString(
+					"ctCollectionName"
+				)
 			).buildString();
 		}
 
