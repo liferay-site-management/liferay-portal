@@ -14,13 +14,15 @@ String ctCollectionName = GetterUtil.getString(renderRequest.getParameter("ctCol
 BackgroundTask backgroundTask = BackgroundTaskLocalServiceUtil.getBackgroundTask(backgroundTaskId);
 %>
 
-<div class="sheet sheet-lg">
-	<clay:container-fluid>
-		<div class="sheet-header">
-			<h6 class="sheet-title"> <%= ctCollectionName %> failed to publish </h6>
-			<div class="sheet-text">
-				<liferay-ui:message key="<%= backgroundTask.getStatusMessage() %>" />
-			</div>
+<clay:container-fluid
+	cssClass="container-view"
+>
+	<div class="sheet">
+		<h2 class="sheet-title">
+			<liferay-ui:message arguments="<%= ctCollectionName %>" key="x-scheduled-publication-failed-with-an-unexpected-system-error" />
+		</h2>
+
+		<div class="sheet-section">
+			<pre class="bg-light border p-2"><%= backgroundTask.getStatusMessage() %></pre>
 		</div>
-	</clay:container-fluid>
-</div>
+</clay:container-fluid>
