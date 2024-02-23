@@ -20,8 +20,6 @@ import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 
-import java.util.Objects;
-
 import javax.portlet.PortletRequest;
 
 import org.osgi.service.component.annotations.Component;
@@ -47,12 +45,29 @@ public class ScheduledPublicationUserNotificationHandler
 		JSONObject jsonObject = _jsonFactory.createJSONObject(
 			userNotificationEvent.getPayload());
 
-		long adminUserId = _getAdminUserId(
-			userNotificationEvent.getCompanyId());
-
 		String body = null;
 
-		if (Objects.equals(userNotificationEvent.getUserId(), adminUserId)) {
+		boolean showConflicts = jsonObject.getBoolean("showConflicts");
+
+		if (showConflicts) {
+			body = _language.get(
+				serviceContext.getLocale(),
+				"click-on-this-notification-to-see-the-list-of-conflicts-" +
+					"that-need-to-be-manually-resolved");
+
+			return StringUtil.replace(
+				getBodyTemplate(), new String[] {"[$BODY$]", "[$TITLE$]"},
+				new String[] {
+					body,
+					_language.format(
+						serviceContext.getLocale(),
+						"x-scheduled-publication-failed",
+						new Object[] {jsonObject.getString("ctCollectionName")},
+						false)
+				});
+		}
+
+		if (_isAdminUser(userNotificationEvent)) {
 			body = _language.get(
 				serviceContext.getLocale(),
 				"click-on-this-notification-to-see-the-stack-trace");
@@ -70,20 +85,10 @@ public class ScheduledPublicationUserNotificationHandler
 				});
 		}
 
-		boolean showConflicts = jsonObject.getBoolean("showConflicts");
-
-		if (showConflicts) {
-			body = _language.get(
-				serviceContext.getLocale(),
-				"click-on-this-notification-to-see-the-list-of-conflicts-" +
-					"that-need-to-be-manually-resolved");
-		}
-		else {
-			body = _language.get(
-				serviceContext.getLocale(),
-				"an-unexpected-error-occurred-while-publishing-the-scheduled-" +
-					"publication");
-		}
+		body = _language.get(
+			serviceContext.getLocale(),
+			"an-unexpected-error-occurred-while-publishing-the-scheduled-" +
+				"publication");
 
 		return StringUtil.replace(
 			getBodyTemplate(), new String[] {"[$BODY$]", "[$TITLE$]"},
@@ -126,10 +131,7 @@ public class ScheduledPublicationUserNotificationHandler
 			).buildString();
 		}
 
-		if (Objects.equals(
-				userNotificationEvent.getUserId(),
-				_getAdminUserId(userNotificationEvent.getCompanyId()))) {
-
+		if (_isAdminUser(userNotificationEvent)) {
 			return PortletURLBuilder.create(
 				_portal.getControlPanelPortletURL(
 					serviceContext.getRequest(), serviceContext.getScopeGroup(),
@@ -138,32 +140,23 @@ public class ScheduledPublicationUserNotificationHandler
 			).setMVCRenderCommandName(
 				"/change_tracking/view_stack_trace"
 			).setParameter(
-				"backgroundTaskId",
-				_jsonFactory.createJSONObject(
-					userNotificationEvent.getPayload()
-				).getLong(
-					"backgroundTaskId"
-				)
+				"backgroundTaskId", jsonObject.getLong("backgroundTaskId")
 			).setParameter(
-				"ctCollectionName",
-				_jsonFactory.createJSONObject(
-					userNotificationEvent.getPayload()
-				).getString(
-					"ctCollectionName"
-				)
+				"ctCollectionName", jsonObject.getString("ctCollectionName")
 			).buildString();
 		}
 
 		return null;
 	}
 
-	private long _getAdminUserId(long companyId) throws Exception {
+	private boolean _isAdminUser(UserNotificationEvent userNotificationEvent)
+		throws Exception {
+
 		Role role = _roleLocalService.getRole(
-			companyId, RoleConstants.ADMINISTRATOR);
+			userNotificationEvent.getCompanyId(), RoleConstants.ADMINISTRATOR);
 
-		long[] userIds = _userLocalService.getRoleUserIds(role.getRoleId());
-
-		return userIds[0];
+		return _userLocalService.hasRoleUser(
+			role.getRoleId(), userNotificationEvent.getUserId());
 	}
 
 	@Reference
