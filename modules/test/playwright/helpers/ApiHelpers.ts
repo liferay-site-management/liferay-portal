@@ -14,6 +14,7 @@ import {FeatureFlagApiHelper} from './FeatureFlagApiHelper';
 import {HeadlessAdminContentApiHelper} from './HeadlessAdminContentApiHelper';
 import {HeadlessAdminUserApiHelper} from './HeadlessAdminUserApiHelper';
 import {HeadlessAdminWorkflowApiHelper} from './HeadlessAdminWorkflowApiHelper';
+import {HeadlessChangeTrackingApiHelper} from './HeadlessChangeTrackingApiHelper';
 import {HeadlessCommerceAdminCatalogApiHelper} from './HeadlessCommerceAdminCatalogApiHelper';
 import {HeadlessCommerceAdminChannelApiHelper} from './HeadlessCommerceAdminChannelApiHelper';
 import {HeadlessCommerceAdminPaymentApiHelper} from './HeadlessCommerceAdminPaymentApiHelper';
@@ -45,6 +46,7 @@ export class ApiHelpers {
 	readonly headlessAdminContent: HeadlessAdminContentApiHelper;
 	readonly headlessAdminUser: HeadlessAdminUserApiHelper;
 	readonly headlessAdminWorkflow: HeadlessAdminWorkflowApiHelper;
+	readonly headlessChangeTracking: HeadlessChangeTrackingApiHelper;
 	readonly headlessCommerceAdminCatalog: HeadlessCommerceAdminCatalogApiHelper;
 	readonly headlessCommerceAdminChannel: HeadlessCommerceAdminChannelApiHelper;
 	readonly headlessCommerceAdminPaymentApiHelper: HeadlessCommerceAdminPaymentApiHelper;
@@ -76,6 +78,7 @@ export class ApiHelpers {
 		this.headlessAdminContent = new HeadlessAdminContentApiHelper(this);
 		this.headlessAdminUser = new HeadlessAdminUserApiHelper(this);
 		this.headlessAdminWorkflow = new HeadlessAdminWorkflowApiHelper(this);
+		this.headlessChangeTracking = new HeadlessChangeTrackingApiHelper(this);
 		this.headlessCommerceAdminCatalog =
 			new HeadlessCommerceAdminCatalogApiHelper(this);
 		this.headlessCommerceAdminChannel =
@@ -119,7 +122,7 @@ export class ApiHelpers {
 
 	async post(
 		url: string,
-		data: DataObject | any[] | string,
+		data?: DataObject | any[] | string,
 		failOnStatusCode?: boolean,
 		headers?: {[key: string]: string}
 	) {
@@ -129,6 +132,12 @@ export class ApiHelpers {
 			failOnStatusCode,
 			headers
 		);
+
+		const text = await response.text();
+
+		if (!text) {
+			return response;
+		}
 
 		return response.json();
 	}
