@@ -830,8 +830,8 @@ public class CTCollectionLocalServiceImpl
 			ctCollectionPersistence.findByPrimaryKey(fromCTCollectionId);
 
 		if ((fromCTCollection.getStatus() != WorkflowConstants.STATUS_DRAFT) &&
-			(fromCTCollection.getStatus() !=
-				WorkflowConstants.STATUS_PENDING)) {
+			(fromCTCollection.getStatus() != WorkflowConstants.STATUS_PENDING)
+			&& (fromCTCollection.getStatus() != WorkflowConstants.STATUS_EXPIRED)) {
 
 			throw new CTCollectionStatusException(
 				"Change tracking collection " + fromCTCollection +
