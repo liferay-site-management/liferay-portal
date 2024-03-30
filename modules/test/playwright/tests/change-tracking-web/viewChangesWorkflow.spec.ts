@@ -8,14 +8,14 @@ import {mergeTests} from '@playwright/test';
 import {apiHelpersTest} from '../../fixtures/apiHelpersTest';
 import {changeTrackingPagesTest} from '../../fixtures/changeTrackingPagesTest';
 import {loginTest} from '../../fixtures/loginTest';
-import {processBuilderPagesTest} from '../../fixtures/processBuilderPagesTest';
+import {workflowPagesTest} from '../../fixtures/workflowPagesTest';
 import {journalPagesTest} from '../journal-web/fixtures/journalPagesTest';
 
 export const test = mergeTests(
 	apiHelpersTest,
 	journalPagesTest,
 	changeTrackingPagesTest,
-	processBuilderPagesTest,
+	workflowPagesTest,
 	loginTest()
 );
 
@@ -24,12 +24,11 @@ test('LPD-19748 Add workflow info to the View Change screen', async ({
 	changeTrackingPage,
 	journalEditArticlePage,
 	page,
-	processBuilderPage,
+	workflowPage,
 }) => {
-	await processBuilderPage.goToProcessBuilderConfigurationTab();
-	await processBuilderPage.enableSingleApproverWorkflow(
-		'Web Content Article'
-	);
+	await workflowPage.goto();
+
+	await workflowPage.changeWorkflow('Web Content Article', 'Single Approver');
 
 	await changeTrackingPage.enablePublications();
 
@@ -72,10 +71,9 @@ test('LPD-19748 Add workflow info to the View Change screen', async ({
 
 	await apiHelpers.headlessChangeTracking.deleteCTCollection(ctCollection.id);
 
-	await changeTrackingPage.disablePublications();
+	await workflowPage.goto();
 
-	await processBuilderPage.goToProcessBuilderConfigurationTab();
-	await processBuilderPage.disableSingleApproverWorkflow(
-		'Web Content Article'
-	);
+	await workflowPage.changeWorkflow('Web Content Article', 'No Workflow', {
+		disable: true,
+	});
 });
