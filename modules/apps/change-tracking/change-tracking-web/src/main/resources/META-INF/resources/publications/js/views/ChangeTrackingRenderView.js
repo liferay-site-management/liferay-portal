@@ -771,6 +771,45 @@ export default function ChangeTrackingRenderView({
 			});
 		}
 
+		if (state.renderData.divider) {
+			dropdownItems.push(Liferay.Language.get('move-changes'));
+			dropdownItems.push(state.renderData.divider);
+		}
+
+		if (state.renderData.workflowApprove) {
+			dropdownItems.push({
+				label: state.renderData.workflowApprove.label,
+				onClick: () => navigate(state.renderData.workflowApprove.href),
+				symbolLeft: 'pencil',
+			});
+		}
+		if (state.renderData.workflowReject) {
+			dropdownItems.push({
+				label: state.renderData.workflowReject.label,
+				onClick: () => navigate(state.renderData.workflowReject.href),
+				symbolLeft: 'pencil',
+			});
+		}
+
+		if (state.renderData.workflowAssignToMe) {
+			dropdownItems.push({
+				label: state.renderData.workflowAssignToMe.label,
+				onClick: () =>
+					navigate(state.renderData.workflowAssignToMe.href),
+				symbolLeft: 'pencil',
+			});
+		}
+		if (state.renderData.workflowAssignTo) {
+			dropdownItems.push({
+				label: state.renderData.workflowAssignTo.label,
+				onClick: () => navigate(state.renderData.workflowAssignTo.href),
+				symbolLeft: 'pencil',
+			});
+		}
+		if (state.renderData.divider) {
+			dropdownItems.push(state.renderData.divider);
+		}
+
 		if (moveChangesURL !== null) {
 			dropdownItems.push({
 				label: (
