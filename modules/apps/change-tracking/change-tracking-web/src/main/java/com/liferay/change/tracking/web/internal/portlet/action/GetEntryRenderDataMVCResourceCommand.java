@@ -39,14 +39,19 @@ import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.GroupedModel;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.WorkflowInstanceLink;
+import com.liferay.portal.kernel.model.WorkflowedModel;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
+import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
+import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
+import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalService;
 import com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalService;
 import com.liferay.portal.kernel.servlet.PipingServletResponse;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.LinkedHashMapBuilder;
@@ -78,6 +83,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import javax.portlet.ActionRequest;
+import javax.portlet.PortletURL;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
@@ -175,8 +181,13 @@ public class GetEntryRenderDataMVCResourceCommand
 		String defaultLanguageId = null;
 		JSONObject editInProductionJSONObject = null;
 		JSONObject editInPublicationJSONObject = null;
+		JSONObject dividerJSONObject = null;
 		JSONObject localizedTitlesJSONObject = _jsonFactory.createJSONObject();
 		String rightPreview = null;
+		JSONObject workflowAssignToJSONObject = null;
+		JSONObject workflowAssignToMeJSONObject = null;
+		JSONObject workflowApproveJSONObject = null;
+		JSONObject workflowRejectJSONObject = null;
 		JSONObject rightLocalizedPreviewJSONObject = null;
 		JSONObject rightLocalizedRenderJSONObject = null;
 		String rightRender = null;
@@ -221,6 +232,139 @@ public class GetEntryRenderDataMVCResourceCommand
 								httpServletRequest, "edit-in-x",
 								new Object[] {ctCollection.getName()}, false),
 							resourceRequest, resourceResponse);
+					}
+				}
+
+				long groupId = 0;
+
+				if (rightModel instanceof GroupedModel) {
+					GroupedModel groupedModel = (GroupedModel)rightModel;
+
+					groupId = groupedModel.getGroupId();
+				}
+
+				boolean enabled =
+					_workflowDefinitionLinkLocalService.
+						hasWorkflowDefinitionLink(
+							ctEntry.getCompanyId(), groupId,
+							_portal.getClassName(
+								ctEntry.getModelClassNameId()));
+
+				if ((rightModel instanceof WorkflowedModel) && enabled) {
+					WorkflowInstanceLink workflowInstanceLink =
+						_workflowInstanceLinkLocalService.
+							fetchWorkflowInstanceLink(
+								ctEntry.getCompanyId(), groupId,
+								_portal.getClassName(
+									ctEntry.getModelClassNameId()),
+								ctEntry.getModelClassPK());
+
+					List<WorkflowTask> workflowTasks =
+						_workflowTaskManager.getWorkflowTasksByWorkflowInstance(
+							ctEntry.getCompanyId(), null,
+							workflowInstanceLink.getWorkflowInstanceId(), false,
+							0, 1, null);
+
+					if (!workflowTasks.isEmpty()) {
+						WorkflowTask workflowTask = workflowTasks.get(0);
+
+						PortletURL redirectURL =
+							PortletURLBuilder.createRenderURL(
+								resourceResponse
+							).setMVCPath(
+								"/publications/edit_ct_entry.jsp"
+							).setParameter(
+								"assigneeUserId",
+								workflowTask.getAssigneeUserId()
+							).setParameter(
+								"workflowTaskId",
+								workflowTask.getWorkflowTaskId()
+							).setWindowState(
+								LiferayWindowState.POP_UP
+							).buildPortletURL();
+
+						if (workflowTask.getAssigneeUserId() == -1) {
+							workflowAssignToMeJSONObject = JSONUtil.put(
+								"href",
+								PublicationsPortletURLUtil.getHref(
+									resourceResponse.createActionURL(),
+									ActionRequest.ACTION_NAME,
+									"/change_tracking/edit_ct_entry",
+									"redirect", redirectURL, "assigneeUserId",
+									String.valueOf(
+										workflowTask.getAssigneeUserId()),
+									"eventName", "assignToMe", "workflowTaskId",
+									String.valueOf(
+										workflowTask.getWorkflowTaskId()))
+							).put(
+								"label",
+								_language.get(
+									httpServletRequest, "assign-to-me")
+							).put(
+								"symbolLeft", "pencil"
+							);
+						}
+						else {
+							workflowApproveJSONObject = JSONUtil.put(
+								"href",
+								PublicationsPortletURLUtil.getHref(
+									resourceResponse.createActionURL(),
+									ActionRequest.ACTION_NAME,
+									"/change_tracking/edit_ct_entry",
+									"redirect", redirectURL, "workflowTaskId",
+									String.valueOf(
+										workflowTask.getWorkflowTaskId()),
+									"assigneeUserId",
+									String.valueOf(
+										workflowTask.getAssigneeUserId()),
+									"eventName", Constants.APPROVE)
+							).put(
+								"label",
+								_language.get(httpServletRequest, "approve")
+							).put(
+								"symbolLeft", "pencil"
+							);
+							workflowRejectJSONObject = JSONUtil.put(
+								"href",
+								PublicationsPortletURLUtil.getHref(
+									resourceResponse.createActionURL(),
+									ActionRequest.ACTION_NAME,
+									"/change_tracking/edit_ct_entry",
+									"redirect", redirectURL, "assigneeUserId",
+									String.valueOf(
+										workflowTask.getAssigneeUserId()),
+									"eventName", Constants.REJECT,
+									"workflowTaskId",
+									String.valueOf(
+										workflowTask.getWorkflowTaskId()))
+							).put(
+								"label",
+								_language.get(httpServletRequest, "reject")
+							).put(
+								"symbolLeft", "pencil"
+							);
+						}
+
+						workflowAssignToJSONObject = JSONUtil.put(
+							"href",
+							PublicationsPortletURLUtil.getHref(
+								resourceResponse.createActionURL(),
+								ActionRequest.ACTION_NAME,
+								"/change_tracking/edit_ct_entry", "redirectURL",
+								redirectURL, "assigneeUserId",
+								String.valueOf(
+									workflowTask.getAssigneeUserId()),
+								"eventName", "assignTo", "workflowTaskId",
+								String.valueOf(
+									workflowTask.getWorkflowTaskId()))
+						).put(
+							"label",
+							_language.get(httpServletRequest, "assign-to-...")
+						).put(
+							"symbolLeft", "pencil"
+						);
+
+						dividerJSONObject = JSONUtil.put("type", "divider");
 					}
 				}
 
@@ -548,6 +692,26 @@ public class GetEntryRenderDataMVCResourceCommand
 
 		if (editInPublicationJSONObject != null) {
 			jsonObject.put("editInPublication", editInPublicationJSONObject);
+		}
+
+		if (dividerJSONObject != null) {
+			jsonObject.put("divider", dividerJSONObject);
+		}
+
+		if (workflowAssignToJSONObject != null) {
+			jsonObject.put("workflowAssignTo", workflowAssignToJSONObject);
+		}
+
+		if (workflowAssignToMeJSONObject != null) {
+			jsonObject.put("workflowAssignToMe", workflowAssignToMeJSONObject);
+		}
+
+		if (workflowApproveJSONObject != null) {
+			jsonObject.put("workflowApprove", workflowApproveJSONObject);
+		}
+
+		if (workflowRejectJSONObject != null) {
+			jsonObject.put("workflowReject", workflowRejectJSONObject);
 		}
 
 		if (leftLocalizedPreviewJSONObject != null) {
@@ -1170,6 +1334,10 @@ public class GetEntryRenderDataMVCResourceCommand
 
 	@Reference
 	private SegmentsExperienceLocalService _segmentsExperienceLocalService;
+
+	@Reference
+	private WorkflowDefinitionLinkLocalService
+		_workflowDefinitionLinkLocalService;
 
 	@Reference
 	private WorkflowInstanceLinkLocalService _workflowInstanceLinkLocalService;
