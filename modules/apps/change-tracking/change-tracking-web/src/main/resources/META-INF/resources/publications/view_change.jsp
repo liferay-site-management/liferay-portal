@@ -39,3 +39,9 @@ renderResponse.setTitle(LanguageUtil.get(request, "review-change"));
 		/>
 	</div>
 </div>
+
+<aui:script>
+	function <portlet:namespace />refreshPortlet(uri) {
+		location.href = uri;
+	}
+</aui:script>
