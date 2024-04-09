@@ -39,6 +39,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.kernel.workflow.WorkflowTaskManager;
 import com.liferay.portlet.LiferayPortletUtil;
 
 import javax.portlet.RenderRequest;
@@ -143,7 +144,8 @@ public class ViewChangeMVCRenderCommand implements MVCRenderCommand {
 					_ctCollectionLocalService, _ctDisplayRendererRegistry,
 					_ctPreferencesLocalService, _ctRemoteLocalService,
 					_portal.getHttpServletRequest(renderRequest), _language,
-					_publicationHelper, renderRequest, renderResponse),
+					_publicationHelper, renderRequest, renderResponse,
+					_workflowTaskManager),
 				_publishSchedulerSnapshot.get(), renderRequest, renderResponse,
 				_userLocalService);
 
@@ -205,5 +207,8 @@ public class ViewChangeMVCRenderCommand implements MVCRenderCommand {
 
 	@Reference
 	private UserLocalService _userLocalService;
+
+	@Reference
+	private WorkflowTaskManager _workflowTaskManager;
 
 }
