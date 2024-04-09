@@ -40,13 +40,13 @@ import com.liferay.portal.kernel.model.GroupedModel;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.WorkflowInstanceLink;
 import com.liferay.portal.kernel.model.WorkflowedModel;
+import com.liferay.portal.kernel.module.service.Snapshot;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
-import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalService;
 import com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalService;
 import com.liferay.portal.kernel.servlet.PipingServletResponse;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -64,6 +64,7 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.workflow.WorkflowTask;
 import com.liferay.portal.kernel.workflow.WorkflowTaskManager;
+import com.liferay.portal.kernel.workflow.WorkflowTaskManagerUtil;
 import com.liferay.segments.constants.SegmentsExperienceConstants;
 import com.liferay.segments.model.SegmentsEntry;
 import com.liferay.segments.model.SegmentsExperience;
@@ -141,6 +142,42 @@ public class GetEntryRenderDataMVCResourceCommand
 		}
 	}
 
+	private PortletURL _createWorkflowRedirectURL(
+			String eventName, ResourceResponse resourceResponse,
+			PortletURL portletURL, ThemeDisplay themeDisplay,
+			WorkflowTask workflowTask)
+		throws Exception {
+
+		String mvcPath = "/publications/ct_entry_assign.jsp";
+
+		if (Objects.equals(eventName, Constants.APPROVE) ||
+			Objects.equals(eventName, Constants.REJECT)) {
+
+			mvcPath = "/publications/ct_entry_action.jsp";
+		}
+
+		return PortletURLBuilder.createRenderURL(
+			resourceResponse
+		).setMVCPath(
+			mvcPath
+		).setRedirect(
+			portletURL
+		).setParameter(
+			"assigneeUserId", workflowTask.getAssigneeUserId()
+		).setParameter(
+			"eventName", eventName
+		).setParameter(
+			"hasAssignableUsers",
+			_hasAssignableUsers(workflowTask.getWorkflowTaskId())
+		).setParameter(
+			"userId", themeDisplay.getUserId()
+		).setParameter(
+			"workflowTaskId", workflowTask.getWorkflowTaskId()
+		).setWindowState(
+			LiferayWindowState.POP_UP
+		).buildPortletURL();
+	}
+
 	private <T extends BaseModel<T>> JSONObject _getCTEntryRenderDataJSONObject(
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse,
 			long ctEntryId)
@@ -179,20 +216,20 @@ public class GetEntryRenderDataMVCResourceCommand
 
 		String[] availableLanguageIds = null;
 		String defaultLanguageId = null;
+		JSONObject dividerJSONObject = null;
 		JSONObject editInProductionJSONObject = null;
 		JSONObject editInPublicationJSONObject = null;
-		JSONObject dividerJSONObject = null;
 		JSONObject localizedTitlesJSONObject = _jsonFactory.createJSONObject();
 		String rightPreview = null;
-		JSONObject workflowAssignToJSONObject = null;
-		JSONObject workflowAssignToMeJSONObject = null;
-		JSONObject workflowApproveJSONObject = null;
-		JSONObject workflowRejectJSONObject = null;
 		JSONObject rightLocalizedPreviewJSONObject = null;
 		JSONObject rightLocalizedRenderJSONObject = null;
 		String rightRender = null;
 		T rightModel = null;
 		String rightTitle = null;
+		JSONObject workflowApproveJSONObject = null;
+		JSONObject workflowAssignToJSONObject = null;
+		JSONObject workflowAssignToMeJSONObject = null;
+		JSONObject workflowRejectJSONObject = null;
 
 		if (ctEntry.getChangeType() != CTConstants.CT_CHANGE_TYPE_DELETION) {
 			rightTitle = ctCollection.getName();
@@ -235,22 +272,22 @@ public class GetEntryRenderDataMVCResourceCommand
 					}
 				}
 
-				long groupId = 0;
+				boolean workflowEnabled =
+					_ctDisplayRendererRegistry.isWorkflowEnabled(
+						ctEntry, rightModel);
 
-				if (rightModel instanceof GroupedModel) {
-					GroupedModel groupedModel = (GroupedModel)rightModel;
+				if (workflowEnabled &&
+					FeatureFlagManagerUtil.isEnabled("LPD-10703") &&
+					(rightModel instanceof WorkflowedModel)) {
 
-					groupId = groupedModel.getGroupId();
-				}
+					long groupId = 0;
 
-				boolean enabled =
-					_workflowDefinitionLinkLocalService.
-						hasWorkflowDefinitionLink(
-							ctEntry.getCompanyId(), groupId,
-							_portal.getClassName(
-								ctEntry.getModelClassNameId()));
+					if (rightModel instanceof GroupedModel) {
+						GroupedModel groupedModel = (GroupedModel)rightModel;
 
-				if ((rightModel instanceof WorkflowedModel) && enabled) {
+						groupId = groupedModel.getGroupId();
+					}
+
 					WorkflowInstanceLink workflowInstanceLink =
 						_workflowInstanceLinkLocalService.
 							fetchWorkflowInstanceLink(
@@ -259,112 +296,114 @@ public class GetEntryRenderDataMVCResourceCommand
 									ctEntry.getModelClassNameId()),
 								ctEntry.getModelClassPK());
 
-					List<WorkflowTask> workflowTasks =
-						_workflowTaskManager.getWorkflowTasksByWorkflowInstance(
-							ctEntry.getCompanyId(), null,
-							workflowInstanceLink.getWorkflowInstanceId(), false,
-							0, 1, null);
+					if (!(workflowInstanceLink == null)) {
+						List<WorkflowTask> workflowTasks =
+							_workflowTaskManager.
+								getWorkflowTasksByWorkflowInstance(
+									ctEntry.getCompanyId(), null,
+									workflowInstanceLink.
+										getWorkflowInstanceId(),
+									false, 0, 1, null);
 
-					if (!workflowTasks.isEmpty()) {
-						WorkflowTask workflowTask = workflowTasks.get(0);
+						if (!workflowTasks.isEmpty()) {
+							WorkflowTask workflowTask = workflowTasks.get(0);
 
-						PortletURL redirectURL =
-							PortletURLBuilder.createRenderURL(
-								resourceResponse
-							).setMVCPath(
-								"/publications/edit_ct_entry.jsp"
-							).setParameter(
-								"assigneeUserId",
-								workflowTask.getAssigneeUserId()
-							).setParameter(
-								"workflowTaskId",
-								workflowTask.getWorkflowTaskId()
-							).setWindowState(
-								LiferayWindowState.POP_UP
-							).buildPortletURL();
+							if (Objects.equals(
+									workflowTask.getName(), "review")) {
 
-						if (workflowTask.getAssigneeUserId() == -1) {
-							workflowAssignToMeJSONObject = JSONUtil.put(
-								"href",
-								PublicationsPortletURLUtil.getHref(
-									resourceResponse.createActionURL(),
-									ActionRequest.ACTION_NAME,
-									"/change_tracking/edit_ct_entry",
-									"redirect", redirectURL, "assigneeUserId",
-									String.valueOf(
-										workflowTask.getAssigneeUserId()),
-									"eventName", "assignToMe", "workflowTaskId",
-									String.valueOf(
-										workflowTask.getWorkflowTaskId()))
-							).put(
-								"label",
-								_language.get(
-									httpServletRequest, "assign-to-me")
-							).put(
-								"symbolLeft", "pencil"
-							);
+								PortletURL portletURL =
+									PortletURLBuilder.createRenderURL(
+										resourceResponse
+									).setMVCRenderCommandName(
+										"/change_tracking/view_change"
+									).setParameter(
+										"ctCollectionId", ctCollectionId
+									).setParameter(
+										"ctEntryId", ctEntryId
+									).buildPortletURL();
+
+								if ((workflowTask.getAssigneeUserId() == -1) ||
+									!Objects.equals(
+										workflowTask.getAssigneeUserId(),
+										themeDisplay.getUserId())) {
+
+									workflowAssignToMeJSONObject = JSONUtil.put(
+										"href",
+										PublicationsPortletURLUtil.getHref(
+											resourceResponse.createActionURL(),
+											ActionRequest.ACTION_NAME,
+											"/change_tracking/ct_entry_assign")
+									).put(
+										"label",
+										_language.get(
+											httpServletRequest, "assign-to-me")
+									).put(
+										"redirectURL",
+										_createWorkflowRedirectURL(
+											"assignToMe", resourceResponse,
+											portletURL, themeDisplay,
+											workflowTask)
+									);
+								}
+								else {
+									workflowApproveJSONObject = JSONUtil.put(
+										"href",
+										PublicationsPortletURLUtil.getHref(
+											resourceResponse.createActionURL(),
+											ActionRequest.ACTION_NAME,
+											"/change_tracking/ct_entry_action")
+									).put(
+										"label",
+										_language.get(
+											httpServletRequest, "approve")
+									).put(
+										"redirectURL",
+										_createWorkflowRedirectURL(
+											Constants.APPROVE, resourceResponse,
+											portletURL, themeDisplay,
+											workflowTask)
+									);
+
+									workflowRejectJSONObject = JSONUtil.put(
+										"href",
+										PublicationsPortletURLUtil.getHref(
+											resourceResponse.createActionURL(),
+											ActionRequest.ACTION_NAME,
+											"/change_tracking/ct_entry_action")
+									).put(
+										"label",
+										_language.get(
+											httpServletRequest, "reject")
+									).put(
+										"redirectURL",
+										_createWorkflowRedirectURL(
+											Constants.REJECT, resourceResponse,
+											portletURL, themeDisplay,
+											workflowTask)
+									);
+								}
+
+								workflowAssignToJSONObject = JSONUtil.put(
+									"href",
+									PublicationsPortletURLUtil.getHref(
+										resourceResponse.createActionURL(),
+										ActionRequest.ACTION_NAME,
+										"/change_tracking/edit_ct_assign")
+								).put(
+									"label",
+									_language.get(
+										httpServletRequest, "assign-to-...")
+								).put(
+									"redirectURL",
+									_createWorkflowRedirectURL(
+										"assignTo", resourceResponse,
+										portletURL, themeDisplay, workflowTask)
+								);
+
+								dividerJSONObject = JSONUtil.put(
+									"type", "divider");
+							}
 						}
-						else {
-							workflowApproveJSONObject = JSONUtil.put(
-								"href",
-								PublicationsPortletURLUtil.getHref(
-									resourceResponse.createActionURL(),
-									ActionRequest.ACTION_NAME,
-									"/change_tracking/edit_ct_entry",
-									"redirect", redirectURL, "workflowTaskId",
-									String.valueOf(
-										workflowTask.getWorkflowTaskId()),
-									"assigneeUserId",
-									String.valueOf(
-										workflowTask.getAssigneeUserId()),
-									"eventName", Constants.APPROVE)
-							).put(
-								"label",
-								_language.get(httpServletRequest, "approve")
-							).put(
-								"symbolLeft", "pencil"
-							);
-							workflowRejectJSONObject = JSONUtil.put(
-								"href",
-								PublicationsPortletURLUtil.getHref(
-									resourceResponse.createActionURL(),
-									ActionRequest.ACTION_NAME,
-									"/change_tracking/edit_ct_entry",
-									"redirect", redirectURL, "assigneeUserId",
-									String.valueOf(
-										workflowTask.getAssigneeUserId()),
-									"eventName", Constants.REJECT,
-									"workflowTaskId",
-									String.valueOf(
-										workflowTask.getWorkflowTaskId()))
-							).put(
-								"label",
-								_language.get(httpServletRequest, "reject")
-							).put(
-								"symbolLeft", "pencil"
-							);
-						}
-
-						workflowAssignToJSONObject = JSONUtil.put(
-							"href",
-							PublicationsPortletURLUtil.getHref(
-								resourceResponse.createActionURL(),
-								ActionRequest.ACTION_NAME,
-								"/change_tracking/edit_ct_entry", "redirectURL",
-								redirectURL, "assigneeUserId",
-								String.valueOf(
-									workflowTask.getAssigneeUserId()),
-								"eventName", "assignTo", "workflowTaskId",
-								String.valueOf(
-									workflowTask.getWorkflowTaskId()))
-						).put(
-							"label",
-							_language.get(httpServletRequest, "assign-to-...")
-						).put(
-							"symbolLeft", "pencil"
-						);
-
-						dividerJSONObject = JSONUtil.put("type", "divider");
 					}
 				}
 
@@ -1299,8 +1338,19 @@ public class GetEntryRenderDataMVCResourceCommand
 		return sb.toString();
 	}
 
+	private boolean _hasAssignableUsers(long workflowTaskId) throws Exception {
+		WorkflowTaskManager workflowTaskManager =
+			_workflowTaskManagerSnapshot.get();
+
+		return workflowTaskManager.hasAssignableUsers(workflowTaskId);
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		GetEntryRenderDataMVCResourceCommand.class);
+
+	private static final Snapshot<WorkflowTaskManager>
+		_workflowTaskManagerSnapshot = new Snapshot<>(
+			WorkflowTaskManagerUtil.class, WorkflowTaskManager.class);
 
 	@Reference
 	private BasePersistenceRegistry _basePersistenceRegistry;
@@ -1334,10 +1384,6 @@ public class GetEntryRenderDataMVCResourceCommand
 
 	@Reference
 	private SegmentsExperienceLocalService _segmentsExperienceLocalService;
-
-	@Reference
-	private WorkflowDefinitionLinkLocalService
-		_workflowDefinitionLinkLocalService;
 
 	@Reference
 	private WorkflowInstanceLinkLocalService _workflowInstanceLinkLocalService;
