@@ -284,103 +284,76 @@ public class GetEntryRenderDataMVCResourceCommand
 					if (!workflowTasks.isEmpty()) {
 						WorkflowTask workflowTask = workflowTasks.get(0);
 
-						PortletURL redirectURL =
-							PortletURLBuilder.createRenderURL(
-								resourceResponse
-							).setMVCPath(
-								"/publications/edit_ct_entry.jsp"
-							).setParameter(
-								"assigneeUserId",
-								workflowTask.getAssigneeUserId()
-							).setParameter(
-								"workflowTaskId",
-								workflowTask.getWorkflowTaskId()
-							).setWindowState(
-								LiferayWindowState.POP_UP
-							).buildPortletURL();
+						if (workflowTask.getName().equals("review")) {
 
-						if (workflowTask.getAssigneeUserId() == -1) {
-							workflowAssignToMeJSONObject = JSONUtil.put(
+							PortletURL portletURL =
+								PortletURLBuilder.createRenderURL(
+									resourceResponse
+								).setMVCRenderCommandName(
+									"/change_tracking/view_change"
+								).setParameter(
+									"ctCollectionId", ctCollectionId
+								).setParameter(
+									"ctEntryId", ctEntryId
+								).buildPortletURL();
+
+							if (workflowTask.getAssigneeUserId() == -1) {
+								workflowAssignToMeJSONObject = JSONUtil.put(
+									"href",
+									PublicationsPortletURLUtil.getHref(
+										resourceResponse.createActionURL(),
+										ActionRequest.ACTION_NAME,
+										"/change_tracking/ct_entry_assign"
+										)
+								).put(
+									"label",
+									_language.get(
+										httpServletRequest, "assign-to-me")
+								).put("redirectURL", createRedirectURL("assignToMe", resourceResponse, portletURL, themeDisplay,workflowTask)
+								);
+
+							}
+							else {
+
+								workflowApproveJSONObject = JSONUtil.put(
+									"href",
+									PublicationsPortletURLUtil.getHref(
+										resourceResponse.createActionURL(),
+										ActionRequest.ACTION_NAME,
+										"/change_tracking/ct_entry_action")
+								).put(
+									"label",
+									_language.get(httpServletRequest, "approve")
+								).put("redirectURL", createRedirectURL(Constants.APPROVE, resourceResponse, portletURL, themeDisplay,workflowTask));
+
+								workflowRejectJSONObject = JSONUtil.put(
+									"href",
+									PublicationsPortletURLUtil.getHref(
+										resourceResponse.createActionURL(),
+										ActionRequest.ACTION_NAME,
+										"/change_tracking/ct_entry_action")
+								).put(
+									"label",
+									_language.get(httpServletRequest, "reject")
+								).put("redirectURL", createRedirectURL(Constants.REJECT, resourceResponse, portletURL, themeDisplay,workflowTask));
+							}
+
+							workflowAssignToJSONObject = JSONUtil.put(
 								"href",
 								PublicationsPortletURLUtil.getHref(
 									resourceResponse.createActionURL(),
 									ActionRequest.ACTION_NAME,
-									"/change_tracking/edit_ct_entry",
-									"redirect", redirectURL, "assigneeUserId",
-									String.valueOf(
-										workflowTask.getAssigneeUserId()),
-									"eventName", "assignToMe", "workflowTaskId",
-									String.valueOf(
-										workflowTask.getWorkflowTaskId()))
+									"/change_tracking/edit_ct_assign"
+									)
 							).put(
 								"label",
 								_language.get(
-									httpServletRequest, "assign-to-me")
-							).put(
-								"symbolLeft", "pencil"
-							);
-						}
-						else {
-							workflowApproveJSONObject = JSONUtil.put(
-								"href",
-								PublicationsPortletURLUtil.getHref(
-									resourceResponse.createActionURL(),
-									ActionRequest.ACTION_NAME,
-									"/change_tracking/edit_ct_entry",
-									"redirect", redirectURL, "workflowTaskId",
-									String.valueOf(
-										workflowTask.getWorkflowTaskId()),
-									"assigneeUserId",
-									String.valueOf(
-										workflowTask.getAssigneeUserId()),
-									"eventName", Constants.APPROVE)
-							).put(
-								"label",
-								_language.get(httpServletRequest, "approve")
-							).put(
-								"symbolLeft", "pencil"
-							);
-							workflowRejectJSONObject = JSONUtil.put(
-								"href",
-								PublicationsPortletURLUtil.getHref(
-									resourceResponse.createActionURL(),
-									ActionRequest.ACTION_NAME,
-									"/change_tracking/edit_ct_entry",
-									"redirect", redirectURL, "assigneeUserId",
-									String.valueOf(
-										workflowTask.getAssigneeUserId()),
-									"eventName", Constants.REJECT,
-									"workflowTaskId",
-									String.valueOf(
-										workflowTask.getWorkflowTaskId()))
-							).put(
-								"label",
-								_language.get(httpServletRequest, "reject")
-							).put(
-								"symbolLeft", "pencil"
-							);
-						}
+									httpServletRequest, "assign-to-...")
+							).put("redirectURL", createRedirectURL("assignTo", resourceResponse, portletURL, themeDisplay,workflowTask));
 
-						workflowAssignToJSONObject = JSONUtil.put(
-							"href",
-							PublicationsPortletURLUtil.getHref(
-								resourceResponse.createActionURL(),
-								ActionRequest.ACTION_NAME,
-								"/change_tracking/edit_ct_entry", "redirectURL",
-								redirectURL, "assigneeUserId",
-								String.valueOf(
-									workflowTask.getAssigneeUserId()),
-								"eventName", "assignTo", "workflowTaskId",
-								String.valueOf(
-									workflowTask.getWorkflowTaskId()))
-						).put(
-							"label",
-							_language.get(httpServletRequest, "assign-to-...")
-						).put(
-							"symbolLeft", "pencil"
-						);
-
-						dividerJSONObject = JSONUtil.put("type", "divider");
+							dividerJSONObject = JSONUtil.put(
+								"type", "divider");
+						}
 					}
 				}
 
@@ -914,6 +887,61 @@ public class GetEntryRenderDataMVCResourceCommand
 				StringUtil.toLowerCase(languageId), CharPool.UNDERLINE,
 				CharPool.DASH)
 		);
+	}
+
+	private PortletURL createRedirectURL(String eventName, ResourceResponse resourceResponse, PortletURL portletURL, ThemeDisplay themeDisplay, WorkflowTask workflowTask)
+		throws WorkflowException {
+
+		if(eventName.equals(Constants.APPROVE) || eventName.equals(Constants.REJECT)) {
+			return
+				PortletURLBuilder.createRenderURL(
+					resourceResponse
+				).setMVCPath(
+					"/publications/ct_entry_action.jsp"
+				).setRedirect(
+					portletURL
+				).setParameter(
+					"assigneeUserId",
+					workflowTask.getAssigneeUserId()
+				).setParameter(
+					"workflowTaskId",
+					workflowTask.getWorkflowTaskId()
+				).setParameter(
+					"hasAssignableUsers", hasAssignableUsers(
+						workflowTask.getWorkflowTaskId())
+				).setParameter(
+					"userId", themeDisplay.getUserId()
+				).setParameter(
+					"eventName", eventName
+				).setWindowState(
+					LiferayWindowState.POP_UP
+				).buildPortletURL();
+		} else {
+			return
+				PortletURLBuilder.createRenderURL(
+					resourceResponse
+				).setMVCPath(
+					"/publications/ct_entry_assign.jsp"
+				).setRedirect(
+					portletURL
+				).setParameter(
+					"assigneeUserId",
+					workflowTask.getAssigneeUserId()
+				).setParameter(
+					"workflowTaskId",
+					workflowTask.getWorkflowTaskId()
+				).setParameter(
+					"hasAssignableUsers", hasAssignableUsers(
+						workflowTask.getWorkflowTaskId())
+				).setParameter(
+					"userId", themeDisplay.getUserId()
+				).setParameter(
+					"eventName", eventName
+				).setWindowState(
+					LiferayWindowState.POP_UP
+				).buildPortletURL();
+
+		}
 	}
 
 	private <T extends BaseModel<T>> JSONObject _getLocalizedPreviewJSONObject(
