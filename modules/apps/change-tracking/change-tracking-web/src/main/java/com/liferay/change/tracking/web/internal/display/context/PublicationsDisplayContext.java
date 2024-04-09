@@ -25,6 +25,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.NavigationItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.NavigationItemListBuilder;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.Language;
@@ -37,6 +38,10 @@ import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.kernel.workflow.WorkflowTask;
+import com.liferay.portal.kernel.workflow.WorkflowTaskManager;
+import com.liferay.portal.kernel.workflow.WorkflowTaskManagerUtil;
+import com.liferay.portal.kernel.workflow.WorkflowTransition;
 import com.liferay.portal.util.PropsValues;
 
 import java.util.List;
@@ -61,7 +66,8 @@ public class PublicationsDisplayContext {
 		CTRemoteLocalService ctRemoteLocalService,
 		HttpServletRequest httpServletRequest, Language language,
 		PublicationHelper publicationHelper, RenderRequest renderRequest,
-		RenderResponse renderResponse) {
+		RenderResponse renderResponse,
+		WorkflowTaskManager workflowTaskManager) {
 
 		_ctCollectionLocalService = ctCollectionLocalService;
 		_ctDisplayRendererRegistry = ctDisplayRendererRegistry;
@@ -71,6 +77,7 @@ public class PublicationsDisplayContext {
 		_publicationHelper = publicationHelper;
 		_renderRequest = renderRequest;
 		_renderResponse = renderResponse;
+		_workflowTaskManager = workflowTaskManager;
 
 		_themeDisplay = (ThemeDisplay)renderRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -532,6 +539,20 @@ public class PublicationsDisplayContext {
 		).build();
 	}
 
+	public WorkflowTask getWorkflowTask(long workflowTaskId)
+		throws PortalException {
+
+		return _workflowTaskManager.getWorkflowTask(workflowTaskId);
+	}
+
+	public List<WorkflowTransition> getWorkflowTaskWorkflowTransitions(
+			WorkflowTask workflowTask)
+		throws PortalException {
+
+		return WorkflowTaskManagerUtil.getWorkflowTaskWorkflowTransitions(
+			workflowTask.getWorkflowTaskId());
+	}
+
 	private final long _ctCollectionId;
 	private final CTCollectionLocalService _ctCollectionLocalService;
 	private final CTDisplayRendererRegistry _ctDisplayRendererRegistry;
@@ -542,5 +563,6 @@ public class PublicationsDisplayContext {
 	private final RenderRequest _renderRequest;
 	private final RenderResponse _renderResponse;
 	private final ThemeDisplay _themeDisplay;
+	private final WorkflowTaskManager _workflowTaskManager;
 
 }
