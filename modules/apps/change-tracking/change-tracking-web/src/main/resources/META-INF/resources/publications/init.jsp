@@ -16,3 +16,8 @@ if (publicationsDisplayContext != null) {
 	ctDisplayRendererRegistry = publicationsDisplayContext.getCtDisplayRendererRegistry();
 }
 %>
+
+<%@ page import="com.liferay.portal.kernel.model.User" %><%@
+page import="com.liferay.portal.kernel.util.PortalUtil" %><%@
+page import="com.liferay.portal.kernel.workflow.WorkflowTask" %><%@
+page import="com.liferay.portal.kernel.workflow.WorkflowTaskManagerUtil" %>
