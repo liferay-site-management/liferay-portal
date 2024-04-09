@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.service.permission.PortletPermissionUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.workflow.WorkflowTaskManager;
 
 import java.io.IOException;
 
@@ -86,7 +87,8 @@ public class PublicationsPortlet extends MVCPortlet {
 				_ctCollectionLocalService, _ctDisplayRendererRegistry,
 				_ctPreferencesLocalService, _ctRemoteLocalService,
 				_portal.getHttpServletRequest(renderRequest), _language,
-				_publicationHelper, renderRequest, renderResponse);
+				_publicationHelper, renderRequest, renderResponse,
+				_workflowTaskManager);
 
 		renderRequest.setAttribute(
 			CTWebKeys.PUBLICATIONS_DISPLAY_CONTEXT, publicationsDisplayContext);
@@ -149,5 +151,8 @@ public class PublicationsPortlet extends MVCPortlet {
 		target = "(&(release.bundle.symbolic.name=com.liferay.change.tracking.web)(&(release.schema.version>=1.0.2)(!(release.schema.version>=2.0.0))))"
 	)
 	private Release _release;
+
+	@Reference
+	private WorkflowTaskManager _workflowTaskManager;
 
 }
