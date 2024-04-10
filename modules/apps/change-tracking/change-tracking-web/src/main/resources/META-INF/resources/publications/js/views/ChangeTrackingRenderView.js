@@ -743,7 +743,7 @@ export default function ChangeTrackingRenderView({
 			return null;
 		}
 
-		const dropdownItems = [];
+		let dropdownItems = [];
 
 		if (state.renderData.editInPublication) {
 			dropdownItems.push({
@@ -771,99 +771,6 @@ export default function ChangeTrackingRenderView({
 			});
 		}
 
-		if (state.renderData.divider) {
-			dropdownItems.push(state.renderData.divider);
-		}
-
-		if (state.renderData.workflowApprove) {
-			dropdownItems.push({
-				label: state.renderData.workflowApprove.label,
-				onClick: () =>
-					Liferay.Util.openWindow({
-						dialog: {
-							destroyOnHide: true,
-							height: 340,
-							resizable: false,
-							width: 896,
-						},
-						dialogIframe: {
-							bodyCssClass: 'task-dialog',
-						},
-						id: '<portlet:namespace />assignToDialog',
-						title: 'Approve',
-						uri: state.renderData.workflowApprove.redirectURL,
-					}),
-				symbolLeft: 'workflow',
-			});
-		}
-		if (state.renderData.workflowReject) {
-			dropdownItems.push({
-				label: state.renderData.workflowReject.label,
-				onClick: () =>
-					Liferay.Util.openWindow({
-						dialog: {
-							destroyOnHide: true,
-							height: 340,
-							resizable: false,
-							width: 896,
-						},
-						dialogIframe: {
-							bodyCssClass: 'task-dialog',
-						},
-						id: '<portlet:namespace />assignToDialog',
-						title: 'Reject',
-						uri: state.renderData.workflowReject.redirectURL,
-					}),
-				symbolLeft: 'workflow',
-			});
-		}
-
-		if (state.renderData.workflowAssignToMe) {
-			dropdownItems.push({
-				label: state.renderData.workflowAssignToMe.label,
-				onClick: () =>
-					Liferay.Util.openWindow({
-						dialog: {
-							destroyOnHide: true,
-							height: 340,
-							resizable: false,
-							width: 896,
-						},
-						dialogIframe: {
-							bodyCssClass: 'task-dialog',
-						},
-						id: '<portlet:namespace />assignToDialog',
-						title: 'Assign to Me',
-						uri: state.renderData.workflowAssignToMe.redirectURL,
-					}),
-				symbolLeft: 'workflow',
-			});
-		}
-		if (state.renderData.workflowAssignTo) {
-			dropdownItems.push({
-				label: state.renderData.workflowAssignTo.label,
-				onClick: () =>
-					Liferay.Util.openWindow({
-						dialog: {
-							destroyOnHide: true,
-							height: 340,
-							resizable: false,
-							width: 896,
-						},
-						dialogIframe: {
-							bodyCssClass: 'task-dialog',
-						},
-						id: '<portlet:namespace />assignToDialog',
-						title: 'Assign to...',
-						uri: state.renderData.workflowAssignTo.redirectURL,
-					}),
-				symbolLeft: 'workflow',
-			});
-		}
-		if (state.renderData.divider) {
-			dropdownItems.push(state.renderData.divider);
-		}
-
 		if (moveChangesURL !== null) {
 			dropdownItems.push({
 				label: (
@@ -878,6 +785,113 @@ export default function ChangeTrackingRenderView({
 				onClick: () => navigate(moveChangesURL),
 				symbolLeft: 'move-folder',
 			});
+		}
+
+		if (state.renderData.divider) {
+			dropdownItems.push(state.renderData.divider);
+			dropdownItems = [
+				{
+					items: dropdownItems,
+					label: Liferay.Language.get('publication'),
+					type: 'group',
+				},
+				{
+					items: [],
+					label: Liferay.Language.get('workflow'),
+					type: 'group',
+				},
+			];
+		}
+
+		if (state.renderData.workflowApprove) {
+			dropdownItems[1].items.push({
+				label: state.renderData.workflowApprove.label,
+				onClick: () =>
+					Liferay.Util.openWindow({
+						dialog: {
+							destroyOnHide: true,
+							height: 340,
+							resizable: false,
+							width: 896,
+						},
+						dialogIframe: {
+							bodyCssClass: 'task-dialog',
+						},
+						id: '<portlet:namespace />workflowDialog',
+						title: Liferay.Language.get('approve'),
+						uri: state.renderData.workflowApprove.redirectURL,
+					}),
+				symbolLeft: 'workflow',
+			});
+		}
+
+		if (state.renderData.workflowReject) {
+			dropdownItems[1].items.push({
+				label: state.renderData.workflowReject.label,
+				onClick: () =>
+					Liferay.Util.openWindow({
+						dialog: {
+							destroyOnHide: true,
+							height: 340,
+							resizable: false,
+							width: 896,
+						},
+						dialogIframe: {
+							bodyCssClass: 'task-dialog',
+						},
+						id: '<portlet:namespace />workflowDialog',
+						title: Liferay.Language.get('reject'),
+						uri: state.renderData.workflowReject.redirectURL,
+					}),
+				symbolLeft: 'workflow',
+			});
+		}
+
+		if (state.renderData.workflowAssignToMe) {
+			dropdownItems[1].items.push({
+				label: state.renderData.workflowAssignToMe.label,
+				onClick: () =>
+					Liferay.Util.openWindow({
+						dialog: {
+							destroyOnHide: true,
+							height: 340,
+							resizable: false,
+							width: 896,
+						},
+						dialogIframe: {
+							bodyCssClass: 'task-dialog',
+						},
+						id: '<portlet:namespace />workflowDialog',
+						title: Liferay.Language.get('assign-to-me'),
+						uri: state.renderData.workflowAssignToMe.redirectURL,
+					}),
+				symbolLeft: 'workflow',
+			});
+		}
+		if (state.renderData.workflowAssignTo) {
+			dropdownItems[1].items.push({
+				label: state.renderData.workflowAssignTo.label,
+				onClick: () =>
+					Liferay.Util.openWindow({
+						dialog: {
+							destroyOnHide: true,
+							height: 340,
+							resizable: false,
+							width: 896,
+						},
+						dialogIframe: {
+							bodyCssClass: 'task-dialog',
+						},
+						id: '<portlet:namespace />workflowDialog',
+						title: Liferay.Language.get('assign-to-...'),
+						uri: state.renderData.workflowAssignTo.redirectURL,
+					}),
+				symbolLeft: 'workflow',
+			});
+		}
+
+		if (state.renderData.divider) {
+			dropdownItems[1].items.push(state.renderData.divider);
 		}
 
 		if (discardURL !== null) {
