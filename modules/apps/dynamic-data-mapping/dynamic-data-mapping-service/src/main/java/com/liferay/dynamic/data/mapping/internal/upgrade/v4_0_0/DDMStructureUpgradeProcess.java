@@ -69,7 +69,8 @@ public class DDMStructureUpgradeProcess extends UpgradeProcess {
 				AutoBatchPreparedStatementUtil.concurrentAutoBatch(
 					connection,
 					"update DDMStructure set parentStructureId = 0, " +
-						"definition = ? where structureId = ?")) {
+						"definition = ? where structureId = ? and " +
+							"ctCollectionId = ?")) {
 
 			preparedStatement1.setLong(
 				1,
@@ -99,6 +100,8 @@ public class DDMStructureUpgradeProcess extends UpgradeProcess {
 								resultSet.getLong("structureId")));
 					preparedStatement2.setLong(
 						2, resultSet.getLong("structureId"));
+					preparedStatement2.setLong(
+						3, resultSet.getLong("ctCollectionId"));
 
 					preparedStatement2.addBatch();
 				}
@@ -196,7 +199,8 @@ public class DDMStructureUpgradeProcess extends UpgradeProcess {
 				AutoBatchPreparedStatementUtil.concurrentAutoBatch(
 					connection,
 					"update DDMStructureVersion set parentStructureId = 0, " +
-						"definition = ? where structureVersionId = ?")) {
+						"definition = ? where structureVersionId = ? and " +
+							"ctCollectionId = ?")) {
 
 			preparedStatement1.setLong(
 				1,
@@ -224,6 +228,8 @@ public class DDMStructureUpgradeProcess extends UpgradeProcess {
 								parentStructureId, parentStructureLayoutId));
 					preparedStatement2.setLong(
 						2, resultSet.getLong("structureVersionId"));
+					preparedStatement2.setLong(
+						3, resultSet.getLong("ctCollectionIdId"));
 					preparedStatement2.addBatch();
 				}
 

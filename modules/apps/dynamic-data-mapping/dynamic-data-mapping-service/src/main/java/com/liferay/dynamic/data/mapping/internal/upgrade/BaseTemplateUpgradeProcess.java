@@ -100,11 +100,13 @@ public abstract class BaseTemplateUpgradeProcess extends UpgradeProcess {
 	private void _upgradeDDMTemplates() throws Exception {
 		try (PreparedStatement selectPreparedStatement =
 				connection.prepareStatement(
-					"select templateId, script from DDMTemplate");
+					"select ctCollectionId, templateId, script from " +
+						"DDMTemplate");
 			PreparedStatement updatePreparedStatement =
 				AutoBatchPreparedStatementUtil.concurrentAutoBatch(
 					connection,
-					"update DDMTemplate set script = ? where templateId = ?")) {
+					"update DDMTemplate set script = ? where templateId = ? " +
+						"and ctCollectionId = ?")) {
 
 			try (ResultSet resultSet = selectPreparedStatement.executeQuery()) {
 				while (resultSet.next()) {
@@ -119,6 +121,8 @@ public abstract class BaseTemplateUpgradeProcess extends UpgradeProcess {
 							resultSet.getString("script")));
 					updatePreparedStatement.setLong(
 						2, resultSet.getLong("templateId"));
+					updatePreparedStatement.setLong(
+						3, resultSet.getLong("ctCollectionId"));
 
 					updatePreparedStatement.addBatch();
 				}
@@ -131,12 +135,13 @@ public abstract class BaseTemplateUpgradeProcess extends UpgradeProcess {
 	private void _upgradeFragmentEntries() throws Exception {
 		try (PreparedStatement selectPreparedStatement =
 				connection.prepareStatement(
-					"select fragmentEntryId, html from FragmentEntry");
+					"select ctCollectionId, fragmentEntryId, html from " +
+						"FragmentEntry");
 			PreparedStatement updatePreparedStatement =
 				AutoBatchPreparedStatementUtil.concurrentAutoBatch(
 					connection,
 					"update FragmentEntry set html = ? where fragmentEntryId " +
-						"= ?")) {
+						"= ? and ctCollectionId = ?")) {
 
 			try (ResultSet resultSet = selectPreparedStatement.executeQuery()) {
 				while (resultSet.next()) {
@@ -147,6 +152,8 @@ public abstract class BaseTemplateUpgradeProcess extends UpgradeProcess {
 							resultSet.getString("html")));
 					updatePreparedStatement.setLong(
 						2, resultSet.getLong("fragmentEntryId"));
+					updatePreparedStatement.setLong(
+						3, resultSet.getLong("ctCollectionId"));
 
 					updatePreparedStatement.addBatch();
 				}

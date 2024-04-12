@@ -55,15 +55,16 @@ public class DLFileEntryTypeDDMFieldAttributeUpgradeProcess
 
 			PreparedStatement preparedStatement2 = connection.prepareStatement(
 				StringBundler.concat(
-					"select fieldAttributeId, languageId, smallAttributeValue ",
-					"from DDMFieldAttribute where storageId = ? and fieldId = ",
-					"? and (attributeName is null or attributeName = '') "));
+					"select fieldAttributeId, languageId, ",
+					"smallAttributeValue, ctCollectionId from ",
+					"DDMFieldAttribute where storageId = ? and fieldId = ? ",
+					"and (attributeName is null or attributeName = '') "));
 
 			PreparedStatement preparedStatement3 =
 				AutoBatchPreparedStatementUtil.autoBatch(
 					connection,
 					"update DDMFieldAttribute set smallAttributeValue = ? " +
-						"where fieldAttributeId = ? ");
+						"where fieldAttributeId = ? and ctCollectionId = ?");
 
 			preparedStatement1.setLong(
 				1, PortalUtil.getClassNameId(DLFileEntryType.class));
@@ -105,6 +106,8 @@ public class DLFileEntryTypeDDMFieldAttributeUpgradeProcess
 
 							preparedStatement3.setLong(
 								2, resultSet2.getLong(1));
+							preparedStatement3.setLong(
+								3, resultSet2.getLong(4));
 
 							preparedStatement3.addBatch();
 						}
