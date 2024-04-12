@@ -91,3 +91,81 @@ test('LPD-19748 Only workflow status is displayed when workflow is disabled', as
 	await expect(page.getByText(`Workflow status: Pending`)).toBeVisible();
 	await changeTrackingPage.viewDisplayTab('Workflow', {isHidden: true});
 });
+
+test('LPD-19763 Workflow assign actions are displayed in dropdown', async ({
+	changeTrackingPage,
+	ctCollection,
+	page,
+}) => {
+	await changeTrackingPage.goToReviewChanges(ctCollection.name);
+
+	await changeTrackingPage.reviewChange(journalName);
+
+	await expect(page.getByText(`Workflow status: Pending`)).toBeVisible();
+
+	const button = page.getByLabel('more-actions');
+
+	await button.click();
+
+	await expect(
+		page.getByRole('menuitem', {
+			name: 'Assign to me',
+		})
+	).toBeVisible();
+
+	await expect(
+		page.getByRole('menuitem', {
+			name: 'Assign to...',
+		})
+	).toBeVisible();
+});
+
+test('LPD-19763 Workflow review actions are displayed in dropdown', async ({
+	changeTrackingPage,
+	ctCollection,
+	page,
+}) => {
+	await changeTrackingPage.goToReviewChanges(ctCollection.name);
+
+	await changeTrackingPage.reviewChange(journalName);
+
+	await expect(page.getByText(`Workflow status: Pending`)).toBeVisible();
+
+	const moreActionsbutton = page.getByLabel('more-actions');
+
+	await moreActionsbutton.click();
+
+	const assignToMeMenuItem = page.getByRole('menuitem', {
+		name: 'Assign to me',
+	});
+
+	await assignToMeMenuItem.click();
+
+	await expect(page.getByText(`CloseAssign to Me`)).toBeVisible();
+
+	const doneButton = page
+		.frameLocator('iframe[title="Assign to Me"]')
+		.getByRole('button', {exact: true, name: 'Done'});
+
+	await doneButton.click();
+
+	await moreActionsbutton.click();
+
+	await expect(
+		page.getByRole('menuitem', {
+			name: 'Approve',
+		})
+	).toBeVisible();
+
+	await expect(
+		page.getByRole('menuitem', {
+			name: 'Reject',
+		})
+	).toBeVisible();
+
+	await expect(
+		page.getByRole('menuitem', {
+			name: 'Assign to...',
+		})
+	).toBeVisible();
+});
