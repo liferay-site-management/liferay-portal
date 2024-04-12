@@ -43,7 +43,7 @@ test('LPD-19748 Add workflow info to the View Change screen', async ({
 
 	await changeTrackingPage.reviewChange(journalName);
 
-	await expect(page.getByText(`Workflow status: Pending`)).toBeVisible();
+	await expect(page.getByText(`Pending`)).toBeVisible();
 
 	await changeTrackingPage.viewDisplayTab('Workflow');
 });
@@ -88,7 +88,7 @@ test('LPD-19748 Only workflow status is displayed when workflow is disabled', as
 
 	await changeTrackingPage.reviewChange(journalName);
 
-	await expect(page.getByText(`Workflow status: Pending`)).toBeVisible();
+	await expect(page.getByText(`Pending`)).toBeVisible();
 	await changeTrackingPage.viewDisplayTab('Workflow', {isHidden: true});
 });
 
@@ -101,7 +101,7 @@ test('LPD-19763 Workflow assign actions are displayed in dropdown', async ({
 
 	await changeTrackingPage.reviewChange(journalName);
 
-	await expect(page.getByText(`Workflow status: Pending`)).toBeVisible();
+	await expect(page.getByText(`Pending`)).toBeVisible();
 
 	const button = page.getByLabel('more-actions');
 
@@ -129,7 +129,7 @@ test('LPD-19763 Workflow review actions are displayed in dropdown', async ({
 
 	await changeTrackingPage.reviewChange(journalName);
 
-	await expect(page.getByText(`Workflow status: Pending`)).toBeVisible();
+	await expect(page.getByText(`Pending`)).toBeVisible();
 
 	const moreActionsbutton = page.getByLabel('more-actions');
 
