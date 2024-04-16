@@ -136,6 +136,7 @@ export default function ChangeTrackingRenderView({
 	handleNavigation,
 	initialDataURL,
 	moveChangesURL,
+	namespace,
 	parentEntries,
 	showDropdown,
 	showHeader = true,
@@ -743,7 +744,7 @@ export default function ChangeTrackingRenderView({
 			return null;
 		}
 
-		const dropdownItems = [];
+		let dropdownItems = [];
 
 		if (state.renderData.editInPublication) {
 			dropdownItems.push({
@@ -785,6 +786,58 @@ export default function ChangeTrackingRenderView({
 				onClick: () => navigate(moveChangesURL),
 				symbolLeft: 'move-folder',
 			});
+		}
+
+		if (state.renderData.divider) {
+			dropdownItems.push(state.renderData.divider);
+			dropdownItems = [
+				{
+					items: dropdownItems,
+					label: Liferay.Language.get('publication'),
+					type: 'group',
+				},
+				{
+					items: [],
+					label: Liferay.Language.get('workflow'),
+					type: 'group',
+				},
+			];
+		}
+
+		if (state.renderData.workflowAssignToMe) {
+			dropdownItems[1].items.push({
+				label: Liferay.Language.get('assign-to-me'),
+				onClick: () =>
+					Liferay.Util.openModal({
+						center: true,
+						height: '276px',
+						id: `${namespace}workflowDialog`,
+						size: 'lg',
+						title: Liferay.Language.get('assign-to-me'),
+						url: state.renderData.workflowAssignToMe.href,
+					}),
+				symbolLeft: 'workflow',
+			});
+		}
+
+		if (state.renderData.workflowAssignTo) {
+			dropdownItems[1].items.push({
+				label: Liferay.Language.get('assign-to-...'),
+				onClick: () =>
+					Liferay.Util.openModal({
+						center: true,
+						height: '356px',
+						id: `${namespace}workflowDialog`,
+						size: 'lg',
+						title: Liferay.Language.get('assign-to-...'),
+						url: state.renderData.workflowAssignTo.href,
+					}),
+				symbolLeft: 'workflow',
+			});
+		}
+
+		if (state.renderData.divider) {
+			dropdownItems[1].items.push(state.renderData.divider);
 		}
 
 		if (discardURL !== null) {
