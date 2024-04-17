@@ -238,6 +238,7 @@ public class GetEntryRenderDataMVCResourceCommand
 						ctEntry, rightModel);
 
 				if (workflowEnabled &&
+					FeatureFlagManagerUtil.isEnabled("LPD-10703") &&
 					(rightModel instanceof WorkflowedModel)) {
 
 					long groupId = 0;
