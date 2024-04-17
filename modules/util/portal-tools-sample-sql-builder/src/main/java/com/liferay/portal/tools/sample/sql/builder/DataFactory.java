@@ -781,6 +781,10 @@ public class DataFactory {
 		return _powerUserRoleModel;
 	}
 
+	public RoleModel getPublicationsReviewerRoleModel() {
+		return _publicationsReviewerRoleModel;
+	}
+
 	public int getRandomCProductModelIndex() {
 		Random random = new Random();
 
@@ -5763,6 +5767,13 @@ public class DataFactory {
 
 		roleModels.add(_powerUserRoleModel);
 
+		// Publications Reviewer
+
+		_publicationsReviewerRoleModel = newRoleModel(
+			RoleConstants.PUBLICATIONS_USER, RoleConstants.TYPE_PUBLICATIONS);
+
+		roleModels.add(_publicationsReviewerRoleModel);
+
 		// Site Administrator
 
 		roleModels.add(
@@ -8061,6 +8072,7 @@ public class DataFactory {
 	private RoleModel _ownerRoleModel;
 	private final SimpleCounter _portletPreferenceValueIdCounter;
 	private RoleModel _powerUserRoleModel;
+	private RoleModel _publicationsReviewerRoleModel;
 	private final SimpleCounter _resourcePermissionIdCounter;
 	private long _sampleUserId;
 	private final SimpleCounter _segmentsExperienceCounter;
