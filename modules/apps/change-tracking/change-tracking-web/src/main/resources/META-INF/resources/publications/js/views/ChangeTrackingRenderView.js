@@ -20,6 +20,7 @@ import {
 	fetch,
 	navigate as navigateUtil,
 	openConfirmModal,
+	openToast,
 } from 'frontend-js-web';
 import React, {useEffect, useState} from 'react';
 
@@ -810,6 +811,27 @@ export default function ChangeTrackingRenderView({
 				onClick: () =>
 					Liferay.Util.openModal({
 						center: true,
+						customEvents: [
+							{
+								name: `${namespace}workflowAssigned`,
+								onEvent() {
+									const iframe = document.querySelector(
+										'.liferay-modal iframe'
+									);
+
+									iframe.contentWindow.location.reload();
+
+									Liferay.fire('closeModal');
+
+									openToast({
+										message: Liferay.Language.get(
+											'your-request-completed-successfully'
+										),
+										type: 'success',
+									});
+								},
+							},
+						],
 						height: '276px',
 						id: `${namespace}workflowDialog`,
 						size: 'lg',
@@ -826,6 +848,27 @@ export default function ChangeTrackingRenderView({
 				onClick: () =>
 					Liferay.Util.openModal({
 						center: true,
+						customEvents: [
+							{
+								name: `${namespace}workflowAssigned`,
+								onEvent() {
+									const iframe = document.querySelector(
+										'.liferay-modal iframe'
+									);
+
+									iframe.contentWindow.location.reload();
+
+									Liferay.fire('closeModal');
+
+									openToast({
+										message: Liferay.Language.get(
+											'your-request-completed-successfully'
+										),
+										type: 'success',
+									});
+								},
+							},
+						],
 						height: '356px',
 						id: `${namespace}workflowDialog`,
 						size: 'lg',
