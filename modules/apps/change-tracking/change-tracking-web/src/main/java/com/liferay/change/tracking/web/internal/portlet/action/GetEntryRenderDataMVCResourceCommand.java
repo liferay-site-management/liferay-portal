@@ -650,7 +650,7 @@ public class GetEntryRenderDataMVCResourceCommand
 			Map<String, Object> workflowData = _getWorkflowData(
 				ctEntry, rightModel, themeDisplay, resourceResponse);
 
-			if (!workflowData.isEmpty()) {
+			if (workflowData != null) {
 				jsonObject.put("workflowData", workflowData);
 			}
 		}
@@ -1138,7 +1138,7 @@ public class GetEntryRenderDataMVCResourceCommand
 			WorkflowTask workflowTask = _getWorkflowTask(workflowInstanceLink);
 
 			if (workflowTask == null) {
-				return new LinkedHashMap<>();
+				return null;
 			}
 
 			Format format = FastDateFormatFactoryUtil.getDateTime(
