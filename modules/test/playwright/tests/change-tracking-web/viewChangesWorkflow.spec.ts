@@ -266,3 +266,26 @@ test('LPD-23969 Activities tab is added to workflow info display', async ({
 			.nth(1)
 	).toBeVisible();
 });
+
+test('LPD-24645 Workflow tab is not present for draft', async ({
+	changeTrackingPage,
+	ctCollection,
+	journalEditArticlePage,
+	page,
+}) => {
+	const title = getRandomString();
+
+	await journalEditArticlePage.goto();
+
+	await journalEditArticlePage.fillTitle(title);
+
+	await page.getByRole('button', {name: 'Save as Draft'}).click();
+
+	await page.getByText('Version: 1.0 Draft').waitFor();
+
+	await changeTrackingPage.goToReviewChanges(ctCollection.name);
+
+	await changeTrackingPage.reviewChange(title);
+
+	await changeTrackingPage.viewDisplayTab('Workflow', {isHidden: true});
+});
