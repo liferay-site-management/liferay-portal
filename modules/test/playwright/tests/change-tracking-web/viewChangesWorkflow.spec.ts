@@ -10,9 +10,11 @@ import {changeTrackingPagesTest} from '../../fixtures/changeTrackingPagesTest';
 import {featureFlagsTest} from '../../fixtures/featureFlagsTest';
 import {workflowPagesTest} from '../../fixtures/workflowPagesTest';
 import getRandomString from '../../utils/getRandomString';
+import {blogsPagesTest} from '../blogs-web/fixtures/blogsPagesTest';
 import {journalPagesTest} from '../journal-web/fixtures/journalPagesTest';
 
 export const test = mergeTests(
+	blogsPagesTest,
 	featureFlagsTest({
 		'LPD-10703': true,
 	}),
@@ -298,4 +300,29 @@ test('LPD-25058 View More button is added to workflow Activities tab for many ro
 	await expect(
 		page.getByRole('button', {exact: true, name: 'View More'})
 	).toBeHidden();
+});
+
+test('LPD-24645 Workflow tab is not present for draft', async ({
+	blogsEditBlogEntryPage,
+	changeTrackingPage,
+	ctCollection,
+	page,
+}) => {
+	const title = getRandomString();
+
+	await blogsEditBlogEntryPage.goto();
+
+	await blogsEditBlogEntryPage.editBlogEntry(getRandomString(), title);
+
+	await page.getByRole('button', {name: 'Save as Draft'}).click();
+
+	await expect(
+		page.getByText('Success:Your request completed successfully.')
+	).toBeVisible();
+
+	await changeTrackingPage.goToReviewChanges(ctCollection.name);
+
+	await changeTrackingPage.reviewChange(title);
+
+	await changeTrackingPage.viewDisplayTab('Workflow', {isHidden: true});
 });
