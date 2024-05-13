@@ -3279,6 +3279,8 @@ public class DataFactory {
 
 		ctCollectionModel.setCtCollectionId(_counter.get());
 		ctCollectionModel.setExternalReferenceCode(SequentialUUID.generate());
+		ctCollectionModel.setCreateDate(new Date());
+		ctCollectionModel.setModifiedDate(new Date());
 		ctCollectionModel.setCompanyId(_companyId);
 		ctCollectionModel.setUserId(_sampleUserId);
 		ctCollectionModel.setCtRemoteId(_counter.get());
@@ -3298,7 +3300,7 @@ public class DataFactory {
 		List<CTCollectionModel> ctCollectionModels = new ArrayList<>();
 
 		for (int i = 1;
-			 i <= BenchmarksPropsValues.MAX_PUBLICATION_CONTENT_LAYOUT_COUNT;
+			 i <= BenchmarksPropsValues.MAX_PUBLICATION_COUNT;
 			 i++) {
 
 			ctCollectionModels.add(
