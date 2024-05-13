@@ -5,6 +5,7 @@
 
 import {Locator, Page, expect} from '@playwright/test';
 
+import {ApiHelpers} from '../../helpers/ApiHelpers';
 import {PORTLET_URLS} from '../../utils/portletUrls';
 
 export class ChangeTrackingPage {
@@ -66,6 +67,24 @@ export class ChangeTrackingPage {
 			)
 			.filter({hasText: 'Review Changes'})
 			.waitFor();
+	}
+
+	async workOnProduction() {
+		const apiHelpers = new ApiHelpers(this.page);
+
+		await apiHelpers.headlessChangeTracking.checkoutCTCollection('0');
+
+		await this.page.reload();
+	}
+
+	async workOnPublication(ctCollection) {
+		const apiHelpers = new ApiHelpers(this.page);
+
+		await apiHelpers.headlessChangeTracking.checkoutCTCollection(
+			ctCollection.id
+		);
+
+		await this.page.reload();
 	}
 
 	async reviewChange(title: string) {
