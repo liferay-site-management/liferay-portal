@@ -151,6 +151,6 @@ public abstract class BaseCTUpgradeProcessTestCase {
 
 	private static final TransactionConfig _transactionConfig =
 		TransactionConfig.Factory.create(
-			Propagation.REQUIRED, new Class<?>[] {Exception.class});
+			Propagation.REQUIRES_NEW, new Class<?>[] {Exception.class});
 
 }
