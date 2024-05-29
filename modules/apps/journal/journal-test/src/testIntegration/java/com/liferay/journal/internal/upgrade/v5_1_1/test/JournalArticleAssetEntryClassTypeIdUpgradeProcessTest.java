@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.cache.MultiVMPool;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.change.tracking.CTService;
 import com.liferay.portal.kernel.service.persistence.change.tracking.CTPersistence;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
@@ -143,8 +144,8 @@ public class JournalArticleAssetEntryClassTypeIdUpgradeProcessTest
 	}
 
 	@Override
-	protected CTPersistence<?> getCTPersistence() {
-		return _assetEntryLocalService.getCTPersistence();
+	protected CTService<?> getCTService() {
+		return _assetEntryLocalService;
 	}
 
 	@Override
