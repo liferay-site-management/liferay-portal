@@ -113,21 +113,17 @@ test('LPD-19763 Workflow assign actions are displayed in dropdown', async ({
 
 	await moreActionsButton.click();
 
-	await expect(
-		page.getByRole('menuitem', {
-			name: 'Assign to me',
-		})
-	).toBeVisible();
+	const assignToMeMenuItem = page.getByRole('menuitem', {
+		name: 'Assign to me',
+	});
+
+	await expect(assignToMeMenuItem).toBeVisible();
 
 	await expect(
 		page.getByRole('menuitem', {
 			name: 'Assign to...',
 		})
 	).toBeVisible();
-
-	const assignToMeMenuItem = page.getByRole('menuitem', {
-		name: 'Assign to me',
-	});
 
 	await assignToMeMenuItem.click();
 
@@ -335,27 +331,22 @@ test('LPD-22771 Assign button added to workflow view', async ({
 
 	await changeTrackingPage.selectTab('Workflow');
 
-	const assignButton = page.getByRole('button', {
-		exact: true,
-		name: 'Assign to...',
-	});
-
-	await expect(assignButton).toBeVisible();
-
-	await assignButton.click();
+	await page
+		.getByRole('button', {
+			exact: true,
+			name: 'Assign to...',
+		})
+		.click();
 
 	await page
 		.frameLocator('iframe[title="Assign to\\.\\.\\."]')
 		.getByLabel('Assign to')
 		.selectOption('test (Test Test)');
 
-	const doneButton = page
+	await page
 		.frameLocator('iframe[title="Assign to..."]')
-		.getByRole('button', {exact: true, name: 'Done'});
-
-	await expect(doneButton).toBeVisible();
-
-	await doneButton.click();
+		.getByRole('button', {exact: true, name: 'Done'})
+		.click();
 
 	await expect(
 		page.getByRole('cell').and(page.getByText('Test Test'))
@@ -412,9 +403,7 @@ test('LPD-27013 Cannot assign tasks once task is completed', async ({
 
 	await expect(assignButton).toBeVisible({visible: false});
 
-	const moreActionsButton = page.getByLabel('more-actions');
-
-	await moreActionsButton.click();
+	await page.getByLabel('more-actions').click();
 
 	await expect(
 		page.getByRole('menuitem', {
