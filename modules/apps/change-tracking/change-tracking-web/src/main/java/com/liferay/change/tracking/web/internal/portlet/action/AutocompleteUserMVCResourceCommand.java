@@ -5,6 +5,7 @@
 
 package com.liferay.change.tracking.web.internal.portlet.action;
 
+import com.liferay.change.tracking.constants.CTActionKeys;
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.model.CTCollection;
@@ -14,15 +15,21 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
+import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.service.permission.PortletPermissionUtil;
+import com.liferay.portal.kernel.service.permission.UserPermissionUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -34,6 +41,7 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.io.IOException;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -67,7 +75,8 @@ public class AutocompleteUserMVCResourceCommand extends BaseMVCResourceCommand {
 	}
 
 	private List<User> _getUsers(
-		ResourceRequest resourceRequest, ThemeDisplay themeDisplay) {
+			ResourceRequest resourceRequest, ThemeDisplay themeDisplay)
+		throws PortalException {
 
 		String keywords = ParamUtil.getString(resourceRequest, "keywords");
 
@@ -78,11 +87,37 @@ public class AutocompleteUserMVCResourceCommand extends BaseMVCResourceCommand {
 		PermissionChecker permissionChecker =
 			themeDisplay.getPermissionChecker();
 
-		if (permissionChecker.isCompanyAdmin()) {
+		if (UserPermissionUtil.contains(
+				permissionChecker, ResourceConstants.PRIMKEY_DNE,
+				ActionKeys.VIEW)) {
+
 			return _userLocalService.search(
 				themeDisplay.getCompanyId(), keywords,
 				WorkflowConstants.STATUS_APPROVED, new LinkedHashMap<>(), 0, 20,
 				new UserScreenNameComparator(true));
+		}
+
+		Role role = _roleLocalService.getRole(
+			themeDisplay.getCompanyId(), RoleConstants.PUBLICATIONS_USER);
+
+		List<User> publicationUsers = new ArrayList<>();
+
+		for (long userId : _userLocalService.getRoleUserIds(role.getRoleId())) {
+			User user = _userLocalService.fetchUser(userId);
+
+			publicationUsers.add(user);
+		}
+
+		long ctCollectionId = ParamUtil.getLong(
+			resourceRequest, "ctCollectionId");
+
+		CTCollection ctCollection = _ctCollectionLocalService.fetchCTCollection(
+			ctCollectionId);
+
+		if (_ctCollectionModelResourcePermission.contains(
+				permissionChecker, ctCollection, CTActionKeys.INVITE_USERS)) {
+
+			return publicationUsers;
 		}
 
 		User user = themeDisplay.getUser();
@@ -163,8 +198,17 @@ public class AutocompleteUserMVCResourceCommand extends BaseMVCResourceCommand {
 	@Reference
 	private CTCollectionLocalService _ctCollectionLocalService;
 
+	@Reference(
+		target = "(model.class.name=com.liferay.change.tracking.model.CTCollection)"
+	)
+	private ModelResourcePermission<CTCollection>
+		_ctCollectionModelResourcePermission;
+
 	@Reference
 	private JSONFactory _jsonFactory;
+
+	@Reference
+	private RoleLocalService _roleLocalService;
 
 	@Reference
 	private UserLocalService _userLocalService;
