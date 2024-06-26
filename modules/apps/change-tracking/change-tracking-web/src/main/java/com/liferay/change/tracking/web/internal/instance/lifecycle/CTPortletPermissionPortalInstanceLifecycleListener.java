@@ -124,6 +124,11 @@ public class CTPortletPermissionPortalInstanceLifecycleListener
 			String.valueOf(role.getCompanyId()), role.getRoleId(),
 			CTActionKeys.ADD_PUBLICATION);
 		_resourcePermissionLocalService.addResourcePermission(
+			role.getCompanyId(), CTCollection.class.getName(),
+			ResourceConstants.SCOPE_COMPANY,
+			String.valueOf(role.getCompanyId()), role.getRoleId(),
+			CTActionKeys.INVITE_USERS);
+		_resourcePermissionLocalService.addResourcePermission(
 			companyId, CTPortletKeys.PUBLICATIONS,
 			ResourceConstants.SCOPE_COMPANY, String.valueOf(companyId),
 			role.getRoleId(), ActionKeys.ACCESS_IN_CONTROL_PANEL);

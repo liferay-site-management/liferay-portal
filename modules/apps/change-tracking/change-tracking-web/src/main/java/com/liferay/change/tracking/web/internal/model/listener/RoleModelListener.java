@@ -7,6 +7,7 @@ package com.liferay.change.tracking.web.internal.model.listener;
 
 import com.liferay.change.tracking.constants.CTActionKeys;
 import com.liferay.change.tracking.constants.CTPortletKeys;
+import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.ModelListenerException;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -56,6 +57,11 @@ public class RoleModelListener extends BaseModelListener<Role> {
 				ResourceConstants.SCOPE_COMPANY,
 				String.valueOf(role.getCompanyId()), role.getRoleId(),
 				CTActionKeys.ADD_PUBLICATION);
+			_resourcePermissionLocalService.addResourcePermission(
+				role.getCompanyId(), CTCollection.class.getName(),
+				ResourceConstants.SCOPE_COMPANY,
+				String.valueOf(role.getCompanyId()), role.getRoleId(),
+				CTActionKeys.INVITE_USERS);
 			_resourcePermissionLocalService.addResourcePermission(
 				role.getCompanyId(), CTPortletKeys.PUBLICATIONS,
 				ResourceConstants.SCOPE_COMPANY,
