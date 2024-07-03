@@ -879,17 +879,18 @@ public class CTCollectionLocalServiceImpl
 				toCTCollectionId, entry.getKey(), entry.getValue());
 		}
 
-		relatedCTEntriesMap = _getRelatedCTEntriesMap(
-			toCTCollection, modelClassNameId, modelClassPK);
+		Map<Long, List<CTEntry>> movedRelatedCTEntriesMap =
+			_getRelatedCTEntriesMap(
+				toCTCollection, modelClassNameId, modelClassPK);
 
 		ctEntries = new ArrayList<>();
 
-		for (List<CTEntry> curCTEntries : relatedCTEntriesMap.values()) {
+		for (List<CTEntry> curCTEntries : movedRelatedCTEntriesMap.values()) {
 			ctEntries.addAll(curCTEntries);
 		}
 
 		conflictInfoMap = checkConflicts(
-			fromCTCollection.getCompanyId(), ctEntries, toCTCollectionId,
+			toCTCollection.getCompanyId(), ctEntries, toCTCollectionId,
 			toCTCollection.getName(), CTConstants.CT_COLLECTION_ID_PRODUCTION,
 			"Production");
 
