@@ -30,16 +30,19 @@ public class UpgradeCountry extends UpgradeProcess {
 		try (LoggingTimer loggingTimer = new LoggingTimer()) {
 			try (PreparedStatement preparedStatement1 =
 					connection.prepareStatement(
-						"select countryId from Country where uuid_ is null");
+						"select ctCollectionId, countryId from Country where " +
+							"uuid_ is null");
 				PreparedStatement preparedStatement2 =
 					AutoBatchPreparedStatementUtil.autoBatch(
 						connection,
-						"update Country set uuid_ = ? where countryId = ?");
+						"update Country set uuid_ = ? where ctCollectionId = " +
+							"? and countryId = ?");
 				ResultSet resultSet = preparedStatement1.executeQuery()) {
 
 				while (resultSet.next()) {
 					preparedStatement2.setString(1, PortalUUIDUtil.generate());
 					preparedStatement2.setLong(2, resultSet.getLong(1));
+					preparedStatement2.setLong(3, resultSet.getLong(2));
 
 					preparedStatement2.addBatch();
 				}
