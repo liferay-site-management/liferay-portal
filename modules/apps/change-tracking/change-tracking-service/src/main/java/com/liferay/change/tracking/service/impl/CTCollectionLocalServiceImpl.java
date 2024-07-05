@@ -879,24 +879,6 @@ public class CTCollectionLocalServiceImpl
 				toCTCollectionId, entry.getKey(), entry.getValue());
 		}
 
-		relatedCTEntriesMap = _getRelatedCTEntriesMap(
-			toCTCollection, modelClassNameId, modelClassPK);
-
-		ctEntries = new ArrayList<>();
-
-		for (List<CTEntry> curCTEntries : relatedCTEntriesMap.values()) {
-			ctEntries.addAll(curCTEntries);
-		}
-
-		conflictInfoMap = checkConflicts(
-			fromCTCollection.getCompanyId(), ctEntries, toCTCollectionId,
-			toCTCollection.getName(), CTConstants.CT_COLLECTION_ID_PRODUCTION,
-			"Production");
-
-		if (!conflictInfoMap.isEmpty()) {
-			throw new CTPublishConflictException("Conflict detected");
-		}
-
 		_ctClosureFactory.clearCache(fromCTCollectionId);
 		_ctClosureFactory.clearCache(toCTCollectionId);
 	}

@@ -5,8 +5,13 @@
 
 package com.liferay.change.tracking.web.internal.portlet.action;
 
+import com.liferay.change.tracking.conflict.ConflictInfo;
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.constants.CTPortletKeys;
+import com.liferay.change.tracking.exception.CTPublishConflictException;
+import com.liferay.change.tracking.model.CTCollection;
+import com.liferay.change.tracking.model.CTEntry;
+import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTCollectionService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
@@ -15,6 +20,10 @@ import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -55,6 +64,36 @@ public class MoveChangesMVCActionCommand extends BaseMVCActionCommand {
 				_ctCollectionService.moveCTEntry(
 					fromCTCollectionId, toCTCollectionId, modelClassNameId,
 					modelClassPK);
+
+				Map<Long, List<CTEntry>> relatedCTEntriesMap =
+					_ctCollectionLocalService.getRelatedCTEntriesMap(
+						toCTCollectionId, modelClassNameId, modelClassPK);
+
+				List<CTEntry> ctEntries = new ArrayList<>();
+
+				for (List<CTEntry> curCTEntries :
+						relatedCTEntriesMap.values()) {
+
+					ctEntries.addAll(curCTEntries);
+				}
+
+				CTCollection toCTCollection =
+					_ctCollectionLocalService.fetchCTCollection(
+						toCTCollectionId);
+
+				Map<Long, List<ConflictInfo>> conflictInfoMap =
+					_ctCollectionLocalService.checkConflicts(
+						toCTCollection.getCompanyId(), ctEntries,
+						toCTCollectionId, toCTCollection.getName(),
+						CTConstants.CT_COLLECTION_ID_PRODUCTION, "Production");
+
+				if (!conflictInfoMap.isEmpty()) {
+					_ctCollectionService.moveCTEntry(
+						toCTCollectionId, fromCTCollectionId, modelClassNameId,
+						modelClassPK);
+
+					throw new CTPublishConflictException("Conflict detected");
+				}
 			}
 			catch (PortalException portalException) {
 				SessionErrors.add(actionRequest, portalException.getClass());
@@ -90,6 +129,9 @@ public class MoveChangesMVCActionCommand extends BaseMVCActionCommand {
 
 		actionResponse.sendRedirect(redirect);
 	}
+
+	@Reference
+	private CTCollectionLocalService _ctCollectionLocalService;
 
 	@Reference
 	private CTCollectionService _ctCollectionService;
