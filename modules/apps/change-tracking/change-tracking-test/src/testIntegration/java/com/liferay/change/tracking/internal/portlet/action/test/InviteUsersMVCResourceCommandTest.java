@@ -10,6 +10,7 @@ import com.liferay.change.tracking.configuration.CTEmailNotificationConfiguratio
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.configuration.test.util.CompanyConfigurationTemporarySwapper;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
@@ -21,6 +22,7 @@ import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.test.portlet.MockLiferayResourceRequest;
 import com.liferay.portal.kernel.test.portlet.MockLiferayResourceResponse;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
@@ -40,7 +42,9 @@ import com.liferay.portal.test.rule.SynchronousMailTestRule;
 
 import javax.portlet.PortletRequest;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -60,30 +64,25 @@ public class InviteUsersMVCResourceCommandTest {
 			PermissionCheckerMethodTestRule.INSTANCE,
 			SynchronousMailTestRule.INSTANCE);
 
-	@FeatureFlags("LPD-11212")
-	@Test
-	public void testGetInviteUsersEmailNotificationBody() throws Exception {
-		CTCollection ctCollection = _ctCollectionLocalService.addCTCollection(
+	@Before
+	public void setUp() throws Exception {
+		_ctCollection = _ctCollectionLocalService.addCTCollection(
 			null, TestPropsValues.getCompanyId(), TestPropsValues.getUserId(),
 			0, RandomTestUtil.randomString(), null);
 
-		User user = UserTestUtil.addUser();
+		_serviceContext = ServiceContextTestUtil.getServiceContext(
+			TestPropsValues.getGroupId(), TestPropsValues.getUserId());
+	}
 
-		MockLiferayResourceRequest mockLiferayResourceRequest =
-			_getMockLiferayResourceRequest(
-				ctCollection.getCtCollectionId(), user.getUserId());
+	@After
+	public void tearDown() {
+		ServiceContextThreadLocal.popServiceContext();
+	}
 
-		ServiceContext serviceContext =
-			ServiceContextTestUtil.getServiceContext(
-				TestPropsValues.getGroupId(), TestPropsValues.getUserId());
-
-		serviceContext.setRequest(
-			mockLiferayResourceRequest.getHttpServletRequest());
-
-		ServiceContextThreadLocal.pushServiceContext(serviceContext);
-
-		_mvcResourceCommand.serveResource(
-			mockLiferayResourceRequest, new MockLiferayResourceResponse());
+	@FeatureFlags("LPD-11212")
+	@Test
+	public void testGetInviteUsersEmailNotificationBody() throws Exception {
+		_inviteUserToPublication(_ctCollection);
 
 		Assert.assertEquals(1, MailServiceTestUtil.getInboxSize());
 
@@ -93,12 +92,12 @@ public class InviteUsersMVCResourceCommandTest {
 
 		String url = PortletURLBuilder.create(
 			_portal.getControlPanelPortletURL(
-				serviceContext.getRequest(), serviceContext.getScopeGroup(),
+				_serviceContext.getRequest(), _serviceContext.getScopeGroup(),
 				CTPortletKeys.PUBLICATIONS, 0, 0, PortletRequest.RENDER_PHASE)
 		).setMVCRenderCommandName(
 			"/change_tracking/view_changes"
 		).setParameter(
-			"ctCollectionId", ctCollection.getCtCollectionId()
+			"ctCollectionId", _ctCollection.getCtCollectionId()
 		).buildString();
 
 		Assert.assertFalse(url.isEmpty());
@@ -107,37 +106,40 @@ public class InviteUsersMVCResourceCommandTest {
 			mailMessageBody.contains(
 				"You have been invited to work on a publication. For further " +
 					"information, please visit " + url));
-
-		ServiceContextThreadLocal.popServiceContext();
 	}
 
 	@FeatureFlags("LPD-11212")
 	@Test
-	public void testGetInviteUsersWithCustomEmailSenderNameAndAddress() throws Exception {
+	public void testGetInviteUsersWithCustomEmailSenderNameAndAddress()
+		throws Exception {
+
 		String invitationEmailSenderEmailAddress = "custom@liferay.com";
 		String invitationEmailSenderName = "Custom sender name";
 
 		try (CompanyConfigurationTemporarySwapper
-				 companyConfigurationTemporarySwapper =
-				 new CompanyConfigurationTemporarySwapper(
-					 TestPropsValues.getCompanyId(),
-					 CTEmailNotificationConfiguration.class.getName(),
-					 HashMapDictionaryBuilder.<String, Object>put(
-						 "invitationEmailSenderEmailAddress",
-						 invitationEmailSenderEmailAddress
-					 ).put(
-						 "invitationEmailSenderName",
-						 invitationEmailSenderName
-					 ).build())) {
+				companyConfigurationTemporarySwapper =
+					new CompanyConfigurationTemporarySwapper(
+						TestPropsValues.getCompanyId(),
+						CTEmailNotificationConfiguration.class.getName(),
+						HashMapDictionaryBuilder.<String, Object>put(
+							"invitationEmailSenderEmailAddress",
+							invitationEmailSenderEmailAddress
+						).put(
+							"invitationEmailSenderName",
+							invitationEmailSenderName
+						).build())) {
 
-			_inviteUserToPublication();
+			_inviteUserToPublication(_ctCollection);
 
 			MailMessage mailMessage = MailServiceTestUtil.getLastMailMessage();
 
 			String from = mailMessage.getFirstHeaderValue("From");
 
 			Assert.assertEquals(
-				from, invitationEmailSenderName + " <" + invitationEmailSenderEmailAddress + ">");
+				from,
+				StringBundler.concat(
+					invitationEmailSenderName, " <",
+					invitationEmailSenderEmailAddress, ">"));
 		}
 	}
 
@@ -148,17 +150,17 @@ public class InviteUsersMVCResourceCommandTest {
 		String invitationEmailSubject = "Custom email subject";
 
 		try (CompanyConfigurationTemporarySwapper
-				 companyConfigurationTemporarySwapper =
-				 new CompanyConfigurationTemporarySwapper(
-					 TestPropsValues.getCompanyId(),
-					 CTEmailNotificationConfiguration.class.getName(),
-					 HashMapDictionaryBuilder.<String, Object>put(
-						 "invitationEmailBody", invitationEmailBody
-					 ).put(
-						 "invitationEmailSubject", invitationEmailSubject
-					 ).build())) {
+				companyConfigurationTemporarySwapper =
+					new CompanyConfigurationTemporarySwapper(
+						TestPropsValues.getCompanyId(),
+						CTEmailNotificationConfiguration.class.getName(),
+						HashMapDictionaryBuilder.<String, Object>put(
+							"invitationEmailBody", invitationEmailBody
+						).put(
+							"invitationEmailSubject", invitationEmailSubject
+						).build())) {
 
-			_inviteUserToPublication();
+			_inviteUserToPublication(_ctCollection);
 
 			MailMessage mailMessage = MailServiceTestUtil.getLastMailMessage();
 
@@ -206,10 +208,8 @@ public class InviteUsersMVCResourceCommandTest {
 		return themeDisplay;
 	}
 
-	private void _inviteUserToPublication() throws Exception {
-		CTCollection ctCollection = _ctCollectionLocalService.addCTCollection(
-			null, TestPropsValues.getCompanyId(), TestPropsValues.getUserId(),
-			0, RandomTestUtil.randomString(), null);
+	private void _inviteUserToPublication(CTCollection ctCollection)
+		throws Exception {
 
 		User user = UserTestUtil.addUser();
 
@@ -217,18 +217,17 @@ public class InviteUsersMVCResourceCommandTest {
 			_getMockLiferayResourceRequest(
 				ctCollection.getCtCollectionId(), user.getUserId());
 
-		ServiceContext serviceContext =
-			ServiceContextTestUtil.getServiceContext(
-				TestPropsValues.getGroupId(), TestPropsValues.getUserId());
-
-		serviceContext.setRequest(
+		_serviceContext.setRequest(
 			mockLiferayResourceRequest.getHttpServletRequest());
 
-		ServiceContextThreadLocal.pushServiceContext(serviceContext);
+		ServiceContextThreadLocal.pushServiceContext(_serviceContext);
 
 		_mvcResourceCommand.serveResource(
 			mockLiferayResourceRequest, new MockLiferayResourceResponse());
 	}
+
+	@DeleteAfterTestRun
+	private static CTCollection _ctCollection;
 
 	@Inject
 	private static CTCollectionLocalService _ctCollectionLocalService;
@@ -241,5 +240,7 @@ public class InviteUsersMVCResourceCommandTest {
 
 	@Inject
 	private Portal _portal;
+
+	private ServiceContext _serviceContext;
 
 }
