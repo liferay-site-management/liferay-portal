@@ -58,6 +58,7 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.io.IOException;
@@ -315,16 +316,6 @@ public class InviteUsersMVCResourceCommand
 				UserNotificationDeliveryConstants.TYPE_EMAIL)) {
 
 			try {
-				User user = themeDisplay.getUser();
-
-				String fromName = user.getFullName();
-				String fromAddress = user.getEmailAddress();
-
-				User receiverUser = _userLocalService.getUser(receiverUserId);
-
-				String toName = receiverUser.getFullName();
-				String toAddress = receiverUser.getEmailAddress();
-
 				CTEmailNotificationConfiguration
 					ctEmailNotificationConfiguration =
 						_configurationProvider.getCompanyConfiguration(
@@ -337,10 +328,32 @@ public class InviteUsersMVCResourceCommand
 				MailTemplateContextBuilder mailTemplateContextBuilder =
 					MailTemplateFactoryUtil.createMailTemplateContextBuilder();
 
+				User user = themeDisplay.getUser();
+
+				String invitationEmailSenderName =
+					ctEmailNotificationConfiguration.
+						invitationEmailSenderName();
+
+				if (Validator.isNull(invitationEmailSenderName)) {
+					invitationEmailSenderName = user.getFullName();
+				}
+
+				String invitationEmailSenderEmailAddress =
+					ctEmailNotificationConfiguration.
+						invitationEmailSenderEmailAddress();
+
+				if (Validator.isNull(invitationEmailSenderEmailAddress)) {
+					invitationEmailSenderEmailAddress = user.getEmailAddress();
+				}
+
+				User receiverUser = _userLocalService.getUser(receiverUserId);
+
 				mailTemplateContextBuilder.put(
-					"[$FROM_ADDRESS$]", new EscapableObject<>(fromAddress));
+					"[$FROM_ADDRESS$]",
+					new EscapableObject<>(invitationEmailSenderEmailAddress));
 				mailTemplateContextBuilder.put(
-					"[$FROM_NAME$]", new EscapableObject<>(fromName));
+					"[$FROM_NAME$]",
+					new EscapableObject<>(invitationEmailSenderName));
 				mailTemplateContextBuilder.put(
 					"[$PORTAL_PUBLICATION_REVIEW_CHANGES_URL$]",
 					PortletURLBuilder.create(
@@ -357,7 +370,8 @@ public class InviteUsersMVCResourceCommand
 				mailTemplateContextBuilder.put(
 					"[$PORTAL_URL$]", themeDisplay.getPortalURL());
 				mailTemplateContextBuilder.put(
-					"[$TO_NAME$]", new EscapableObject<>(toName));
+					"[$TO_NAME$]",
+					new EscapableObject<>(receiverUser.getFullName()));
 
 				MailTemplateContext mailTemplateContext =
 					mailTemplateContextBuilder.build();
@@ -377,8 +391,10 @@ public class InviteUsersMVCResourceCommand
 						bodyLocalizedValuesMap.get(user.getLocale()), true);
 
 				MailMessage mailMessage = new MailMessage(
-					new InternetAddress(fromAddress, fromName),
-					new InternetAddress(toAddress),
+					new InternetAddress(
+						invitationEmailSenderEmailAddress,
+						invitationEmailSenderName),
+					new InternetAddress(receiverUser.getEmailAddress()),
 					subjectMailTemplate.renderAsString(
 						user.getLocale(), mailTemplateContext),
 					bodyMailTemplate.renderAsString(
