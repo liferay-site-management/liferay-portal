@@ -15,6 +15,39 @@ export const test = mergeTests(
 	changeTrackingPagesTest
 );
 
+test('LPD-28809 Verify email notification checkbox is displayed', async ({
+	page,
+}) => {
+	await page.getByTestId('userPersonalMenu').click();
+
+	await page.getByRole('menuitem', {name: 'Notifications'}).click();
+
+	await page
+		.locator(
+			'#portlet-topper-toolbar_com_liferay_notifications_web_portlet_NotificationsPortlet'
+		)
+		.getByLabel('Options')
+		.click();
+
+	await page
+		.getByRole('menuitem', {exact: true, name: 'Configuration'})
+		.click();
+
+	const dialogIFrame = page.frameLocator(
+		'iframe[title=" Notifications  - Configuration"]'
+	);
+
+	await dialogIFrame.getByRole('link', {name: 'Publications'}).click();
+
+	const invitePublication = dialogIFrame.getByRole('cell', {
+		name: 'Receive a notification when someone: Invites you to work on a publication.',
+	});
+
+	await expect(invitePublication.getByRole('checkbox').nth(0)).toBeChecked();
+
+	await expect(invitePublication.getByRole('checkbox').nth(1)).toBeChecked();
+});
+
 test('LPD-28956 Verify the configuration fields are displayed', async ({
 	ChangeTrackingInstanceSettingsPage,
 	page,
