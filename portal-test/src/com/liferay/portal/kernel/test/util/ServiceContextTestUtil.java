@@ -50,15 +50,17 @@ public class ServiceContextTestUtil {
 	}
 
 	public static ServiceContext getServiceContext(
-		long companyId, long groupId, long userId) throws PortalException {
+			long companyId, long groupId, long userId)
+		throws PortalException {
 
 		return getServiceContext(
 			companyId, groupId, userId, new long[0], new String[0]);
 	}
 
 	public static ServiceContext getServiceContext(
-		long companyId, long groupId, long userId, long[] assetCategoryIds,
-		String[] assetTagNames) throws PortalException {
+			long companyId, long groupId, long userId, long[] assetCategoryIds,
+			String[] assetTagNames)
+		throws PortalException {
 
 		ServiceContext serviceContext = new ServiceContext();
 
@@ -68,9 +70,11 @@ public class ServiceContextTestUtil {
 		serviceContext.setAssetTagNames(assetTagNames);
 		serviceContext.setCompanyId(companyId);
 		serviceContext.setPortalURL(
-            CompanyLocalServiceUtil.getCompany(companyId).getPortalURL(
-                groupId
-            ));
+			CompanyLocalServiceUtil.getCompany(
+				companyId
+			).getPortalURL(
+				groupId
+			));
 		serviceContext.setScopeGroupId(groupId);
 		serviceContext.setUserId(userId);
 
