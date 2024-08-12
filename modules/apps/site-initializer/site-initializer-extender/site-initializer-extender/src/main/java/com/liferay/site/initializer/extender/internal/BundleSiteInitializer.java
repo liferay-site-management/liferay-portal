@@ -5550,6 +5550,12 @@ public class BundleSiteInitializer implements SiteInitializer {
 		serviceContext.setAddGroupPermissions(true);
 		serviceContext.setAddGuestPermissions(true);
 		serviceContext.setCompanyId(user.getCompanyId());
+		serviceContext.setPortalURL(
+			_companyLocalService.getCompany(
+				serviceContext.getCompanyId()
+			).getPortalURL(
+				serviceContext.getScopeGroupId()
+			));
 		serviceContext.setScopeGroupId(groupId);
 		serviceContext.setTimeZone(user.getTimeZone());
 		serviceContext.setUserId(user.getUserId());
@@ -5630,13 +5636,6 @@ public class BundleSiteInitializer implements SiteInitializer {
 		throws Exception {
 
 		Group group = serviceContext.getScopeGroup();
-
-		serviceContext.setPortalURL(
-			_companyLocalService.getCompany(
-				group.getCompanyId()
-			).getPortalURL(
-				serviceContext.getScopeGroupId()
-			));
 
 		return StringUtil.replace(
 			s,
