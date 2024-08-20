@@ -8,6 +8,8 @@ package com.liferay.friendly.url.internal.upgrade.registry;
 import com.liferay.friendly.url.configuration.FriendlyURLRedirectionConfiguration;
 import com.liferay.friendly.url.internal.upgrade.v2_0_0.util.FriendlyURLEntryTable;
 import com.liferay.friendly.url.internal.upgrade.v3_0_0.UpgradeCompanyId;
+import com.liferay.friendly.url.internal.upgrade.v3_4_2.FriendlyURLFormatUpgradeProcess;
+import com.liferay.friendly.url.service.FriendlyURLEntryLocalService;
 import com.liferay.portal.configuration.persistence.upgrade.ConfigurationUpgradeStepFactory;
 import com.liferay.portal.kernel.security.permission.ResourceActions;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
@@ -66,6 +68,10 @@ public class FriendlyURLServiceUpgradeStepRegistrator
 			new com.liferay.friendly.url.internal.upgrade.v3_4_1.
 				LayoutFriendlyURLEntryUpgradeProcess(
 					_classNameLocalService, _portal, _resourceActions));
+
+		registry.register(
+			"3.4.1", "3.4.2",
+			new FriendlyURLFormatUpgradeProcess(_friendlyURLEntryLocalService));
 	}
 
 	@Reference
@@ -73,6 +79,9 @@ public class FriendlyURLServiceUpgradeStepRegistrator
 
 	@Reference
 	private ConfigurationUpgradeStepFactory _configurationUpgradeStepFactory;
+
+	@Reference
+	private FriendlyURLEntryLocalService _friendlyURLEntryLocalService;
 
 	@Reference
 	private Portal _portal;
