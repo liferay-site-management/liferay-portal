@@ -454,6 +454,9 @@ public class PortalUpgradeProcessRegistryImpl
 		upgradeVersionTreeMap.put(
 			new Version(31, 6, 0),
 			new DLFileShortcutExternalReferenceCodeUpgradeProcess());
+
+		upgradeVersionTreeMap.put(
+			new Version(31, 6, 1), new UpgradeGroupFriendlyURLFormat());
 	}
 
 }
