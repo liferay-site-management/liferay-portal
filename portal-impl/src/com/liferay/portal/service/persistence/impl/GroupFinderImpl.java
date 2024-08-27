@@ -1175,6 +1175,9 @@ public class GroupFinderImpl
 					userId = permissionChecker.getUserId();
 				}
 
+				queryPos.add(userId);
+				queryPos.add(userId);
+
 				int hasUserRole = 0;
 
 				Long companyId = CompanyThreadLocal.getCompanyId();
