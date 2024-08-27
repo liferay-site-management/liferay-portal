@@ -30,7 +30,7 @@ public class ViewPublicationsMVCRenderCommand implements MVCRenderCommand {
 	public String render(
 		RenderRequest renderRequest, RenderResponse renderResponse) {
 
-		return "/publications/view_publications.jsp";
+		return "/publications/configuration.jsp";
 	}
 
 }

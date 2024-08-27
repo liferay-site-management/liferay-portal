@@ -45,7 +45,10 @@ export default function ChangeTrackingIndicator({
 	warningButton,
 	warningHeader,
 	warningLearnLink,
+	portletPreferenceURL,
 }) {
+
+	console.log(portletPreferenceURL);
 	const COLUMN_MODIFIED_DATE = 'modifiedDate';
 	const COLUMN_NAME = 'name';
 
@@ -451,6 +454,10 @@ export default function ChangeTrackingIndicator({
 										displayType="secondary"
 										onClick={() => {
 											setCloseWarning(true);
+											navigate(
+													portletPreferenceURL,
+													true
+												);
 										}}
 										size="sm"
 										style={{

@@ -59,7 +59,10 @@ import org.osgi.service.component.annotations.Reference;
 		"javax.portlet.name=" + CTPortletKeys.PUBLICATIONS,
 		"javax.portlet.resource-bundle=content.Language",
 		"javax.portlet.security-role-ref=administrator",
-		"javax.portlet.version=3.0"
+		"javax.portlet.version=3.0",
+
+		"javax.portlet.init-param.config-template=/publications/configuration.jsp",
+//		"javax.portlet.init-param.view-template=/view.jsp"
 	},
 	service = Portlet.class
 )

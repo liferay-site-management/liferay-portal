@@ -23,6 +23,7 @@ import com.liferay.change.tracking.web.internal.constants.CTWebKeys;
 import com.liferay.change.tracking.web.internal.security.permission.resource.CTPermission;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
@@ -36,21 +37,29 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.PortletPreferences;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
+import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.PortalPreferences;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
+import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
+import com.liferay.portal.kernel.security.auth.AuthTokenUtil;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.service.PortletPreferencesLocalService;
 import com.liferay.portal.kernel.service.permission.PortletPermissionUtil;
 import com.liferay.portal.kernel.servlet.PortalSessionThreadLocal;
 import com.liferay.portal.kernel.servlet.taglib.BaseDynamicInclude;
 import com.liferay.portal.kernel.servlet.taglib.DynamicInclude;
+import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
@@ -65,8 +74,10 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
+import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
+import javax.portlet.RenderResponse;
 import javax.portlet.ResourceURL;
 
 import javax.servlet.ServletContext;
@@ -179,6 +190,9 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 			String portletId = ParamUtil.getString(
 				httpServletRequest, "p_p_id");
 
+			List<PortletPreferences> portletPreferences =
+				_portletPreferencesLocalService.getPortletPreferences();
+
 			_reactRenderer.renderReact(
 				new ComponentDescriptor(
 					"{ChangeTrackingIndicator} from change-tracking-web",
@@ -192,7 +206,7 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 						ctConfiguration.productionOnlyApplication(), portletId),
 					_ctSettingsConfigurationHelper.isSandboxEnabled(
 						themeDisplay.getCompanyId()),
-					_isShowContextChangePopover(themeDisplay), themeDisplay,
+					_isShowContextChangePopover(httpServletRequest, themeDisplay), themeDisplay,
 					Validator.isNotNull(portletId) &&
 					ArrayUtil.contains(
 						ctConfiguration.unsupportedApplication(), portletId)),
@@ -202,6 +216,9 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 		}
 		catch (JspException | PortalException exception) {
 			ReflectionUtil.throwException(exception);
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -235,7 +252,7 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 			CTPreferences ctPreferences, boolean productionOnlyApplication,
 			boolean sandboxOnlyEnabled, boolean showContextChangePopover,
 			ThemeDisplay themeDisplay, boolean unsupportedApplication)
-		throws PortalException {
+		throws Exception {
 
 		PortletURL checkoutURL = PortletURLBuilder.create(
 			_portal.getControlPanelPortletURL(
@@ -359,6 +376,9 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 					_language.get(
 						themeDisplay.getLocale(),
 						"keep-working-in-this-publication"));
+
+//				data.put("portletPreferenceURL", getPortletURL(httpServletRequest));
+				data.put("portletPreferenceURL", _getActionURL(httpServletRequest, themeDisplay.getPortletDisplay()));
 			}
 			else {
 				data.put("title", ctCollection.getName());
@@ -616,7 +636,56 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 		}
 	}
 
-	private boolean _isShowContextChangePopover(ThemeDisplay themeDisplay) {
+	public PortletURL getPortletURL(HttpServletRequest httpServletRequest) {
+
+		RenderResponse renderResponse =
+			(RenderResponse)httpServletRequest.getAttribute(
+				JavaConstants.JAVAX_PORTLET_RESPONSE);
+
+		PortletURL _portletURL = PortletURLBuilder.createActionURL(
+			renderResponse
+		).setActionName(
+			"editConfiguration"
+		).setMVCPath(
+			"/edit_configuration.jsp"
+		).setPortletResource(
+			ParamUtil.getString(httpServletRequest, "portletResource")
+		).setParameter(
+			"portletConfiguration", Boolean.TRUE
+		).setParameter(
+			"color",
+			"red"
+		).buildPortletURL();
+
+		return _portletURL;
+	}
+
+	private String _getActionURL(
+		HttpServletRequest httpServletRequest,
+		PortletDisplay portletDisplay)
+		throws Exception {
+
+		return PortletURLBuilder.create(
+			PortletURLFactoryUtil.create(
+				httpServletRequest,	CTPortletKeys.PUBLICATIONS,
+				PortletRequest.ACTION_PHASE)
+		).setActionName(
+			"editConfiguration"
+		).setMVCPath(
+			"/edit_configuration.jsp"
+		).setPortletResource(
+			portletDisplay.getPortletResource()
+		).setParameter(
+			"portletConfiguration", true
+		).setParameter(
+			"silencePopoverTime",
+			"Forever"
+		).setParameter(
+			"cmd", Constants.UPDATE
+		).buildString();
+	}
+
+	private boolean _isShowContextChangePopover(HttpServletRequest httpServletRequest, ThemeDisplay themeDisplay) {
 		Group group = themeDisplay.getScopeGroup();
 
 		if (CTCollectionThreadLocal.isProductionMode() ||
@@ -682,6 +751,9 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 
 	@Reference
 	private ReactRenderer _reactRenderer;
+
+	@Reference
+	private PortletPreferencesLocalService _portletPreferencesLocalService;
 
 	@Reference(
 		target = "(osgi.web.symbolicname=com.liferay.change.tracking.web)"

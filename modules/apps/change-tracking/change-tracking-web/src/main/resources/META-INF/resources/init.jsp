@@ -20,6 +20,7 @@ taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %><%@
 taglib uri="http://liferay.com/tld/user" prefix="liferay-user" %>
 
 <%@ page import="com.liferay.change.tracking.constants.CTActionKeys" %><%@
+page import="com.liferay.portal.kernel.util.Constants" %><%@
 page import="com.liferay.change.tracking.constants.CTConstants" %><%@
 page import="com.liferay.change.tracking.exception.CTCollectionStatusException" %><%@
 page import="com.liferay.change.tracking.exception.CTLocalizedException" %><%@
