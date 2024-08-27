@@ -1193,8 +1193,6 @@ public class GroupFinderImpl
 
 				queryPos.add(hasUserRole);
 
-				queryPos.add(userId);
-
 				Role siteAdminRole = RoleLocalServiceUtil.fetchRole(
 					companyId, RoleConstants.SITE_ADMINISTRATOR);
 
