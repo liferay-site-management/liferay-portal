@@ -547,10 +547,7 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 				));
 		}
 
-		if (FeatureFlagManagerUtil.isEnabled("LPS-161033")) {
-			_getTimelineData(
-				ctCollection, data, httpServletRequest, themeDisplay);
-		}
+		_getTimelineData(ctCollection, data, httpServletRequest, themeDisplay);
 
 		return data;
 	}
