@@ -310,6 +310,55 @@ public class ViewChangesDisplayContext {
 		).build();
 	}
 
+	public Map<String, Object> getItemsOverview() {
+		boolean showHideable = ParamUtil.getBoolean(
+			_renderRequest, "showHideable");
+
+		Map<Long, String> siteNames = DisplayContextUtil.getSiteNames(
+			_ctCollection.getCtCollectionId(), showHideable, _themeDisplay);
+
+		JSONArray itemsOverviewJSONArray = JSONFactoryUtil.createJSONArray();
+
+		for (Map.Entry<Long, String> site : siteNames.entrySet()) {
+			Map<Long, String> typeNamesBySite =
+				DisplayContextUtil.getTypeNamesBySite(
+					_ctCollection.getCtCollectionId(), site.getKey(),
+					showHideable, _themeDisplay);
+
+			Map<String, Integer> typeNameCounts = new HashMap<>();
+
+			for (Map.Entry<Long, String> typeName :
+					typeNamesBySite.entrySet()) {
+
+				typeNameCounts.put(
+					typeName.getValue(),
+					typeNameCounts.getOrDefault(typeName.getValue(), 0) + 1);
+			}
+
+			JSONArray typeNameAndCountJSONArray =
+				JSONFactoryUtil.createJSONArray();
+
+			for (Map.Entry<String, Integer> entry : typeNameCounts.entrySet()) {
+				typeNameAndCountJSONArray.put(
+					StringBundler.concat(
+						entry.getKey(), " (", entry.getValue(), ")"));
+			}
+
+			itemsOverviewJSONArray.put(
+				JSONUtil.put(
+					"siteName", site.getValue()
+				).put(
+					"totalTypeCount", typeNamesBySite.size()
+				).put(
+					"typeNameAndCount", typeNameAndCountJSONArray
+				));
+		}
+
+		return HashMapBuilder.<String, Object>put(
+			"itemsOverview", itemsOverviewJSONArray
+		).build();
+	}
+
 	public String getMyWorkflowTaskPortletNamespace() {
 		return PortalUtil.getPortletNamespace(PortletKeys.MY_WORKFLOW_TASK);
 	}
