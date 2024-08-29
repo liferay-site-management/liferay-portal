@@ -161,6 +161,63 @@ public class DisplayContextUtil {
 		return typeNames;
 	}
 
+	public static Map<Long, String> getTypeNamesBySite(
+		long ctCollectionId, long groupId, boolean showHideable,
+		ThemeDisplay themeDisplay) {
+
+		Map<Long, String> typeNames = new LinkedHashMap<>();
+
+		Searcher searcher = _searcherSnapshot.get();
+
+		SearchRequestBuilderFactory searchRequestBuilderFactory =
+			_searchRequestBuilderFactorySnapshot.get();
+
+		Sorts sorts = _sortsSnapshot.get();
+
+		SearchRequestBuilder searchRequestBuilder =
+			searchRequestBuilderFactory.builder(
+			).companyId(
+				themeDisplay.getCompanyId()
+			).entryClassNames(
+				CTEntry.class.getName()
+			).emptySearchEnabled(
+				true
+			).fields(
+				"modelClassNameId", "typeName", Field.GROUP_ID
+			).sorts(
+				sorts.field(
+					Field.getSortableFieldName(
+						"typeName_".concat(
+							LocaleUtil.toLanguageId(themeDisplay.getLocale()))),
+					SortOrder.ASC)
+			).withSearchContext(
+				searchContext -> {
+					searchContext.setAttribute(
+						"ctCollectionId", ctCollectionId);
+					searchContext.setAttribute("showHideable", showHideable);
+				}
+			);
+
+		SearchResponse searchResponse = searcher.search(
+			searchRequestBuilder.build());
+
+		long count = 0;
+
+		for (Document document : searchResponse.getDocuments()) {
+			if (document.getLong(Field.GROUP_ID) == null) {
+				continue;
+			}
+
+			if (document.getLong(Field.GROUP_ID) == groupId) {
+				typeNames.put(count, document.getString("typeName"));
+			}
+
+			count++;
+		}
+
+		return typeNames;
+	}
+
 	public static JSONObject getTypeNamesJSONObject(
 		Set<Long> classNameIds,
 		CTDisplayRendererRegistry ctDisplayRendererRegistry,
