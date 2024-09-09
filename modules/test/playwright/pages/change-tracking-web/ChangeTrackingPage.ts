@@ -168,6 +168,12 @@ export class ChangeTrackingPage {
 		await this.page.goto(`/group/guest${PORTLET_URLS.publications}`);
 	}
 
+	async goToPublicationHistory(title: string) {
+		await this.goto();
+
+		await this.page.getByRole('link', {name: 'History'}).click();
+	}
+
 	async goToReviewChanges(title: string) {
 		await this.goto();
 
