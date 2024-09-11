@@ -47,6 +47,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.sql.CTSQLModeThreadLocal;
 import com.liferay.portal.kernel.dao.orm.ORMException;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -101,6 +102,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 
@@ -278,9 +280,28 @@ public class ViewChangesDisplayContext {
 		return fdsActionDropdownItems;
 	}
 
-	public List<FDSFilter> getFDSFilters() {
+	public List<FDSFilter> getFDSFilters() throws PortalException {
 		boolean showHideable = ParamUtil.getBoolean(
 			_renderRequest, "showHideable");
+
+		Map<Long, String> selectedSiteNames = new HashMap<>();
+
+		long groupId = ParamUtil.getLong(_renderRequest, "groupId");
+
+		Group group = _groupLocalService.fetchGroup(groupId);
+
+		if (group != null) {
+			selectedSiteNames.put(groupId, group.getDescriptiveName());
+		}
+
+		Map<Long, String> selectedTypeNames = new HashMap<>();
+		String typeName = ParamUtil.getString(_renderRequest, "typeName");
+
+		if (!typeName.isEmpty()) {
+			selectedTypeNames.put(
+				ParamUtil.getLong(_renderRequest, "modelClassNameId"),
+				typeName);
+		}
 
 		Map<Long, String> siteNames = DisplayContextUtil.getSiteNames(
 			_ctCollection.getCtCollectionId(), showHideable, _themeDisplay);
@@ -295,8 +316,8 @@ public class ViewChangesDisplayContext {
 
 		return ListUtil.fromArray(
 			new ChangeTypeSelectionFDSFilter(),
-			new SiteSelectionFDSFilter(siteNames),
-			new TypeNameSelectionFDSFilter(typeNames),
+			new SiteSelectionFDSFilter(siteNames, selectedSiteNames),
+			new TypeNameSelectionFDSFilter(typeNames, selectedTypeNames),
 			new UserSelectionFDSFilter(usersJSONObject.toMap()));
 	}
 
@@ -324,9 +345,10 @@ public class ViewChangesDisplayContext {
 		JSONArray itemsOverviewJSONArray = JSONFactoryUtil.createJSONArray();
 
 		for (Map.Entry<Long, String> siteName : siteNames.entrySet()) {
-			List<String> typeNames = DisplayContextUtil.getTypeNamesBySite(
-				_ctCollection.getCtCollectionId(), siteName.getKey(),
-				showHideable, _themeDisplay);
+			List<Map<String, String>> typeNames =
+				DisplayContextUtil.getTypeNamesBySite(
+					_ctCollection.getCtCollectionId(), siteName.getKey(),
+					showHideable, _themeDisplay);
 
 			if (typeNames.isEmpty()) {
 				continue;
@@ -334,9 +356,11 @@ public class ViewChangesDisplayContext {
 
 			Map<String, Integer> typeNameCounts = new HashMap<>();
 
-			for (String typeName : typeNames) {
+			for (Map<String, String> typeName : typeNames) {
 				typeNameCounts.put(
-					typeName, typeNameCounts.getOrDefault(typeName, 0) + 1);
+					typeName.get("typeName"),
+					typeNameCounts.getOrDefault(typeName.get("typeName"), 0) +
+						1);
 			}
 
 			JSONArray typeNameAndCountJSONArray =
@@ -344,8 +368,40 @@ public class ViewChangesDisplayContext {
 
 			for (Map.Entry<String, Integer> entry : typeNameCounts.entrySet()) {
 				typeNameAndCountJSONArray.put(
-					StringBundler.concat(
-						entry.getKey(), "+", entry.getValue()));
+					JSONUtil.put(
+						"href",
+						PortletURLBuilder.createRenderURL(
+							_renderResponse
+						).setMVCRenderCommandName(
+							"/change_tracking/view_changes"
+						).setParameter(
+							"ctCollectionId", _ctCollection.getCtCollectionId()
+						).setParameter(
+							"groupId", siteName.getKey()
+						).setParameter(
+							"modelClassNameId",
+							() -> {
+								for (Map<String, String> type : typeNames) {
+									if (Objects.equals(
+											entry.getKey(),
+											type.get("typeName"))) {
+
+										return type.get("modelClassNameId");
+									}
+								}
+
+								return null;
+							}
+						).setParameter(
+							"showHideable", showHideable
+						).setParameter(
+							"typeName", entry.getKey()
+						).buildString()
+					).put(
+						"label",
+						StringBundler.concat(
+							entry.getKey(), " (", entry.getValue(), ") ")
+					));
 			}
 
 			itemsOverviewJSONArray.put(
