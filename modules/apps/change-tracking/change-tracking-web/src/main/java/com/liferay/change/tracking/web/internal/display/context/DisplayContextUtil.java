@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.search.filter.ExistsFilter;
 import com.liferay.portal.kernel.search.generic.BooleanQueryImpl;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
@@ -162,11 +163,9 @@ public class DisplayContextUtil {
 		return typeNames;
 	}
 
-	public static List<String> getTypeNamesBySite(
+	public static List<Map<String, String>> getTypeNamesBySite(
 		long ctCollectionId, long groupId, boolean showHideable,
 		ThemeDisplay themeDisplay) {
-
-		List<String> typeNames = new ArrayList<>();
 
 		Searcher searcher = _searcherSnapshot.get();
 		Sorts sorts = _sortsSnapshot.get();
@@ -183,7 +182,7 @@ public class DisplayContextUtil {
 			).emptySearchEnabled(
 				true
 			).fields(
-				"typeName"
+				"modelClassNameId", "typeName"
 			).sorts(
 				sorts.field(
 					Field.getSortableFieldName(
@@ -225,8 +224,16 @@ public class DisplayContextUtil {
 		SearchResponse searchResponse = searcher.search(
 			searchRequestBuilder.build());
 
+		List<Map<String, String>> typeNames = new ArrayList<>();
+
 		for (Document document : searchResponse.getDocuments()) {
-			typeNames.add(document.getString("typeName"));
+			typeNames.add(
+				HashMapBuilder.put(
+					"modelClassNameId",
+					String.valueOf(document.getLong("modelClassNameId"))
+				).put(
+					"typeName", document.getString("typeName")
+				).build());
 		}
 
 		return typeNames;
