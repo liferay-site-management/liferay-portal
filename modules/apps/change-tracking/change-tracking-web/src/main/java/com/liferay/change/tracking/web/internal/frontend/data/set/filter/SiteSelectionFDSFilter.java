@@ -51,9 +51,15 @@ public class SiteSelectionFDSFilter extends BaseSelectionFDSFilter {
 			new ArrayList<>();
 
 		for (Map.Entry<Long, String> entry : _selectedSiteNamesMap.entrySet()) {
-			selectionFDSFilterItems.add(
-				new SelectionFDSFilterItem(
-					entry.getValue(), String.valueOf(entry.getKey())));
+			if (_siteNamesMap.entrySet(
+				).contains(
+					entry
+				)) {
+
+				selectionFDSFilterItems.add(
+					new SelectionFDSFilterItem(
+						entry.getValue(), String.valueOf(entry.getKey())));
+			}
 		}
 
 		return HashMapBuilder.<String, Object>put(
