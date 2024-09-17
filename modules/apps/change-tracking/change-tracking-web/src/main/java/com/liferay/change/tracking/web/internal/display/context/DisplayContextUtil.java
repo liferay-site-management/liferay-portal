@@ -29,8 +29,8 @@ import com.liferay.portal.kernel.search.filter.ExistsFilter;
 import com.liferay.portal.kernel.search.generic.BooleanQueryImpl;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
@@ -39,7 +39,6 @@ import com.liferay.portal.search.searcher.Searcher;
 import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.sort.Sorts;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -163,9 +162,10 @@ public class DisplayContextUtil {
 		return typeNames;
 	}
 
-	public static List<Map<String, String>> getTypeNamesBySite(
-		long ctCollectionId, long groupId, boolean showHideable,
-		ThemeDisplay themeDisplay) {
+	public static Map<Long, ObjectValuePair<String, Integer>>
+		getTypeNamesBySite(
+			long ctCollectionId, long groupId, boolean showHideable,
+			ThemeDisplay themeDisplay) {
 
 		Searcher searcher = _searcherSnapshot.get();
 		Sorts sorts = _sortsSnapshot.get();
@@ -224,16 +224,21 @@ public class DisplayContextUtil {
 		SearchResponse searchResponse = searcher.search(
 			searchRequestBuilder.build());
 
-		List<Map<String, String>> typeNames = new ArrayList<>();
+		Map<Long, ObjectValuePair<String, Integer>> typeNames =
+			new LinkedHashMap<>();
+		Map<Long, Integer> totalCount = new LinkedHashMap<>();
 
 		for (Document document : searchResponse.getDocuments()) {
-			typeNames.add(
-				HashMapBuilder.put(
-					"modelClassNameId",
-					String.valueOf(document.getLong("modelClassNameId"))
-				).put(
-					"typeName", document.getString("typeName")
-				).build());
+			int count = totalCount.getOrDefault(
+				document.getLong("modelClassNameId"), 0);
+
+			count++;
+
+			totalCount.put(document.getLong("modelClassNameId"), count);
+
+			typeNames.put(
+				document.getLong("modelClassNameId"),
+				new ObjectValuePair(document.getString("typeName"), count));
 		}
 
 		return typeNames;
