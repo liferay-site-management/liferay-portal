@@ -140,3 +140,37 @@ test('LPD-22759 Allow users to view the entire history of an entity in a popup m
 		}
 	}
 });
+
+test('LPD-22768 Add options to interact with the same entity in other publications via a popup modal', async ({
+	journalPage,
+	page,
+}) => {
+	await goToPublicationTimelineModal(page, journalPage);
+
+	const entityHistoryModalLocator = getEntityHistoryModalLocator(page);
+
+	const firstDropdown = entityHistoryModalLocator
+		.locator('.item-actions .dropdown svg.lexicon-icon-ellipsis-v')
+		.first();
+
+	await firstDropdown.waitFor();
+	await firstDropdown.click();
+
+	await expect(
+		entityHistoryModalLocator.getByRole('menuitem', {name: 'Discard'})
+	).toBeVisible();
+
+	await expect(
+		entityHistoryModalLocator.getByRole('menuitem', {
+			name: 'Edit in Publication',
+		})
+	).toBeVisible();
+
+	await expect(
+		entityHistoryModalLocator.getByRole('menuitem', {name: 'Move Changes'})
+	).toBeVisible();
+
+	await expect(
+		entityHistoryModalLocator.getByRole('menuitem', {name: 'Review Change'})
+	).toBeVisible();
+});
