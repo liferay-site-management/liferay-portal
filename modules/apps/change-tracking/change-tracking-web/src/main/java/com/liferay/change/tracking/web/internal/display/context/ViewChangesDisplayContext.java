@@ -295,19 +295,21 @@ public class ViewChangesDisplayContext {
 			selectedSiteNames.put(groupId, group.getDescriptiveName());
 		}
 
-		Map<Long, String> selectedTypeNames = new HashMap<>();
-		String typeName = ParamUtil.getString(_renderRequest, "typeName");
-
-		if (!typeName.isEmpty()) {
-			selectedTypeNames.put(
-				ParamUtil.getLong(_renderRequest, "modelClassNameId"),
-				typeName);
-		}
-
 		Map<Long, String> siteNames = DisplayContextUtil.getSiteNames(
 			_ctCollection.getCtCollectionId(), showHideable, _themeDisplay);
 		Map<Long, String> typeNames = DisplayContextUtil.getTypeNames(
 			_ctCollection.getCtCollectionId(), showHideable, _themeDisplay);
+
+		Map<Long, String> selectedTypeNames = new HashMap<>();
+
+		for (Map.Entry<Long, String> typeName : typeNames.entrySet()) {
+			long modelClassNameId = ParamUtil.getLong(
+				_renderRequest, "modelClassNameId");
+
+			if (modelClassNameId == typeName.getKey()) {
+				selectedTypeNames.put(modelClassNameId, typeName.getValue());
+			}
+		}
 
 		JSONObject usersJSONObject = DisplayContextUtil.getUserInfoJSONObject(
 			CTEntryTable.INSTANCE.userId.eq(UserTable.INSTANCE.userId),
