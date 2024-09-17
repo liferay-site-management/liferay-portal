@@ -75,6 +75,7 @@ import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -92,6 +93,7 @@ import java.io.Serializable;
 
 import java.text.Format;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -102,7 +104,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 
@@ -345,7 +346,7 @@ public class ViewChangesDisplayContext {
 		JSONArray itemsOverviewJSONArray = JSONFactoryUtil.createJSONArray();
 
 		for (Map.Entry<Long, String> siteName : siteNames.entrySet()) {
-			List<Map<String, String>> typeNames =
+			Map<Long, ObjectValuePair<String, Integer>> typeNames =
 				DisplayContextUtil.getTypeNamesBySite(
 					_ctCollection.getCtCollectionId(), siteName.getKey(),
 					showHideable, _themeDisplay);
@@ -354,19 +355,16 @@ public class ViewChangesDisplayContext {
 				continue;
 			}
 
-			Map<String, Integer> typeNameCounts = new HashMap<>();
-
-			for (Map<String, String> typeName : typeNames) {
-				typeNameCounts.put(
-					typeName.get("typeName"),
-					typeNameCounts.getOrDefault(typeName.get("typeName"), 0) +
-						1);
-			}
-
 			JSONArray typeNameAndCountJSONArray =
 				JSONFactoryUtil.createJSONArray();
 
-			for (Map.Entry<String, Integer> entry : typeNameCounts.entrySet()) {
+			List<Integer> siteCount = new ArrayList<>();
+
+			for (Map.Entry<Long, ObjectValuePair<String, Integer>> entry :
+					typeNames.entrySet()) {
+
+				ObjectValuePair<String, Integer> value = entry.getValue();
+
 				typeNameAndCountJSONArray.put(
 					JSONUtil.put(
 						"href",
@@ -379,34 +377,31 @@ public class ViewChangesDisplayContext {
 						).setParameter(
 							"groupId", siteName.getKey()
 						).setParameter(
-							"modelClassNameId",
-							() -> {
-								for (Map<String, String> type : typeNames) {
-									if (Objects.equals(
-											entry.getKey(),
-											type.get("typeName"))) {
-
-										return type.get("modelClassNameId");
-									}
-								}
-
-								return null;
-							}
+							"modelClassNameId", entry.getKey()
 						).setParameter(
 							"showHideable", showHideable
-						).setParameter(
-							"typeName", entry.getKey()
 						).buildString()
 					).put(
 						"label",
 						StringBundler.concat(
-							entry.getKey(), " (", entry.getValue(), ") ")
+							value.getKey(), " (", value.getValue(), ") ")
 					));
+
+				siteCount.add(value.getValue());
 			}
 
 			itemsOverviewJSONArray.put(
 				JSONUtil.put(
-					"siteCount", typeNames.size()
+					"siteCount",
+					() -> {
+						int count = 0;
+
+						for (int i : siteCount) {
+							count += i;
+						}
+
+						return count;
+					}
 				).put(
 					"siteName", siteName.getValue()
 				).put(
