@@ -31,8 +31,6 @@ export default function TimelineDropdownMenu({
 	const dropdownItems = [];
 
 	if (Liferay.FeatureFlags['LPD-20556']) {
-		const ctCollectionId = timelineItem.id;
-
 		const createMVCRenderCommandURL = (
 			mvcRenderCommandName,
 			additionalParams = {}
@@ -40,7 +38,7 @@ export default function TimelineDropdownMenu({
 			return createPortletURL(
 				themeDisplay.getLayoutRelativeControlPanelURL(),
 				{
-					ctCollectionId,
+					ctCollectionId: timelineItem.ctCollectionId,
 					mvcRenderCommandName,
 					p_p_id: getPortletId(namespace),
 					...additionalParams,
@@ -57,7 +55,7 @@ export default function TimelineDropdownMenu({
 		);
 
 		const checkoutURL = createPortletURL(timelineEditURL, {
-			ctCollectionId,
+			ctCollectionId: timelineItem.ctCollectionId,
 		}).toString();
 
 		const moveURL = createMVCRenderCommandURL(
@@ -70,27 +68,23 @@ export default function TimelineDropdownMenu({
 		const viewURL = createMVCRenderCommandURL(
 			'/change_tracking/view_change',
 			{
-				ctEntryId: timelineItem.ctEntryId,
+				ctEntryId: timelineItem.id,
 			}
 		);
 
-		if (
-			timelineItem.status.code === WORKFLOW_STATUS_DRAFT &&
-			!!timelineItem.actions.update &&
-			checkoutURL
-		) {
+		if (!!timelineItem.actions.update && checkoutURL) {
 			dropdownItems.push({
 				action: true,
 				href: checkoutURL,
 				label: sub(
 					Liferay.Language.get('edit-in-x'),
-					timelineItem.name
+					timelineItem.ctCollectionName
 				),
 				symbolLeft: 'pencil',
 			});
 		}
 
-		if (viewURL) {
+		if (!!timelineItem.actions.get && viewURL) {
 			dropdownItems.push({
 				href: viewURL,
 				label: Liferay.Language.get('review-change'),
@@ -98,12 +92,7 @@ export default function TimelineDropdownMenu({
 			});
 		}
 
-		if (
-			(timelineItem.status.code === WORKFLOW_STATUS_DRAFT ||
-				timelineItem.status.code === WORKFLOW_STATUS_EXPIRED) &&
-			!!timelineItem.actions.update &&
-			moveURL
-		) {
+		if (!!timelineItem.actions['move-changes'] && moveURL) {
 			dropdownItems.push({
 				href: moveURL,
 				label: Liferay.Language.get('move-changes'),
@@ -111,11 +100,7 @@ export default function TimelineDropdownMenu({
 			});
 		}
 
-		if (
-			timelineItem.status.code === WORKFLOW_STATUS_DRAFT &&
-			!!timelineItem.actions.update &&
-			discardURL
-		) {
+		if (!!timelineItem.actions['view-discard'] && discardURL) {
 			dropdownItems.push({
 				href: discardURL,
 				label: Liferay.Language.get('discard'),

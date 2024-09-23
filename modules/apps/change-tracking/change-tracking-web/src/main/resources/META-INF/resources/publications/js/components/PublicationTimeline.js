@@ -182,23 +182,37 @@ const PublicationTimeline = ({
 			<ClayDropDown.Item key={timelineItem.id}>
 				<ClayLayout.ContentRow className="c-mb-1">
 					<ClayLayout.ContentCol expand>
+						{timelineClassPK == 0 ? (
+							<div className="text-weight-bold">
+								{timelineItem.title}
+							</div>
+						) : null}
+
 						<div className="align-items-center d-flex">
-							<span className="c-pr-2">{timelineItem.name}</span>
+							<span className="c-pr-2">
+								{Liferay.FeatureFlags['LPD-20556']
+									? timelineItem.ctCollectionName
+									: timelineItem.name}
+							</span>
 
-							<WorkflowStatusLabel
-								workflowStatus={timelineItem.status.code}
-							/>
+							{Liferay.FeatureFlags['LPD-20556'] ? (
+								<WorkflowStatusLabel
+									workflowStatus={
+										timelineItem.ctCollectionStatus.code
+									}
+								/>
+							) : (
+								<WorkflowStatusLabel
+									workflowStatus={timelineItem.status.code}
+								/>
+							)}
 						</div>
 
-						<div className="text-secondary">
-							{timelineItem.description}
-						</div>
-
-						<div className="text-secondary">
-							{Liferay.FeatureFlags['LPD-20556']
-								? timelineItem.ctEntryStatusMessage
-								: timelineItem.statusMessage}
-						</div>
+						{timelineItem.statusMessage ? (
+							<div className="text-secondary">
+								{timelineItem.statusMessage}
+							</div>
+						) : null}
 					</ClayLayout.ContentCol>
 
 					<ClayLayout.ContentCol>
@@ -283,31 +297,8 @@ const PublicationTimeline = ({
 			.then((response) => {
 				return response.json();
 			})
-			.then(async (jsonResponse) => {
-				const tempTimelineItems = jsonResponse.items;
-
-				for (let i = 0; i < tempTimelineItems.length; i++) {
-					await fetch(
-						`/o/change-tracking-rest/v1.0/ct-collections/${tempTimelineItems[i].id}/ct-entries/by-model-class-name-id/${timelineClassNameId}/by-model-class-pk/${timelineClassPK}`,
-						{method: 'GET'}
-					)
-						.then((response) => {
-							return response.json();
-						})
-						.then((jsonResponse) => {
-							tempTimelineItems[i].ctEntryChangeType =
-								jsonResponse.changeType;
-							tempTimelineItems[i].ctEntryDateModified =
-								jsonResponse.dateModified;
-							tempTimelineItems[i].ctEntryId = jsonResponse.id;
-							tempTimelineItems[i].ctEntryStatusMessage =
-								jsonResponse.statusMessage;
-							tempTimelineItems[i].ctEntryUser =
-								jsonResponse.ownerName;
-						});
-				}
-
-				setTimelineItems(tempTimelineItems);
+			.then((jsonResponse) => {
+				setTimelineItems(jsonResponse.items);
 				setLoading(false);
 			});
 	}, [timelineClassNameId, timelineClassPK, timelineItems, timelineItemsURL]);
