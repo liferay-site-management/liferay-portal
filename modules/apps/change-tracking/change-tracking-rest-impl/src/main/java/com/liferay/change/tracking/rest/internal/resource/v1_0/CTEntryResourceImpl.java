@@ -10,6 +10,7 @@ import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.rest.dto.v1_0.CTEntry;
 import com.liferay.change.tracking.rest.internal.odata.entity.v1_0.CTEntryEntityModel;
 import com.liferay.change.tracking.rest.resource.v1_0.CTEntryResource;
+import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.spi.display.CTDisplayRendererRegistry;
 import com.liferay.change.tracking.spi.history.CTCollectionHistoryProvider;
@@ -207,6 +208,9 @@ public class CTEntryResourceImpl extends BaseCTEntryResourceImpl {
 				com.liferay.change.tracking.model.CTEntry ctEntry)
 		throws Exception {
 
+		CTCollection ctCollection = _ctCollectionLocalService.getCTCollection(
+			ctEntry.getCtCollectionId());
+
 		return new DefaultDTOConverterContext(
 			contextAcceptLanguage.isAcceptAllLanguages(),
 			HashMapBuilder.put(
@@ -230,7 +234,11 @@ public class CTEntryResourceImpl extends BaseCTEntryResourceImpl {
 							contextCompany.getCompanyId(), "LPS-171364") ||
 						(model == null) ||
 						_ctDisplayRendererRegistry.isHideable(
-							model, ctEntry.getModelClassNameId())) {
+							model, ctEntry.getModelClassNameId()) ||
+						(ctCollection.getStatus() !=
+							WorkflowConstants.STATUS_DRAFT) ||
+						(ctCollection.getStatus() !=
+							WorkflowConstants.STATUS_EXPIRED)) {
 
 						return null;
 					}
@@ -241,14 +249,30 @@ public class CTEntryResourceImpl extends BaseCTEntryResourceImpl {
 				}
 			).put(
 				"update",
-				addAction(
-					ActionKeys.UPDATE, ctEntry.getCtCollectionId(),
-					"getCTEntry", _ctCollectionModelResourcePermission)
+				() -> {
+					if (ctCollection.getStatus() !=
+							WorkflowConstants.STATUS_DRAFT) {
+
+						return null;
+					}
+
+					return addAction(
+						ActionKeys.UPDATE, ctEntry.getCtCollectionId(),
+						"getCTEntry", _ctCollectionModelResourcePermission);
+				}
 			).put(
 				"view-discard",
-				addAction(
-					ActionKeys.UPDATE, ctEntry.getCtCollectionId(),
-					"getCTEntry", _ctCollectionModelResourcePermission)
+				() -> {
+					if (ctCollection.getStatus() !=
+							WorkflowConstants.STATUS_DRAFT) {
+
+						return null;
+					}
+
+					return addAction(
+						ActionKeys.UPDATE, ctEntry.getCtCollectionId(),
+						"getCTEntry", _ctCollectionModelResourcePermission);
+				}
 			).build(),
 			null, contextHttpServletRequest, ctEntry.getCtCollectionId(),
 			contextAcceptLanguage.getPreferredLocale(), contextUriInfo,
@@ -268,6 +292,9 @@ public class CTEntryResourceImpl extends BaseCTEntryResourceImpl {
 	@Reference
 	private CTCollectionHistoryProviderRegistry
 		_ctCollectionHistoryProviderRegistry;
+
+	@Reference
+	private CTCollectionLocalService _ctCollectionLocalService;
 
 	@Reference(
 		policy = ReferencePolicy.DYNAMIC,
