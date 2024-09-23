@@ -236,14 +236,19 @@ public class CTEntryResourceImpl extends BaseCTEntryResourceImpl {
 					}
 
 					return addAction(
-						ActionKeys.VIEW, ctEntry.getCtCollectionId(),
+						ActionKeys.UPDATE, ctEntry.getCtCollectionId(),
 						"getCTEntry", _ctCollectionModelResourcePermission);
 				}
 			).put(
+				"update",
+				addAction(
+					ActionKeys.UPDATE, ctEntry.getCtCollectionId(),
+					"getCTEntry", _ctCollectionModelResourcePermission)
+			).put(
 				"view-discard",
 				addAction(
-					ActionKeys.VIEW, ctEntry.getCtCollectionId(), "getCTEntry",
-					_ctCollectionModelResourcePermission)
+					ActionKeys.UPDATE, ctEntry.getCtCollectionId(),
+					"getCTEntry", _ctCollectionModelResourcePermission)
 			).build(),
 			null, contextHttpServletRequest, ctEntry.getCtCollectionId(),
 			contextAcceptLanguage.getPreferredLocale(), contextUriInfo,
