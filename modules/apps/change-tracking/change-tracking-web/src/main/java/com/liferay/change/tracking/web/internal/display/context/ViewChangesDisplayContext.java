@@ -48,7 +48,6 @@ import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.sql.CTSQLModeThreadLocal;
 import com.liferay.portal.kernel.dao.orm.ORMException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -584,9 +583,8 @@ public class ViewChangesDisplayContext {
 		).put(
 			"moveChangesURL",
 			() -> {
-				if (!FeatureFlagManagerUtil.isEnabled("LPS-171364") ||
-					(_ctCollection.getStatus() !=
-						WorkflowConstants.STATUS_DRAFT)) {
+				if (_ctCollection.getStatus() !=
+						WorkflowConstants.STATUS_DRAFT) {
 
 					return null;
 				}
