@@ -82,8 +82,10 @@ public class CTEntryModelDocumentContributor
 			ctEntry.getCtCollectionId());
 
 		if (ctCollection != null) {
-			document.addKeyword("ctCollectionName", ctCollection.getName());
-			document.addKeyword("ctCollectionStatus", ctCollection.getStatus());
+			document.addKeywordSortable(
+				"ctCollectionName", ctCollection.getName());
+			document.addNumberSortable(
+				"ctCollectionStatus", ctCollection.getStatus());
 
 			if ((ctCollection.getStatus() ==
 					WorkflowConstants.STATUS_APPROVED) ||
@@ -101,7 +103,7 @@ public class CTEntryModelDocumentContributor
 					document.addKeyword(
 						"ctCollectionStatusUserId",
 						ctCollectionStatusUser.getUserId());
-					document.addText(
+					document.addKeywordSortable(
 						"ctCollectionStatusUserName",
 						ctCollectionStatusUser.getFullName());
 				}
