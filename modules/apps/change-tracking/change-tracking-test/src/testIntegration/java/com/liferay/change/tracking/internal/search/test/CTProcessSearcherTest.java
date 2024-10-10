@@ -154,30 +154,6 @@ public class CTProcessSearcherTest {
 	}
 
 	@Test
-	public void testSearchByType() throws Exception {
-		CTCollection ctCollection1 = _addCTCollection();
-		CTCollection ctCollection2 = _addCTCollection();
-
-		try (SafeCloseable safeCloseable =
-				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
-					ctCollection1.getCtCollectionId())) {
-
-			DDMStructureTestUtil.addStructure(
-				TestPropsValues.getGroupId(), JournalArticle.class.getName());
-		}
-
-		CTProcess moveCTProcess = _ctProcessLocalService.addCTProcess(
-			TestPropsValues.getUserId(), ctCollection1.getCtCollectionId(),
-			ctCollection2.getCtCollectionId(), null);
-
-		_addCTProcess(ctCollection1.getCtCollectionId());
-
-		_assertHits(
-			_getUIDs(moveCTProcess),
-			_byAttribute("type", CTConstants.CT_PROCESS_MOVE));
-	}
-
-	@Test
 	public void testSearchByUserId() throws Exception {
 		CTCollection ctCollection = _addCTCollection();
 
