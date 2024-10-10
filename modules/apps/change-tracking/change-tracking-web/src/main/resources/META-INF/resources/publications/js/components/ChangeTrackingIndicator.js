@@ -711,7 +711,7 @@ export default function ChangeTrackingIndicator({
 	);
 
 	const renderTimeline = () => {
-		if (viewTimelineHistoryURL !== null && timelineItemsURL !== null) {
+		if (!!viewTimelineHistoryURL && !!timelineItemsURL) {
 			return (
 				<ClayDropDown
 					alignmentPosition={Align.BottomCenter}
