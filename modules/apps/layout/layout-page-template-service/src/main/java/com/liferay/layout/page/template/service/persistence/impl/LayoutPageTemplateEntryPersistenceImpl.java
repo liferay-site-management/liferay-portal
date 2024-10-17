@@ -29423,7 +29423,7 @@ public class LayoutPageTemplateEntryPersistenceImpl
 		ctStrictColumnNames.add("layoutPrototypeId");
 		ctStrictColumnNames.add("plid");
 		ctMergeColumnNames.add("lastPublishDate");
-		ctStrictColumnNames.add("status");
+		ctMergeColumnNames.add("status");
 		ctMergeColumnNames.add("statusByUserId");
 		ctMergeColumnNames.add("statusByUserName");
 		ctMergeColumnNames.add("statusDate");

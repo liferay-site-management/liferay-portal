@@ -15584,10 +15584,10 @@ public class DLFolderPersistenceImpl
 		ctStrictColumnNames.add("hidden_");
 		ctStrictColumnNames.add("restrictionType");
 		ctStrictColumnNames.add("lastPublishDate");
-		ctStrictColumnNames.add("status");
-		ctStrictColumnNames.add("statusByUserId");
-		ctStrictColumnNames.add("statusByUserName");
-		ctStrictColumnNames.add("statusDate");
+		ctMergeColumnNames.add("status");
+		ctMergeColumnNames.add("statusByUserId");
+		ctMergeColumnNames.add("statusByUserName");
+		ctMergeColumnNames.add("statusDate");
 		ctStrictColumnNames.add("fileEntryTypes");
 
 		_ctColumnNamesMap.put(

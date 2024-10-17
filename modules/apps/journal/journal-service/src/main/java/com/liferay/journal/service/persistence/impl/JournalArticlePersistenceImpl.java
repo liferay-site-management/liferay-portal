@@ -34281,7 +34281,7 @@ public class JournalArticlePersistenceImpl
 		ctStrictColumnNames.add("smallImageSource");
 		ctStrictColumnNames.add("smallImageURL");
 		ctStrictColumnNames.add("lastPublishDate");
-		ctStrictColumnNames.add("status");
+		ctMergeColumnNames.add("status");
 		ctMergeColumnNames.add("statusByUserId");
 		ctMergeColumnNames.add("statusByUserName");
 		ctMergeColumnNames.add("statusDate");

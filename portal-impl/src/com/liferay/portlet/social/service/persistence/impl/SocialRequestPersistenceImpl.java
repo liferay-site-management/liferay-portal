@@ -7122,6 +7122,7 @@ public class SocialRequestPersistenceImpl
 
 	static {
 		Set<String> ctControlColumnNames = new HashSet<String>();
+		Set<String> ctMergeColumnNames = new HashSet<String>();
 		Set<String> ctStrictColumnNames = new HashSet<String>();
 
 		ctControlColumnNames.add("mvccVersion");
@@ -7137,10 +7138,11 @@ public class SocialRequestPersistenceImpl
 		ctStrictColumnNames.add("type_");
 		ctStrictColumnNames.add("extraData");
 		ctStrictColumnNames.add("receiverUserId");
-		ctStrictColumnNames.add("status");
+		ctMergeColumnNames.add("status");
 
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.CONTROL, ctControlColumnNames);
+		_ctColumnNamesMap.put(CTColumnResolutionType.MERGE, ctMergeColumnNames);
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.PK, Collections.singleton("requestId"));
 		_ctColumnNamesMap.put(

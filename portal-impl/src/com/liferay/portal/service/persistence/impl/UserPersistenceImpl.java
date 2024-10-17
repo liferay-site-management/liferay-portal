@@ -10975,6 +10975,7 @@ public class UserPersistenceImpl
 	static {
 		Set<String> ctControlColumnNames = new HashSet<String>();
 		Set<String> ctIgnoreColumnNames = new HashSet<String>();
+		Set<String> ctMergeColumnNames = new HashSet<String>();
 		Set<String> ctStrictColumnNames = new HashSet<String>();
 
 		ctControlColumnNames.add("mvccVersion");
@@ -11019,7 +11020,7 @@ public class UserPersistenceImpl
 		ctStrictColumnNames.add("agreedToTermsOfUse");
 		ctStrictColumnNames.add("emailAddressVerified");
 		ctStrictColumnNames.add("type_");
-		ctStrictColumnNames.add("status");
+		ctMergeColumnNames.add("status");
 		ctStrictColumnNames.add("groups_");
 		ctStrictColumnNames.add("orgs");
 		ctStrictColumnNames.add("roles");
@@ -11030,6 +11031,7 @@ public class UserPersistenceImpl
 			CTColumnResolutionType.CONTROL, ctControlColumnNames);
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.IGNORE, ctIgnoreColumnNames);
+		_ctColumnNamesMap.put(CTColumnResolutionType.MERGE, ctMergeColumnNames);
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.PK, Collections.singleton("userId"));
 		_ctColumnNamesMap.put(

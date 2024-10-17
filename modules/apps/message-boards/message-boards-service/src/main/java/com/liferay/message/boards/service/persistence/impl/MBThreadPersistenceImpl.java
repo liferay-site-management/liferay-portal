@@ -14015,9 +14015,9 @@ public class MBThreadPersistenceImpl
 		ctStrictColumnNames.add("priority");
 		ctStrictColumnNames.add("question");
 		ctStrictColumnNames.add("lastPublishDate");
-		ctStrictColumnNames.add("status");
-		ctStrictColumnNames.add("statusByUserId");
-		ctStrictColumnNames.add("statusByUserName");
+		ctMergeColumnNames.add("status");
+		ctMergeColumnNames.add("statusByUserId");
+		ctMergeColumnNames.add("statusByUserName");
 		ctMergeColumnNames.add("statusDate");
 
 		_ctColumnNamesMap.put(

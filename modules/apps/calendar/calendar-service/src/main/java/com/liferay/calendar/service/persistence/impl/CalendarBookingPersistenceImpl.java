@@ -6379,9 +6379,9 @@ public class CalendarBookingPersistenceImpl
 		ctStrictColumnNames.add("secondReminder");
 		ctStrictColumnNames.add("secondReminderType");
 		ctStrictColumnNames.add("lastPublishDate");
-		ctStrictColumnNames.add("status");
-		ctStrictColumnNames.add("statusByUserId");
-		ctStrictColumnNames.add("statusByUserName");
+		ctMergeColumnNames.add("status");
+		ctMergeColumnNames.add("statusByUserId");
+		ctMergeColumnNames.add("statusByUserName");
 		ctMergeColumnNames.add("statusDate");
 
 		_ctColumnNamesMap.put(
