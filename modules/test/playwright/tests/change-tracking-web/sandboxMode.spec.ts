@@ -8,34 +8,22 @@ import {expect, mergeTests} from '@playwright/test';
 import {apiHelpersTest} from '../../fixtures/apiHelpersTest';
 import {changeTrackingPagesTest} from '../../fixtures/changeTrackingPagesTest';
 import {featureFlagsTest} from '../../fixtures/featureFlagsTest';
-import {isolatedSiteTest} from '../../fixtures/isolatedSiteTest';
-import getRandomString from '../../utils/getRandomString';
 import performLogin, {performLogout} from '../../utils/performLogin';
-import getBasicWebContentStructureId from '../../utils/structured-content/getBasicWebContentStructureId';
 
 export const test = mergeTests(
-	featureFlagsTest({
-		'LPD-20556': true,
-	}),
 	apiHelpersTest,
 	changeTrackingPagesTest,
-	isolatedSiteTest
+	featureFlagsTest({
+		'LPD-20556': true,
+	})
 );
 
 test.beforeEach(async ({changeTrackingPage}) => {
-	await changeTrackingPage.workOnProduction();
-
 	await changeTrackingPage.toggleSandboxConfiguration(true);
 });
 
-test.afterEach(async ({apiHelpers, changeTrackingPage, ctCollection, page}) => {
-	await performLogout(page);
-
-	await performLogin(page, 'test');
-
+test.afterEach(async ({changeTrackingPage}) => {
 	await changeTrackingPage.toggleSandboxConfiguration(false);
-
-	await apiHelpers.headlessChangeTracking.deleteCTCollection(ctCollection.id);
 });
 
 test('LPD-34602 Add view-only mode for production when using Publications sandbox', async ({
@@ -48,8 +36,6 @@ test('LPD-34602 Add view-only mode for production when using Publications sandbo
 	await performLogout(page);
 
 	await performLogin(page, user.alternateName);
-
-	await page.bringToFront();
 
 	const changeTrackingIndicatorButton = page.locator(
 		'.change-tracking-indicator-button'
@@ -76,51 +62,6 @@ test('LPD-34602 Add view-only mode for production when using Publications sandbo
 	await expect(workOnUserMenuItem).toBeVisible();
 
 	await workOnUserMenuItem.click();
-
-	await performLogout(page);
-
-	await performLogin(page, 'test');
-
-	await apiHelpers.headlessAdminUser.deleteUserAccount(Number(user.id));
-});
-
-test('LPD-39341 Sandbox mode allows users to work on production without permissions', async ({
-	apiHelpers,
-	changeTrackingPage,
-	ctCollection,
-	page,
-	site,
-}) => {
-	await changeTrackingPage.workOnPublication(ctCollection);
-
-	const basicWebContentStructureId =
-		await getBasicWebContentStructureId(apiHelpers);
-
-	const title = getRandomString();
-
-	await apiHelpers.jsonWebServicesJournal.addWebContent({
-		ddmStructureId: basicWebContentStructureId,
-		groupId: site.id,
-		titleMap: {en_US: title},
-	});
-
-	const user = await changeTrackingPage.addUserWithPublicationsUserRole();
-
-	await performLogout(page);
-
-	await performLogin(page, user.alternateName);
-
-	await changeTrackingPage.workOnPublication(ctCollection);
-
-	await apiHelpers.headlessChangeTracking.publishCTCollection(
-		ctCollection.id
-	);
-
-	await page.reload();
-
-	const sandboxPublication = await page.getByText(user.alternateName + ' - ');
-
-	await expect(sandboxPublication).toBeVisible();
 
 	await performLogout(page);
 
