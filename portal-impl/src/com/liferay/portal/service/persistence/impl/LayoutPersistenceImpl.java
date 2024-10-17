@@ -20423,8 +20423,8 @@ public class LayoutPersistenceImpl
 		ctStrictColumnNames.add("createDate");
 		ctIgnoreColumnNames.add("modifiedDate");
 		ctMergeColumnNames.add("parentPlid");
-		ctStrictColumnNames.add("privateLayout");
-		ctStrictColumnNames.add("layoutId");
+		ctMergeColumnNames.add("privateLayout");
+		ctMergeColumnNames.add("layoutId");
 		ctMergeColumnNames.add("parentLayoutId");
 		ctStrictColumnNames.add("classNameId");
 		ctStrictColumnNames.add("classPK");
@@ -20433,10 +20433,10 @@ public class LayoutPersistenceImpl
 		ctMergeColumnNames.add("description");
 		ctMergeColumnNames.add("keywords");
 		ctMergeColumnNames.add("robots");
-		ctStrictColumnNames.add("type_");
+		ctMergeColumnNames.add("type_");
 		ctMergeColumnNames.add("typeSettings");
 		ctMergeColumnNames.add("hidden_");
-		ctStrictColumnNames.add("system_");
+		ctMergeColumnNames.add("system_");
 		ctMergeColumnNames.add("friendlyURL");
 		ctMergeColumnNames.add("iconImageId");
 		ctMergeColumnNames.add("themeId");
@@ -20445,10 +20445,10 @@ public class LayoutPersistenceImpl
 		ctMergeColumnNames.add("css");
 		ctMergeColumnNames.add("priority");
 		ctMergeColumnNames.add("faviconFileEntryId");
-		ctStrictColumnNames.add("masterLayoutPlid");
-		ctStrictColumnNames.add("layoutPrototypeUuid");
-		ctStrictColumnNames.add("layoutPrototypeLinkEnabled");
-		ctStrictColumnNames.add("sourcePrototypeLayoutUuid");
+		ctMergeColumnNames.add("masterLayoutPlid");
+		ctMergeColumnNames.add("layoutPrototypeUuid");
+		ctMergeColumnNames.add("layoutPrototypeLinkEnabled");
+		ctMergeColumnNames.add("sourcePrototypeLayoutUuid");
 		ctMergeColumnNames.add("publishDate");
 		ctMergeColumnNames.add("lastPublishDate");
 		ctMergeColumnNames.add("status");

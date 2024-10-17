@@ -2553,6 +2553,7 @@ public class WikiPageResourcePersistenceImpl
 
 	static {
 		Set<String> ctControlColumnNames = new HashSet<String>();
+		Set<String> ctMergeColumnNames = new HashSet<String>();
 		Set<String> ctStrictColumnNames = new HashSet<String>();
 
 		ctControlColumnNames.add("mvccVersion");
@@ -2560,11 +2561,12 @@ public class WikiPageResourcePersistenceImpl
 		ctStrictColumnNames.add("uuid_");
 		ctStrictColumnNames.add("groupId");
 		ctStrictColumnNames.add("companyId");
-		ctStrictColumnNames.add("nodeId");
-		ctStrictColumnNames.add("title");
+		ctMergeColumnNames.add("nodeId");
+		ctMergeColumnNames.add("title");
 
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.CONTROL, ctControlColumnNames);
+		_ctColumnNamesMap.put(CTColumnResolutionType.MERGE, ctMergeColumnNames);
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.PK,
 			Collections.singleton("resourcePrimKey"));
