@@ -5093,6 +5093,7 @@ public class PhonePersistenceImpl
 	static {
 		Set<String> ctControlColumnNames = new HashSet<String>();
 		Set<String> ctIgnoreColumnNames = new HashSet<String>();
+		Set<String> ctMergeColumnNames = new HashSet<String>();
 		Set<String> ctStrictColumnNames = new HashSet<String>();
 
 		ctControlColumnNames.add("mvccVersion");
@@ -5106,15 +5107,16 @@ public class PhonePersistenceImpl
 		ctIgnoreColumnNames.add("modifiedDate");
 		ctStrictColumnNames.add("classNameId");
 		ctStrictColumnNames.add("classPK");
-		ctStrictColumnNames.add("number_");
-		ctStrictColumnNames.add("extension");
-		ctStrictColumnNames.add("listTypeId");
-		ctStrictColumnNames.add("primary_");
+		ctMergeColumnNames.add("number_");
+		ctMergeColumnNames.add("extension");
+		ctMergeColumnNames.add("listTypeId");
+		ctMergeColumnNames.add("primary_");
 
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.CONTROL, ctControlColumnNames);
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.IGNORE, ctIgnoreColumnNames);
+		_ctColumnNamesMap.put(CTColumnResolutionType.MERGE, ctMergeColumnNames);
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.PK, Collections.singleton("phoneId"));
 		_ctColumnNamesMap.put(

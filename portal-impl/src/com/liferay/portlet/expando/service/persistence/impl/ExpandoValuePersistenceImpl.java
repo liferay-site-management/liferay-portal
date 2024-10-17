@@ -5688,20 +5688,22 @@ public class ExpandoValuePersistenceImpl
 
 	static {
 		Set<String> ctControlColumnNames = new HashSet<String>();
+		Set<String> ctMergeColumnNames = new HashSet<String>();
 		Set<String> ctStrictColumnNames = new HashSet<String>();
 
 		ctControlColumnNames.add("mvccVersion");
 		ctControlColumnNames.add("ctCollectionId");
 		ctStrictColumnNames.add("companyId");
-		ctStrictColumnNames.add("tableId");
-		ctStrictColumnNames.add("columnId");
-		ctStrictColumnNames.add("rowId_");
+		ctMergeColumnNames.add("tableId");
+		ctMergeColumnNames.add("columnId");
+		ctMergeColumnNames.add("rowId_");
 		ctStrictColumnNames.add("classNameId");
 		ctStrictColumnNames.add("classPK");
-		ctStrictColumnNames.add("data_");
+		ctMergeColumnNames.add("data_");
 
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.CONTROL, ctControlColumnNames);
+		_ctColumnNamesMap.put(CTColumnResolutionType.MERGE, ctMergeColumnNames);
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.PK, Collections.singleton("valueId"));
 		_ctColumnNamesMap.put(

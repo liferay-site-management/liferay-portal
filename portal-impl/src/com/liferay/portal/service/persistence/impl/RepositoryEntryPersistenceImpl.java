@@ -3092,6 +3092,7 @@ public class RepositoryEntryPersistenceImpl
 	static {
 		Set<String> ctControlColumnNames = new HashSet<String>();
 		Set<String> ctIgnoreColumnNames = new HashSet<String>();
+		Set<String> ctMergeColumnNames = new HashSet<String>();
 		Set<String> ctStrictColumnNames = new HashSet<String>();
 
 		ctControlColumnNames.add("mvccVersion");
@@ -3103,15 +3104,16 @@ public class RepositoryEntryPersistenceImpl
 		ctStrictColumnNames.add("userName");
 		ctStrictColumnNames.add("createDate");
 		ctIgnoreColumnNames.add("modifiedDate");
-		ctStrictColumnNames.add("repositoryId");
-		ctStrictColumnNames.add("mappedId");
-		ctStrictColumnNames.add("manualCheckInRequired");
-		ctStrictColumnNames.add("lastPublishDate");
+		ctMergeColumnNames.add("repositoryId");
+		ctMergeColumnNames.add("mappedId");
+		ctMergeColumnNames.add("manualCheckInRequired");
+		ctMergeColumnNames.add("lastPublishDate");
 
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.CONTROL, ctControlColumnNames);
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.IGNORE, ctIgnoreColumnNames);
+		_ctColumnNamesMap.put(CTColumnResolutionType.MERGE, ctMergeColumnNames);
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.PK,
 			Collections.singleton("repositoryEntryId"));

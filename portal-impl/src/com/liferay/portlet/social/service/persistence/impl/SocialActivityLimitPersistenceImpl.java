@@ -2821,6 +2821,7 @@ public class SocialActivityLimitPersistenceImpl
 
 	static {
 		Set<String> ctControlColumnNames = new HashSet<String>();
+		Set<String> ctMergeColumnNames = new HashSet<String>();
 		Set<String> ctStrictColumnNames = new HashSet<String>();
 
 		ctControlColumnNames.add("mvccVersion");
@@ -2830,12 +2831,13 @@ public class SocialActivityLimitPersistenceImpl
 		ctStrictColumnNames.add("userId");
 		ctStrictColumnNames.add("classNameId");
 		ctStrictColumnNames.add("classPK");
-		ctStrictColumnNames.add("activityType");
-		ctStrictColumnNames.add("activityCounterName");
-		ctStrictColumnNames.add("value");
+		ctMergeColumnNames.add("activityType");
+		ctMergeColumnNames.add("activityCounterName");
+		ctMergeColumnNames.add("value");
 
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.CONTROL, ctControlColumnNames);
+		_ctColumnNamesMap.put(CTColumnResolutionType.MERGE, ctMergeColumnNames);
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.PK,
 			Collections.singleton("activityLimitId"));

@@ -5406,6 +5406,7 @@ public class DLFileEntryTypePersistenceImpl
 	static {
 		Set<String> ctControlColumnNames = new HashSet<String>();
 		Set<String> ctIgnoreColumnNames = new HashSet<String>();
+		Set<String> ctMergeColumnNames = new HashSet<String>();
 		Set<String> ctStrictColumnNames = new HashSet<String>();
 
 		ctControlColumnNames.add("mvccVersion");
@@ -5418,18 +5419,19 @@ public class DLFileEntryTypePersistenceImpl
 		ctStrictColumnNames.add("userName");
 		ctStrictColumnNames.add("createDate");
 		ctIgnoreColumnNames.add("modifiedDate");
-		ctStrictColumnNames.add("dataDefinitionId");
-		ctStrictColumnNames.add("fileEntryTypeKey");
-		ctStrictColumnNames.add("name");
-		ctStrictColumnNames.add("description");
-		ctStrictColumnNames.add("scope");
-		ctStrictColumnNames.add("lastPublishDate");
-		ctStrictColumnNames.add("folders");
+		ctMergeColumnNames.add("dataDefinitionId");
+		ctMergeColumnNames.add("fileEntryTypeKey");
+		ctMergeColumnNames.add("name");
+		ctMergeColumnNames.add("description");
+		ctMergeColumnNames.add("scope");
+		ctMergeColumnNames.add("lastPublishDate");
+		ctMergeColumnNames.add("folders");
 
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.CONTROL, ctControlColumnNames);
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.IGNORE, ctIgnoreColumnNames);
+		_ctColumnNamesMap.put(CTColumnResolutionType.MERGE, ctMergeColumnNames);
 		_ctColumnNamesMap.put(
 			CTColumnResolutionType.PK,
 			Collections.singleton("fileEntryTypeId"));
