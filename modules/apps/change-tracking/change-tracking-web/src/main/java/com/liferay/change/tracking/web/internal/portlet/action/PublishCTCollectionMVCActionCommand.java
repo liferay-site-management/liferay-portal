@@ -5,15 +5,24 @@
 
 package com.liferay.change.tracking.web.internal.portlet.action;
 
+import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.constants.CTPortletKeys;
+import com.liferay.change.tracking.model.CTCollection;
+import com.liferay.change.tracking.model.CTPreferences;
+import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTCollectionService;
+import com.liferay.change.tracking.service.CTPreferencesLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -48,10 +57,42 @@ public class PublishCTCollectionMVCActionCommand extends BaseMVCActionCommand {
 		long ctCollectionId = ParamUtil.getLong(
 			actionRequest, "ctCollectionId");
 
-		String name = ParamUtil.getString(actionRequest, "name");
-
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
+
+		if (FeatureFlagManagerUtil.isEnabled(
+				themeDisplay.getCompanyId(), "LPD-39203")) {
+
+			try {
+				_ctPreferencesLocalService.resetCTPreferences(ctCollectionId);
+
+				CTCollection ctCollection =
+					_ctCollectionLocalService.getCTCollection(ctCollectionId);
+
+				CTPreferences ctPreferences =
+					_ctPreferencesLocalService.getCTPreferences(
+						ctCollection.getCompanyId(),
+						_userLocalService.getGuestUserId(
+							ctCollection.getCompanyId()));
+
+				ctPreferences.setCtCollectionId(ctCollectionId);
+				ctPreferences.setPreviousCtCollectionId(
+					CTConstants.CT_COLLECTION_ID_PRODUCTION);
+
+				_ctPreferencesLocalService.updateCTPreferences(ctPreferences);
+			}
+			catch (PortalException portalException) {
+				if (_log.isWarnEnabled()) {
+					_log.warn(
+						"Can not instantly publish publication because of " +
+							"error, publication will attempt to continue to " +
+								"publish normally",
+						portalException);
+				}
+			}
+		}
+
+		String name = ParamUtil.getString(actionRequest, "name");
 
 		try {
 			_ctCollectionService.publishCTCollection(
@@ -83,8 +124,17 @@ public class PublishCTCollectionMVCActionCommand extends BaseMVCActionCommand {
 			).buildString());
 	}
 
+	private static final Log _log = LogFactoryUtil.getLog(
+		PublishCTCollectionMVCActionCommand.class);
+
+	@Reference
+	private CTCollectionLocalService _ctCollectionLocalService;
+
 	@Reference
 	private CTCollectionService _ctCollectionService;
+
+	@Reference
+	private CTPreferencesLocalService _ctPreferencesLocalService;
 
 	@Reference
 	private GroupLocalService _groupLocalService;
@@ -94,5 +144,8 @@ public class PublishCTCollectionMVCActionCommand extends BaseMVCActionCommand {
 
 	@Reference
 	private Portal _portal;
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }
