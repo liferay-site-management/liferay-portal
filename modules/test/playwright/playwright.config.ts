@@ -17,7 +17,8 @@ import {config as batchPlannerConfig} from './tests/batch-planner/config';
 import {config as blogsWebConfig} from './tests/blogs-web/config';
 import {config as calendarWebConfig} from './tests/calendar-web/config';
 import {config as captchaWebConfig} from './tests/captcha-web/config';
-import {config as changeTrackingWebConfig} from './tests/change-tracking-web/config';
+import {config as changeTrackingWeb1Config} from './tests/change-tracking-web-1/config';
+import {config as changeTrackingWeb2Config} from './tests/change-tracking-web-2/config';
 import {config as clientExtensionWebConfig} from './tests/client-extension-web/config';
 import {config as commerceConfig} from './tests/commerce/config';
 import {config as configurationAdminWebConfig} from './tests/configuration-admin-web/config';
@@ -116,7 +117,8 @@ export default defineConfig({
 		calendarWebConfig,
 		captchaWebConfig,
 		cookiesBannerWebConfig,
-		changeTrackingWebConfig,
+		changeTrackingWeb1Config,
+		changeTrackingWeb2Config,
 		clientExtensionWebConfig,
 		commerceConfig,
 		commerceWorkspaceConfig,
