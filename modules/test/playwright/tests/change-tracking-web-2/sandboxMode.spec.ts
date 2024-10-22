@@ -7,28 +7,16 @@ import {expect, mergeTests} from '@playwright/test';
 
 import {apiHelpersTest} from '../../fixtures/apiHelpersTest';
 import {changeTrackingPagesTest} from '../../fixtures/changeTrackingPagesTest';
-import {featureFlagsTest} from '../../fixtures/featureFlagsTest';
 import {isolatedSiteTest} from '../../fixtures/isolatedSiteTest';
 import getRandomString from '../../utils/getRandomString';
 import performLogin, {performLogout} from '../../utils/performLogin';
 import getBasicWebContentStructureId from '../../utils/structured-content/getBasicWebContentStructureId';
 
 export const test = mergeTests(
-	featureFlagsTest({
-		'LPD-20556': true,
-	}),
 	apiHelpersTest,
 	changeTrackingPagesTest,
 	isolatedSiteTest
 );
-
-test.beforeEach(async ({changeTrackingPage}) => {
-	await changeTrackingPage.toggleSandboxConfiguration(true);
-});
-
-test.afterEach(async ({changeTrackingPage}) => {
-	await changeTrackingPage.toggleSandboxConfiguration(false);
-});
 
 test('LPD-34602 Add view-only mode for production when using Publications sandbox', async ({
 	apiHelpers,
@@ -74,7 +62,7 @@ test('LPD-34602 Add view-only mode for production when using Publications sandbo
 	await apiHelpers.headlessAdminUser.deleteUserAccount(Number(user.id));
 });
 
-test.skip('LPD-39341 Sandbox mode allows users to work on production without permissions', async ({
+test('LPD-39341 Sandbox mode allows users to work on production without permissions', async ({
 	apiHelpers,
 	changeTrackingPage,
 	ctCollection,
