@@ -78,6 +78,7 @@ import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -88,6 +89,7 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
+import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -1612,11 +1614,36 @@ public class ViewChangesDisplayContext {
 						(ctSQLMode == CTSQLModeThreadLocal.CTSQLMode.DEFAULT)) {
 
 						if (ctModelMap == null) {
-							ctModelMap =
-								_ctDisplayRendererRegistry.fetchCTModelMap(
-									_ctCollection.getCtCollectionId(),
-									CTSQLModeThreadLocal.CTSQLMode.DEFAULT,
-									modelClassNameId, classPKs);
+							int i = 0;
+
+							while (i < classPKs.size()) {
+								int endIndex = i + _SQL_SERVER_PARAM_LIMIT;
+
+								if (endIndex > classPKs.size()) {
+									endIndex = classPKs.size() - 1;
+								}
+
+								Long[] batchClassPKs = ArrayUtil.subset(
+									classPKs.toArray(new Long[0]), i, endIndex);
+
+								Map<Serializable, T> batchCtModelMap =
+									_ctDisplayRendererRegistry.fetchCTModelMap(
+										_ctCollection.getCtCollectionId(),
+										CTSQLModeThreadLocal.CTSQLMode.DEFAULT,
+										modelClassNameId,
+										SetUtil.fromArray(batchClassPKs));
+
+								if (batchCtModelMap != null) {
+									if (ctModelMap == null) {
+										ctModelMap = batchCtModelMap;
+									}
+									else {
+										ctModelMap.putAll(batchCtModelMap);
+									}
+								}
+
+								i += _SQL_SERVER_PARAM_LIMIT;
+							}
 						}
 
 						if (ctModelMap != null) {
@@ -1780,6 +1807,8 @@ public class ViewChangesDisplayContext {
 			}
 		}
 	}
+
+	private static final int _SQL_SERVER_PARAM_LIMIT = 2000;
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		ViewChangesDisplayContext.class);
