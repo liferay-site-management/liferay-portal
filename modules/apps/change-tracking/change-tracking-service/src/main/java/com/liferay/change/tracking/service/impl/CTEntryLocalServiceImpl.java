@@ -14,7 +14,11 @@ import com.liferay.change.tracking.service.base.CTEntryLocalServiceBaseImpl;
 import com.liferay.change.tracking.service.persistence.CTCollectionPersistence;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalArticleTable;
+import com.liferay.knowledge.base.model.KBArticle;
+import com.liferay.knowledge.base.model.KBArticleTable;
+import com.liferay.petra.sql.dsl.Column;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
+import com.liferay.petra.sql.dsl.base.BaseTable;
 import com.liferay.petra.sql.dsl.query.DSLQuery;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.change.tracking.CTAware;
@@ -26,12 +30,16 @@ import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -113,48 +121,18 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		CTEntry ctEntry = ctEntryPersistence.fetchByC_MCNI_MCPK(
 			ctCollectionId, modelClassNameId, modelClassPK);
 
+		if (_versionedClasses == null) {
+			_versionedClasses = _getVersionedClassesMap();
+		}
+
 		if ((ctEntry != null) ||
-			(modelClassNameId != _classNameLocalService.getClassNameId(
-				JournalArticle.class))) {
+			!_versionedClasses.containsKey(modelClassNameId)) {
 
 			return ctEntry;
 		}
 
-		List<Long> resourcePrimKey = ctEntryPersistence.dslQuery(
-			DSLQueryFactoryUtil.select(
-				JournalArticleTable.INSTANCE.resourcePrimKey
-			).from(
-				JournalArticleTable.INSTANCE
-			).where(
-				JournalArticleTable.INSTANCE.id.eq(modelClassPK)
-			));
-
-		if (resourcePrimKey.isEmpty()) {
-			return null;
-		}
-
-		List<Long> journalArticleIds = ctEntryPersistence.dslQuery(
-			DSLQueryFactoryUtil.select(
-				JournalArticleTable.INSTANCE.id
-			).from(
-				JournalArticleTable.INSTANCE
-			).where(
-				JournalArticleTable.INSTANCE.resourcePrimKey.eq(
-					resourcePrimKey.get(0)
-				).and(
-					JournalArticleTable.INSTANCE.ctCollectionId.eq(
-						ctCollectionId)
-				)
-			).orderBy(
-				JournalArticleTable.INSTANCE.modifiedDate.descending()
-			));
-
-		if (journalArticleIds.isEmpty()) {
-			return null;
-		}
-
-		return ctEntryPersistence.fetchByC_MCNI_MCPK(
-			ctCollectionId, modelClassNameId, journalArticleIds.get(0));
+		return _fetchVersionedCTEntry(
+			ctCollectionId, modelClassNameId, modelClassPK);
 	}
 
 	@Override
@@ -357,10 +335,104 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		return ctEntryPersistence.update(ctEntry);
 	}
 
+	private CTEntry _fetchVersionedCTEntry(
+		long ctCollectionId, long modelClassNameId, long modelClassPK) {
+
+		BaseTable<?> tableInstance = null;
+		Column<?, Long> tablePKColumn = null;
+		Column<?, Long> resourcePrimKeyColumn = null;
+		Column<?, Long> ctCollectionIdColumn = null;
+		Column<?, Date> modifiedDateColumn = null;
+
+		if (Objects.equals(
+				_versionedClasses.get(modelClassNameId),
+				JournalArticle.class.getName())) {
+
+			tableInstance = JournalArticleTable.INSTANCE;
+
+			tablePKColumn = ((JournalArticleTable)tableInstance).id;
+			resourcePrimKeyColumn =
+				((JournalArticleTable)tableInstance).resourcePrimKey;
+			ctCollectionIdColumn =
+				((JournalArticleTable)tableInstance).ctCollectionId;
+			modifiedDateColumn =
+				((JournalArticleTable)tableInstance).modifiedDate;
+		}
+		else if (Objects.equals(
+					_versionedClasses.get(modelClassNameId),
+					KBArticle.class.getName())) {
+
+			tableInstance = KBArticleTable.INSTANCE;
+
+			tablePKColumn = ((KBArticleTable)tableInstance).kbArticleId;
+			resourcePrimKeyColumn =
+				((KBArticleTable)tableInstance).resourcePrimKey;
+			ctCollectionIdColumn =
+				((KBArticleTable)tableInstance).ctCollectionId;
+			modifiedDateColumn = ((KBArticleTable)tableInstance).modifiedDate;
+		}
+
+		List<Long> resourcePrimKey;
+		List<Long> ids = null;
+
+		if ((tablePKColumn != null) && (modifiedDateColumn != null)) {
+			resourcePrimKey = ctEntryPersistence.dslQuery(
+				DSLQueryFactoryUtil.select(
+					resourcePrimKeyColumn
+				).from(
+					tableInstance
+				).where(
+					tablePKColumn.eq(modelClassPK)
+				));
+
+			if (resourcePrimKey.isEmpty()) {
+				return null;
+			}
+
+			ids = ctEntryPersistence.dslQuery(
+				DSLQueryFactoryUtil.select(
+					tablePKColumn
+				).from(
+					tableInstance
+				).where(
+					resourcePrimKeyColumn.eq(
+						resourcePrimKey.get(0)
+					).and(
+						ctCollectionIdColumn.eq(ctCollectionId)
+					)
+				).orderBy(
+					modifiedDateColumn.descending()
+				));
+
+			if (ids.isEmpty()) {
+				return null;
+			}
+		}
+
+		return ctEntryPersistence.fetchByC_MCNI_MCPK(
+			ctCollectionId, modelClassNameId, ids.get(0));
+	}
+
+	private Map<Long, String> _getVersionedClassesMap() {
+		if ((_versionedClasses == null) && (_classNameLocalService != null)) {
+			_versionedClasses = HashMapBuilder.put(
+				_classNameLocalService.getClassNameId(JournalArticle.class),
+				JournalArticle.class.getName()
+			).put(
+				_classNameLocalService.getClassNameId(KBArticle.class),
+				KBArticle.class.getName()
+			).build();
+		}
+
+		return _versionedClasses;
+	}
+
 	@Reference
 	private ClassNameLocalService _classNameLocalService;
 
 	@Reference
 	private CTCollectionPersistence _ctCollectionPersistence;
+
+	private Map<Long, String> _versionedClasses;
 
 }
