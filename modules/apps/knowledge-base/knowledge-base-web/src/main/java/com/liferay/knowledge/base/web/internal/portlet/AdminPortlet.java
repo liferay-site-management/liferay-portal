@@ -5,6 +5,7 @@
 
 package com.liferay.knowledge.base.web.internal.portlet;
 
+import com.liferay.change.tracking.spi.constants.CTTimelineKeys;
 import com.liferay.knowledge.base.constants.KBArticleConstants;
 import com.liferay.knowledge.base.constants.KBFolderConstants;
 import com.liferay.knowledge.base.constants.KBPortletKeys;
@@ -170,11 +171,20 @@ public class AdminPortlet extends BaseKBPortlet {
 				renderRequest, "resourcePrimKey");
 			int status = WorkflowConstants.STATUS_ANY;
 
+			HttpServletRequest httpServletRequest =
+				_portal.getHttpServletRequest(renderRequest);
+
 			if ((resourcePrimKey > 0) &&
 				(resourceClassNameId == kbArticleClassNameId)) {
 
 				kbArticle = kbArticleService.getLatestKBArticle(
 					resourcePrimKey, status);
+
+				httpServletRequest.setAttribute(
+					CTTimelineKeys.CLASS_NAME, KBArticle.class.getName());
+
+				httpServletRequest.setAttribute(
+					CTTimelineKeys.CLASS_PK, kbArticle.getKbArticleId());
 			}
 
 			renderRequest.setAttribute(
@@ -216,6 +226,12 @@ public class AdminPortlet extends BaseKBPortlet {
 
 			if (kbTemplateId > 0) {
 				kbTemplate = kbTemplateService.getKBTemplate(kbTemplateId);
+
+				httpServletRequest.setAttribute(
+					CTTimelineKeys.CLASS_NAME, KBTemplate.class.getName());
+
+				httpServletRequest.setAttribute(
+					CTTimelineKeys.CLASS_PK, kbTemplate.getKbTemplateId());
 			}
 
 			renderRequest.setAttribute(
