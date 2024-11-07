@@ -54,13 +54,16 @@ public class ViewKBArticleMVCRenderCommand implements MVCRenderCommand {
 		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
 			renderRequest);
 
-		httpServletRequest.setAttribute(
+		HttpServletRequest originalHttpServletRequest =
+			_portal.getOriginalServletRequest(httpServletRequest);
+
+		originalHttpServletRequest.setAttribute(
 			CTTimelineKeys.CLASS_NAME, KBArticle.class.getName());
 
 		KBArticle kbArticle = (KBArticle)renderRequest.getAttribute(
 			KBWebKeys.KNOWLEDGE_BASE_KB_ARTICLE);
 
-		httpServletRequest.setAttribute(
+		originalHttpServletRequest.setAttribute(
 			CTTimelineKeys.CLASS_PK, kbArticle.getKbArticleId());
 
 		if (rootPortletId.equals(KBPortletKeys.KNOWLEDGE_BASE_ADMIN)) {

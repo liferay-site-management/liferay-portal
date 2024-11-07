@@ -45,10 +45,11 @@ public class ViewKBTemplatesMVCRenderCommand implements MVCRenderCommand {
 				_portal.getLiferayPortletRequest(renderRequest),
 				_portal.getLiferayPortletResponse(renderResponse)));
 
-		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
-			renderRequest);
+		HttpServletRequest originalHttpServletRequest =
+			_portal.getOriginalServletRequest(
+				_portal.getHttpServletRequest(renderRequest));
 
-		httpServletRequest.setAttribute(
+		originalHttpServletRequest.setAttribute(
 			CTTimelineKeys.CLASS_NAME, KBTemplate.class.getName());
 
 		return "/admin/view_kb_templates.jsp";

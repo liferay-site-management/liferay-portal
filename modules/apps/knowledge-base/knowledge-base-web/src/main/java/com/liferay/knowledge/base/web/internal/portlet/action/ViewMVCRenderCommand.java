@@ -50,10 +50,11 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 
 		String rootPortletId = _getRootPortletId(renderRequest);
 
-		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
-			renderRequest);
+		HttpServletRequest originalHttpServletRequest =
+			_portal.getOriginalServletRequest(
+				_portal.getHttpServletRequest(renderRequest));
 
-		httpServletRequest.setAttribute(
+		originalHttpServletRequest.setAttribute(
 			CTTimelineKeys.CLASS_NAME, KBArticle.class.getName());
 
 		if (rootPortletId.equals(KBPortletKeys.KNOWLEDGE_BASE_ADMIN)) {
@@ -64,7 +65,7 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 			KBArticle kbArticle = (KBArticle)renderRequest.getAttribute(
 				KBWebKeys.KNOWLEDGE_BASE_KB_ARTICLE);
 
-			httpServletRequest.setAttribute(
+			originalHttpServletRequest.setAttribute(
 				CTTimelineKeys.CLASS_PK, kbArticle.getKbArticleId());
 
 			return "/article/view.jsp";
@@ -74,7 +75,7 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 			KBArticle kbArticle = (KBArticle)renderRequest.getAttribute(
 				KBWebKeys.KNOWLEDGE_BASE_KB_ARTICLE);
 
-			httpServletRequest.setAttribute(
+			originalHttpServletRequest.setAttribute(
 				CTTimelineKeys.CLASS_PK, kbArticle.getKbArticleId());
 
 			return "/display/view.jsp";

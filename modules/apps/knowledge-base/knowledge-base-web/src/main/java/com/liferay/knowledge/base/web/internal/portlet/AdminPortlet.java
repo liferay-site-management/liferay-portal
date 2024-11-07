@@ -171,8 +171,12 @@ public class AdminPortlet extends BaseKBPortlet {
 				renderRequest, "resourcePrimKey");
 			int status = WorkflowConstants.STATUS_ANY;
 
-			HttpServletRequest httpServletRequest =
-				_portal.getHttpServletRequest(renderRequest);
+			HttpServletRequest originalHttpServletRequest =
+				_portal.getOriginalServletRequest(
+					_portal.getHttpServletRequest(renderRequest));
+
+			originalHttpServletRequest = _portal.getOriginalServletRequest(
+				originalHttpServletRequest);
 
 			if ((resourcePrimKey > 0) &&
 				(resourceClassNameId == kbArticleClassNameId)) {
@@ -180,10 +184,10 @@ public class AdminPortlet extends BaseKBPortlet {
 				kbArticle = kbArticleService.getLatestKBArticle(
 					resourcePrimKey, status);
 
-				httpServletRequest.setAttribute(
+				originalHttpServletRequest.setAttribute(
 					CTTimelineKeys.CLASS_NAME, KBArticle.class.getName());
 
-				httpServletRequest.setAttribute(
+				originalHttpServletRequest.setAttribute(
 					CTTimelineKeys.CLASS_PK, kbArticle.getKbArticleId());
 			}
 
@@ -227,10 +231,10 @@ public class AdminPortlet extends BaseKBPortlet {
 			if (kbTemplateId > 0) {
 				kbTemplate = kbTemplateService.getKBTemplate(kbTemplateId);
 
-				httpServletRequest.setAttribute(
+				originalHttpServletRequest.setAttribute(
 					CTTimelineKeys.CLASS_NAME, KBTemplate.class.getName());
 
-				httpServletRequest.setAttribute(
+				originalHttpServletRequest.setAttribute(
 					CTTimelineKeys.CLASS_PK, kbTemplate.getKbTemplateId());
 			}
 
