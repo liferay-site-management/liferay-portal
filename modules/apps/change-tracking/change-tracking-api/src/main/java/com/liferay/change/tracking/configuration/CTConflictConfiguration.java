@@ -29,4 +29,10 @@ public interface CTConflictConfiguration {
 	)
 	public boolean modificationDeletionConflictCheckEnabled();
 
+	@Meta.AD(
+		deflt = "false", name = "allow-publications-to-go-out-of-date",
+		required = false
+	)
+	public boolean outOfDateAllowed();
+
 }

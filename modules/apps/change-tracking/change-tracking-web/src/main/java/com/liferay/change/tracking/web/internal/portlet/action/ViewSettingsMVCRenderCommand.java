@@ -6,6 +6,7 @@
 package com.liferay.change.tracking.web.internal.portlet.action;
 
 import com.liferay.change.tracking.constants.CTPortletKeys;
+import com.liferay.change.tracking.web.internal.configuration.helper.CTConflictConfigurationHelper;
 import com.liferay.change.tracking.web.internal.configuration.helper.CTSettingsConfigurationHelper;
 import com.liferay.change.tracking.web.internal.constants.CTWebKeys;
 import com.liferay.change.tracking.web.internal.display.context.PublicationsConfigurationDisplayContext;
@@ -51,6 +52,7 @@ public class ViewSettingsMVCRenderCommand implements MVCRenderCommand {
 		PublicationsConfigurationDisplayContext
 			publicationsConfigurationDisplayContext =
 				new PublicationsConfigurationDisplayContext(
+					_ctConflictConfigurationHelper,
 					_ctSettingsConfigurationHelper,
 					_portal.getHttpServletRequest(renderRequest),
 					renderResponse);
@@ -61,6 +63,9 @@ public class ViewSettingsMVCRenderCommand implements MVCRenderCommand {
 
 		return "/publications/view_settings.jsp";
 	}
+
+	@Reference
+	private CTConflictConfigurationHelper _ctConflictConfigurationHelper;
 
 	@Reference
 	private CTSettingsConfigurationHelper _ctSettingsConfigurationHelper;

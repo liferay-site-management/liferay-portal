@@ -7,6 +7,7 @@ package com.liferay.change.tracking.web.internal.portlet.action;
 
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.exception.CTStagingEnabledException;
+import com.liferay.change.tracking.web.internal.configuration.helper.CTConflictConfigurationHelper;
 import com.liferay.change.tracking.web.internal.configuration.helper.CTSettingsConfigurationHelper;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
@@ -55,6 +56,8 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 			actionRequest, CTPortletKeys.PUBLICATIONS,
 			PortletRequest.RENDER_PHASE);
 
+		boolean enableOutOfDatePublications = ParamUtil.getBoolean(
+			actionRequest, "enableOutOfDatePublications");
 		boolean enablePublications = ParamUtil.getBoolean(
 			actionRequest, "enablePublications");
 		boolean enableManageRemotely = ParamUtil.getBoolean(
@@ -84,6 +87,12 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 					ParamUtil.getBoolean(actionRequest, "enableSandboxOnly")
 				).put(
 					"unapprovedChangesAllowed", enableUnapprovedChanges
+				).build());
+
+			_ctConflictConfigurationHelper.save(
+				themeDisplay.getCompanyId(),
+				HashMapBuilder.<String, Object>put(
+					"outOfDateAllowed", enableOutOfDatePublications
 				).build());
 		}
 		catch (ConfigurationException configurationException) {
@@ -116,6 +125,9 @@ public class UpdateGlobalPublicationsConfigurationMVCActionCommand
 
 		sendRedirect(actionRequest, actionResponse, redirectURL.toString());
 	}
+
+	@Reference
+	private CTConflictConfigurationHelper _ctConflictConfigurationHelper;
 
 	@Reference
 	private CTSettingsConfigurationHelper _ctSettingsConfigurationHelper;

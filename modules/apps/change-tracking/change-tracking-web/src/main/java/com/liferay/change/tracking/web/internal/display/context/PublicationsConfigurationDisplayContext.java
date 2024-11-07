@@ -5,7 +5,9 @@
 
 package com.liferay.change.tracking.web.internal.display.context;
 
+import com.liferay.change.tracking.configuration.CTConflictConfiguration;
 import com.liferay.change.tracking.configuration.CTSettingsConfiguration;
+import com.liferay.change.tracking.web.internal.configuration.helper.CTConflictConfigurationHelper;
 import com.liferay.change.tracking.web.internal.configuration.helper.CTSettingsConfigurationHelper;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -23,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 public class PublicationsConfigurationDisplayContext {
 
 	public PublicationsConfigurationDisplayContext(
+		CTConflictConfigurationHelper ctConflictConfigurationHelper,
 		CTSettingsConfigurationHelper ctSettingsConfigurationHelper,
 		HttpServletRequest httpServletRequest, RenderResponse renderResponse) {
 
@@ -36,6 +39,12 @@ public class PublicationsConfigurationDisplayContext {
 		CTSettingsConfiguration ctSettingsConfiguration =
 			ctSettingsConfigurationHelper.getCTSettingsConfiguration(
 				themeDisplay.getCompanyId());
+
+		CTConflictConfiguration ctConflictConfiguration =
+			ctConflictConfigurationHelper.getCTConflictConfiguration(
+				themeDisplay.getCompanyId());
+
+		_outOfDateAllowed = ctConflictConfiguration.outOfDateAllowed();
 
 		_publicationsEnabled = ctSettingsConfiguration.enabled();
 		_remoteClientId = ctSettingsConfiguration.remoteClientId();
@@ -78,6 +87,10 @@ public class PublicationsConfigurationDisplayContext {
 		return _remoteClientSecret;
 	}
 
+	public boolean isOutOfDatePublicationsAllowed() {
+		return _outOfDateAllowed;
+	}
+
 	public boolean isPublicationsEnabled() {
 		return _publicationsEnabled;
 	}
@@ -96,6 +109,7 @@ public class PublicationsConfigurationDisplayContext {
 
 	private final HttpServletRequest _httpServletRequest;
 	private String _navigation;
+	private final boolean _outOfDateAllowed;
 	private final boolean _publicationsEnabled;
 	private final String _remoteClientId;
 	private final String _remoteClientSecret;

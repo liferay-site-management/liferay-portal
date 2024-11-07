@@ -63,6 +63,18 @@
 	</clay:sheet-section>
 </div>
 
+<div id="<portlet:namespace />allowOutOfDate">
+	<clay:sheet-section>
+		<h3 class="sheet-subtitle" id="<portlet:namespace />allowOutOfDateHeader"><liferay-ui:message key="allow-publications-to-go-out-of-date" /></h3>
+
+		<div class="sheet-text" id="<portlet:namespace />allowOutOfDateHelp"><liferay-ui:message key="allow-publications-to-go-out-of-date-help" /></div>
+
+		<div class="form-group">
+			<aui:input aria-describedby="allowOutOfDateHelp" aria-labelledby="allowOutOfDateHeader" inlineLabel="right" label="" labelCssClass="simple-toggle-switch" name="enableOutOfDatePublications" onChange='<%= liferayPortletResponse.getNamespace() + "autoSave();" %>' type="toggle-switch" value="<%= publicationsConfigurationDisplayContext.isOutOfDatePublicationsAllowed() %>" />
+		</div>
+	</clay:sheet-section>
+</div>
+
 <aui:script>
 	Liferay.Util.toggleBoxes(
 		'<portlet:namespace />enablePublications',
@@ -79,6 +91,12 @@
 	Liferay.Util.toggleBoxes(
 		'<portlet:namespace />enablePublications',
 		'<portlet:namespace />manageRemotely',
+		<%= publicationsConfigurationDisplayContext.isPublicationsEnabled() ? false : null %>
+	);
+
+	Liferay.Util.toggleBoxes(
+		'<portlet:namespace />enablePublications',
+		'<portlet:namespace />allowOutOfDate',
 		<%= publicationsConfigurationDisplayContext.isPublicationsEnabled() ? false : null %>
 	);
 
