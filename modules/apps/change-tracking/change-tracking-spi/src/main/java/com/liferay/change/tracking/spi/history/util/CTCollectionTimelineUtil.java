@@ -1,11 +1,13 @@
 /**
- * SPDX-FileCopyrightText: (c) 2000 Liferay, Inc. https://liferay.com
+ * SPDX-FileCopyrightText: (c) 2024 Liferay, Inc. https://liferay.com
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package com.liferay.change.tracking.spi.history.util;
 
 import com.liferay.change.tracking.spi.constants.CTTimelineKeys;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,30 +16,23 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class CTCollectionTimelineUtil {
 
-	/**
-	 * Set the CT Timeline Key for only the class name. Used for aggregate timeline views.
-	 * @param httpServletRequest httpServletRequest the servlet request used to associate the
-	 *    <code>CTTimelineKeys</code>
-	 * @param clazz the class whose name will be associated with the request
-	 */
-	public void setClassName(
-		HttpServletRequest httpServletRequest, Class<?> clazz) {
+	public static void setClassName(Class<?> clazz) {
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		HttpServletRequest httpServletRequest = serviceContext.getRequest();
 
 		httpServletRequest.setAttribute(
 			CTTimelineKeys.CLASS_NAME, clazz.getName());
 	}
 
-	/**
-	 * Sets the CT Timeline Keys for both class name and class PK. Used for views of a specific entity.
-	 * @param httpServletRequest httpServletRequest the servlet request used to associate the
-	 *    <code>CTTimelineKeys</code>
-	 * @param clazz the class whose name will be associated with the request
-	 * @param classPK the PK of the entity of type <code>clazz</code> that will be associated with the request
-	 */
-	public void setCTTimelineKeys(
-		HttpServletRequest httpServletRequest, Class<?> clazz, long classPK) {
+	public static void setCTTimelineKeys(Class<?> clazz, long classPK) {
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
 
-		setClassName(httpServletRequest, clazz);
+		HttpServletRequest httpServletRequest = serviceContext.getRequest();
+
+		setClassName(clazz);
 
 		httpServletRequest.setAttribute(CTTimelineKeys.CLASS_PK, classPK);
 	}
