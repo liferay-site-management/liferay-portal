@@ -9,6 +9,7 @@ import {changeTrackingPagesTest} from '../../fixtures/changeTrackingPagesTest';
 import {formsPagesTest} from '../../fixtures/formsPagesTest';
 import {getRandomInt} from '../../utils/getRandomInt';
 import getRandomString from '../../utils/getRandomString';
+import {PORTLET_URLS} from '../../utils/portletUrls';
 import {waitForAlert} from '../../utils/waitForAlert';
 
 export const test = mergeTests(formsPagesTest, changeTrackingPagesTest);
@@ -94,4 +95,23 @@ test('LPD-39428 Assert publication timeline history is enabled for data provider
 	await expect(
 		page.getByRole('menuitem', {name: dataProviderTitle})
 	).toBeVisible();
+});
+
+test('LPD-39428 Assert publication timeline history is enabled for tags', async ({
+	page,
+}) => {
+	const tagTitle = 'Tag' + getRandomInt();
+	await page.goto(`/group/guest${PORTLET_URLS.tagsAdmin}`);
+	await page.getByRole('link', {name: 'Add Tag'}).click();
+	await page.getByPlaceholder('Name').fill(tagTitle);
+	await page.getByRole('button', {name: 'Save'}).click();
+
+	const timelineButton = page.getByLabel('timeline-button');
+	await timelineButton.waitFor();
+	await timelineButton.click();
+
+	const timelineActionsButton = page.locator('.publication-timeline button');
+
+	await expect(timelineActionsButton).toBeVisible();
+	await expect(page.getByRole('menuitem', {name: tagTitle})).toBeVisible();
 });
