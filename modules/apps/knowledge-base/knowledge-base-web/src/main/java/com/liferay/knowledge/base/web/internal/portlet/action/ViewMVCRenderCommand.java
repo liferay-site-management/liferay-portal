@@ -13,7 +13,6 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
@@ -22,10 +21,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Adolfo Pérez
@@ -50,12 +46,7 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 
 		String rootPortletId = _getRootPortletId(renderRequest);
 
-		HttpServletRequest originalHttpServletRequest =
-			_portal.getOriginalServletRequest(
-				_portal.getHttpServletRequest(renderRequest));
-
-		CTTimelineUtil.setClassName(
-			originalHttpServletRequest, KBArticle.class);
+		CTTimelineUtil.setClassName(renderRequest, KBArticle.class);
 
 		if (rootPortletId.equals(KBPortletKeys.KNOWLEDGE_BASE_ADMIN)) {
 			return "/admin/view.jsp";
@@ -66,8 +57,7 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 				KBWebKeys.KNOWLEDGE_BASE_KB_ARTICLE);
 
 			CTTimelineUtil.setCTTimelineKeys(
-				originalHttpServletRequest, KBArticle.class,
-				kbArticle.getKbArticleId());
+				renderRequest, KBArticle.class, kbArticle.getKbArticleId());
 
 			return "/article/view.jsp";
 		}
@@ -77,8 +67,7 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 				KBWebKeys.KNOWLEDGE_BASE_KB_ARTICLE);
 
 			CTTimelineUtil.setCTTimelineKeys(
-				originalHttpServletRequest, KBArticle.class,
-				kbArticle.getKbArticleId());
+				renderRequest, KBArticle.class, kbArticle.getKbArticleId());
 
 			return "/display/view.jsp";
 		}
@@ -109,8 +98,5 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 
 		return "/search/view.jsp";
 	}
-
-	@Reference
-	private Portal _portal;
 
 }

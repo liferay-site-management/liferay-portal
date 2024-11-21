@@ -16,8 +16,6 @@ import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -45,12 +43,7 @@ public class ViewKBTemplatesMVCRenderCommand implements MVCRenderCommand {
 				_portal.getLiferayPortletRequest(renderRequest),
 				_portal.getLiferayPortletResponse(renderResponse)));
 
-		HttpServletRequest originalHttpServletRequest =
-			_portal.getOriginalServletRequest(
-				_portal.getHttpServletRequest(renderRequest));
-
-		CTTimelineUtil.setClassName(
-			originalHttpServletRequest, KBTemplate.class);
+		CTTimelineUtil.setClassName(renderRequest, KBTemplate.class);
 
 		return "/admin/view_kb_templates.jsp";
 	}

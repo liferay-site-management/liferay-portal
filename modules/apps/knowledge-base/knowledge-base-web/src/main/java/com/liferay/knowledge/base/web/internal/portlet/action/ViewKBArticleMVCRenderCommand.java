@@ -54,15 +54,8 @@ public class ViewKBArticleMVCRenderCommand implements MVCRenderCommand {
 		KBArticle kbArticle = (KBArticle)renderRequest.getAttribute(
 			KBWebKeys.KNOWLEDGE_BASE_KB_ARTICLE);
 
-		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
-			renderRequest);
-
-		HttpServletRequest originalHttpServletRequest =
-			_portal.getOriginalServletRequest(httpServletRequest);
-
 		CTTimelineUtil.setCTTimelineKeys(
-			originalHttpServletRequest, KBArticle.class,
-			kbArticle.getKbArticleId());
+			renderRequest, KBArticle.class, kbArticle.getKbArticleId());
 
 		if (rootPortletId.equals(KBPortletKeys.KNOWLEDGE_BASE_ADMIN)) {
 			return "/admin/view_kb_article.jsp";
@@ -78,6 +71,9 @@ public class ViewKBArticleMVCRenderCommand implements MVCRenderCommand {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)renderRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
+
+		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
+			renderRequest);
 
 		if (rootPortletId.equals(KBPortletKeys.KNOWLEDGE_BASE_SEARCH)) {
 			try {
