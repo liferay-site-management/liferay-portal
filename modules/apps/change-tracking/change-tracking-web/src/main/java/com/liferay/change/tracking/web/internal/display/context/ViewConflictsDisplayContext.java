@@ -138,6 +138,19 @@ public class ViewConflictsDisplayContext {
 				);
 			}
 		).put(
+			"learnResolvingConflictsLink",
+			() -> {
+				LearnMessage learnMessage = LearnMessageUtil.getLearnMessage(
+					"resolving-conflicts", _themeDisplay.getLanguageId(),
+					"change-tracking-web");
+
+				return JSONUtil.put(
+					"message", learnMessage.getMessage()
+				).put(
+					"url", learnMessage.getURL()
+				);
+			}
+		).put(
 			"publishURL",
 			() -> PortletURLBuilder.createActionURL(
 				_renderResponse

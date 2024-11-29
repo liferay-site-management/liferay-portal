@@ -26,6 +26,7 @@ class ChangeTrackingConflictsView extends ChangeTrackingBaseScheduleView {
 			hasUnapprovedChanges,
 			isEmpty,
 			learnLink,
+			learnResolvingConflictsLink,
 			publishURL,
 			redirect,
 			resolvedConflicts,
@@ -42,6 +43,7 @@ class ChangeTrackingConflictsView extends ChangeTrackingBaseScheduleView {
 		this.hasUnapprovedChanges = hasUnapprovedChanges;
 		this.isEmpty = isEmpty;
 		this.learnLink = learnLink;
+		this.learnResolvingConflictsLink = learnResolvingConflictsLink;
 		this.publishURL = publishURL;
 		this.redirect = redirect;
 		this.resolvedConflicts = resolvedConflicts;
@@ -145,9 +147,13 @@ class ChangeTrackingConflictsView extends ChangeTrackingBaseScheduleView {
 							displayType="info"
 							spritemap={this.spritemap}
 							title={Liferay.Language.get(
-								"this-publication-contains-changes-to-a-content-page.-publishing-these-changes-will-fully-overwrite-the-page's-content-and-layout-in-production"
+								'publication-may-overwrite-changes-made-directly-into-production'
 							)}
-						/>
+						>
+							<a href={this.learnResolvingConflictsLink.url}>
+								{this.learnResolvingConflictsLink.message}
+							</a>
+						</ClayAlert>
 					)}
 				</div>
 
