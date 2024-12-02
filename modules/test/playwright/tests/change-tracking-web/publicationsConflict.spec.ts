@@ -6,7 +6,11 @@
 import {expect, mergeTests} from '@playwright/test';
 
 import {apiHelpersTest} from '../../fixtures/apiHelpersTest';
+import {applicationsMenuPageTest} from '../../fixtures/applicationsMenuPageTest';
 import {changeTrackingPagesTest} from '../../fixtures/changeTrackingPagesTest';
+import {isolatedSiteTest} from '../../fixtures/isolatedSiteTest';
+import {pageEditorPagesTest} from '../../fixtures/pageEditorPagesTest';
+import {pagesAdminPagesTest} from '../../fixtures/pagesAdminPagesTest';
 import {productMenuPageTest} from '../../fixtures/productMenuPageTest';
 import getRandomString from '../../utils/getRandomString';
 import {waitForAlert} from '../../utils/waitForAlert';
@@ -15,11 +19,95 @@ import {journalPagesTest} from '../journal-web/fixtures/journalPagesTest';
 
 export const test = mergeTests(
 	apiHelpersTest,
+	applicationsMenuPageTest,
+	isolatedSiteTest,
 	blogsPagesTest,
 	changeTrackingPagesTest,
 	journalPagesTest,
+	pagesAdminPagesTest,
+	pageEditorPagesTest,
 	productMenuPageTest
 );
+
+test('LPD-42499 Assert Page Conflict message is correct on Check Conflict screen', async ({
+	applicationsMenuPage,
+	changeTrackingPage,
+	ctCollection,
+	page,
+	pageEditorPage,
+	pagesAdminPage,
+	productMenuPage,
+	site,
+}) => {
+	await changeTrackingPage.workOnProduction();
+
+	await applicationsMenuPage.goToSite(site.name);
+
+	const layoutTitle = getRandomString();
+
+	await productMenuPage.openProductMenuIfClosed();
+
+	await productMenuPage.goToPages();
+
+	await pagesAdminPage.createNewPage({
+		addButtonLabel: 'Page',
+		draft: true,
+		name: layoutTitle,
+		template: 'Blank',
+	});
+
+	await pageEditorPage.goToSidebarTab('Fragments and Widgets');
+
+	await pageEditorPage.addFragment(
+		'Featured Content',
+		'Banner Center',
+		page.locator('div.page-editor__root')
+	);
+
+	await pageEditorPage.publishPage();
+
+	await changeTrackingPage.workOnPublication(ctCollection);
+
+	await pagesAdminPage.editPage(layoutTitle);
+
+	await pageEditorPage.goToSidebarTab('Fragments and Widgets');
+
+	await pageEditorPage.addFragment(
+		'Featured Content',
+		'Banner Center',
+		page.locator('div.page-editor__root')
+	);
+
+	await pageEditorPage.publishPage();
+
+	await changeTrackingPage.workOnProduction();
+
+	await pagesAdminPage.editPage(layoutTitle);
+
+	await pageEditorPage.goToSidebarTab('Fragments and Widgets');
+
+	await pageEditorPage.changeFragmentConfiguration({
+		fieldLabel: 'Background Color',
+		fragmentId: await pageEditorPage.getFragmentId('Paragraph'),
+		tab: 'Styles',
+		value: 'Danger',
+		valueFromStylebook: true,
+	});
+
+	await pageEditorPage.publishPage();
+
+	await changeTrackingPage.workOnPublication(ctCollection);
+
+	await changeTrackingPage.goToReviewChanges(ctCollection.name);
+
+	await page.getByRole('link', {name: 'Publish'}).click();
+
+	await expect(
+		page.getByText(
+			'Publication may overwrite changes made directly into production.'
+		)
+	).toBeVisible();
+});
 
 test('Resolve deletion modification conflict publications by discarding', async ({
 	apiHelpers,
