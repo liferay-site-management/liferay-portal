@@ -138,6 +138,10 @@ public class ChangeTrackingServiceUpgradeStepRegistrator
 		registry.register(
 			"2.12.3", "2.12.4",
 			new CTProcessResourceUpgradeProcess(_resourceLocalService));
+
+		registry.register(
+			"2.12.4", "2.13.0",
+			UpgradeProcessFactory.addColumns("CTCollection", "score INT"));
 	}
 
 	@Reference
