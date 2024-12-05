@@ -18,6 +18,7 @@ import com.liferay.change.tracking.exception.CTEnclosureException;
 import com.liferay.change.tracking.exception.CTLocalizedException;
 import com.liferay.change.tracking.exception.CTPublishConflictException;
 import com.liferay.change.tracking.internal.CTEnclosureUtil;
+import com.liferay.change.tracking.internal.CTScoreChecker;
 import com.liferay.change.tracking.internal.CTServiceCopier;
 import com.liferay.change.tracking.internal.CTServiceRegistry;
 import com.liferay.change.tracking.internal.conflict.CTConflictChecker;
@@ -160,6 +161,34 @@ public class CTCollectionLocalServiceImpl
 			false, false, false);
 
 		return ctCollection;
+	}
+
+	@Override
+	public CTCollection calculateScore(long ctCollectionId) {
+		CTCollection ctCollection = ctCollectionPersistence.fetchByPrimaryKey(
+			ctCollectionId);
+
+		if (ctCollection == null) {
+			return null;
+		}
+
+		List<CTEntry> ctEntries = _ctEntryLocalService.getCTCollectionCTEntries(
+			ctCollectionId);
+
+		int score = 0;
+
+		if (_ctScoreChecker == null) {
+			_ctScoreChecker = new CTScoreChecker(
+				_classNameLocalService, _ctServiceRegistry);
+		}
+
+		for (CTEntry ctEntry : ctEntries) {
+			score += _ctScoreChecker.calculate(ctEntry.getModelClassNameId());
+		}
+
+		ctCollection.setScore(score);
+
+		return ctCollectionPersistence.update(ctCollection);
 	}
 
 	@Override
@@ -1087,6 +1116,41 @@ public class CTCollectionLocalServiceImpl
 		return ctCollectionPersistence.update(ctCollection);
 	}
 
+	@Override
+	public CTCollection updateScore(
+		long ctCollectionId, long modelClassNameId, boolean increment) {
+
+		CTCollection ctCollection = ctCollectionPersistence.fetchByPrimaryKey(
+			ctCollectionId);
+
+		if (ctCollection == null) {
+			return null;
+		}
+
+		int score = ctCollection.getScore();
+
+		if (score == 0) {
+			ctCollection = calculateScore(ctCollection.getCtCollectionId());
+
+			score = ctCollection.getScore();
+		}
+
+		if (increment) {
+			score += _ctScoreChecker.calculate(modelClassNameId);
+		}
+		else {
+			score -= _ctScoreChecker.calculate(modelClassNameId);
+		}
+
+		if (score < 0) {
+			score = 0;
+		}
+
+		ctCollection.setScore(score);
+
+		return ctCollectionPersistence.update(ctCollection);
+	}
+
 	@Activate
 	protected void activate(BundleContext bundleContext) {
 		_constraintResolverServiceTrackerMap =
@@ -1602,6 +1666,8 @@ public class CTCollectionLocalServiceImpl
 
 	@Reference
 	private CTSchemaVersionLocalService _ctSchemaVersionLocalService;
+
+	private CTScoreChecker _ctScoreChecker;
 
 	@Reference
 	private CTServiceRegistry _ctServiceRegistry;
