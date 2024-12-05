@@ -80,6 +80,8 @@ public interface CTCollectionLocalService
 			long ctRemoteId, String name, String description)
 		throws PortalException;
 
+	public CTCollection calculateScore(long ctCollectionId);
+
 	public Map<Long, List<ConflictInfo>> checkConflicts(
 			CTCollection ctCollection)
 		throws PortalException;
@@ -386,5 +388,8 @@ public interface CTCollectionLocalService
 	public CTCollection updateCTCollection(
 			long userId, long ctCollectionId, String name, String description)
 		throws PortalException;
+
+	public CTCollection updateScore(
+		long ctCollectionId, long modelClassNameId, boolean increment);
 
 }

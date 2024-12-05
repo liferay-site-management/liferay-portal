@@ -24,6 +24,7 @@ create table CTCollection (
 	name VARCHAR(75) null,
 	description VARCHAR(200) null,
 	onDemandUserId LONG,
+	score INTEGER,
 	shareable BOOLEAN,
 	status INTEGER,
 	statusByUserId LONG,

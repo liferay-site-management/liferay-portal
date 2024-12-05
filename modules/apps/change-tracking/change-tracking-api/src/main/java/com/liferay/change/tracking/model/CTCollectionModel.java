@@ -279,6 +279,20 @@ public interface CTCollectionModel
 	public void setOnDemandUserUuid(String onDemandUserUuid);
 
 	/**
+	 * Returns the score of this ct collection.
+	 *
+	 * @return the score of this ct collection
+	 */
+	public int getScore();
+
+	/**
+	 * Sets the score of this ct collection.
+	 *
+	 * @param score the score of this ct collection
+	 */
+	public void setScore(int score);
+
+	/**
 	 * Returns the shareable of this ct collection.
 	 *
 	 * @return the shareable of this ct collection

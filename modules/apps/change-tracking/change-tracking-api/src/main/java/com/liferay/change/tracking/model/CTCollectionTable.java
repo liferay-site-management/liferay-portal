@@ -51,6 +51,8 @@ public class CTCollectionTable extends BaseTable<CTCollectionTable> {
 		"description", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
 	public final Column<CTCollectionTable, Long> onDemandUserId = createColumn(
 		"onDemandUserId", Long.class, Types.BIGINT, Column.FLAG_DEFAULT);
+	public final Column<CTCollectionTable, Integer> score = createColumn(
+		"score", Integer.class, Types.INTEGER, Column.FLAG_DEFAULT);
 	public final Column<CTCollectionTable, Boolean> shareable = createColumn(
 		"shareable", Boolean.class, Types.BOOLEAN, Column.FLAG_DEFAULT);
 	public final Column<CTCollectionTable, Integer> status = createColumn(

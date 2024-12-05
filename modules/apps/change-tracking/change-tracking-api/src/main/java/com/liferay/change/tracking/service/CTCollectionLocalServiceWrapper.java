@@ -58,6 +58,13 @@ public class CTCollectionLocalServiceWrapper
 	}
 
 	@Override
+	public com.liferay.change.tracking.model.CTCollection calculateScore(
+		long ctCollectionId) {
+
+		return _ctCollectionLocalService.calculateScore(ctCollectionId);
+	}
+
+	@Override
 	public java.util.Map
 		<Long,
 		 java.util.List<com.liferay.change.tracking.conflict.ConflictInfo>>
@@ -567,6 +574,14 @@ public class CTCollectionLocalServiceWrapper
 
 		return _ctCollectionLocalService.updateCTCollection(
 			userId, ctCollectionId, name, description);
+	}
+
+	@Override
+	public com.liferay.change.tracking.model.CTCollection updateScore(
+		long ctCollectionId, long modelClassNameId, boolean increment) {
+
+		return _ctCollectionLocalService.updateScore(
+			ctCollectionId, modelClassNameId, increment);
 	}
 
 	@Override

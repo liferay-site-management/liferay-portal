@@ -140,6 +140,8 @@ public class CTCollectionPersistenceTest {
 
 		newCTCollection.setOnDemandUserId(RandomTestUtil.nextLong());
 
+		newCTCollection.setScore(RandomTestUtil.nextInt());
+
 		newCTCollection.setShareable(RandomTestUtil.randomBoolean());
 
 		newCTCollection.setStatus(RandomTestUtil.nextInt());
@@ -189,6 +191,8 @@ public class CTCollectionPersistenceTest {
 		Assert.assertEquals(
 			existingCTCollection.getOnDemandUserId(),
 			newCTCollection.getOnDemandUserId());
+		Assert.assertEquals(
+			existingCTCollection.getScore(), newCTCollection.getScore());
 		Assert.assertEquals(
 			existingCTCollection.isShareable(), newCTCollection.isShareable());
 		Assert.assertEquals(
@@ -305,8 +309,9 @@ public class CTCollectionPersistenceTest {
 			"externalReferenceCode", true, "ctCollectionId", true, "companyId",
 			true, "userId", true, "createDate", true, "modifiedDate", true,
 			"ctRemoteId", true, "schemaVersionId", true, "name", true,
-			"description", true, "onDemandUserId", true, "shareable", true,
-			"status", true, "statusByUserId", true, "statusDate", true);
+			"description", true, "onDemandUserId", true, "score", true,
+			"shareable", true, "status", true, "statusByUserId", true,
+			"statusDate", true);
 	}
 
 	@Test
@@ -613,6 +618,8 @@ public class CTCollectionPersistenceTest {
 		ctCollection.setDescription(RandomTestUtil.randomString());
 
 		ctCollection.setOnDemandUserId(RandomTestUtil.nextLong());
+
+		ctCollection.setScore(RandomTestUtil.nextInt());
 
 		ctCollection.setShareable(RandomTestUtil.randomBoolean());
 

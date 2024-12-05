@@ -68,7 +68,7 @@ public class CTCollectionCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(35);
+		StringBundler sb = new StringBundler(37);
 
 		sb.append("{mvccVersion=");
 		sb.append(mvccVersion);
@@ -96,6 +96,8 @@ public class CTCollectionCacheModel
 		sb.append(description);
 		sb.append(", onDemandUserId=");
 		sb.append(onDemandUserId);
+		sb.append(", score=");
+		sb.append(score);
 		sb.append(", shareable=");
 		sb.append(shareable);
 		sb.append(", status=");
@@ -165,6 +167,7 @@ public class CTCollectionCacheModel
 		}
 
 		ctCollectionImpl.setOnDemandUserId(onDemandUserId);
+		ctCollectionImpl.setScore(score);
 		ctCollectionImpl.setShareable(shareable);
 		ctCollectionImpl.setStatus(status);
 		ctCollectionImpl.setStatusByUserId(statusByUserId);
@@ -202,6 +205,8 @@ public class CTCollectionCacheModel
 		description = objectInput.readUTF();
 
 		onDemandUserId = objectInput.readLong();
+
+		score = objectInput.readInt();
 
 		shareable = objectInput.readBoolean();
 
@@ -257,6 +262,8 @@ public class CTCollectionCacheModel
 
 		objectOutput.writeLong(onDemandUserId);
 
+		objectOutput.writeInt(score);
+
 		objectOutput.writeBoolean(shareable);
 
 		objectOutput.writeInt(status);
@@ -278,6 +285,7 @@ public class CTCollectionCacheModel
 	public String name;
 	public String description;
 	public long onDemandUserId;
+	public int score;
 	public boolean shareable;
 	public int status;
 	public long statusByUserId;

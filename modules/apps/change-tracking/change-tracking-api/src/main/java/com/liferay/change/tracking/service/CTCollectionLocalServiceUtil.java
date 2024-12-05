@@ -62,6 +62,10 @@ public class CTCollectionLocalServiceUtil {
 			description);
 	}
 
+	public static CTCollection calculateScore(long ctCollectionId) {
+		return getService().calculateScore(ctCollectionId);
+	}
+
 	public static Map
 		<Long, List<com.liferay.change.tracking.conflict.ConflictInfo>>
 				checkConflicts(CTCollection ctCollection)
@@ -486,6 +490,13 @@ public class CTCollectionLocalServiceUtil {
 
 		return getService().updateCTCollection(
 			userId, ctCollectionId, name, description);
+	}
+
+	public static CTCollection updateScore(
+		long ctCollectionId, long modelClassNameId, boolean increment) {
+
+		return getService().updateScore(
+			ctCollectionId, modelClassNameId, increment);
 	}
 
 	public static CTCollectionLocalService getService() {

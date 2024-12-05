@@ -47,6 +47,7 @@ public class CTCollectionWrapper
 		attributes.put("name", getName());
 		attributes.put("description", getDescription());
 		attributes.put("onDemandUserId", getOnDemandUserId());
+		attributes.put("score", getScore());
 		attributes.put("shareable", isShareable());
 		attributes.put("status", getStatus());
 		attributes.put("statusByUserId", getStatusByUserId());
@@ -134,6 +135,12 @@ public class CTCollectionWrapper
 
 		if (onDemandUserId != null) {
 			setOnDemandUserId(onDemandUserId);
+		}
+
+		Integer score = (Integer)attributes.get("score");
+
+		if (score != null) {
+			setScore(score);
 		}
 
 		Boolean shareable = (Boolean)attributes.get("shareable");
@@ -294,6 +301,16 @@ public class CTCollectionWrapper
 	@Override
 	public long getSchemaVersionId() {
 		return model.getSchemaVersionId();
+	}
+
+	/**
+	 * Returns the score of this ct collection.
+	 *
+	 * @return the score of this ct collection
+	 */
+	@Override
+	public int getScore() {
+		return model.getScore();
 	}
 
 	/**
@@ -534,6 +551,16 @@ public class CTCollectionWrapper
 	@Override
 	public void setSchemaVersionId(long schemaVersionId) {
 		model.setSchemaVersionId(schemaVersionId);
+	}
+
+	/**
+	 * Sets the score of this ct collection.
+	 *
+	 * @param score the score of this ct collection
+	 */
+	@Override
+	public void setScore(int score) {
+		model.setScore(score);
 	}
 
 	/**
