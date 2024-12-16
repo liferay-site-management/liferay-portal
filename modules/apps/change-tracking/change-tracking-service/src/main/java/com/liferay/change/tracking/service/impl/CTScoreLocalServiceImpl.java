@@ -50,6 +50,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.osgi.framework.BundleContext;
@@ -242,6 +243,17 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 			});
 	}
 
+	private String _getSizeClassification(int score) {
+		if (score > 20000) {
+			return "large";
+		}
+		else if (score > 10000) {
+			return "medium";
+		}
+
+		return "small";
+	}
+
 	private CTScore _updateScore(
 			long ctCollectionId, long modelClassNameId, boolean increment)
 		throws PortalException {
@@ -254,6 +266,8 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 		}
 
 		int score = ctScore.getScore();
+
+		String sizeClassification = _getSizeClassification(score);
 
 		if (increment) {
 			score += _calculate(modelClassNameId);
@@ -268,23 +282,29 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 
 		ctScore.setScore(score);
 
-		CTCollection ctCollection =
-			_ctCollectionLocalService.getCTCollection(ctCollectionId);
+		String newSizeClassification = _getSizeClassification(score);
 
-		Set<Long> userIds = SetUtil.fromArray(
-			_ctUserNotificationHelper.getPublicationRoleUserIds(
-				ctCollection, true, PublicationRoleConstants.NAME_ADMIN,
-				PublicationRoleConstants.NAME_PUBLISHER));
+		if (!Objects.equals(sizeClassification, newSizeClassification)) {
+			CTCollection ctCollection =
+				_ctCollectionLocalService.getCTCollection(ctCollectionId);
 
-		_ctUserNotificationHelper.sendUserNotificationEvents(
-			ctCollection,
-			JSONUtil.put(
-				"ctCollectionId", ctCollectionId
-			).put(
-				"notificationType",
-				UserNotificationDefinition.NOTIFICATION_TYPE_UPDATE_ENTRY
-			),
-			ArrayUtil.toLongArray(userIds));
+			Set<Long> userIds = SetUtil.fromArray(
+				_ctUserNotificationHelper.getPublicationRoleUserIds(
+					ctCollection, true, PublicationRoleConstants.NAME_ADMIN,
+					PublicationRoleConstants.NAME_PUBLISHER));
+
+			_ctUserNotificationHelper.sendUserNotificationEvents(
+				ctCollection,
+				JSONUtil.put(
+					"ctCollectionId", ctCollectionId
+				).put(
+					"notificationType",
+					UserNotificationDefinition.NOTIFICATION_TYPE_UPDATE_ENTRY
+				).put(
+					"sizeClassification", newSizeClassification
+				),
+				ArrayUtil.toLongArray(userIds));
+		}
 
 		return ctScorePersistence.update(ctScore);
 	}
