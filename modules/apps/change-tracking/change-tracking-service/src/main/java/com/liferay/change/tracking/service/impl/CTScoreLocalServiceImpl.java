@@ -5,10 +5,13 @@
 
 package com.liferay.change.tracking.service.impl;
 
+import com.liferay.change.tracking.constants.PublicationRoleConstants;
 import com.liferay.change.tracking.internal.CTServiceRegistry;
+import com.liferay.change.tracking.internal.helper.CTUserNotificationHelper;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.model.CTScore;
+import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.service.base.CTScoreLocalServiceBaseImpl;
 import com.liferay.change.tracking.service.persistence.CTCollectionPersistence;
@@ -24,15 +27,20 @@ import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.db.DBType;
 import com.liferay.portal.kernel.dao.jdbc.CurrentConnection;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.increment.BufferedIncrement;
 import com.liferay.portal.kernel.increment.NumberIncrement;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.notifications.UserNotificationDefinition;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.ExceptionRetryAcceptor;
 import com.liferay.portal.kernel.service.change.tracking.CTService;
 import com.liferay.portal.kernel.spring.aop.Property;
 import com.liferay.portal.kernel.spring.aop.Retry;
+import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.SetUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -100,7 +108,9 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 			)
 		}
 	)
-	public CTScore decrementScore(long ctCollectionId, long modelClassNameId) {
+	public CTScore decrementScore(long ctCollectionId, long modelClassNameId)
+		throws PortalException {
+
 		return _updateScore(ctCollectionId, modelClassNameId, false);
 	}
 
@@ -119,7 +129,9 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 			)
 		}
 	)
-	public CTScore incrementScore(long ctCollectionId, long modelClassNameId) {
+	public CTScore incrementScore(long ctCollectionId, long modelClassNameId)
+		throws PortalException {
+
 		return _updateScore(ctCollectionId, modelClassNameId, true);
 	}
 
@@ -231,7 +243,8 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 	}
 
 	private CTScore _updateScore(
-		long ctCollectionId, long modelClassNameId, boolean increment) {
+			long ctCollectionId, long modelClassNameId, boolean increment)
+		throws PortalException {
 
 		CTScore ctScore = ctScorePersistence.fetchByCtCollectionId(
 			ctCollectionId);
@@ -255,6 +268,24 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 
 		ctScore.setScore(score);
 
+		CTCollection ctCollection =
+			_ctCollectionLocalService.getCTCollection(ctCollectionId);
+
+		Set<Long> userIds = SetUtil.fromArray(
+			_ctUserNotificationHelper.getPublicationRoleUserIds(
+				ctCollection, true, PublicationRoleConstants.NAME_ADMIN,
+				PublicationRoleConstants.NAME_PUBLISHER));
+
+		_ctUserNotificationHelper.sendUserNotificationEvents(
+			ctCollection,
+			JSONUtil.put(
+				"ctCollectionId", ctCollectionId
+			).put(
+				"notificationType",
+				UserNotificationDefinition.NOTIFICATION_TYPE_UPDATE_ENTRY
+			),
+			ArrayUtil.toLongArray(userIds));
+
 		return ctScorePersistence.update(ctScore);
 	}
 
@@ -267,6 +298,9 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 	private ClassNameLocalService _classNameLocalService;
 
 	@Reference
+	private CTCollectionLocalService _ctCollectionLocalService;
+
+	@Reference
 	private CTCollectionPersistence _ctCollectionPersistence;
 
 	@Reference
@@ -274,6 +308,9 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 
 	@Reference
 	private CTServiceRegistry _ctServiceRegistry;
+
+	@Reference
+	private CTUserNotificationHelper _ctUserNotificationHelper;
 
 	@Reference
 	private CurrentConnection _currentConnection;
