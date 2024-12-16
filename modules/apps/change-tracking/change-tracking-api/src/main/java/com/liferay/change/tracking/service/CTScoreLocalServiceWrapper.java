@@ -76,7 +76,8 @@ public class CTScoreLocalServiceWrapper
 
 	@Override
 	public com.liferay.change.tracking.model.CTScore decrementScore(
-		long ctCollectionId, long modelClassNameId) {
+			long ctCollectionId, long modelClassNameId)
+		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _ctScoreLocalService.decrementScore(
 			ctCollectionId, modelClassNameId);
@@ -324,7 +325,8 @@ public class CTScoreLocalServiceWrapper
 
 	@Override
 	public com.liferay.change.tracking.model.CTScore incrementScore(
-		long ctCollectionId, long modelClassNameId) {
+			long ctCollectionId, long modelClassNameId)
+		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _ctScoreLocalService.incrementScore(
 			ctCollectionId, modelClassNameId);

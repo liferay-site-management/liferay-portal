@@ -76,7 +76,8 @@ public class CTScoreLocalServiceUtil {
 	}
 
 	public static CTScore decrementScore(
-		long ctCollectionId, long modelClassNameId) {
+			long ctCollectionId, long modelClassNameId)
+		throws PortalException {
 
 		return getService().decrementScore(ctCollectionId, modelClassNameId);
 	}
@@ -280,7 +281,8 @@ public class CTScoreLocalServiceUtil {
 	}
 
 	public static CTScore incrementScore(
-		long ctCollectionId, long modelClassNameId) {
+			long ctCollectionId, long modelClassNameId)
+		throws PortalException {
 
 		return getService().incrementScore(ctCollectionId, modelClassNameId);
 	}
