@@ -12,6 +12,7 @@ import {isolatedSiteTest} from '../../fixtures/isolatedSiteTest';
 import {pageEditorPagesTest} from '../../fixtures/pageEditorPagesTest';
 import {pagesAdminPagesTest} from '../../fixtures/pagesAdminPagesTest';
 import {productMenuPageTest} from '../../fixtures/productMenuPageTest';
+import {clickAndExpectToBeVisible} from '../../utils/clickAndExpectToBeVisible';
 import getRandomString from '../../utils/getRandomString';
 import getBasicWebContentStructureId from '../../utils/structured-content/getBasicWebContentStructureId';
 import {waitForAlert} from '../../utils/waitForAlert';
@@ -179,6 +180,16 @@ test('Publish Parallel Publications', async ({
 
 	await journalEditArticlePage.fillTitle(title1);
 
+	await clickAndExpectToBeVisible({
+		autoClick: true,
+		target: page.getByRole('menuitem', {
+			name: 'Publish With Permissions',
+		}),
+		trigger: page.getByRole('button', {
+			name: 'Select and Confirm Publish Settings',
+		}),
+	});
+
 	const publishButton = page.getByRole('button', {name: 'Publish'});
 
 	await publishButton.click();
@@ -207,6 +218,16 @@ test('Publish Parallel Publications', async ({
 	const title2 = getRandomString();
 
 	await journalEditArticlePage.fillTitle(title2);
+
+	await clickAndExpectToBeVisible({
+		autoClick: true,
+		target: page.getByRole('menuitem', {
+			name: 'Publish With Permissions',
+		}),
+		trigger: page.getByRole('button', {
+			name: 'Select and Confirm Publish Settings',
+		}),
+	});
 
 	await publishButton.click();
 

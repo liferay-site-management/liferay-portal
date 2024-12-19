@@ -52,6 +52,15 @@ test.beforeEach(
 				await journalEditArticlePage.goto();
 				await page.locator('div[data-qa-id="content"]').waitFor();
 				await journalEditArticlePage.fillTitle(articleTitle);
+				await clickAndExpectToBeVisible({
+					autoClick: true,
+					target: page.getByRole('menuitem', {
+						name: 'Publish With Permissions',
+					}),
+					trigger: page.getByRole('button', {
+						name: 'Select and Confirm Publish Settings',
+					}),
+				});
 				await page.getByRole('button', {name: 'Publish'}).click();
 				await waitForAlert(
 					page,
