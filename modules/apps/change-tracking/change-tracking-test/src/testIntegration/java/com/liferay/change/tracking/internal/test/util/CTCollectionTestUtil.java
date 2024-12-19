@@ -6,8 +6,12 @@
 package com.liferay.change.tracking.internal.test.util;
 
 import com.liferay.change.tracking.model.CTCollection;
+import com.liferay.change.tracking.model.CTScore;
 import com.liferay.change.tracking.service.CTCollectionLocalServiceUtil;
 import com.liferay.change.tracking.service.CTCollectionServiceUtil;
+import com.liferay.change.tracking.service.CTScoreLocalServiceUtil;
+import com.liferay.document.library.kernel.model.DLFileEntryMetadata;
+import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestUtil;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.journal.test.util.JournalTestUtil;
@@ -58,6 +62,32 @@ public class CTCollectionTestUtil {
 		JournalArticleLocalServiceUtil.deleteArticle(
 			group.getGroupId(), journalArticle.getArticleId(),
 			ServiceContextTestUtil.getServiceContext());
+
+		return ctCollection;
+	}
+
+	public static CTCollection createCTCollectionWithScoreUpdated(
+			User user, long groupId, int score)
+		throws Exception {
+
+		CTCollection ctCollection = CTCollectionServiceUtil.addCTCollection(
+			null, TestPropsValues.getCompanyId(), user.getUserId(), 0,
+			RandomTestUtil.randomString(), null);
+
+		try (SafeCloseable safeCloseable =
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ctCollection.getCtCollectionId())) {
+
+			DDMStructureTestUtil.addStructure(
+				groupId, DLFileEntryMetadata.class.getName());
+		}
+
+		CTScore ctScore = CTScoreLocalServiceUtil.fetchCTScoreByCTCollectionId(
+			ctCollection.getCtCollectionId());
+
+		ctScore.setScore(score);
+
+		CTScoreLocalServiceUtil.updateCTScore(ctScore);
 
 		return ctCollection;
 	}
