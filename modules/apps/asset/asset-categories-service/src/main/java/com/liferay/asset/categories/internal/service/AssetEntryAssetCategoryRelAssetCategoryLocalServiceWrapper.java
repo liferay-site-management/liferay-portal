@@ -14,6 +14,9 @@ import com.liferay.asset.kernel.service.AssetCategoryLocalService;
 import com.liferay.asset.kernel.service.AssetCategoryLocalServiceWrapper;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.petra.function.transform.TransformUtil;
+import com.liferay.petra.lang.SafeCloseable;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
+import com.liferay.portal.kernel.change.tracking.sql.CTSQLModeThreadLocal;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.ModelHintsUtil;
@@ -124,12 +127,29 @@ public class AssetEntryAssetCategoryRelAssetCategoryLocalServiceWrapper
 	private List<AssetCategory> _getAssetCategoriesByEntryId(
 		long assetEntryId) {
 
-		List<AssetEntryAssetCategoryRel> assetEntryAssetCategoryRels =
-			_assetEntryAssetCategoryRelLocalService.
-				getAssetEntryAssetCategoryRelsByAssetEntryId(
-					assetEntryId, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
-					AssetEntryAssetCategoryRelAssetCategoryIdComparator.
-						getInstance(true));
+		List<AssetEntryAssetCategoryRel> assetEntryAssetCategoryRels;
+
+		if (!CTCollectionThreadLocal.isProductionMode()) {
+			try (SafeCloseable safeCloseable =
+					CTSQLModeThreadLocal.setCTSQLModeWithSafeCloseable(
+						CTSQLModeThreadLocal.CTSQLMode.CT_ONLY)) {
+
+				assetEntryAssetCategoryRels =
+					_assetEntryAssetCategoryRelLocalService.
+						getAssetEntryAssetCategoryRelsByAssetEntryId(
+							assetEntryId, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
+							AssetEntryAssetCategoryRelAssetCategoryIdComparator.
+								getInstance(true));
+			}
+		}
+		else {
+			assetEntryAssetCategoryRels =
+				_assetEntryAssetCategoryRelLocalService.
+					getAssetEntryAssetCategoryRelsByAssetEntryId(
+						assetEntryId, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
+						AssetEntryAssetCategoryRelAssetCategoryIdComparator.
+							getInstance(true));
+		}
 
 		return TransformUtil.transform(
 			assetEntryAssetCategoryRels,
