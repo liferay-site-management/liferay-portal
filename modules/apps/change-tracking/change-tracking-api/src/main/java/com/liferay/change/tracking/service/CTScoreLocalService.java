@@ -98,6 +98,7 @@ public interface CTScoreLocalService
 			)
 		}
 	)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public CTScore decrementScore(long ctCollectionId, long modelClassNameId);
 
 	/**
@@ -275,6 +276,7 @@ public interface CTScoreLocalService
 			)
 		}
 	)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public CTScore incrementScore(long ctCollectionId, long modelClassNameId);
 
 	/**
