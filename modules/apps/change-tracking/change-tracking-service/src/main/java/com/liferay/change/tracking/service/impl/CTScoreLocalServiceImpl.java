@@ -33,6 +33,8 @@ import com.liferay.portal.kernel.service.ExceptionRetryAcceptor;
 import com.liferay.portal.kernel.service.change.tracking.CTService;
 import com.liferay.portal.kernel.spring.aop.Property;
 import com.liferay.portal.kernel.spring.aop.Retry;
+import com.liferay.portal.kernel.transaction.Propagation;
+import com.liferay.portal.kernel.transaction.Transactional;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -100,6 +102,7 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 			)
 		}
 	)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public CTScore decrementScore(long ctCollectionId, long modelClassNameId) {
 		return _updateScore(ctCollectionId, modelClassNameId, false);
 	}
@@ -119,6 +122,7 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 			)
 		}
 	)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public CTScore incrementScore(long ctCollectionId, long modelClassNameId) {
 		return _updateScore(ctCollectionId, modelClassNameId, true);
 	}
