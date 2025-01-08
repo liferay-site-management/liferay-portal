@@ -57,7 +57,7 @@ import org.osgi.service.component.annotations.Reference;
 	property = "model.class.name=com.liferay.change.tracking.model.CTScore",
 	service = AopService.class
 )
-@CTAware
+@CTAware(onProduction = true)
 public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 
 	@Override
