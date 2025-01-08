@@ -94,7 +94,7 @@ public interface CTScoreLocalService
 		properties = {
 			@Property(
 				name = ExceptionRetryAcceptor.EXCEPTION_NAME,
-				value = "org.hibernate.StaleObjectStateException"
+				value = "org.hibernate.StaleStateException"
 			)
 		}
 	)
@@ -271,7 +271,7 @@ public interface CTScoreLocalService
 		properties = {
 			@Property(
 				name = ExceptionRetryAcceptor.EXCEPTION_NAME,
-				value = "org.hibernate.StaleObjectStateException"
+				value = "org.hibernate.StaleStateException"
 			)
 		}
 	)
