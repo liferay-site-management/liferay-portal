@@ -96,7 +96,7 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 		properties = {
 			@Property(
 				name = ExceptionRetryAcceptor.EXCEPTION_NAME,
-				value = "org.hibernate.StaleObjectStateException"
+				value = "org.hibernate.StaleStateException"
 			)
 		}
 	)
@@ -115,7 +115,7 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 		properties = {
 			@Property(
 				name = ExceptionRetryAcceptor.EXCEPTION_NAME,
-				value = "org.hibernate.StaleObjectStateException"
+				value = "org.hibernate.StaleStateException"
 			)
 		}
 	)
