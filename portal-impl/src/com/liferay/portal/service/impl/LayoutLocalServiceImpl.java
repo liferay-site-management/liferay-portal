@@ -872,11 +872,6 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 
 		LockManagerUtil.unlock(Layout.class.getName(), layout.getPlid());
 
-		// Layout friendly URLs
-
-		_layoutFriendlyURLLocalService.deleteLayoutFriendlyURLs(
-			layout.getPlid());
-
 		// Portlet preferences
 
 		_portletPreferencesLocalService.deletePortletPreferencesByPlid(
@@ -886,6 +881,14 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 
 		_assetEntryLocalService.deleteEntry(
 			Layout.class.getName(), layout.getPlid());
+
+		_assetEntryLocalService.deleteEntry(
+			LayoutFriendlyURL.class.getName(), layout.getPlid());
+
+		// Layout friendly URLs
+
+		_layoutFriendlyURLLocalService.deleteLayoutFriendlyURLs(
+			layout.getPlid());
 
 		// Ratings
 
