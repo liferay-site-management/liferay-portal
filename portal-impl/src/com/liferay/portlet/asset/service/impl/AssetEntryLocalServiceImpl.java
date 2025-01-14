@@ -1361,6 +1361,8 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 			// Entry
 
 			entry = assetEntryPersistence.remove(entry);
+
+			assetEntryPersistence.flush();
 		}
 		else {
 			List<Object[]> assertEntryAssetTagIds =
