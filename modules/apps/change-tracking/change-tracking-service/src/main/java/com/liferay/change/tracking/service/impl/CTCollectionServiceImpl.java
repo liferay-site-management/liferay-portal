@@ -31,6 +31,7 @@ import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
+import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -170,9 +171,14 @@ public class CTCollectionServiceImpl extends CTCollectionServiceBaseImpl {
 		_ctCollectionModelResourcePermission.check(
 			getPermissionChecker(), toCTCollectionId, ActionKeys.UPDATE);
 
-		ctCollectionLocalService.moveCTEntry(
-			fromCTCollectionId, toCTCollectionId, modelClassNameId,
-			modelClassPK);
+		TransactionCommitCallbackUtil.registerCallback(
+			() -> {
+				ctCollectionLocalService.moveCTEntry(
+					fromCTCollectionId, toCTCollectionId, modelClassNameId,
+					modelClassPK);
+
+				return null;
+			});
 	}
 
 	@Override
