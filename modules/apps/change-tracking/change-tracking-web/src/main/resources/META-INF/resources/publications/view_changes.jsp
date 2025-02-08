@@ -40,6 +40,13 @@ renderResponse.setTitle(LanguageUtil.get(request, "review-changes"));
 			</div>
 		</c:if>
 
+		<c:if test="<%= SessionErrors.contains(renderRequest, CTPublishConflictException.class) %>">
+			<clay:alert
+				displayType="danger"
+				message="one-or-more-changes-conflict-with-existing-changes-in-the-destination-publication"
+			/>
+		</c:if>
+
 		<clay:navigation-bar
 			navigationItems="<%= viewChangesDisplayContext.getViewNavigationItems() %>"
 		/>

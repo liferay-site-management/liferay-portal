@@ -7,6 +7,8 @@ package com.liferay.change.tracking.web.internal.portlet.action;
 
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.constants.CTPortletKeys;
+import com.liferay.change.tracking.exception.CTEnclosureException;
+import com.liferay.change.tracking.exception.CTPublishConflictException;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.CTCollectionService;
 import com.liferay.change.tracking.service.CTEntryLocalService;
@@ -20,6 +22,7 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.BaseTransactionalMVCActionC
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -80,14 +83,18 @@ public class MoveChangesMVCActionCommand
 					CTEntry ctEntry = _ctEntryLocalService.fetchCTEntry(
 						fromCTCollectionId, modelClassNameId, modelClassPK);
 
-					_moveCTEntry(ctEntry, fromCTCollectionId, toCTCollectionId);
+					_moveCTEntry(
+						actionRequest, ctEntry, fromCTCollectionId,
+						toCTCollectionId);
 				}
 
 				for (long ctEntryId : ctEntryIds) {
 					CTEntry ctEntry = _ctEntryLocalService.fetchCTEntry(
 						ctEntryId);
 
-					_moveCTEntry(ctEntry, fromCTCollectionId, toCTCollectionId);
+					_moveCTEntry(
+						actionRequest, ctEntry, fromCTCollectionId,
+						toCTCollectionId);
 				}
 			}
 			catch (PortalException portalException) {
@@ -128,7 +135,8 @@ public class MoveChangesMVCActionCommand
 	}
 
 	private <T extends BaseModel<T>> void _moveCTEntry(
-			CTEntry ctEntry, long fromCTCollectionId, long toCTCollectionId)
+			ActionRequest actionRequest, CTEntry ctEntry,
+			long fromCTCollectionId, long toCTCollectionId)
 		throws PortalException {
 
 		if (ctEntry == null) {
@@ -151,9 +159,29 @@ public class MoveChangesMVCActionCommand
 		}
 
 		if (ctEntry.getCtCollectionId() == fromCTCollectionId) {
-			_ctCollectionService.moveCTEntry(
-				ctEntry.getCtCollectionId(), toCTCollectionId,
-				ctEntry.getModelClassNameId(), ctEntry.getModelClassPK());
+			TransactionCommitCallbackUtil.registerCallback(
+				() -> {
+					try {
+						_ctCollectionService.moveCTEntry(
+							ctEntry.getCtCollectionId(), toCTCollectionId,
+							ctEntry.getModelClassNameId(),
+							ctEntry.getModelClassPK());
+					}
+					catch (Exception exception) {
+						if (exception instanceof CTEnclosureException) {
+							hideDefaultErrorMessage(actionRequest);
+							SessionErrors.clear(actionRequest);
+						}
+						else if (exception instanceof
+									CTPublishConflictException) {
+
+							SessionErrors.add(
+								actionRequest, exception.getClass());
+						}
+					}
+
+					return null;
+				});
 		}
 	}
 

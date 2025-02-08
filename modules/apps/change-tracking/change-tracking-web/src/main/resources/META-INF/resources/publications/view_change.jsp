@@ -32,6 +32,15 @@ renderResponse.setTitle(LanguageUtil.get(request, "review-change"));
 		/>
 	</div>
 
+	<clay:container-fluid>
+		<c:if test="<%= SessionErrors.contains(renderRequest, CTPublishConflictException.class) %>">
+			<clay:alert
+				displayType="danger"
+				message="one-or-more-changes-conflict-with-existing-changes-in-the-destination-publication"
+			/>
+		</c:if>
+	</clay:container-fluid>
+
 	<div class="sidenav-content">
 		<react:component
 			module="{ChangeTrackingChangeView} from change-tracking-web"
