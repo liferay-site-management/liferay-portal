@@ -112,6 +112,11 @@ public class JournalArticleCTDisplayRenderer
 	}
 
 	@Override
+	public boolean isHideable(JournalArticle journalArticle) {
+		return true;
+	}
+
+	@Override
 	public String renderPreview(DisplayContext<JournalArticle> displayContext)
 		throws Exception {
 
