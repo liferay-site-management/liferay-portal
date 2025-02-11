@@ -17,7 +17,6 @@ import com.liferay.dynamic.data.mapping.model.DDMTemplateTable;
 import com.liferay.friendly.url.model.FriendlyURLEntryTable;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalArticleLocalizationTable;
-import com.liferay.journal.model.JournalArticleResourceTable;
 import com.liferay.journal.model.JournalArticleTable;
 import com.liferay.journal.model.JournalFolderTable;
 import com.liferay.journal.service.persistence.JournalArticlePersistence;
@@ -92,14 +91,9 @@ public class JournalArticleTableReferenceDefinition
 				JournalArticleTable.INSTANCE.id.eq(
 					JournalArticleLocalizationTable.INSTANCE.articlePK)
 			)
-		).resourcePermissionReference(
-			JournalArticleTable.INSTANCE.resourcePrimKey, JournalArticle.class
 		).singleColumnReference(
 			JournalArticleTable.INSTANCE.id,
 			DDMStorageLinkTable.INSTANCE.classPK
-		).singleColumnReference(
-			JournalArticleTable.INSTANCE.resourcePrimKey,
-			JournalArticleResourceTable.INSTANCE.resourcePrimKey
 		).systemEventReference(
 			JournalArticleTable.INSTANCE.id, JournalArticle.class
 		);

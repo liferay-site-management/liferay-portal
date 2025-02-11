@@ -8,7 +8,9 @@ package com.liferay.journal.internal.change.tracking.spi.reference;
 import com.liferay.change.tracking.spi.reference.TableReferenceDefinition;
 import com.liferay.change.tracking.spi.reference.builder.ChildTableReferenceInfoBuilder;
 import com.liferay.change.tracking.spi.reference.builder.ParentTableReferenceInfoBuilder;
+import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalArticleResourceTable;
+import com.liferay.journal.model.JournalArticleTable;
 import com.liferay.journal.service.persistence.JournalArticleResourcePersistence;
 import com.liferay.portal.kernel.service.persistence.BasePersistence;
 
@@ -26,6 +28,14 @@ public class JournalArticleResourceTableReferenceDefinition
 	public void defineChildTableReferences(
 		ChildTableReferenceInfoBuilder<JournalArticleResourceTable>
 			childTableReferenceInfoBuilder) {
+
+		childTableReferenceInfoBuilder.resourcePermissionReference(
+			JournalArticleResourceTable.INSTANCE.resourcePrimKey,
+			JournalArticle.class
+		).singleColumnReference(
+			JournalArticleResourceTable.INSTANCE.resourcePrimKey,
+			JournalArticleTable.INSTANCE.resourcePrimKey
+		);
 	}
 
 	@Override
