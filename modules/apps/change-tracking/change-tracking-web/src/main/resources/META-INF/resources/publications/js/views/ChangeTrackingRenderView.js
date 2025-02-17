@@ -1568,6 +1568,8 @@ export default function ChangeTrackingRenderView({
 										currentLocale={currentLocale}
 										defaultLocale={
 											state.renderData.defaultLocale
+												? state.renderData.defaultLocale
+												: defaultLocale
 										}
 										locales={state.renderData.locales}
 										setSelectedLocale={setSelectedLocale}
