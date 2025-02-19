@@ -6,10 +6,13 @@
 package com.liferay.asset.categories.internal.search.spi.model.index.contributor;
 
 import com.liferay.asset.kernel.model.AssetVocabulary;
+import com.liferay.asset.kernel.model.AssetVocabularyDepotEntryRel;
+import com.liferay.asset.kernel.service.AssetVocabularyDepotEntryRelLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Localization;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.search.localization.SearchLocalizationHelper;
@@ -51,6 +54,9 @@ public class AssetVocabularyModelDocumentContributor
 
 		document.addNumber(
 			Field.VISIBILITY_TYPE, assetVocabulary.getVisibilityType());
+		document.addKeyword(
+			"depotEntryIds",
+			_getDepotEntryIds(assetVocabulary.getVocabularyId()));
 		document.addLocalizedKeyword(
 			"localized_title",
 			_localization.populateLocalizationMap(
@@ -58,6 +64,14 @@ public class AssetVocabularyModelDocumentContributor
 				assetVocabulary.getDefaultLanguageId(),
 				assetVocabulary.getGroupId()),
 			true, true);
+	}
+
+	private long[] _getDepotEntryIds(long vocabularyId) {
+		return ListUtil.toLongArray(
+			_assetVocabularyDepotEntryRelLocalService.
+				getAssetVocabularyDepotEntryRelsByAssetVocabularyId(
+					vocabularyId),
+			AssetVocabularyDepotEntryRel::getDepotEntryId);
 	}
 
 	private Locale _getSiteDefaultLocale(long groupId) {
@@ -68,6 +82,10 @@ public class AssetVocabularyModelDocumentContributor
 			throw new SystemException(portalException);
 		}
 	}
+
+	@Reference
+	private AssetVocabularyDepotEntryRelLocalService
+		_assetVocabularyDepotEntryRelLocalService;
 
 	@Reference
 	private Localization _localization;
