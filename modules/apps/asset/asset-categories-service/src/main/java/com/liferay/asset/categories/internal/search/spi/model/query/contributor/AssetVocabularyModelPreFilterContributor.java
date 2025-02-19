@@ -29,17 +29,30 @@ public class AssetVocabularyModelPreFilterContributor
 		int[] visibilityTypes = GetterUtil.getIntegerValues(
 			searchContext.getAttribute(Field.VISIBILITY_TYPE));
 
-		if (ArrayUtil.isEmpty(visibilityTypes)) {
-			return;
+		if (ArrayUtil.isNotEmpty(visibilityTypes)) {
+			TermsFilter visibilityTypesTermsFilter = new TermsFilter(
+				Field.VISIBILITY_TYPE);
+
+			visibilityTypesTermsFilter.addValues(
+				ArrayUtil.toStringArray(visibilityTypes));
+
+			booleanFilter.add(
+				visibilityTypesTermsFilter, BooleanClauseOccur.MUST);
 		}
 
-		TermsFilter assetEntryIdsTermsFilter = new TermsFilter(
-			Field.VISIBILITY_TYPE);
+		long[] depotEntryIds = (long[])searchContext.getAttribute(
+			"depotEntryIds");
 
-		assetEntryIdsTermsFilter.addValues(
-			ArrayUtil.toStringArray(visibilityTypes));
+		if (ArrayUtil.isNotEmpty(depotEntryIds)) {
+			TermsFilter depotEntryIdsTermsFilter = new TermsFilter(
+				"depotEntryIds");
 
-		booleanFilter.add(assetEntryIdsTermsFilter, BooleanClauseOccur.MUST);
+			depotEntryIdsTermsFilter.addValues(
+				ArrayUtil.toStringArray(depotEntryIds));
+
+			booleanFilter.add(
+				depotEntryIdsTermsFilter, BooleanClauseOccur.MUST);
+		}
 	}
 
 }
