@@ -19,6 +19,7 @@ import com.liferay.change.tracking.web.internal.display.BasePersistenceRegistry;
 import com.liferay.change.tracking.web.internal.display.DisplayContextImpl;
 import com.liferay.change.tracking.web.internal.util.PublicationsPortletURLUtil;
 import com.liferay.diff.DiffHtml;
+import com.liferay.journal.model.JournalArticleResource;
 import com.liferay.knowledge.base.model.KBArticleModel;
 import com.liferay.petra.io.unsync.UnsyncStringWriter;
 import com.liferay.petra.lang.SafeCloseable;
@@ -322,13 +323,19 @@ public class GetEntryRenderDataMVCResourceCommand
 		String leftRender = null;
 		String leftTitle = null;
 
-		if ((ctEntry.getChangeType() == CTConstants.CT_CHANGE_TYPE_ADDITION) &&
-			(rightModel != null)) {
+		boolean instanceOfJournalArticleResource =
+			rightModel instanceof JournalArticleResource;
+
+		if (((ctEntry.getChangeType() == CTConstants.CT_CHANGE_TYPE_ADDITION) &&
+			 (rightModel != null)) ||
+			instanceOfJournalArticleResource) {
 
 			String rightVersionName = ctDisplayRenderer.getVersionName(
 				rightModel);
 
-			if (Validator.isNotNull(rightVersionName)) {
+			if (Validator.isNotNull(rightVersionName) ||
+				instanceOfJournalArticleResource) {
+
 				try (SafeCloseable safeCloseable1 =
 						CTCollectionThreadLocal.
 							setCTCollectionIdWithSafeCloseable(
