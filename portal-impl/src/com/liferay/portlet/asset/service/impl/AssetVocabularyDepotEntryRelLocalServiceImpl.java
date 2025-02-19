@@ -6,10 +6,13 @@
 package com.liferay.portlet.asset.service.impl;
 
 import com.liferay.asset.kernel.exception.InvalidAssetVocabularyDepotEntryRelException;
+import com.liferay.asset.kernel.model.AssetVocabulary;
 import com.liferay.asset.kernel.model.AssetVocabularyDepotEntryRel;
 import com.liferay.asset.kernel.service.AssetVocabularyLocalService;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -49,7 +52,12 @@ public class AssetVocabularyDepotEntryRelLocalServiceImpl
 			assetVocabularyDepotEntryRel.setUuid(serviceContext.getUuid());
 		}
 
-		return addAssetVocabularyDepotEntryRel(assetVocabularyDepotEntryRel);
+		assetVocabularyDepotEntryRel = addAssetVocabularyDepotEntryRel(
+			assetVocabularyDepotEntryRel);
+
+		_reindexAssetVocabulary(assetVocabularyId);
+
+		return assetVocabularyDepotEntryRel;
 	}
 
 	public void deleteAssetVocabularyDepotEntryRelsByAssetVocabularyId(
@@ -96,6 +104,15 @@ public class AssetVocabularyDepotEntryRelLocalServiceImpl
 		for (long depotEntryId : depotEntryIds) {
 			addAssetVocabularyDepotEntryRel(assetVocabularyId, depotEntryId);
 		}
+	}
+
+	private void _reindexAssetVocabulary(long assetVocabularyId)
+		throws PortalException {
+
+		Indexer<AssetVocabulary> indexer =
+			IndexerRegistryUtil.nullSafeGetIndexer(AssetVocabulary.class);
+
+		indexer.reindex(AssetVocabulary.class.getName(), assetVocabularyId);
 	}
 
 	@BeanReference(type = AssetVocabularyLocalService.class)
