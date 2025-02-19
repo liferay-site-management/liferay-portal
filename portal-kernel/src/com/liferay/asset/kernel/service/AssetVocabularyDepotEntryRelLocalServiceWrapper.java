@@ -52,6 +52,15 @@ public class AssetVocabularyDepotEntryRelLocalServiceWrapper
 			addAssetVocabularyDepotEntryRel(assetVocabularyDepotEntryRel);
 	}
 
+	@Override
+	public AssetVocabularyDepotEntryRel addAssetVocabularyDepotEntryRel(
+			long assetVocabularyId, long depotEntryId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _assetVocabularyDepotEntryRelLocalService.
+			addAssetVocabularyDepotEntryRel(assetVocabularyId, depotEntryId);
+	}
+
 	/**
 	 * Creates a new asset vocabulary depot entry rel with the primary key. Does not add the asset vocabulary depot entry rel to the database.
 	 *
@@ -114,6 +123,23 @@ public class AssetVocabularyDepotEntryRelLocalServiceWrapper
 
 		return _assetVocabularyDepotEntryRelLocalService.
 			deleteAssetVocabularyDepotEntryRel(assetVocabularyDepotEntryRelId);
+	}
+
+	@Override
+	public void deleteAssetVocabularyDepotEntryRelsByAssetVocabularyId(
+		long assetVocabularyId) {
+
+		_assetVocabularyDepotEntryRelLocalService.
+			deleteAssetVocabularyDepotEntryRelsByAssetVocabularyId(
+				assetVocabularyId);
+	}
+
+	@Override
+	public void deleteAssetVocabularyDepotEntryRelsByDepotEntryId(
+		long depotEntryId) {
+
+		_assetVocabularyDepotEntryRelLocalService.
+			deleteAssetVocabularyDepotEntryRelsByDepotEntryId(depotEntryId);
 	}
 
 	/**
@@ -320,6 +346,24 @@ public class AssetVocabularyDepotEntryRelLocalServiceWrapper
 			getAssetVocabularyDepotEntryRels(start, end);
 	}
 
+	@Override
+	public java.util.List<AssetVocabularyDepotEntryRel>
+		getAssetVocabularyDepotEntryRelsByAssetVocabularyId(
+			long assetVocabularyId) {
+
+		return _assetVocabularyDepotEntryRelLocalService.
+			getAssetVocabularyDepotEntryRelsByAssetVocabularyId(
+				assetVocabularyId);
+	}
+
+	@Override
+	public java.util.List<AssetVocabularyDepotEntryRel>
+		getAssetVocabularyDepotEntryRelsByDepotEntryId(long depotEntryId) {
+
+		return _assetVocabularyDepotEntryRelLocalService.
+			getAssetVocabularyDepotEntryRelsByDepotEntryId(depotEntryId);
+	}
+
 	/**
 	 * Returns the number of asset vocabulary depot entry rels.
 	 *
@@ -360,6 +404,15 @@ public class AssetVocabularyDepotEntryRelLocalServiceWrapper
 
 		return _assetVocabularyDepotEntryRelLocalService.getPersistedModel(
 			primaryKeyObj);
+	}
+
+	@Override
+	public void setAssetVocabularyDepotEntryRels(
+			long assetVocabularyId, long[] depotEntryIds)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		_assetVocabularyDepotEntryRelLocalService.
+			setAssetVocabularyDepotEntryRels(assetVocabularyId, depotEntryIds);
 	}
 
 	/**

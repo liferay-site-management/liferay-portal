@@ -5,13 +5,21 @@
 
 package com.liferay.portlet.asset.service.http;
 
+import com.liferay.asset.kernel.service.AssetVocabularyDepotEntryRelServiceUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.auth.HttpPrincipal;
+import com.liferay.portal.kernel.service.http.TunnelUtil;
+import com.liferay.portal.kernel.util.MethodHandler;
+import com.liferay.portal.kernel.util.MethodKey;
+
 /**
  * Provides the HTTP utility for the
- * <code>com.liferay.asset.kernel.service.AssetVocabularyDepotEntryRelServiceUtil</code> service
+ * <code>AssetVocabularyDepotEntryRelServiceUtil</code> service
  * utility. The
  * static methods of this class calls the same methods of the service utility.
  * However, the signatures are different because it requires an additional
- * <code>com.liferay.portal.kernel.security.auth.HttpPrincipal</code> parameter.
+ * <code>HttpPrincipal</code> parameter.
  *
  * <p>
  * The benefits of using the HTTP utility is that it is fast and allows for
@@ -32,4 +40,147 @@ package com.liferay.portlet.asset.service.http;
  * @generated
  */
 public class AssetVocabularyDepotEntryRelServiceHttp {
+
+	public static com.liferay.asset.kernel.model.AssetVocabularyDepotEntryRel
+			addAssetVocabularyDepotEntryRel(
+				HttpPrincipal httpPrincipal, long assetVocabularyId,
+				long depotEntryId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		try {
+			MethodKey methodKey = new MethodKey(
+				AssetVocabularyDepotEntryRelServiceUtil.class,
+				"addAssetVocabularyDepotEntryRel",
+				_addAssetVocabularyDepotEntryRelParameterTypes0);
+
+			MethodHandler methodHandler = new MethodHandler(
+				methodKey, assetVocabularyId, depotEntryId);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception exception) {
+				if (exception instanceof
+						com.liferay.portal.kernel.exception.PortalException) {
+
+					throw (com.liferay.portal.kernel.exception.PortalException)
+						exception;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					exception);
+			}
+
+			return (com.liferay.asset.kernel.model.AssetVocabularyDepotEntryRel)
+				returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException
+					systemException) {
+
+			_log.error(systemException, systemException);
+
+			throw systemException;
+		}
+	}
+
+	public static java.util.List
+		<com.liferay.asset.kernel.model.AssetVocabularyDepotEntryRel>
+				getAssetVocabularyDepotEntryRelsByAssetVocabularyId(
+					HttpPrincipal httpPrincipal, long assetVocabularyId)
+			throws com.liferay.portal.kernel.exception.PortalException {
+
+		try {
+			MethodKey methodKey = new MethodKey(
+				AssetVocabularyDepotEntryRelServiceUtil.class,
+				"getAssetVocabularyDepotEntryRelsByAssetVocabularyId",
+				_getAssetVocabularyDepotEntryRelsByAssetVocabularyIdParameterTypes1);
+
+			MethodHandler methodHandler = new MethodHandler(
+				methodKey, assetVocabularyId);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception exception) {
+				if (exception instanceof
+						com.liferay.portal.kernel.exception.PortalException) {
+
+					throw (com.liferay.portal.kernel.exception.PortalException)
+						exception;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					exception);
+			}
+
+			return (java.util.List
+				<com.liferay.asset.kernel.model.AssetVocabularyDepotEntryRel>)
+					returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException
+					systemException) {
+
+			_log.error(systemException, systemException);
+
+			throw systemException;
+		}
+	}
+
+	public static void setAssetVocabularyDepotEntryRels(
+			HttpPrincipal httpPrincipal, long assetVocabularyId,
+			long[] depotEntryIds)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		try {
+			MethodKey methodKey = new MethodKey(
+				AssetVocabularyDepotEntryRelServiceUtil.class,
+				"setAssetVocabularyDepotEntryRels",
+				_setAssetVocabularyDepotEntryRelsParameterTypes2);
+
+			MethodHandler methodHandler = new MethodHandler(
+				methodKey, assetVocabularyId, depotEntryIds);
+
+			try {
+				TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception exception) {
+				if (exception instanceof
+						com.liferay.portal.kernel.exception.PortalException) {
+
+					throw (com.liferay.portal.kernel.exception.PortalException)
+						exception;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					exception);
+			}
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException
+					systemException) {
+
+			_log.error(systemException, systemException);
+
+			throw systemException;
+		}
+	}
+
+	private static Log _log = LogFactoryUtil.getLog(
+		AssetVocabularyDepotEntryRelServiceHttp.class);
+
+	private static final Class<?>[]
+		_addAssetVocabularyDepotEntryRelParameterTypes0 = new Class[] {
+			long.class, long.class
+		};
+	private static final Class<?>[]
+		_getAssetVocabularyDepotEntryRelsByAssetVocabularyIdParameterTypes1 =
+			new Class[] {long.class};
+	private static final Class<?>[]
+		_setAssetVocabularyDepotEntryRelsParameterTypes2 = new Class[] {
+			long.class, long[].class
+		};
+
 }

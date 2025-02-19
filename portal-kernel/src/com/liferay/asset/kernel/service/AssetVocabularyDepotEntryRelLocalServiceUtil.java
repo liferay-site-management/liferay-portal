@@ -53,6 +53,14 @@ public class AssetVocabularyDepotEntryRelLocalServiceUtil {
 			assetVocabularyDepotEntryRel);
 	}
 
+	public static AssetVocabularyDepotEntryRel addAssetVocabularyDepotEntryRel(
+			long assetVocabularyId, long depotEntryId)
+		throws PortalException {
+
+		return getService().addAssetVocabularyDepotEntryRel(
+			assetVocabularyId, depotEntryId);
+	}
+
 	/**
 	 * Creates a new asset vocabulary depot entry rel with the primary key. Does not add the asset vocabulary depot entry rel to the database.
 	 *
@@ -113,6 +121,20 @@ public class AssetVocabularyDepotEntryRelLocalServiceUtil {
 
 		return getService().deleteAssetVocabularyDepotEntryRel(
 			assetVocabularyDepotEntryRelId);
+	}
+
+	public static void deleteAssetVocabularyDepotEntryRelsByAssetVocabularyId(
+		long assetVocabularyId) {
+
+		getService().deleteAssetVocabularyDepotEntryRelsByAssetVocabularyId(
+			assetVocabularyId);
+	}
+
+	public static void deleteAssetVocabularyDepotEntryRelsByDepotEntryId(
+		long depotEntryId) {
+
+		getService().deleteAssetVocabularyDepotEntryRelsByDepotEntryId(
+			depotEntryId);
 	}
 
 	/**
@@ -287,6 +309,21 @@ public class AssetVocabularyDepotEntryRelLocalServiceUtil {
 		return getService().getAssetVocabularyDepotEntryRels(start, end);
 	}
 
+	public static List<AssetVocabularyDepotEntryRel>
+		getAssetVocabularyDepotEntryRelsByAssetVocabularyId(
+			long assetVocabularyId) {
+
+		return getService().getAssetVocabularyDepotEntryRelsByAssetVocabularyId(
+			assetVocabularyId);
+	}
+
+	public static List<AssetVocabularyDepotEntryRel>
+		getAssetVocabularyDepotEntryRelsByDepotEntryId(long depotEntryId) {
+
+		return getService().getAssetVocabularyDepotEntryRelsByDepotEntryId(
+			depotEntryId);
+	}
+
 	/**
 	 * Returns the number of asset vocabulary depot entry rels.
 	 *
@@ -319,6 +356,14 @@ public class AssetVocabularyDepotEntryRelLocalServiceUtil {
 		throws PortalException {
 
 		return getService().getPersistedModel(primaryKeyObj);
+	}
+
+	public static void setAssetVocabularyDepotEntryRels(
+			long assetVocabularyId, long[] depotEntryIds)
+		throws PortalException {
+
+		getService().setAssetVocabularyDepotEntryRels(
+			assetVocabularyId, depotEntryIds);
 	}
 
 	/**

@@ -5,6 +5,7 @@
 
 package com.liferay.asset.kernel.service;
 
+import com.liferay.asset.kernel.model.AssetVocabularyDepotEntryRel;
 import com.liferay.portal.kernel.service.ServiceWrapper;
 
 /**
@@ -30,6 +31,26 @@ public class AssetVocabularyDepotEntryRelServiceWrapper
 			assetVocabularyDepotEntryRelService;
 	}
 
+	@Override
+	public AssetVocabularyDepotEntryRel addAssetVocabularyDepotEntryRel(
+			long assetVocabularyId, long depotEntryId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _assetVocabularyDepotEntryRelService.
+			addAssetVocabularyDepotEntryRel(assetVocabularyId, depotEntryId);
+	}
+
+	@Override
+	public java.util.List<AssetVocabularyDepotEntryRel>
+			getAssetVocabularyDepotEntryRelsByAssetVocabularyId(
+				long assetVocabularyId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _assetVocabularyDepotEntryRelService.
+			getAssetVocabularyDepotEntryRelsByAssetVocabularyId(
+				assetVocabularyId);
+	}
+
 	/**
 	 * Returns the OSGi service identifier.
 	 *
@@ -38,6 +59,15 @@ public class AssetVocabularyDepotEntryRelServiceWrapper
 	@Override
 	public String getOSGiServiceIdentifier() {
 		return _assetVocabularyDepotEntryRelService.getOSGiServiceIdentifier();
+	}
+
+	@Override
+	public void setAssetVocabularyDepotEntryRels(
+			long assetVocabularyId, long[] depotEntryIds)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		_assetVocabularyDepotEntryRelService.setAssetVocabularyDepotEntryRels(
+			assetVocabularyId, depotEntryIds);
 	}
 
 	@Override
