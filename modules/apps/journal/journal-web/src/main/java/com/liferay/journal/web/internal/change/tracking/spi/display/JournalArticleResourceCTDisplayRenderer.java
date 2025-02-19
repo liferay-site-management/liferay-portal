@@ -16,6 +16,9 @@ import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalArticleDisplay;
 import com.liferay.journal.model.JournalArticleResource;
 import com.liferay.journal.service.JournalArticleLocalService;
+import com.liferay.journal.service.JournalArticleResourceLocalService;
+import com.liferay.petra.lang.SafeCloseable;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
@@ -47,6 +50,14 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = CTDisplayRenderer.class)
 public class JournalArticleResourceCTDisplayRenderer
 	extends BaseCTDisplayRenderer<JournalArticleResource> {
+
+	@Override
+	public JournalArticleResource fetchLatestVersionedModel(
+		JournalArticleResource journalArticleResource) {
+
+		return _journalArticleResourceLocalService.fetchJournalArticleResource(
+			journalArticleResource.getResourcePrimKey());
+	}
 
 	@Override
 	public String[] getAvailableLanguageIds(
@@ -140,10 +151,17 @@ public class JournalArticleResourceCTDisplayRenderer
 		JournalArticleResource journalArticleResource) {
 
 		try {
-			JournalArticle journalArticle = _getLatestJournalArticle(
-				journalArticleResource);
+			long ctCollectionId = journalArticleResource.getCtCollectionId();
 
-			return String.valueOf(journalArticle.getVersion());
+			try (SafeCloseable safeCloseable =
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ctCollectionId)) {
+
+				JournalArticle journalArticle = _getLatestJournalArticle(
+					journalArticleResource);
+
+				return String.valueOf(journalArticle.getVersion());
+			}
 		}
 		catch (Exception exception) {
 			if (_log.isDebugEnabled()) {
@@ -278,6 +296,10 @@ public class JournalArticleResourceCTDisplayRenderer
 
 	@Reference
 	private JournalArticleLocalService _journalArticleLocalService;
+
+	@Reference
+	private JournalArticleResourceLocalService
+		_journalArticleResourceLocalService;
 
 	@Reference
 	private Language _language;
