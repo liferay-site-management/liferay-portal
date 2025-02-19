@@ -7,7 +7,11 @@ package com.liferay.asset.categories.search.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.asset.kernel.model.AssetVocabulary;
+import com.liferay.asset.kernel.model.AssetVocabularyDepotEntryRel;
+import com.liferay.asset.kernel.service.AssetVocabularyDepotEntryRelLocalService;
 import com.liferay.asset.kernel.service.AssetVocabularyService;
+import com.liferay.depot.model.DepotEntry;
+import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -20,8 +24,11 @@ import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.rule.SynchronousDestinationTestRule;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
+import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -39,6 +46,7 @@ import com.liferay.users.admin.test.util.search.GroupBlueprint;
 import com.liferay.users.admin.test.util.search.GroupSearchFixture;
 import com.liferay.users.admin.test.util.search.UserSearchFixture;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -101,6 +109,16 @@ public class AssetVocabularyIndexerIndexedFieldsTest {
 
 		AssetVocabulary assetVocabulary =
 			_assetVocabularyFixture.createAssetVocabulary("新しい商品");
+
+		DepotEntry depotEntry1 = _addDepotEntry();
+		DepotEntry depotEntry2 = _addDepotEntry();
+
+		_assetVocabularyDepotEntryRelLocalService.
+			setAssetVocabularyDepotEntryRels(
+				assetVocabulary.getVocabularyId(),
+				new long[] {
+					depotEntry1.getDepotEntryId(), depotEntry2.getDepotEntryId()
+				});
 
 		String searchTerm = "新しい";
 
@@ -172,6 +190,15 @@ public class AssetVocabularyIndexerIndexedFieldsTest {
 
 	protected UserSearchFixture userSearchFixture;
 
+	private DepotEntry _addDepotEntry() throws Exception {
+		return _depotEntryLocalService.addDepotEntry(
+			Collections.singletonMap(
+				LocaleUtil.getDefault(), RandomTestUtil.randomString()),
+			Collections.singletonMap(
+				LocaleUtil.getDefault(), RandomTestUtil.randomString()),
+			ServiceContextTestUtil.getServiceContext());
+	}
+
 	private Map<String, String> _expectedFieldValues(
 			AssetVocabulary assetVocabulary)
 		throws Exception {
@@ -203,6 +230,19 @@ public class AssetVocabularyIndexerIndexedFieldsTest {
 		).put(
 			Field.VISIBILITY_TYPE,
 			String.valueOf(assetVocabulary.getVisibilityType())
+		).put(
+			"depotEntryIds",
+			() -> {
+				List<Long> depotEntryIds = ListUtil.toList(
+					_assetVocabularyDepotEntryRelLocalService.
+						getAssetVocabularyDepotEntryRelsByAssetVocabularyId(
+							assetVocabulary.getVocabularyId()),
+					AssetVocabularyDepotEntryRel::getDepotEntryId);
+
+				Collections.sort(depotEntryIds);
+
+				return String.valueOf(depotEntryIds);
+			}
 		).put(
 			"externalReferenceCode", assetVocabulary.getExternalReferenceCode()
 		).put(
@@ -279,8 +319,16 @@ public class AssetVocabularyIndexerIndexedFieldsTest {
 	@DeleteAfterTestRun
 	private List<AssetVocabulary> _assetVocabularies;
 
+	@Inject
+	private AssetVocabularyDepotEntryRelLocalService
+		_assetVocabularyDepotEntryRelLocalService;
+
 	private AssetVocabularyFixture _assetVocabularyFixture;
 	private Locale _defaultLocale;
+
+	@Inject
+	private DepotEntryLocalService _depotEntryLocalService;
+
 	private Group _group;
 
 	@DeleteAfterTestRun
