@@ -10,6 +10,7 @@ import com.liferay.change.tracking.test.util.BaseTableReferenceDefinitionTestCas
 import com.liferay.journal.constants.JournalFolderConstants;
 import com.liferay.journal.constants.JournalPortletKeys;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.service.JournalArticleResourceLocalService;
 import com.liferay.journal.service.JournalContentSearchLocalService;
 import com.liferay.journal.test.util.JournalTestUtil;
 import com.liferay.portal.kernel.model.Layout;
@@ -49,6 +50,9 @@ public class JournalContentSearchTableReferenceDefinitionTest
 			TestPropsValues.getUserId(), group.getGroupId(),
 			JournalFolderConstants.DEFAULT_PARENT_FOLDER_ID);
 		_layout = _layoutLocalService.getLayout(TestPropsValues.getPlid());
+
+		_journalArticleResourceLocalService.updateJournalArticleResource(
+			_journalArticle.getArticleResource());
 	}
 
 	@Override
@@ -60,6 +64,10 @@ public class JournalContentSearchTableReferenceDefinitionTest
 	}
 
 	private JournalArticle _journalArticle;
+
+	@Inject
+	private JournalArticleResourceLocalService
+		_journalArticleResourceLocalService;
 
 	@Inject
 	private JournalContentSearchLocalService _journalContentSearchLocalService;

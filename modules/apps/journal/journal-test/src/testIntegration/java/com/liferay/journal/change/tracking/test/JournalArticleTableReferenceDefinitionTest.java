@@ -9,10 +9,12 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.change.tracking.test.util.BaseTableReferenceDefinitionTestCase;
 import com.liferay.journal.constants.JournalFolderConstants;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.service.JournalArticleLocalService;
+import com.liferay.journal.service.JournalArticleResourceLocalService;
 import com.liferay.journal.test.util.JournalTestUtil;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 
@@ -47,12 +49,17 @@ public class JournalArticleTableReferenceDefinitionTest
 
 	@Override
 	protected CTModel<?> addCTModel() throws Exception {
-		return JournalTestUtil.updateArticle(
-			_journalArticle, _journalArticle.getTitleMap(),
-			_journalArticle.getContent(), false, false,
-			ServiceContextTestUtil.getServiceContext());
+		return _journalArticleResourceLocalService.updateJournalArticleResource(
+			_journalArticle.getArticleResource());
 	}
 
 	private JournalArticle _journalArticle;
+
+	@Inject
+	private JournalArticleLocalService _journalArticleLocalService;
+
+	@Inject
+	private JournalArticleResourceLocalService
+		_journalArticleResourceLocalService;
 
 }
