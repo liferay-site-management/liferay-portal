@@ -73,6 +73,10 @@ public interface AssetVocabularyDepotEntryRelLocalService
 	public AssetVocabularyDepotEntryRel addAssetVocabularyDepotEntryRel(
 		AssetVocabularyDepotEntryRel assetVocabularyDepotEntryRel);
 
+	public AssetVocabularyDepotEntryRel addAssetVocabularyDepotEntryRel(
+			long assetVocabularyId, long depotEntryId)
+		throws PortalException;
+
 	/**
 	 * Creates a new asset vocabulary depot entry rel with the primary key. Does not add the asset vocabulary depot entry rel to the database.
 	 *
@@ -118,6 +122,12 @@ public interface AssetVocabularyDepotEntryRelLocalService
 	public AssetVocabularyDepotEntryRel deleteAssetVocabularyDepotEntryRel(
 			long assetVocabularyDepotEntryRelId)
 		throws PortalException;
+
+	public void deleteAssetVocabularyDepotEntryRelsByAssetVocabularyId(
+		long assetVocabularyId);
+
+	public void deleteAssetVocabularyDepotEntryRelsByDepotEntryId(
+		long depotEntryId);
 
 	/**
 	 * @throws PortalException
@@ -258,6 +268,15 @@ public interface AssetVocabularyDepotEntryRelLocalService
 	public List<AssetVocabularyDepotEntryRel> getAssetVocabularyDepotEntryRels(
 		int start, int end);
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<AssetVocabularyDepotEntryRel>
+		getAssetVocabularyDepotEntryRelsByAssetVocabularyId(
+			long assetVocabularyId);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<AssetVocabularyDepotEntryRel>
+		getAssetVocabularyDepotEntryRelsByDepotEntryId(long depotEntryId);
+
 	/**
 	 * Returns the number of asset vocabulary depot entry rels.
 	 *
@@ -282,6 +301,10 @@ public interface AssetVocabularyDepotEntryRelLocalService
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public PersistedModel getPersistedModel(Serializable primaryKeyObj)
+		throws PortalException;
+
+	public void setAssetVocabularyDepotEntryRels(
+			long assetVocabularyId, long[] depotEntryIds)
 		throws PortalException;
 
 	/**
