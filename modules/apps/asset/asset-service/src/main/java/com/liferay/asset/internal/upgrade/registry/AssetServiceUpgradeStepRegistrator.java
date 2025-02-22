@@ -5,6 +5,7 @@
 
 package com.liferay.asset.internal.upgrade.registry;
 
+import com.liferay.asset.internal.upgrade.v2_2_0.util.AssetVocabularyDepotEntryRelTable;
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.portal.kernel.model.Release;
 import com.liferay.portal.kernel.upgrade.DummyUpgradeStep;
@@ -37,6 +38,9 @@ public class AssetServiceUpgradeStepRegistrator
 		registry.register("2.0.0", "2.0.1", new DummyUpgradeStep());
 
 		registry.register("2.0.1", "2.1.0", new DummyUpgradeStep());
+
+		registry.register(
+			"2.1.0", "2.2.0", AssetVocabularyDepotEntryRelTable.create());
 	}
 
 	@Reference(
