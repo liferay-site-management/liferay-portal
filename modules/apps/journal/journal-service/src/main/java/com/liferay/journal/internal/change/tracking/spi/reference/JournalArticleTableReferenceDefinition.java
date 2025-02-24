@@ -18,7 +18,6 @@ import com.liferay.friendly.url.model.FriendlyURLEntryTable;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalArticleLocalizationTable;
 import com.liferay.journal.model.JournalArticleTable;
-import com.liferay.journal.model.JournalFolderTable;
 import com.liferay.journal.service.persistence.JournalArticlePersistence;
 import com.liferay.portal.kernel.model.ClassNameTable;
 import com.liferay.portal.kernel.model.ImageTable;
@@ -161,9 +160,6 @@ public class JournalArticleTableReferenceDefinition
 						LayoutTable.INSTANCE.groupId)
 				)
 			)
-		).singleColumnReference(
-			JournalArticleTable.INSTANCE.folderId,
-			JournalFolderTable.INSTANCE.folderId
 		);
 	}
 

@@ -11,6 +11,7 @@ import com.liferay.change.tracking.spi.reference.builder.ParentTableReferenceInf
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalArticleResourceTable;
 import com.liferay.journal.model.JournalArticleTable;
+import com.liferay.journal.model.JournalFolderTable;
 import com.liferay.journal.service.persistence.JournalArticleResourcePersistence;
 import com.liferay.portal.kernel.service.persistence.BasePersistence;
 
@@ -44,7 +45,24 @@ public class JournalArticleResourceTableReferenceDefinition
 			parentTableReferenceInfoBuilder) {
 
 		parentTableReferenceInfoBuilder.groupedModel(
-			JournalArticleResourceTable.INSTANCE);
+			JournalArticleResourceTable.INSTANCE
+		).referenceInnerJoin(
+			fromStep -> fromStep.from(
+				JournalFolderTable.INSTANCE
+			).innerJoinON(
+				JournalArticleResourceTable.INSTANCE,
+				JournalArticleResourceTable.INSTANCE.groupId.eq(
+					JournalFolderTable.INSTANCE.groupId)
+			).innerJoinON(
+				JournalArticleTable.INSTANCE,
+				JournalArticleTable.INSTANCE.folderId.eq(
+					JournalFolderTable.INSTANCE.folderId
+				).and(
+					JournalArticleResourceTable.INSTANCE.resourcePrimKey.eq(
+						JournalArticleTable.INSTANCE.resourcePrimKey)
+				)
+			)
+		);
 	}
 
 	@Override
