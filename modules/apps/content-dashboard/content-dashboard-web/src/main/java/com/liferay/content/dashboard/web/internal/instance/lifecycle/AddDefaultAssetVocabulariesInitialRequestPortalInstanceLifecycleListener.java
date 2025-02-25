@@ -17,6 +17,7 @@ import com.liferay.portal.instance.lifecycle.InitialRequestPortalInstanceLifecyc
 import com.liferay.portal.instance.lifecycle.PortalInstanceLifecycleListener;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.Release;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -138,5 +139,10 @@ public class
 
 	@Reference
 	private Portal _portal;
+
+	@Reference(
+		target = "(&(release.bundle.symbolic.name=com.liferay.asset.service)(&(release.schema.version>=2.2.0)))"
+	)
+	private Release _release;
 
 }
