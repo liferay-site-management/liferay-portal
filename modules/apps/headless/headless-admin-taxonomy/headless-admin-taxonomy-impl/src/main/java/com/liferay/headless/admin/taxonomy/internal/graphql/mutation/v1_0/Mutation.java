@@ -671,6 +671,29 @@ public class Mutation {
 						taxonomyVocabulary));
 	}
 
+	@GraphQLField(
+		description = "Creates the asset library's taxonomy vocabulary in the given spaces."
+	)
+	public TaxonomyVocabulary createAssetLibraryTaxonomyVocabularyBySpace(
+			@GraphQLName("assetLibraryId") @NotEmpty String assetLibraryId,
+			@GraphQLName("allowMultipleCategories") Boolean
+				allowMultipleCategories,
+			@GraphQLName("spacesIds") Long[] spacesIds,
+			@GraphQLName("visibilityType") Integer visibilityType,
+			@GraphQLName("taxonomyVocabulary") TaxonomyVocabulary
+				taxonomyVocabulary)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_taxonomyVocabularyResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			taxonomyVocabularyResource ->
+				taxonomyVocabularyResource.
+					postAssetLibraryTaxonomyVocabularyBySpace(
+						Long.valueOf(assetLibraryId), allowMultipleCategories,
+						spacesIds, visibilityType, taxonomyVocabulary));
+	}
+
 	@GraphQLField
 	public java.util.Collection<com.liferay.portal.vulcan.permission.Permission>
 			updateAssetLibraryTaxonomyVocabularyPermissionsPage(

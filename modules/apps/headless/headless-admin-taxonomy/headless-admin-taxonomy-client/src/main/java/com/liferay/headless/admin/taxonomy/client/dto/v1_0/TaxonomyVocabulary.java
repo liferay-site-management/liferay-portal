@@ -397,6 +397,27 @@ public class TaxonomyVocabulary implements Cloneable, Serializable {
 
 	protected Long siteId;
 
+	public Long[] getSpacesIds() {
+		return spacesIds;
+	}
+
+	public void setSpacesIds(Long[] spacesIds) {
+		this.spacesIds = spacesIds;
+	}
+
+	public void setSpacesIds(
+		UnsafeSupplier<Long[], Exception> spacesIdsUnsafeSupplier) {
+
+		try {
+			spacesIds = spacesIdsUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Long[] spacesIds;
+
 	public ViewableBy getViewableBy() {
 		return viewableBy;
 	}
@@ -425,6 +446,27 @@ public class TaxonomyVocabulary implements Cloneable, Serializable {
 	}
 
 	protected ViewableBy viewableBy;
+
+	public Integer getVisibilityType() {
+		return visibilityType;
+	}
+
+	public void setVisibilityType(Integer visibilityType) {
+		this.visibilityType = visibilityType;
+	}
+
+	public void setVisibilityType(
+		UnsafeSupplier<Integer, Exception> visibilityTypeUnsafeSupplier) {
+
+		try {
+			visibilityType = visibilityTypeUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Integer visibilityType;
 
 	@Override
 	public TaxonomyVocabulary clone() throws CloneNotSupportedException {

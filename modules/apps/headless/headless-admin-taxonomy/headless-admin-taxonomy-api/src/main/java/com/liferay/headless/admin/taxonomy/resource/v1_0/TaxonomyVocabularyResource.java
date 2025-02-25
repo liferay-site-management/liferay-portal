@@ -82,6 +82,12 @@ public interface TaxonomyVocabularyResource {
 				TaxonomyVocabulary taxonomyVocabulary)
 		throws Exception;
 
+	public TaxonomyVocabulary postAssetLibraryTaxonomyVocabularyBySpace(
+			Long assetLibraryId, Boolean allowMultipleCategories,
+			Long[] spacesIds, Integer visibilityType,
+			TaxonomyVocabulary taxonomyVocabulary)
+		throws Exception;
+
 	public Page<com.liferay.portal.vulcan.permission.Permission>
 			getAssetLibraryTaxonomyVocabularyPermissionsPage(
 				Long assetLibraryId, String roleNames)

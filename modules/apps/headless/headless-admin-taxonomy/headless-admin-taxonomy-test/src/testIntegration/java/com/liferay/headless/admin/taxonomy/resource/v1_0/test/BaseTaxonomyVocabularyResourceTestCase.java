@@ -1123,6 +1123,30 @@ public abstract class BaseTaxonomyVocabularyResourceTestCase {
 	}
 
 	@Test
+	public void testPostAssetLibraryTaxonomyVocabularyBySpace()
+		throws Exception {
+
+		TaxonomyVocabulary randomTaxonomyVocabulary =
+			randomTaxonomyVocabulary();
+
+		TaxonomyVocabulary postTaxonomyVocabulary =
+			testPostAssetLibraryTaxonomyVocabularyBySpace_addTaxonomyVocabulary(
+				randomTaxonomyVocabulary);
+
+		assertEquals(randomTaxonomyVocabulary, postTaxonomyVocabulary);
+		assertValid(postTaxonomyVocabulary);
+	}
+
+	protected TaxonomyVocabulary
+			testPostAssetLibraryTaxonomyVocabularyBySpace_addTaxonomyVocabulary(
+				TaxonomyVocabulary taxonomyVocabulary)
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	@Test
 	public void testGetAssetLibraryTaxonomyVocabularyPermissionsPage()
 		throws Exception {
 
@@ -2969,8 +2993,24 @@ public abstract class BaseTaxonomyVocabularyResourceTestCase {
 				continue;
 			}
 
+			if (Objects.equals("spacesIds", additionalAssertFieldName)) {
+				if (taxonomyVocabulary.getSpacesIds() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
 			if (Objects.equals("viewableBy", additionalAssertFieldName)) {
 				if (taxonomyVocabulary.getViewableBy() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("visibilityType", additionalAssertFieldName)) {
+				if (taxonomyVocabulary.getVisibilityType() == null) {
 					valid = false;
 				}
 
@@ -3273,10 +3313,32 @@ public abstract class BaseTaxonomyVocabularyResourceTestCase {
 				continue;
 			}
 
+			if (Objects.equals("spacesIds", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						taxonomyVocabulary1.getSpacesIds(),
+						taxonomyVocabulary2.getSpacesIds())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
 			if (Objects.equals("viewableBy", additionalAssertFieldName)) {
 				if (!Objects.deepEquals(
 						taxonomyVocabulary1.getViewableBy(),
 						taxonomyVocabulary2.getViewableBy())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("visibilityType", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						taxonomyVocabulary1.getVisibilityType(),
+						taxonomyVocabulary2.getVisibilityType())) {
 
 					return false;
 				}
@@ -3739,9 +3801,20 @@ public abstract class BaseTaxonomyVocabularyResourceTestCase {
 				"Invalid entity field " + entityFieldName);
 		}
 
+		if (entityFieldName.equals("spacesIds")) {
+			throw new IllegalArgumentException(
+				"Invalid entity field " + entityFieldName);
+		}
+
 		if (entityFieldName.equals("viewableBy")) {
 			throw new IllegalArgumentException(
 				"Invalid entity field " + entityFieldName);
+		}
+
+		if (entityFieldName.equals("visibilityType")) {
+			sb.append(String.valueOf(taxonomyVocabulary.getVisibilityType()));
+
+			return sb.toString();
 		}
 
 		throw new IllegalArgumentException(
@@ -3803,6 +3876,7 @@ public abstract class BaseTaxonomyVocabularyResourceTestCase {
 				siteExternalReferenceCode = StringUtil.toLowerCase(
 					RandomTestUtil.randomString());
 				siteId = testGroup.getGroupId();
+				visibilityType = RandomTestUtil.randomInt();
 			}
 		};
 	}

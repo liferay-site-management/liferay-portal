@@ -801,6 +801,51 @@ public class TaxonomyVocabulary implements Serializable {
 	@JsonIgnore
 	private Supplier<Long> _siteIdSupplier;
 
+	@Schema(
+		description = "A list of Spaces' IDs that the vocabulary is associated with."
+	)
+	public Long[] getSpacesIds() {
+		if (_spacesIdsSupplier != null) {
+			spacesIds = _spacesIdsSupplier.get();
+
+			_spacesIdsSupplier = null;
+		}
+
+		return spacesIds;
+	}
+
+	public void setSpacesIds(Long[] spacesIds) {
+		this.spacesIds = spacesIds;
+
+		_spacesIdsSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setSpacesIds(
+		UnsafeSupplier<Long[], Exception> spacesIdsUnsafeSupplier) {
+
+		_spacesIdsSupplier = () -> {
+			try {
+				return spacesIdsUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField(
+		description = "A list of Spaces' IDs that the vocabulary is associated with."
+	)
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Long[] spacesIds;
+
+	@JsonIgnore
+	private Supplier<Long[]> _spacesIdsSupplier;
+
 	@JsonGetter("viewableBy")
 	@Schema(
 		description = "A write-only property that specifies the vocabulary's default permissions."
@@ -858,6 +903,47 @@ public class TaxonomyVocabulary implements Serializable {
 
 	@JsonIgnore
 	private Supplier<ViewableBy> _viewableBySupplier;
+
+	@Schema(description = "The vocabulary's visibility type.")
+	public Integer getVisibilityType() {
+		if (_visibilityTypeSupplier != null) {
+			visibilityType = _visibilityTypeSupplier.get();
+
+			_visibilityTypeSupplier = null;
+		}
+
+		return visibilityType;
+	}
+
+	public void setVisibilityType(Integer visibilityType) {
+		this.visibilityType = visibilityType;
+
+		_visibilityTypeSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setVisibilityType(
+		UnsafeSupplier<Integer, Exception> visibilityTypeUnsafeSupplier) {
+
+		_visibilityTypeSupplier = () -> {
+			try {
+				return visibilityTypeUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField(description = "The vocabulary's visibility type.")
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Integer visibilityType;
+
+	@JsonIgnore
+	private Supplier<Integer> _visibilityTypeSupplier;
 
 	@Override
 	public boolean equals(Object object) {
@@ -1156,6 +1242,28 @@ public class TaxonomyVocabulary implements Serializable {
 			sb.append(siteId);
 		}
 
+		Long[] spacesIds = getSpacesIds();
+
+		if (spacesIds != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"spacesIds\": ");
+
+			sb.append("[");
+
+			for (int i = 0; i < spacesIds.length; i++) {
+				sb.append(spacesIds[i]);
+
+				if ((i + 1) < spacesIds.length) {
+					sb.append(", ");
+				}
+			}
+
+			sb.append("]");
+		}
+
 		ViewableBy viewableBy = getViewableBy();
 
 		if (viewableBy != null) {
@@ -1170,6 +1278,18 @@ public class TaxonomyVocabulary implements Serializable {
 			sb.append(viewableBy);
 
 			sb.append("\"");
+		}
+
+		Integer visibilityType = getVisibilityType();
+
+		if (visibilityType != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"visibilityType\": ");
+
+			sb.append(visibilityType);
 		}
 
 		sb.append("}");
