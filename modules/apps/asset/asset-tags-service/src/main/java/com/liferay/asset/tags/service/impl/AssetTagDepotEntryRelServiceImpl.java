@@ -5,13 +5,19 @@
 
 package com.liferay.asset.tags.service.impl;
 
+import com.liferay.asset.tags.model.AssetTagDepotEntryRel;
 import com.liferay.asset.tags.service.base.AssetTagDepotEntryRelServiceBaseImpl;
 import com.liferay.portal.aop.AopService;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portlet.asset.service.permission.AssetTagsPermission;
+
+import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
 
 /**
- * @author Brian Wing Shun Chan
+ * @author Gislayne Vitorino
  */
 @Component(
 	property = {
@@ -22,4 +28,38 @@ import org.osgi.service.component.annotations.Component;
 )
 public class AssetTagDepotEntryRelServiceImpl
 	extends AssetTagDepotEntryRelServiceBaseImpl {
+
+	@Override
+	public AssetTagDepotEntryRel addAssetTagDepotEntryRel(
+			long assetTagId, long depotEntryId)
+		throws PortalException {
+
+		AssetTagsPermission.check(
+			getPermissionChecker(), assetTagId, ActionKeys.UPDATE);
+
+		return assetTagDepotEntryRelLocalService.addAssetTagDepotEntryRel(
+			assetTagId, depotEntryId);
+	}
+
+	public List<AssetTagDepotEntryRel> getAssetTagDepotEntryRelsByAssetTagId(
+			long assetTagId)
+		throws PortalException {
+
+		AssetTagsPermission.check(
+			getPermissionChecker(), assetTagId, ActionKeys.VIEW);
+
+		return assetTagDepotEntryRelLocalService.
+			getAssetTagDepotEntryRelsByAssetTagId(assetTagId);
+	}
+
+	public void setAssetTagDepotEntryRels(long assetTagId, long[] depotEntryIds)
+		throws PortalException {
+
+		AssetTagsPermission.check(
+			getPermissionChecker(), assetTagId, ActionKeys.UPDATE);
+
+		assetTagDepotEntryRelLocalService.setAssetTagDepotEntryRels(
+			assetTagId, depotEntryIds);
+	}
+
 }
