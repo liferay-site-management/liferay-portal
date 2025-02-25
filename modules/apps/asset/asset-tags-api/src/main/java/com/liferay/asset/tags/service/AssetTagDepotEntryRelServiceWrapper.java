@@ -5,6 +5,7 @@
 
 package com.liferay.asset.tags.service;
 
+import com.liferay.asset.tags.model.AssetTagDepotEntryRel;
 import com.liferay.portal.kernel.service.ServiceWrapper;
 
 /**
@@ -28,6 +29,24 @@ public class AssetTagDepotEntryRelServiceWrapper
 		_assetTagDepotEntryRelService = assetTagDepotEntryRelService;
 	}
 
+	@Override
+	public AssetTagDepotEntryRel addAssetTagDepotEntryRel(
+			long assetTagId, long depotEntryId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _assetTagDepotEntryRelService.addAssetTagDepotEntryRel(
+			assetTagId, depotEntryId);
+	}
+
+	@Override
+	public java.util.List<AssetTagDepotEntryRel>
+			getAssetTagDepotEntryRelsByAssetTagId(long assetTagId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _assetTagDepotEntryRelService.
+			getAssetTagDepotEntryRelsByAssetTagId(assetTagId);
+	}
+
 	/**
 	 * Returns the OSGi service identifier.
 	 *
@@ -36,6 +55,14 @@ public class AssetTagDepotEntryRelServiceWrapper
 	@Override
 	public String getOSGiServiceIdentifier() {
 		return _assetTagDepotEntryRelService.getOSGiServiceIdentifier();
+	}
+
+	@Override
+	public void setAssetTagDepotEntryRels(long assetTagId, long[] depotEntryIds)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		_assetTagDepotEntryRelService.setAssetTagDepotEntryRels(
+			assetTagId, depotEntryIds);
 	}
 
 	@Override

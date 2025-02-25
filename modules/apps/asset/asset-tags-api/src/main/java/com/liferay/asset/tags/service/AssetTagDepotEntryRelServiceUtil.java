@@ -5,7 +5,11 @@
 
 package com.liferay.asset.tags.service;
 
+import com.liferay.asset.tags.model.AssetTagDepotEntryRel;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.module.service.Snapshot;
+
+import java.util.List;
 
 /**
  * Provides the remote service utility for AssetTagDepotEntryRel. This utility wraps
@@ -26,6 +30,19 @@ public class AssetTagDepotEntryRelServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to <code>com.liferay.asset.tags.service.impl.AssetTagDepotEntryRelServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
+	public static AssetTagDepotEntryRel addAssetTagDepotEntryRel(
+			long assetTagId, long depotEntryId)
+		throws PortalException {
+
+		return getService().addAssetTagDepotEntryRel(assetTagId, depotEntryId);
+	}
+
+	public static List<AssetTagDepotEntryRel>
+			getAssetTagDepotEntryRelsByAssetTagId(long assetTagId)
+		throws PortalException {
+
+		return getService().getAssetTagDepotEntryRelsByAssetTagId(assetTagId);
+	}
 
 	/**
 	 * Returns the OSGi service identifier.
@@ -34,6 +51,13 @@ public class AssetTagDepotEntryRelServiceUtil {
 	 */
 	public static String getOSGiServiceIdentifier() {
 		return getService().getOSGiServiceIdentifier();
+	}
+
+	public static void setAssetTagDepotEntryRels(
+			long assetTagId, long[] depotEntryIds)
+		throws PortalException {
+
+		getService().setAssetTagDepotEntryRels(assetTagId, depotEntryIds);
 	}
 
 	public static AssetTagDepotEntryRelService getService() {

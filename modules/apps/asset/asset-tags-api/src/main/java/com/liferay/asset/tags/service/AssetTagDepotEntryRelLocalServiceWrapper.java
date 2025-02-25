@@ -50,6 +50,15 @@ public class AssetTagDepotEntryRelLocalServiceWrapper
 			assetTagDepotEntryRel);
 	}
 
+	@Override
+	public AssetTagDepotEntryRel addAssetTagDepotEntryRel(
+			long assetTagId, long depotEntryId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _assetTagDepotEntryRelLocalService.addAssetTagDepotEntryRel(
+			assetTagId, depotEntryId);
+	}
+
 	/**
 	 * Creates a new asset tag depot entry rel with the primary key. Does not add the asset tag depot entry rel to the database.
 	 *
@@ -112,6 +121,18 @@ public class AssetTagDepotEntryRelLocalServiceWrapper
 
 		return _assetTagDepotEntryRelLocalService.deleteAssetTagDepotEntryRel(
 			assetTagDepotEntryRelId);
+	}
+
+	@Override
+	public void deleteAssetTagDepotEntryRelsByAssetTagId(long assetTagId) {
+		_assetTagDepotEntryRelLocalService.
+			deleteAssetTagDepotEntryRelsByAssetTagId(assetTagId);
+	}
+
+	@Override
+	public void deleteAssetTagDepotEntryRelsByDepotEntryId(long depotEntryId) {
+		_assetTagDepotEntryRelLocalService.
+			deleteAssetTagDepotEntryRelsByDepotEntryId(depotEntryId);
 	}
 
 	/**
@@ -312,6 +333,22 @@ public class AssetTagDepotEntryRelLocalServiceWrapper
 			start, end);
 	}
 
+	@Override
+	public java.util.List<AssetTagDepotEntryRel>
+		getAssetTagDepotEntryRelsByAssetTagId(long assetTagId) {
+
+		return _assetTagDepotEntryRelLocalService.
+			getAssetTagDepotEntryRelsByAssetTagId(assetTagId);
+	}
+
+	@Override
+	public java.util.List<AssetTagDepotEntryRel>
+		getAssetTagDepotEntryRelsByDepotEntryId(long depotEntryId) {
+
+		return _assetTagDepotEntryRelLocalService.
+			getAssetTagDepotEntryRelsByDepotEntryId(depotEntryId);
+	}
+
 	/**
 	 * Returns the number of asset tag depot entry rels.
 	 *
@@ -351,6 +388,14 @@ public class AssetTagDepotEntryRelLocalServiceWrapper
 
 		return _assetTagDepotEntryRelLocalService.getPersistedModel(
 			primaryKeyObj);
+	}
+
+	@Override
+	public void setAssetTagDepotEntryRels(long assetTagId, long[] depotEntryIds)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		_assetTagDepotEntryRelLocalService.setAssetTagDepotEntryRels(
+			assetTagId, depotEntryIds);
 	}
 
 	/**

@@ -73,6 +73,10 @@ public interface AssetTagDepotEntryRelLocalService
 	public AssetTagDepotEntryRel addAssetTagDepotEntryRel(
 		AssetTagDepotEntryRel assetTagDepotEntryRel);
 
+	public AssetTagDepotEntryRel addAssetTagDepotEntryRel(
+			long assetTagId, long depotEntryId)
+		throws PortalException;
+
 	/**
 	 * Creates a new asset tag depot entry rel with the primary key. Does not add the asset tag depot entry rel to the database.
 	 *
@@ -118,6 +122,10 @@ public interface AssetTagDepotEntryRelLocalService
 	public AssetTagDepotEntryRel deleteAssetTagDepotEntryRel(
 			long assetTagDepotEntryRelId)
 		throws PortalException;
+
+	public void deleteAssetTagDepotEntryRelsByAssetTagId(long assetTagId);
+
+	public void deleteAssetTagDepotEntryRelsByDepotEntryId(long depotEntryId);
 
 	/**
 	 * @throws PortalException
@@ -256,6 +264,14 @@ public interface AssetTagDepotEntryRelLocalService
 	public List<AssetTagDepotEntryRel> getAssetTagDepotEntryRels(
 		int start, int end);
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<AssetTagDepotEntryRel> getAssetTagDepotEntryRelsByAssetTagId(
+		long assetTagId);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<AssetTagDepotEntryRel> getAssetTagDepotEntryRelsByDepotEntryId(
+		long depotEntryId);
+
 	/**
 	 * Returns the number of asset tag depot entry rels.
 	 *
@@ -280,6 +296,9 @@ public interface AssetTagDepotEntryRelLocalService
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public PersistedModel getPersistedModel(Serializable primaryKeyObj)
+		throws PortalException;
+
+	public void setAssetTagDepotEntryRels(long assetTagId, long[] depotEntryIds)
 		throws PortalException;
 
 	/**

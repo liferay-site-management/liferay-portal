@@ -53,6 +53,13 @@ public class AssetTagDepotEntryRelLocalServiceUtil {
 		return getService().addAssetTagDepotEntryRel(assetTagDepotEntryRel);
 	}
 
+	public static AssetTagDepotEntryRel addAssetTagDepotEntryRel(
+			long assetTagId, long depotEntryId)
+		throws PortalException {
+
+		return getService().addAssetTagDepotEntryRel(assetTagId, depotEntryId);
+	}
+
 	/**
 	 * Creates a new asset tag depot entry rel with the primary key. Does not add the asset tag depot entry rel to the database.
 	 *
@@ -109,6 +116,18 @@ public class AssetTagDepotEntryRelLocalServiceUtil {
 
 		return getService().deleteAssetTagDepotEntryRel(
 			assetTagDepotEntryRelId);
+	}
+
+	public static void deleteAssetTagDepotEntryRelsByAssetTagId(
+		long assetTagId) {
+
+		getService().deleteAssetTagDepotEntryRelsByAssetTagId(assetTagId);
+	}
+
+	public static void deleteAssetTagDepotEntryRelsByDepotEntryId(
+		long depotEntryId) {
+
+		getService().deleteAssetTagDepotEntryRelsByDepotEntryId(depotEntryId);
 	}
 
 	/**
@@ -281,6 +300,19 @@ public class AssetTagDepotEntryRelLocalServiceUtil {
 		return getService().getAssetTagDepotEntryRels(start, end);
 	}
 
+	public static List<AssetTagDepotEntryRel>
+		getAssetTagDepotEntryRelsByAssetTagId(long assetTagId) {
+
+		return getService().getAssetTagDepotEntryRelsByAssetTagId(assetTagId);
+	}
+
+	public static List<AssetTagDepotEntryRel>
+		getAssetTagDepotEntryRelsByDepotEntryId(long depotEntryId) {
+
+		return getService().getAssetTagDepotEntryRelsByDepotEntryId(
+			depotEntryId);
+	}
+
 	/**
 	 * Returns the number of asset tag depot entry rels.
 	 *
@@ -313,6 +345,13 @@ public class AssetTagDepotEntryRelLocalServiceUtil {
 		throws PortalException {
 
 		return getService().getPersistedModel(primaryKeyObj);
+	}
+
+	public static void setAssetTagDepotEntryRels(
+			long assetTagId, long[] depotEntryIds)
+		throws PortalException {
+
+		getService().setAssetTagDepotEntryRels(assetTagId, depotEntryIds);
 	}
 
 	/**
