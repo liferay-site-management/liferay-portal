@@ -1,3 +1,8 @@
+buildService {
+	apiDir = "../asset-tags-api/src/main/java"
+	testDir = "../asset-tags-test/src/testIntegration/java"
+}
+
 dependencies {
 	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.impl", version: "default"
 	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel", version: "default"
