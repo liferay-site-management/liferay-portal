@@ -1,4 +1,9 @@
 Bundle-Name: Liferay Asset Tags API
 Bundle-SymbolicName: com.liferay.asset.tags.api
 Bundle-Version: 5.0.14
-Export-Package: com.liferay.asset.tags.constants
+Export-Package:\
+	com.liferay.asset.tags.constants,\
+	com.liferay.asset.tags.exception,\
+	com.liferay.asset.tags.model,\
+	com.liferay.asset.tags.service,\
+	com.liferay.asset.tags.service.persistence
