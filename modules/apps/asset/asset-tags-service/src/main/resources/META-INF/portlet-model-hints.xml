@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="com.liferay.asset.tags.model.AssetTagDepotEntryRel">
+		<field name="mvccVersion" type="long" />
+		<field name="ctCollectionId" type="long" />
+		<field name="uuid" type="String" />
+		<field name="assetTagDepotEntryRelId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="assetTagId" type="long" />
+		<field name="depotEntryId" type="long" />
+	</model>
+</model-hints>
