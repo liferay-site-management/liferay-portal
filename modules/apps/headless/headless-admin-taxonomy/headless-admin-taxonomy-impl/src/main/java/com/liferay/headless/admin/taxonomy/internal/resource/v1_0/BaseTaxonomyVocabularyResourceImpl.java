@@ -598,6 +598,11 @@ public abstract class BaseTaxonomyVocabularyResourceImpl
 		return putTaxonomyVocabulary;
 	}
 
+	protected abstract TaxonomyVocabulary doPostAssetLibraryTaxonomyVocabularyBySpaces(
+		Boolean allowMultipleCategories, Long assetLibraryId, Long[] spacesIds,
+		TaxonomyVocabulary taxonomyVocabulary, Integer visibility)
+		throws Exception;
+
 	/**
 	 * Invoke this method with the command line:
 	 *
@@ -653,12 +658,36 @@ public abstract class BaseTaxonomyVocabularyResourceImpl
 			Long[] spacesIds,
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@javax.validation.constraints.NotNull
-			@javax.ws.rs.QueryParam("visibilityType")
-			Integer visibility,
+			@javax.ws.rs.QueryParam("visibility")
+			Integer visibilityType,
 			TaxonomyVocabulary taxonomyVocabulary)
 		throws Exception {
 
-		return new TaxonomyVocabulary();
+		Permission[] permissions = taxonomyVocabulary.getPermissions();
+
+		TaxonomyVocabulary postTaxonomyVocabulary =
+			doPostAssetLibraryTaxonomyVocabularyBySpaces(
+				allowMultipleCategories, assetLibraryId, spacesIds,
+				taxonomyVocabulary, visibilityType);
+
+		if (permissions != null) {
+			Page<Permission> permissionPage =
+				putTaxonomyVocabularyPermissionsPage(
+					postTaxonomyVocabulary.getId(), permissions);
+
+			postTaxonomyVocabulary.setPermissions(
+				() -> NestedFieldsSupplier.supply(
+					"permissions",
+					nestedField -> {
+						Collection<Permission> collection =
+							permissionPage.getItems();
+
+						return collection.toArray(
+							new Permission[collection.size()]);
+					}));
+		}
+
+		return postTaxonomyVocabulary;
 	}
 
 	/**

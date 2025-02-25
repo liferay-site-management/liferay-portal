@@ -295,6 +295,20 @@ public class TaxonomyVocabularyResourceImpl
 	}
 
 	@Override
+	protected TaxonomyVocabulary doPostAssetLibraryTaxonomyVocabularyBySpaces(
+			Boolean allowMultipleCategories, Long assetLibraryId,
+			Long[] spacesIds, TaxonomyVocabulary taxonomyVocabulary,
+			Integer visibilityType)
+		throws Exception {
+
+		return _toTaxonomyVocabulary(
+			_addAssetVocabulary(
+				allowMultipleCategories,
+				taxonomyVocabulary.getExternalReferenceCode(), assetLibraryId,
+				taxonomyVocabulary, spacesIds, visibilityType));
+	}
+
+	@Override
 	protected TaxonomyVocabulary doPostSiteTaxonomyVocabulary(
 			Long siteId, TaxonomyVocabulary taxonomyVocabulary)
 		throws Exception {
@@ -382,6 +396,41 @@ public class TaxonomyVocabularyResourceImpl
 	private static void _map(String assetType, String className) {
 		_assetTypeTypeToClassNames.put(assetType, className);
 		_classNameToAssetTypeTypes.put(className, assetType);
+	}
+
+	private AssetVocabulary _addAssetVocabulary(
+			Boolean allowMultipleCategories, String externalReferenceCode,
+			Long siteId, TaxonomyVocabulary taxonomyVocabulary,
+			Long[] spacesIds, Integer visibilityType)
+		throws Exception {
+
+		Map<Locale, String> titleMap = LocalizedMapUtil.getLocalizedMap(
+			contextAcceptLanguage.getPreferredLocale(),
+			taxonomyVocabulary.getName(), taxonomyVocabulary.getName_i18n());
+		Map<Locale, String> descriptionMap = LocalizedMapUtil.getLocalizedMap(
+			contextAcceptLanguage.getPreferredLocale(),
+			taxonomyVocabulary.getDescription(),
+			taxonomyVocabulary.getDescription_i18n());
+
+		LocalizedMapUtil.validateI18n(
+			true, LocaleUtil.getSiteDefault(), "Taxonomy vocabulary", titleMap,
+			new HashSet<>(descriptionMap.keySet()));
+
+		AssetVocabularySettingsHelper assetVocabularySettingsHelper =
+			new AssetVocabularySettingsHelper(
+				_getSettings(taxonomyVocabulary.getAssetTypes(), siteId));
+
+		assetVocabularySettingsHelper.setMultiValued(allowMultipleCategories);
+
+		return _assetVocabularyService.addVocabulary(
+			externalReferenceCode, siteId,
+			titleMap.get(LocaleUtil.getSiteDefault()), null, titleMap,
+			descriptionMap, assetVocabularySettingsHelper.toString(),
+			visibilityType,
+			ServiceContextBuilder.create(
+				siteId, contextHttpServletRequest,
+				taxonomyVocabulary.getViewableByAsString()
+			).build());
 	}
 
 	private AssetVocabulary _addAssetVocabulary(
@@ -731,6 +780,8 @@ public class TaxonomyVocabularyResourceImpl
 						return 0;
 					});
 				setSiteId(() -> GroupUtil.getSiteId(group));
+				//setSpacesIds(() -> assetVocabulary.getSpacesIds());
+				//setVisibility(() -> assetVocabulary.getVisibilityType());
 			}
 		};
 	}
