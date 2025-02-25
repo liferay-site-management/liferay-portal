@@ -402,12 +402,23 @@ components:
                     format: int64
                     readOnly: true
                     type: integer
+                spacesIds:
+                    description:
+                        A list of Spaces' IDs that the vocabulary is associated with.
+                    items:
+                        format: int64
+                        type: integer
+                    type: array
                 viewableBy:
                     description:
                         A write-only property that specifies the vocabulary's default permissions.
                     enum: [Anyone, Members, Owner]
                     type: string
                     writeOnly: true
+                visibilityType:
+                    description:
+                        The vocabulary's visibility type.
+                    type: integer
             required:
                 - name
             type: object
@@ -828,6 +839,56 @@ paths:
                         application/xml:
                             schema:
                                 $ref: "#/components/schemas/TaxonomyVocabulary"
+            tags: ["TaxonomyVocabulary"]
+    "/asset-libraries/{assetLibraryId}/taxonomy-vocabularies/by-spaces":
+        post:
+            description:
+                Creates the asset library's taxonomy vocabulary in the given spaces.
+            operationId: postAssetLibraryTaxonomyVocabularyBySpace
+            parameters:
+                - in: path
+                  name: assetLibraryId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: query
+                  name: allowMultipleCategories
+                  required: true
+                  schema:
+                      type: boolean
+                - in: query
+                  name: spacesIds
+                  required: true
+                  schema:
+                      items:
+                          format: int64
+                          type: integer
+                      type: array
+                - in: query
+                  name: visibilityType
+                  required: true
+                  schema:
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/TaxonomyVocabulary"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/TaxonomyVocabulary"
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/TaxonomyVocabulary"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/TaxonomyVocabulary"
+                    description:
+                        successful operation
             tags: ["TaxonomyVocabulary"]
     "/asset-libraries/{assetLibraryId}/taxonomy-vocabularies/permissions":
         get:
