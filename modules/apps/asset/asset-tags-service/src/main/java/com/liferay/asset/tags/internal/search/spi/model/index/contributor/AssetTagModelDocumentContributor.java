@@ -6,9 +6,12 @@
 package com.liferay.asset.tags.internal.search.spi.model.index.contributor;
 
 import com.liferay.asset.kernel.model.AssetTag;
+import com.liferay.asset.tags.model.AssetTagDepotEntryRel;
+import com.liferay.asset.tags.service.AssetTagDepotEntryRelLocalService;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.search.spi.model.index.contributor.ModelDocumentContributor;
 import com.liferay.subscription.service.SubscriptionLocalService;
 
@@ -31,11 +34,24 @@ public class AssetTagModelDocumentContributor
 		document.addTextSortable(Field.NAME, assetTag.getName());
 		document.addNumberSortable("assetCount", assetTag.getAssetCount());
 		document.addKeyword(
+			"depotEntryIds", _getDepotEntryIds(assetTag.getTagId()));
+		document.addKeyword(
 			"subscribed",
 			_subscriptionLocalService.isSubscribed(
 				assetTag.getCompanyId(), PrincipalThreadLocal.getUserId(),
 				AssetTag.class.getName(), assetTag.getTagId()));
 	}
+
+	private long[] _getDepotEntryIds(long tagId) {
+		return ListUtil.toLongArray(
+			_assetTagDepotEntryRelLocalService.
+				getAssetTagDepotEntryRelsByAssetTagId(tagId),
+			AssetTagDepotEntryRel::getDepotEntryId);
+	}
+
+	@Reference
+	private AssetTagDepotEntryRelLocalService
+		_assetTagDepotEntryRelLocalService;
 
 	@Reference
 	private SubscriptionLocalService _subscriptionLocalService;
