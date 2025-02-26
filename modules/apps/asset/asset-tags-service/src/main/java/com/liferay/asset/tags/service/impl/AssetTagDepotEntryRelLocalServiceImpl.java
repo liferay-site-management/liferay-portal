@@ -5,11 +5,14 @@
 
 package com.liferay.asset.tags.service.impl;
 
+import com.liferay.asset.kernel.model.AssetTag;
 import com.liferay.asset.tags.exception.InvalidAssetTagDepotEntryRelException;
 import com.liferay.asset.tags.model.AssetTagDepotEntryRel;
 import com.liferay.asset.tags.service.base.AssetTagDepotEntryRelLocalServiceBaseImpl;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -54,7 +57,11 @@ public class AssetTagDepotEntryRelLocalServiceImpl
 			assetTagDepotEntryRel.setUuid(serviceContext.getUuid());
 		}
 
-		return addAssetTagDepotEntryRel(assetTagDepotEntryRel);
+		assetTagDepotEntryRel = addAssetTagDepotEntryRel(assetTagDepotEntryRel);
+
+		_reindexAssetTag(assetTagId);
+
+		return assetTagDepotEntryRel;
 	}
 
 	public void deleteAssetTagDepotEntryRelsByAssetTagId(long assetTagId) {
@@ -91,6 +98,13 @@ public class AssetTagDepotEntryRelLocalServiceImpl
 		for (long depotEntryId : depotEntryIds) {
 			addAssetTagDepotEntryRel(assetTagId, depotEntryId);
 		}
+	}
+
+	private void _reindexAssetTag(long assetTagId) throws PortalException {
+		Indexer<AssetTag> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
+			AssetTag.class);
+
+		indexer.reindex(AssetTag.class.getName(), assetTagId);
 	}
 
 }
