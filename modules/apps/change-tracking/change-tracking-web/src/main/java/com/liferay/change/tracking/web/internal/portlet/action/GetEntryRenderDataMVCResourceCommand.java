@@ -429,15 +429,6 @@ public class GetEntryRenderDataMVCResourceCommand
 				}
 
 				if (ArrayUtil.isNotEmpty(availableLanguageIds)) {
-					for (String languageId : availableLanguageIds) {
-						localizedTitlesJSONObject.put(
-							languageId,
-							_ctDisplayRendererRegistry.getTitle(
-								leftCtCollectionId, leftCTSQLMode,
-								LocaleUtil.fromLanguageId(languageId),
-								leftModel, ctEntry.getModelClassNameId()));
-					}
-
 					leftLocalizedPreviewJSONObject =
 						_getLocalizedPreviewJSONObject(
 							availableLanguageIds, leftCtCollectionId,
