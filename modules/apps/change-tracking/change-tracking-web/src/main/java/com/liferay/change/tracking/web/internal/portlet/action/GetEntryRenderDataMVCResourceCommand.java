@@ -19,7 +19,6 @@ import com.liferay.change.tracking.web.internal.display.BasePersistenceRegistry;
 import com.liferay.change.tracking.web.internal.display.DisplayContextImpl;
 import com.liferay.change.tracking.web.internal.util.PublicationsPortletURLUtil;
 import com.liferay.diff.DiffHtml;
-import com.liferay.journal.model.JournalArticleResource;
 import com.liferay.knowledge.base.model.KBArticleModel;
 import com.liferay.petra.io.unsync.UnsyncStringWriter;
 import com.liferay.petra.lang.SafeCloseable;
@@ -215,11 +214,9 @@ public class GetEntryRenderDataMVCResourceCommand
 		JSONObject rightLocalizedRenderJSONObject = null;
 		String rightRender = null;
 		T rightModel = null;
-		String rightTitle = null;
+		String rightTitle = ctCollection.getName();
 
 		if (ctEntry.getChangeType() != CTConstants.CT_CHANGE_TYPE_DELETION) {
-			rightTitle = ctCollection.getName();
-
 			long ctCollectionId = ctCollection.getCtCollectionId();
 
 			if (ctCollection.getStatus() == WorkflowConstants.STATUS_APPROVED) {
@@ -323,19 +320,13 @@ public class GetEntryRenderDataMVCResourceCommand
 		String leftRender = null;
 		String leftTitle = null;
 
-		boolean instanceOfJournalArticleResource =
-			rightModel instanceof JournalArticleResource;
-
-		if (((ctEntry.getChangeType() == CTConstants.CT_CHANGE_TYPE_ADDITION) &&
-			 (rightModel != null)) ||
-			instanceOfJournalArticleResource) {
+		if ((ctEntry.getChangeType() == CTConstants.CT_CHANGE_TYPE_ADDITION) &&
+			(rightModel != null)) {
 
 			String rightVersionName = ctDisplayRenderer.getVersionName(
 				rightModel);
 
-			if (Validator.isNotNull(rightVersionName) ||
-				instanceOfJournalArticleResource) {
-
+			if (Validator.isNotNull(rightVersionName)) {
 				try (SafeCloseable safeCloseable1 =
 						CTCollectionThreadLocal.
 							setCTCollectionIdWithSafeCloseable(
@@ -365,25 +356,6 @@ public class GetEntryRenderDataMVCResourceCommand
 								httpServletRequest, "edit-in-production"),
 							resourceRequest, resourceResponse);
 					}
-
-					String leftVersionName = ctDisplayRenderer.getVersionName(
-						leftModel);
-
-					if (Validator.isNull(leftVersionName)) {
-						leftTitle = _language.get(
-							httpServletRequest, "production");
-					}
-					else {
-						leftTitle = StringBundler.concat(
-							_language.get(httpServletRequest, "version"), ": ",
-							leftVersionName, " (",
-							_language.get(httpServletRequest, "production"),
-							")");
-					}
-
-					rightTitle = StringBundler.concat(
-						_language.get(httpServletRequest, "version"), ": ",
-						rightVersionName, " (", ctCollection.getName(), ")");
 
 					if (ArrayUtil.isNotEmpty(availableLanguageIds)) {
 						leftLocalizedPreviewJSONObject =
@@ -416,8 +388,6 @@ public class GetEntryRenderDataMVCResourceCommand
 		}
 		else if (ctEntry.getChangeType() !=
 					CTConstants.CT_CHANGE_TYPE_ADDITION) {
-
-			leftTitle = _language.get(httpServletRequest, "production");
 
 			leftModel = _ctDisplayRendererRegistry.fetchCTModel(
 				leftCtCollectionId, leftCTSQLMode,
@@ -496,6 +466,21 @@ public class GetEntryRenderDataMVCResourceCommand
 			}
 		}
 
+		if (leftModel != null) {
+			String leftVersionName = ctDisplayRenderer.getVersionName(
+				leftModel);
+
+			if (Validator.isNotNull(leftVersionName)) {
+				leftTitle = StringBundler.concat(
+					_language.get(httpServletRequest, "version"), ": ",
+					leftVersionName, " (",
+					_language.get(httpServletRequest, "production"), ")");
+			}
+			else {
+				leftTitle = _language.get(httpServletRequest, "production");
+			}
+		}
+
 		if ((ctEntry.getChangeType() == CTConstants.CT_CHANGE_TYPE_DELETION) &&
 			(leftModel != null)) {
 
@@ -527,19 +512,6 @@ public class GetEntryRenderDataMVCResourceCommand
 				}
 
 				if (rightModel != null) {
-					String rightVersionName = ctDisplayRenderer.getVersionName(
-						rightModel);
-
-					if (Validator.isNull(rightVersionName)) {
-						rightTitle = ctCollection.getName();
-					}
-					else {
-						rightTitle = StringBundler.concat(
-							_language.get(httpServletRequest, "version"), ": ",
-							rightVersionName, " (", ctCollection.getName(),
-							")");
-					}
-
 					leftTitle = StringBundler.concat(
 						_language.get(httpServletRequest, "version"), ": ",
 						leftVersionName, " (",
@@ -572,6 +544,17 @@ public class GetEntryRenderDataMVCResourceCommand
 							CTConstants.TYPE_LATEST);
 					}
 				}
+			}
+		}
+
+		if (rightModel != null) {
+			String rightVersionName = ctDisplayRenderer.getVersionName(
+				rightModel);
+
+			if (Validator.isNotNull(rightVersionName)) {
+				rightTitle = StringBundler.concat(
+					_language.get(httpServletRequest, "version"), ": ",
+					rightVersionName, " (", ctCollection.getName(), ")");
 			}
 		}
 
