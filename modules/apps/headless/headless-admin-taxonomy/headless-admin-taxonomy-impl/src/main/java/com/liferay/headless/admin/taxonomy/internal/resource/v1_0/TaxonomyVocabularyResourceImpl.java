@@ -404,6 +404,8 @@ public class TaxonomyVocabularyResourceImpl
 			Long[] spacesIds, Integer visibilityType)
 		throws Exception {
 
+		// TODO: adapt after Pei's API updates?
+
 		Map<Locale, String> titleMap = LocalizedMapUtil.getLocalizedMap(
 			contextAcceptLanguage.getPreferredLocale(),
 			taxonomyVocabulary.getName(), taxonomyVocabulary.getName_i18n());
@@ -780,8 +782,8 @@ public class TaxonomyVocabularyResourceImpl
 						return 0;
 					});
 				setSiteId(() -> GroupUtil.getSiteId(group));
-				//setSpacesIds(() -> assetVocabulary.getSpacesIds());
-				//setVisibility(() -> assetVocabulary.getVisibilityType());
+				// setSpacesIds(() -> assetVocabulary.getSpacesIds()); TODO: adapt after Pei's API updates?
+				setVisibilityType(assetVocabulary::getVisibilityType);
 			}
 		};
 	}
