@@ -8,6 +8,8 @@ package com.liferay.journal.internal.change.tracking.spi.reference;
 import com.liferay.change.tracking.spi.reference.TableReferenceDefinition;
 import com.liferay.change.tracking.spi.reference.builder.ChildTableReferenceInfoBuilder;
 import com.liferay.change.tracking.spi.reference.builder.ParentTableReferenceInfoBuilder;
+import com.liferay.journal.model.JournalArticleResourceTable;
+import com.liferay.journal.model.JournalArticleTable;
 import com.liferay.journal.model.JournalFolder;
 import com.liferay.journal.model.JournalFolderTable;
 import com.liferay.journal.service.persistence.JournalFolderPersistence;
@@ -30,6 +32,22 @@ public class JournalFolderTableReferenceDefinition
 
 		childTableReferenceInfoBuilder.assetEntryReference(
 			JournalFolderTable.INSTANCE.folderId, JournalFolder.class
+		).referenceInnerJoin(
+			fromStep -> fromStep.from(
+				JournalArticleResourceTable.INSTANCE
+			).innerJoinON(
+				JournalFolderTable.INSTANCE,
+				JournalFolderTable.INSTANCE.groupId.eq(
+					JournalArticleResourceTable.INSTANCE.groupId)
+			).innerJoinON(
+				JournalArticleTable.INSTANCE,
+				JournalArticleTable.INSTANCE.folderId.eq(
+					JournalFolderTable.INSTANCE.folderId
+				).and(
+					JournalArticleResourceTable.INSTANCE.resourcePrimKey.eq(
+						JournalArticleTable.INSTANCE.resourcePrimKey)
+				)
+			)
 		).resourcePermissionReference(
 			JournalFolderTable.INSTANCE.folderId, JournalFolder.class
 		).systemEventReference(
