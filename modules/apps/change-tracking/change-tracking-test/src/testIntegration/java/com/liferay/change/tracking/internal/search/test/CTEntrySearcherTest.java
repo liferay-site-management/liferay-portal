@@ -14,6 +14,7 @@ import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.counter.kernel.service.CounterLocalService;
 import com.liferay.journal.constants.JournalFolderConstants;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.model.JournalArticleResource;
 import com.liferay.journal.model.JournalFolder;
 import com.liferay.journal.service.JournalFolderLocalService;
 import com.liferay.journal.test.util.JournalFolderFixture;
@@ -394,17 +395,19 @@ public class CTEntrySearcherTest {
 				_group.getGroupId(), RandomTestUtil.randomString());
 		}
 
-		long journalArticleClassNameId = _classNameLocalService.getClassNameId(
-			JournalArticle.class);
+		long journalArticleResourceClassNameId =
+			_classNameLocalService.getClassNameId(JournalArticleResource.class);
 
-		CTEntry journalArticleCTEntry = _ctEntryLocalService.fetchCTEntry(
-			_ctCollection.getCtCollectionId(), journalArticleClassNameId,
-			journalArticle.getId());
+		CTEntry journalArticleResourceCTEntry =
+			_ctEntryLocalService.fetchCTEntry(
+				_ctCollection.getCtCollectionId(),
+				journalArticleResourceClassNameId,
+				journalArticle.getResourcePrimKey());
 
 		CTEntry journalFolderCTEntry = _getCTEntries(journalFolder)[0];
 
 		_assertHits(
-			_getUIDs(journalArticleCTEntry, journalFolderCTEntry),
+			_getUIDs(journalArticleResourceCTEntry, journalFolderCTEntry),
 			_getSort(
 				Field.getSortableFieldName(
 					Field.getLocalizedName(LocaleUtil.US, "typeName")),
@@ -412,10 +415,10 @@ public class CTEntrySearcherTest {
 			_byAttribute(
 				"modelClassNameId",
 				new long[] {
-					journalArticleClassNameId, _journalFolderClassNameId
+					journalArticleResourceClassNameId, _journalFolderClassNameId
 				}));
 		_assertHits(
-			_getUIDs(journalFolderCTEntry, journalArticleCTEntry),
+			_getUIDs(journalFolderCTEntry, journalArticleResourceCTEntry),
 			_getSort(
 				Field.getSortableFieldName(
 					Field.getLocalizedName(LocaleUtil.US, "typeName")),
@@ -423,7 +426,7 @@ public class CTEntrySearcherTest {
 			_byAttribute(
 				"modelClassNameId",
 				new long[] {
-					journalArticleClassNameId, _journalFolderClassNameId
+					journalArticleResourceClassNameId, _journalFolderClassNameId
 				}));
 	}
 

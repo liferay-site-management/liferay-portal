@@ -136,7 +136,7 @@ definition {
 
 		task ("Assert the changes are listed when moving the change to Publication 1 Name") {
 			PublicationsChanges.gotoMoveChangeToAnotherPublication(
-				changeCategory = "Web Content Article",
+				changeCategory = "Web Content Article Resource",
 				changeTitle = "Edited in Publication 2 Name",
 				submit = "false",
 				targetPublicationName = "Publication 1 Name");
@@ -148,7 +148,7 @@ definition {
 				locator1 = "PublicationsChanges#REVIEW_CHANGE_LISTING");
 
 			AssertElementPresent(
-				key_changeCategory = "Web Content Article",
+				key_changeCategory = "Web Content Article Resource",
 				key_changeOrder = 1,
 				key_changeTitle = "Edited in Publication 2 Name",
 				locator1 = "PublicationsChanges#REVIEW_CHANGE_LISTING");
@@ -172,7 +172,7 @@ definition {
 				publicationName = "Publication 1 Name");
 
 			PublicationsChanges.viewChanges(
-				changeCategory = "Web Content Article",
+				changeCategory = "Web Content Article Resource",
 				changeSite = "Site Name",
 				changeTitle = "Edited in Publication 2 Name",
 				changeType = "Added",
@@ -232,7 +232,7 @@ definition {
 
 		task ("Attempt to move the change to Publication 1 Name and assert an alert is shown for conflicting changes") {
 			PublicationsChanges.gotoMoveChangeToAnotherPublication(
-				changeCategory = "Web Content Article",
+				changeCategory = "Web Content Article Resource",
 				changeTitle = "WC WebContent Title 2 Edit",
 				targetPublicationName = "Publication 1 Name");
 
@@ -245,10 +245,10 @@ definition {
 				publicationName = "Publication 2 Name");
 
 			PublicationsChanges.viewChanges(
-				changeCategory = "Web Content Article",
+				changeCategory = "Web Content Article Resource",
 				changeSite = "Site Name",
 				changeTitle = "WC WebContent Title 2 Edit",
-				changeType = "Added",
+				changeType = "Modified",
 				changeUser = "Test Test");
 
 			PublicationsChanges.viewChanges(
@@ -263,10 +263,10 @@ definition {
 				publicationName = "Publication 1 Name");
 
 			PublicationsChanges.viewChanges(
-				changeCategory = "Web Content Article",
+				changeCategory = "Web Content Article Resource",
 				changeSite = "Site Name",
 				changeTitle = "WC WebContent Title 1 Edit",
-				changeType = "Added",
+				changeType = "Modified",
 				changeUser = "Test Test");
 
 			PublicationsChanges.viewChanges(
@@ -332,7 +332,7 @@ definition {
 				publicationName = "Publication 2 Name");
 
 			PublicationsChanges.gotoMoveChangeToAnotherPublication(
-				changeCategory = "Web Content Article",
+				changeCategory = "Web Content Article Resource",
 				changeTitle = "Test WebContent Title",
 				targetPublicationName = "Publication 1 Name");
 
@@ -366,14 +366,14 @@ definition {
 				publicationName = "Publication 1 Name");
 
 			PublicationsChanges.viewChanges(
-				changeCategory = "Web Content Article",
+				changeCategory = "Web Content Article Resource",
 				changeSite = "Site Name",
 				changeTitle = "WC WebContent Title",
 				changeType = "Added",
 				changeUser = "Test Test");
 
 			PublicationsNavigator.gotoViewChangeDetails(
-				changeCategory = "Web Content Article",
+				changeCategory = "Web Content Article Resource",
 				changeTitle = "WC WebContent Title");
 
 			Click(locator1 = "PublicationsChanges#REVIEW_CHANGE_DROPDOWN");

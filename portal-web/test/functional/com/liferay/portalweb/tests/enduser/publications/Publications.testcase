@@ -351,14 +351,14 @@ definition {
 			menuItem = "Changed");
 
 		PublicationsChanges.viewChanges(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeSite = "Test Site Name",
 			changeTitle = "WC WebContent Title 2",
 			changeType = "Added",
 			changeUser = "Test Test");
 
 		PublicationsChanges.viewChangesResultNotPresent(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeTitle = "WC WebContent Title 1");
 
 		PublicationsChanges.viewChangesResultNotPresent(
@@ -374,14 +374,14 @@ definition {
 			menuItem = "Changed");
 
 		PublicationsChanges.viewChanges(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeSite = "Site Name",
 			changeTitle = "WC WebContent Title 1",
 			changeType = "Deleted",
 			changeUser = "Test Test");
 
 		PublicationsChanges.viewChangesResultNotPresent(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeTitle = "WC WebContent Title 2");
 
 		PublicationsChanges.viewChangesResultNotPresent(
@@ -404,11 +404,11 @@ definition {
 			changeUser = "Test Test");
 
 		PublicationsChanges.viewChangesResultNotPresent(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeTitle = "WC WebContent Title 1");
 
 		PublicationsChanges.viewChangesResultNotPresent(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeTitle = "WC WebContent Title 2");
 
 		// Workaround LPS-201510
@@ -427,14 +427,14 @@ definition {
 			changeUser = "Test Test");
 
 		PublicationsChanges.viewChanges(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeSite = "Site Name",
 			changeTitle = "WC WebContent Title 1",
 			changeType = "Deleted",
 			changeUser = "Test Test");
 
 		PublicationsChanges.viewChangesResultNotPresent(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeTitle = "WC WebContent Title 2");
 
 		// Workaround LPS-201510
@@ -446,14 +446,14 @@ definition {
 			menuItem = "Sites");
 
 		PublicationsChanges.viewChanges(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeSite = "Test Site Name",
 			changeTitle = "WC WebContent Title 2",
 			changeType = "Added",
 			changeUser = "Test Test");
 
 		PublicationsChanges.viewChangesResultNotPresent(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeTitle = "WC WebContent Title 1");
 
 		PublicationsChanges.viewChangesResultNotPresent(
@@ -476,11 +476,11 @@ definition {
 			changeUser = "Test Test");
 
 		PublicationsChanges.viewChangesResultNotPresent(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeTitle = "WC WebContent Title 1");
 
 		PublicationsChanges.viewChangesResultNotPresent(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeTitle = "WC WebContent Title 2");
 
 		// Workaround LPS-201510
@@ -492,14 +492,14 @@ definition {
 			menuItem = "Types");
 
 		PublicationsChanges.viewChanges(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeSite = "Site Name",
 			changeTitle = "WC WebContent Title 1",
 			changeType = "Deleted",
 			changeUser = "Test Test");
 
 		PublicationsChanges.viewChanges(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeSite = "Test Site Name",
 			changeTitle = "WC WebContent Title 2",
 			changeType = "Added",
@@ -1470,21 +1470,21 @@ definition {
 		Search.searchCP(searchTerm = 1);
 
 		PublicationsChanges.viewChangesResultsOrder(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changesList = "WC Title 1");
 
 		PublicationsChanges.viewChangesResultNotPresent(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeTitle = "WC Title 2");
 
 		PublicationsChanges.viewChangesResultNotPresent(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeTitle = "WC Title 3");
 
 		Search.searchCP(searchTerm = "WC");
 
 		PublicationsChanges.viewChangesResultsOrder(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changesList = "WC Title 1,WC Title 2,WC Title 3");
 
 		PublicationsChanges.sortChanges(
@@ -1492,7 +1492,7 @@ definition {
 			sortName = "Title");
 
 		PublicationsChanges.viewChangesResultsOrder(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changesList = "WC Title 1,WC Title 2,WC Title 3");
 
 		Refresh();
@@ -1502,7 +1502,7 @@ definition {
 			sortName = "Title");
 
 		PublicationsChanges.viewChangesResultsOrder(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changesList = "WC Title 3,WC Title 2,WC Title 1");
 	}
 
@@ -1900,7 +1900,7 @@ definition {
 			publicationName = "Publication Name");
 
 		PublicationsNavigator.gotoViewChangeDetails(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeTitle = "WC WebContent Title Edited");
 
 		PublicationsChangeDetails.viewChangeDetailsInDisplay(

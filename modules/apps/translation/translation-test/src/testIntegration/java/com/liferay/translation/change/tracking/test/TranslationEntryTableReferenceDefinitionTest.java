@@ -8,7 +8,6 @@ package com.liferay.translation.change.tracking.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.change.tracking.test.util.BaseTableReferenceDefinitionTestCase;
 import com.liferay.journal.model.JournalArticle;
-import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.journal.test.util.JournalTestUtil;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -63,14 +62,10 @@ public class TranslationEntryTableReferenceDefinitionTest
 			"application/xliff+xml", LocaleUtil.toLanguageId(LocaleUtil.BRAZIL),
 			ServiceContextTestUtil.getServiceContext());
 
-		return _journalArticleLocalService.fetchLatestArticle(
-			_journalArticle.getResourcePrimKey());
+		return _journalArticle.getArticleResource();
 	}
 
 	private JournalArticle _journalArticle;
-
-	@Inject
-	private JournalArticleLocalService _journalArticleLocalService;
 
 	@Inject
 	private TranslationEntryLocalService _translationEntryLocalService;

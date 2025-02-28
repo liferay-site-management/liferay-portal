@@ -18,6 +18,7 @@ import com.liferay.change.tracking.service.CTProcessLocalService;
 import com.liferay.journal.constants.JournalArticleConstants;
 import com.liferay.journal.constants.JournalFolderConstants;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.model.JournalArticleResource;
 import com.liferay.journal.model.JournalFolder;
 import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.journal.service.JournalFolderLocalService;
@@ -481,8 +482,8 @@ public class CTCollectionLocalServiceTest {
 		_ctCollectionService.moveCTEntry(
 			ctCollection1.getCtCollectionId(),
 			ctCollection2.getCtCollectionId(),
-			_classNameLocalService.getClassNameId(JournalArticle.class),
-			journalArticle.getId());
+			_classNameLocalService.getClassNameId(JournalArticleResource.class),
+			journalArticle.getResourcePrimKey());
 
 		try (SafeCloseable safeCloseable =
 				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(

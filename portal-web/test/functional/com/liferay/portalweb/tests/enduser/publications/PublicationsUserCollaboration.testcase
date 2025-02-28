@@ -145,7 +145,7 @@ definition {
 				publicationName = "Publication Name");
 
 			PublicationsChanges.viewChanges(
-				changeCategory = "Web Content Article",
+				changeCategory = "Web Content Article Resource",
 				changeSite = "Site Name",
 				changeTitle = "WC WebContent Title",
 				changeType = "Added",
@@ -197,7 +197,7 @@ definition {
 				publicationName = "Publication Name");
 
 			PublicationsChanges.viewChanges(
-				changeCategory = "Web Content Article",
+				changeCategory = "Web Content Article Resource",
 				changeSite = "Site Name",
 				changeTitle = "WC WebContent Title",
 				changeType = "Added",
@@ -220,7 +220,7 @@ definition {
 
 		task ("Assert guest user can view Publication with link") {
 			PublicationsChanges.viewChanges(
-				changeCategory = "Web Content Article",
+				changeCategory = "Web Content Article Resource",
 				changeSite = "Site Name",
 				changeTitle = "WC WebContent Title",
 				changeType = "Added",
@@ -316,7 +316,7 @@ definition {
 				publicationName = "Publication Name");
 
 			PublicationsChanges.viewChanges(
-				changeCategory = "Web Content Article",
+				changeCategory = "Web Content Article Resource",
 				changeSite = "Site Name",
 				changeTitle = "WC WebContent Title",
 				changeType = "Added",
@@ -371,7 +371,7 @@ definition {
 				publicationName = "Publication Name");
 
 			PublicationsChanges.viewChanges(
-				changeCategory = "Web Content Article",
+				changeCategory = "Web Content Article Resource",
 				changeSite = "Site Name",
 				changeTitle = "WC WebContent Title",
 				changeType = "Added",

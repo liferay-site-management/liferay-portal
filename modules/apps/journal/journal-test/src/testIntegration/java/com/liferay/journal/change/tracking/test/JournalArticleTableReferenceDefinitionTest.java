@@ -47,10 +47,12 @@ public class JournalArticleTableReferenceDefinitionTest
 
 	@Override
 	protected CTModel<?> addCTModel() throws Exception {
-		return JournalTestUtil.updateArticle(
+		_journalArticle = JournalTestUtil.updateArticle(
 			_journalArticle, _journalArticle.getTitleMap(),
 			_journalArticle.getContent(), false, false,
 			ServiceContextTestUtil.getServiceContext());
+
+		return _journalArticle.getArticleResource();
 	}
 
 	private JournalArticle _journalArticle;

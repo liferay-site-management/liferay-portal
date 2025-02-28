@@ -16,16 +16,20 @@ import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.journal.test.util.JournalTestUtil;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -83,7 +87,20 @@ public class CTEntryConflictHelperTest {
 		Map<Long, List<ConflictInfo>> conflictInfos =
 			_ctCollectionLocalService.checkConflicts(_ctCollection2);
 
-		Assert.assertEquals(conflictInfos.toString(), 2, conflictInfos.size());
+		List<ConflictInfo> journalArticleConflictInfoList = conflictInfos.get(
+			_portal.getClassNameId(JournalArticle.class));
+
+		Assert.assertFalse(journalArticleConflictInfoList.isEmpty());
+
+		ConflictInfo journalArticleConflictInfo =
+			journalArticleConflictInfoList.get(0);
+
+		ResourceBundle resourceBundle = _portal.getResourceBundle(
+			LocaleUtil.ENGLISH);
+
+		Assert.assertEquals(
+			_language.get(resourceBundle, "deletion-modification-conflict"),
+			journalArticleConflictInfo.getConflictDescription(resourceBundle));
 	}
 
 	@Inject
@@ -103,5 +120,11 @@ public class CTEntryConflictHelperTest {
 
 	@DeleteAfterTestRun
 	private Group _group;
+
+	@Inject
+	private Language _language;
+
+	@Inject
+	private Portal _portal;
 
 }

@@ -180,7 +180,7 @@ definition {
 		// Workaround LPS-177895
 
 		/*PublicationsChanges.viewChanges(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeSite = "Site Name",
 			changeStatus = "Pending",
 			changeTitle = "WC WebContent Title",
@@ -341,7 +341,7 @@ definition {
 		PublicationsNavigator.gotoReviewChanges();
 
 		PublicationsChanges.viewChanges(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeSite = "Site Name",
 			changeStatus = "Pending",
 			changeTitle = "WC WebContent Title 1",
@@ -351,7 +351,7 @@ definition {
 		// Workaround LPS-177895
 
 		/*PublicationsChanges.viewChanges(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeSite = "Site Name",
 			changeStatus = "Approved",
 			changeTitle = "WC WebContent Title 2",
@@ -444,7 +444,7 @@ definition {
 		// Workaround LPS-177895
 
 		/*PublicationsChanges.viewChanges(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeSite = "Site Name",
 			changeStatus = "Approved",
 			changeTitle = "WC WebContent Title",

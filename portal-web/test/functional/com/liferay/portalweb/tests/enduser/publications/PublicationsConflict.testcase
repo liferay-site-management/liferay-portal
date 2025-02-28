@@ -164,7 +164,7 @@ definition {
 		PublicationsNavigator.openPublicationsAdmin();
 
 		Publications.assertDiscardIsUnavailableForInactivePublication(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeTitle = "WC WebContent Title",
 			publicationName = "Publication Name");
 

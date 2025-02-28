@@ -81,7 +81,7 @@ public class JournalArticleResourceTableReferenceDefinitionTest
 		Calendar displayCal = CalendarFactoryUtil.getCalendar(
 			user.getTimeZone());
 
-		return _journalArticleLocalService.addArticle(
+		JournalArticle journalArticle = _journalArticleLocalService.addArticle(
 			null, user.getUserId(), group.getGroupId(),
 			JournalFolderConstants.DEFAULT_PARENT_FOLDER_ID,
 			JournalArticleConstants.CLASS_NAME_ID_DEFAULT, 0, StringPool.BLANK,
@@ -106,6 +106,8 @@ public class JournalArticleResourceTableReferenceDefinitionTest
 			displayCal.get(Calendar.MINUTE), 0, 0, 0, 0, 0, true, 0, 0, 0, 0, 0,
 			true, true, false, 0, 0, null, null, null, null,
 			ServiceContextTestUtil.getServiceContext(group.getGroupId()));
+
+		return journalArticle.getArticleResource();
 	}
 
 	@Inject

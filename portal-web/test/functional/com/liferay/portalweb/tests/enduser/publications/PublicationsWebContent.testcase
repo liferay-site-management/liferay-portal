@@ -196,14 +196,14 @@ definition {
 			PublicationsNavigator.gotoReviewChanges();
 
 			PublicationsChanges.viewChanges(
-				changeCategory = "Web Content Article",
+				changeCategory = "Web Content Article Resource",
 				changeSite = "Site Name",
 				changeTitle = "WC Title",
 				changeType = "Added",
 				changeUser = "Test Test");
 
 			PublicationsNavigator.gotoViewChangeDetails(
-				changeCategory = "Web Content Article",
+				changeCategory = "Web Content Article Resource",
 				changeTitle = "WC Title");
 
 			PublicationsNavigator.gotoNavbar(navBarTitle = "Data");
@@ -723,7 +723,7 @@ definition {
 		PublicationsNavigator.gotoReviewChanges();
 
 		PublicationsNavigator.gotoViewChangeDetails(
-			changeCategory = "Web Content Article",
+			changeCategory = "Web Content Article Resource",
 			changeTitle = "WC Web Content Title");
 
 		PublicationsNavigator.gotoNavbar(navBarTitle = "Data");
