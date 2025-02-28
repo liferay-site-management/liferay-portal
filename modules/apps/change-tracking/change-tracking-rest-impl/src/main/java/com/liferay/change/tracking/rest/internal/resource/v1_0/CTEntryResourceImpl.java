@@ -152,6 +152,8 @@ public class CTEntryResourceImpl extends BaseCTEntryResourceImpl {
 				}
 
 				searchContext.setAttribute("ctCollectionId", -1);
+				searchContext.setAttribute("showHideable", Boolean.TRUE);
+
 				searchContext.setCompanyId(contextCompany.getCompanyId());
 
 				BooleanFilter booleanFilter = new BooleanFilter();
