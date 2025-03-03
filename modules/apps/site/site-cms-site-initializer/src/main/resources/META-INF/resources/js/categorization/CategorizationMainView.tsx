@@ -11,6 +11,8 @@ import TagsView from './tags/TagsView';
 import VocabulariesView from './vocabulary/VocabulariesView';
 
 export default function CategorizationMainView() {
+
+	/* eslint-disable sort-keys */
 	const TABS = {
 		vocabularies: Liferay.Language.get('Vocabularies'),
 		tags: Liferay.Language.get('Tags'),
