@@ -65,36 +65,18 @@ public class JournalArticleResourceCTDisplayRenderer
 	public String[] getAvailableLanguageIds(
 		JournalArticleResource journalArticleResource) {
 
-		try {
-			return _getLatestJournalArticle(
-				journalArticleResource
-			).getAvailableLanguageIds();
-		}
-		catch (Exception exception) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(exception);
-			}
-
-			return null;
-		}
+		return _getLatestJournalArticle(
+			journalArticleResource
+		).getAvailableLanguageIds();
 	}
 
 	@Override
 	public String getDefaultLanguageId(
 		JournalArticleResource journalArticleResource) {
 
-		try {
-			return _getLatestJournalArticle(
-				journalArticleResource
-			).getDefaultLanguageId();
-		}
-		catch (Exception exception) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(exception);
-			}
-
-			return null;
-		}
+		return _getLatestJournalArticle(
+			journalArticleResource
+		).getDefaultLanguageId();
 	}
 
 	@Override
@@ -140,16 +122,11 @@ public class JournalArticleResourceCTDisplayRenderer
 		Map<String, Object> modelAttributes =
 			journalArticleResource.getModelAttributes();
 
-		try {
-			JournalArticle journalArticle = _getLatestJournalArticle(
-				journalArticleResource);
+		JournalArticle journalArticle = _getLatestJournalArticle(
+			journalArticleResource);
 
+		if (journalArticle != null) {
 			modelAttributes.put("status", journalArticle.getStatus());
-		}
-		catch (PortalException portalException) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(portalException);
-			}
 		}
 
 		return modelAttributes;
@@ -174,47 +151,22 @@ public class JournalArticleResourceCTDisplayRenderer
 	public String getVersionName(
 		JournalArticleResource journalArticleResource) {
 
-		try {
-			long ctCollectionId = journalArticleResource.getCtCollectionId();
+		JournalArticle journalArticle = _getLatestJournalArticle(
+			journalArticleResource);
 
-			try (SafeCloseable safeCloseable =
-					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
-						ctCollectionId)) {
-
-				JournalArticle journalArticle = _getLatestJournalArticle(
-					journalArticleResource);
-
-				return String.valueOf(journalArticle.getVersion());
-			}
-		}
-		catch (Exception exception) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(exception);
-			}
-
-			return null;
-		}
+		return String.valueOf(journalArticle.getVersion());
 	}
 
 	@Override
 	public ObjectValuePair<Long, Long> getWorkflowedModelClassPK(
 		JournalArticleResource journalArticleResource) {
 
-		try {
-			JournalArticle journalArticle = _getLatestJournalArticle(
-				journalArticleResource);
+		JournalArticle journalArticle = _getLatestJournalArticle(
+			journalArticleResource);
 
-			return new ObjectValuePair<>(
-				_portal.getClassNameId(JournalArticle.class),
-				journalArticle.getPrimaryKey());
-		}
-		catch (PortalException portalException) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(portalException);
-			}
-		}
-
-		return null;
+		return new ObjectValuePair<>(
+			_portal.getClassNameId(JournalArticle.class),
+			journalArticle.getPrimaryKey());
 	}
 
 	@Override
@@ -272,18 +224,8 @@ public class JournalArticleResourceCTDisplayRenderer
 		JournalArticleResource journalArticleResource =
 			displayBuilder.getModel();
 
-		JournalArticle journalArticle = null;
-
-		try {
-			journalArticle = _getLatestJournalArticle(journalArticleResource);
-		}
-		catch (Exception exception) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(exception);
-			}
-		}
-
-		JournalArticle finalJournalArticle = journalArticle;
+		JournalArticle journalArticle = _getLatestJournalArticle(
+			journalArticleResource);
 
 		displayBuilder.display(
 			"name", journalArticle.getTitle(displayBuilder.getLocale())
@@ -293,7 +235,7 @@ public class JournalArticleResourceCTDisplayRenderer
 		).display(
 			"created-by",
 			() -> {
-				String userName = finalJournalArticle.getUserName();
+				String userName = journalArticle.getUserName();
 
 				if (Validator.isNotNull(userName)) {
 					return userName;
@@ -310,15 +252,14 @@ public class JournalArticleResourceCTDisplayRenderer
 		).display(
 			"structure",
 			() -> {
-				DDMStructure ddmStructure =
-					finalJournalArticle.getDDMStructure();
+				DDMStructure ddmStructure = journalArticle.getDDMStructure();
 
 				return ddmStructure.getName(displayBuilder.getLocale());
 			}
 		).display(
 			"template",
 			() -> {
-				DDMTemplate ddmTemplate = finalJournalArticle.getDDMTemplate();
+				DDMTemplate ddmTemplate = journalArticle.getDDMTemplate();
 
 				return ddmTemplate.getName(displayBuilder.getLocale());
 			}
@@ -326,11 +267,22 @@ public class JournalArticleResourceCTDisplayRenderer
 	}
 
 	private JournalArticle _getLatestJournalArticle(
-			JournalArticleResource journalArticleResource)
-		throws PortalException {
+		JournalArticleResource journalArticleResource) {
 
-		return _journalArticleLocalService.getArticle(
-			journalArticleResource.getLatestArticlePK());
+		try (SafeCloseable safeCloseable =
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					journalArticleResource.getCtCollectionId())) {
+
+			return _journalArticleLocalService.getArticle(
+				journalArticleResource.getLatestArticlePK());
+		}
+		catch (Exception exception) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(exception);
+			}
+
+			return null;
+		}
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
