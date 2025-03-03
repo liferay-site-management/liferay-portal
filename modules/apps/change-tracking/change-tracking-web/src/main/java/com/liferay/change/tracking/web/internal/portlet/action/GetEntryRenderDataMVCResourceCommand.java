@@ -216,20 +216,20 @@ public class GetEntryRenderDataMVCResourceCommand
 		T rightModel = null;
 		String rightTitle = ctCollection.getName();
 
+		long rightCTCollectionId = ctCollection.getCtCollectionId();
+
+		if (ctCollection.getStatus() == WorkflowConstants.STATUS_APPROVED) {
+			rightCTCollectionId = _ctEntryLocalService.getCTRowCTCollectionId(
+				ctEntry);
+		}
+
 		if (ctEntry.getChangeType() != CTConstants.CT_CHANGE_TYPE_DELETION) {
-			long ctCollectionId = ctCollection.getCtCollectionId();
-
-			if (ctCollection.getStatus() == WorkflowConstants.STATUS_APPROVED) {
-				ctCollectionId = _ctEntryLocalService.getCTRowCTCollectionId(
-					ctEntry);
-			}
-
 			CTSQLModeThreadLocal.CTSQLMode ctSQLMode =
 				_ctDisplayRendererRegistry.getCTSQLMode(
-					ctCollectionId, ctEntry);
+					rightCTCollectionId, ctEntry);
 
 			rightModel = _ctDisplayRendererRegistry.fetchCTModel(
-				ctCollectionId, ctSQLMode, ctEntry.getModelClassNameId(),
+				rightCTCollectionId, ctSQLMode, ctEntry.getModelClassNameId(),
 				ctEntry.getModelClassPK());
 
 			if (rightModel != null) {
@@ -237,7 +237,7 @@ public class GetEntryRenderDataMVCResourceCommand
 						WorkflowConstants.STATUS_DRAFT) {
 
 					String editURL = _ctDisplayRendererRegistry.getEditURL(
-						ctCollectionId, ctSQLMode, httpServletRequest,
+						rightCTCollectionId, ctSQLMode, httpServletRequest,
 						rightModel, ctEntry.getModelClassNameId());
 
 					if (Validator.isNotNull(editURL)) {
@@ -258,7 +258,7 @@ public class GetEntryRenderDataMVCResourceCommand
 				if (localize) {
 					availableLanguageIds =
 						_ctDisplayRendererRegistry.getAvailableLanguageIds(
-							ctCollectionId, ctSQLMode, rightModel,
+							rightCTCollectionId, ctSQLMode, rightModel,
 							ctEntry.getModelClassNameId());
 					defaultLanguageId =
 						_ctDisplayRendererRegistry.getDefaultLanguageId(
@@ -270,34 +270,34 @@ public class GetEntryRenderDataMVCResourceCommand
 						localizedTitlesJSONObject.put(
 							languageId,
 							_ctDisplayRendererRegistry.getTitle(
-								ctCollectionId, ctSQLMode,
+								rightCTCollectionId, ctSQLMode,
 								LocaleUtil.fromLanguageId(languageId),
 								rightModel, ctEntry.getModelClassNameId()));
 					}
 
 					rightLocalizedPreviewJSONObject =
 						_getLocalizedPreviewJSONObject(
-							availableLanguageIds, ctCollectionId,
+							availableLanguageIds, rightCTCollectionId,
 							ctDisplayRenderer, ctEntryId, ctSQLMode,
 							httpServletRequest, httpServletResponse, rightModel,
 							CTConstants.TYPE_AFTER);
 					rightLocalizedRenderJSONObject =
 						_getLocalizedRenderJSONObject(
 							availableLanguageIds, httpServletRequest,
-							httpServletResponse, ctCollectionId,
+							httpServletResponse, rightCTCollectionId,
 							ctDisplayRenderer, ctEntryId, ctSQLMode, rightModel,
 							CTConstants.TYPE_AFTER);
 				}
 				else {
 					rightPreview = _getPreview(
-						ctCollectionId, ctDisplayRenderer, ctEntryId, ctSQLMode,
-						httpServletRequest, httpServletResponse,
+						rightCTCollectionId, ctDisplayRenderer, ctEntryId,
+						ctSQLMode, httpServletRequest, httpServletResponse,
 						themeDisplay.getLocale(), rightModel,
 						CTConstants.TYPE_AFTER);
 					rightRender = _getRender(
-						httpServletRequest, httpServletResponse, ctCollectionId,
-						ctDisplayRenderer, ctEntryId, ctSQLMode,
-						themeDisplay.getLocale(), rightModel,
+						httpServletRequest, httpServletResponse,
+						rightCTCollectionId, ctDisplayRenderer, ctEntryId,
+						ctSQLMode, themeDisplay.getLocale(), rightModel,
 						CTConstants.TYPE_AFTER);
 				}
 			}
@@ -621,10 +621,14 @@ public class GetEntryRenderDataMVCResourceCommand
 		if (_ctDisplayRendererRegistry.isWorkflowEnabled(ctEntry, rightModel) &&
 			(ctEntry.getChangeType() != CTConstants.CT_CHANGE_TYPE_DELETION)) {
 
+			T workflowedModel = _ctDisplayRendererRegistry.fetchWorkflowedModel(
+				ctEntry, rightModel);
+
 			if (ctCollection.getStatus() == WorkflowConstants.STATUS_DRAFT) {
 				JSONArray workflowActionsJSONArray =
 					_getWorkflowActionsJSONArray(
-						ctEntry, rightModel, themeDisplay, resourceResponse);
+						ctEntry, workflowedModel, themeDisplay,
+						resourceResponse);
 
 				if (workflowActionsJSONArray != null) {
 					jsonObject.put("workflowActions", workflowActionsJSONArray);
@@ -632,7 +636,7 @@ public class GetEntryRenderDataMVCResourceCommand
 			}
 
 			JSONObject workflowDataJSONObject = _getWorkflowDataJSONObject(
-				ctEntry, rightModel, resourceResponse, themeDisplay);
+				ctEntry, workflowedModel, resourceResponse, themeDisplay);
 
 			if (workflowDataJSONObject != null) {
 				jsonObject.put("workflowData", workflowDataJSONObject);
@@ -1054,7 +1058,8 @@ public class GetEntryRenderDataMVCResourceCommand
 			ResourceResponse resourceResponse)
 		throws Exception {
 
-		WorkflowTask workflowTask = _getWorkflowTask(ctEntry, model);
+		WorkflowTask workflowTask = _getWorkflowTask(
+			ctEntry.getCompanyId(), model);
 
 		if (workflowTask == null) {
 			return null;
@@ -1178,7 +1183,7 @@ public class GetEntryRenderDataMVCResourceCommand
 					safeCloseableCTCollectionId)) {
 
 			WorkflowInstanceLink workflowInstanceLink =
-				_getWorkflowInstanceLink(ctEntry, model);
+				_getWorkflowInstanceLink(ctEntry.getCompanyId(), model);
 
 			WorkflowTask workflowTask = _getWorkflowTask(
 				workflowInstanceLink, null);
@@ -1400,7 +1405,7 @@ public class GetEntryRenderDataMVCResourceCommand
 	}
 
 	private <T extends BaseModel<T>> WorkflowInstanceLink
-			_getWorkflowInstanceLink(CTEntry ctEntry, T model)
+			_getWorkflowInstanceLink(long companyId, T model)
 		throws Exception {
 
 		long groupId = 0;
@@ -1411,7 +1416,7 @@ public class GetEntryRenderDataMVCResourceCommand
 			groupId = groupedModel.getGroupId();
 		}
 
-		long classPK = ctEntry.getModelClassPK();
+		long classPK = (long)model.getPrimaryKeyObj();
 
 		if (model instanceof KBArticleModel) {
 			Map<String, Object> modelAttributes = model.getModelAttributes();
@@ -1421,8 +1426,7 @@ public class GetEntryRenderDataMVCResourceCommand
 		}
 
 		return _workflowInstanceLinkLocalService.fetchWorkflowInstanceLink(
-			ctEntry.getCompanyId(), groupId,
-			_portal.getClassName(ctEntry.getModelClassNameId()), classPK);
+			companyId, groupId, model.getModelClassName(), classPK);
 	}
 
 	private String _getWorkflowLogDescriptions(
@@ -1531,11 +1535,11 @@ public class GetEntryRenderDataMVCResourceCommand
 	}
 
 	private <T extends BaseModel<T>> WorkflowTask _getWorkflowTask(
-			CTEntry ctEntry, T model)
+			long companyId, T model)
 		throws Exception {
 
 		return _getWorkflowTask(
-			_getWorkflowInstanceLink(ctEntry, model), false);
+			_getWorkflowInstanceLink(companyId, model), false);
 	}
 
 	private WorkflowTask _getWorkflowTask(

@@ -37,6 +37,12 @@ public interface CTDisplayRendererRegistry {
 		long ctCollectionId, CTSQLModeThreadLocal.CTSQLMode ctSQLMode,
 		long modelClassNameId, Set<Long> primaryKeys);
 
+	public default <T extends BaseModel<T>> T fetchWorkflowedModel(
+		CTEntry ctEntry, T model) {
+
+		return model;
+	}
+
 	public <T extends BaseModel<T>> String[] getAvailableLanguageIds(
 		long ctCollectionId, CTSQLModeThreadLocal.CTSQLMode ctSQLMode, T model,
 		long modelClassNameId);

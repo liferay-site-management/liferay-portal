@@ -35,6 +35,7 @@ import com.liferay.portal.kernel.security.permission.ResourceActions;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalService;
 import com.liferay.portal.kernel.service.change.tracking.CTService;
+import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -133,6 +134,32 @@ public class CTDisplayRendererRegistryImpl
 	}
 
 	@Override
+	public <T extends BaseModel<T>> T fetchWorkflowedModel(
+		CTEntry ctEntry, T model) {
+
+		CTDisplayRenderer<T> ctDisplayRenderer = _getCTDisplayRenderer(
+			ctEntry.getModelClassNameId());
+
+		if (ctDisplayRenderer == null) {
+			return model;
+		}
+
+		ObjectValuePair<Long, Long> objectValuePair =
+			ctDisplayRenderer.getWorkflowedModelClassPK(model);
+
+		if (objectValuePair == null) {
+			return model;
+		}
+
+		CTModel<T> ctModel = (CTModel<T>)model;
+
+		return fetchCTModel(
+			ctModel.getCtCollectionId(),
+			getCTSQLMode(ctModel.getCtCollectionId(), ctEntry),
+			objectValuePair.getKey(), objectValuePair.getValue());
+	}
+
+	@Override
 	public <T extends BaseModel<T>> String[] getAvailableLanguageIds(
 		long ctCollectionId, CTSQLModeThreadLocal.CTSQLMode ctSQLMode, T model,
 		long modelClassNameId) {
@@ -170,7 +197,10 @@ public class CTDisplayRendererRegistryImpl
 				}
 			}
 		}
-		else if (model instanceof WorkflowedModel) {
+
+		model = fetchWorkflowedModel(ctEntry, model);
+
+		if (model instanceof WorkflowedModel) {
 			WorkflowedModel workflowedModel = (WorkflowedModel)model;
 
 			if (workflowedModel.getStatus() ==
@@ -482,6 +512,8 @@ public class CTDisplayRendererRegistryImpl
 	public <T extends BaseModel<T>> boolean isWorkflowEnabled(
 		CTEntry ctEntry, T model) {
 
+		model = fetchWorkflowedModel(ctEntry, model);
+
 		if (!(model instanceof WorkflowedModel)) {
 			return false;
 		}
@@ -495,8 +527,7 @@ public class CTDisplayRendererRegistryImpl
 		}
 
 		return _workflowDefinitionLinkLocalService.hasWorkflowDefinitionLink(
-			ctEntry.getCompanyId(), groupId,
-			_portal.getClassName(ctEntry.getModelClassNameId()));
+			ctEntry.getCompanyId(), groupId, model.getModelClassName());
 	}
 
 	@Activate

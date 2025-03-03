@@ -60,7 +60,6 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.model.GroupedModel;
 import com.liferay.portal.kernel.model.PortletPreferences;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.UserTable;
@@ -1529,13 +1528,12 @@ public class ViewChangesDisplayContext {
 	}
 
 	private List<WorkflowTask> _getWorkflowTasks(
-			CTEntry ctEntry, long classPK, long groupId)
+			long companyId, long classNameId, long classPK, long groupId)
 		throws WorkflowException {
 
 		WorkflowInstanceLink workflowInstanceLink =
 			_workflowInstanceLinkLocalService.fetchWorkflowInstanceLink(
-				ctEntry.getCompanyId(), groupId,
-				_portal.getClassName(ctEntry.getModelClassNameId()), classPK);
+				companyId, groupId, _portal.getClassName(classNameId), classPK);
 
 		if (workflowInstanceLink == null) {
 			return null;
@@ -1564,7 +1562,19 @@ public class ViewChangesDisplayContext {
 			CTEntry ctEntry, long groupId, T model)
 		throws Exception {
 
+		long classNameId = ctEntry.getModelClassNameId();
 		long classPK = ctEntry.getModelClassPK();
+
+		CTDisplayRenderer ctDisplayRenderer =
+			_ctDisplayRendererRegistry.getCTDisplayRenderer(classNameId);
+
+		ObjectValuePair<Long, Long> objectValuePair =
+			ctDisplayRenderer.getWorkflowedModelClassPK(model);
+
+		if (objectValuePair != null) {
+			classNameId = objectValuePair.getKey();
+			classPK = objectValuePair.getValue();
+		}
 
 		if (model instanceof KBArticleModel) {
 			Map<String, Object> modelAttributes = model.getModelAttributes();
@@ -1578,7 +1588,7 @@ public class ViewChangesDisplayContext {
 
 		if (ctCollection.getStatus() == WorkflowConstants.STATUS_APPROVED) {
 			List<WorkflowTask> workflowTasks = _getWorkflowTasks(
-				ctEntry, classPK, groupId);
+				ctEntry.getCompanyId(), classNameId, classPK, groupId);
 
 			if (workflowTasks == null) {
 				return true;
@@ -1594,7 +1604,7 @@ public class ViewChangesDisplayContext {
 					ctEntry.getCtCollectionId())) {
 
 			List<WorkflowTask> workflowTasks = _getWorkflowTasks(
-				ctEntry, classPK, groupId);
+				ctEntry.getCompanyId(), classNameId, classPK, groupId);
 
 			if (workflowTasks == null) {
 				return true;
@@ -1745,8 +1755,12 @@ public class ViewChangesDisplayContext {
 					continue;
 				}
 
+				CTDisplayRenderer ctDisplayRenderer =
+					_ctDisplayRendererRegistry.getCTDisplayRenderer(
+						ctEntry.getModelClassNameId());
+
 				Map<String, Object> modelAttributes =
-					model.getModelAttributes();
+					ctDisplayRenderer.getModelAttributes(model);
 
 				Date modifiedDate = ctEntry.getModifiedDate();
 
@@ -1788,10 +1802,8 @@ public class ViewChangesDisplayContext {
 
 				long groupId = 0;
 
-				if (model instanceof GroupedModel) {
-					GroupedModel groupedModel = (GroupedModel)model;
-
-					groupId = groupedModel.getGroupId();
+				if (modelAttributes.containsKey("groupId")) {
+					groupId = (long)modelAttributes.get("groupId");
 
 					modelInfo._jsonObject.put("groupId", groupId);
 				}

@@ -7,10 +7,13 @@ package com.liferay.change.tracking.spi.display;
 
 import com.liferay.change.tracking.spi.display.context.DisplayContext;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.BaseModel;
+import com.liferay.portal.kernel.util.ObjectValuePair;
 
 import java.io.InputStream;
 
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -61,6 +64,12 @@ public interface CTDisplayRenderer<T> {
 	public String getEditURL(HttpServletRequest httpServletRequest, T model)
 		throws Exception;
 
+	public default Map<String, Object> getModelAttributes(T model) {
+		BaseModel<T> baseModel = (BaseModel<T>)model;
+
+		return baseModel.getModelAttributes();
+	}
+
 	/**
 	 * Returns the model class for this display renderer.
 	 *
@@ -87,6 +96,12 @@ public interface CTDisplayRenderer<T> {
 	public String getTypeName(Locale locale);
 
 	public default String getVersionName(T model) {
+		return null;
+	}
+
+	public default ObjectValuePair<Long, Long> getWorkflowedModelClassPK(
+		T model) {
+
 		return null;
 	}
 

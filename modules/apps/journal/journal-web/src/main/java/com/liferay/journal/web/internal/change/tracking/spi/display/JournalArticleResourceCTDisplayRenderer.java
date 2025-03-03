@@ -30,11 +30,13 @@ import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.JavaConstants;
+import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.Locale;
+import java.util.Map;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
@@ -132,6 +134,28 @@ public class JournalArticleResourceCTDisplayRenderer
 	}
 
 	@Override
+	public Map<String, Object> getModelAttributes(
+		JournalArticleResource journalArticleResource) {
+
+		Map<String, Object> modelAttributes =
+			journalArticleResource.getModelAttributes();
+
+		try {
+			JournalArticle journalArticle = _getLatestJournalArticle(
+				journalArticleResource);
+
+			modelAttributes.put("status", journalArticle.getStatus());
+		}
+		catch (PortalException portalException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(portalException);
+			}
+		}
+
+		return modelAttributes;
+	}
+
+	@Override
 	public Class<JournalArticleResource> getModelClass() {
 		return JournalArticleResource.class;
 	}
@@ -170,6 +194,27 @@ public class JournalArticleResourceCTDisplayRenderer
 
 			return null;
 		}
+	}
+
+	@Override
+	public ObjectValuePair<Long, Long> getWorkflowedModelClassPK(
+		JournalArticleResource journalArticleResource) {
+
+		try {
+			JournalArticle journalArticle = _getLatestJournalArticle(
+				journalArticleResource);
+
+			return new ObjectValuePair<>(
+				_portal.getClassNameId(JournalArticle.class),
+				journalArticle.getPrimaryKey());
+		}
+		catch (PortalException portalException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(portalException);
+			}
+		}
+
+		return null;
 	}
 
 	@Override
