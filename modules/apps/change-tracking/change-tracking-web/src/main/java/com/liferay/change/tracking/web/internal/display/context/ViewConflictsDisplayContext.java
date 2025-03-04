@@ -17,6 +17,7 @@ import com.liferay.change.tracking.spi.display.CTDisplayRendererRegistry;
 import com.liferay.change.tracking.web.internal.configuration.helper.CTSettingsConfigurationHelper;
 import com.liferay.change.tracking.web.internal.util.PublicationsPortletURLUtil;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.model.JournalArticleResource;
 import com.liferay.learn.LearnMessage;
 import com.liferay.learn.LearnMessageUtil;
 import com.liferay.petra.lang.SafeCloseable;
@@ -447,6 +448,27 @@ public class ViewConflictsDisplayContext {
 								_httpServletRequest, "edit-in-production")));
 				}
 
+				long discardModelClassNameId = ctEntry.getModelClassNameId();
+				long discardModelClassPK = ctEntry.getModelClassPK();
+
+				if (Objects.equals(
+						_portal.getClassName(ctEntry.getModelClassNameId()),
+						JournalArticle.class.getName())) {
+
+					discardModelClassNameId = _portal.getClassNameId(
+						JournalArticleResource.class);
+
+					JournalArticle journalArticle =
+						_ctDisplayRendererRegistry.fetchCTModel(
+							ctEntry.getCtCollectionId(),
+							_ctDisplayRendererRegistry.getCTSQLMode(
+								ctEntry.getCtCollectionId(), ctEntry),
+							ctEntry.getModelClassNameId(),
+							conflictInfo.getSourcePrimaryKey());
+
+					discardModelClassPK = journalArticle.getResourcePrimKey();
+				}
+
 				actionsJSONArray.put(
 					JSONUtil.put(
 						"href",
@@ -459,9 +481,9 @@ public class ViewConflictsDisplayContext {
 						).setParameter(
 							"ctCollectionId", ctEntry.getCtCollectionId()
 						).setParameter(
-							"modelClassNameId", ctEntry.getModelClassNameId()
+							"modelClassNameId", discardModelClassNameId
 						).setParameter(
-							"modelClassPK", ctEntry.getModelClassPK()
+							"modelClassPK", discardModelClassPK
 						).buildString()
 					).put(
 						"label",
