@@ -12,6 +12,7 @@ import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.journal.constants.JournalArticleConstants;
 import com.liferay.journal.exception.NoSuchArticleException;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.model.JournalArticleResource;
 import com.liferay.journal.model.JournalFeed;
 import com.liferay.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.journal.service.JournalArticleServiceUtil;
@@ -189,7 +190,8 @@ public class ActionUtil {
 		}
 
 		CTTimelineUtil.setCTTimelineKeys(
-			httpServletRequest, JournalArticle.class, article.getPrimaryKey());
+			httpServletRequest, JournalArticleResource.class,
+			article.getResourcePrimKey());
 
 		return article;
 	}

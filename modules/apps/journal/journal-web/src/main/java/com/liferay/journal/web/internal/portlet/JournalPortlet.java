@@ -53,7 +53,7 @@ import com.liferay.journal.exception.MaxAddMenuFavItemsException;
 import com.liferay.journal.exception.NoSuchArticleException;
 import com.liferay.journal.exception.NoSuchFeedException;
 import com.liferay.journal.exception.NoSuchFolderException;
-import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.model.JournalArticleResource;
 import com.liferay.journal.model.JournalFolder;
 import com.liferay.journal.service.JournalFolderService;
 import com.liferay.journal.util.JournalContent;
@@ -301,7 +301,7 @@ public class JournalPortlet extends MVCPortlet {
 			}
 			else if (Validator.isNull(path)) {
 				CTTimelineUtil.setClassName(
-					httpServletRequest, JournalArticle.class);
+					httpServletRequest, JournalArticleResource.class);
 			}
 			else {
 				_getFolder(httpServletRequest);
