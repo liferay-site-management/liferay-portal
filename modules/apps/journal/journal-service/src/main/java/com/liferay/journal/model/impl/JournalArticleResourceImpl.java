@@ -22,4 +22,13 @@ public class JournalArticleResourceImpl extends JournalArticleResourceBaseImpl {
 		return journalArticle.getId();
 	}
 
+	@Override
+	public int getLatestArticleStatus() {
+		JournalArticle journalArticle =
+			JournalArticleLocalServiceUtil.fetchLatestArticle(
+				getResourcePrimKey());
+
+		return journalArticle.getStatus();
+	}
+
 }
