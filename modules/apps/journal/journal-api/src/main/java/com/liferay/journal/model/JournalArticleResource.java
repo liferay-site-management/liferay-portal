@@ -53,4 +53,6 @@ public interface JournalArticleResource
 
 	public long getLatestArticlePK();
 
+	public int getLatestArticleStatus();
+
 }

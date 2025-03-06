@@ -142,6 +142,11 @@ public class JournalArticleResourceWrapper
 		return model.getLatestArticlePK();
 	}
 
+	@Override
+	public int getLatestArticleStatus() {
+		return model.getLatestArticleStatus();
+	}
+
 	/**
 	 * Returns the mvcc version of this journal article resource.
 	 *
