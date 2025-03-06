@@ -14,6 +14,7 @@ import com.liferay.change.tracking.spi.display.CTDisplayRenderer;
 import com.liferay.change.tracking.spi.display.CTDisplayRendererRegistry;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalArticleLocalization;
+import com.liferay.journal.model.JournalArticleResource;
 import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
@@ -243,6 +244,30 @@ public class CTEntryModelDocumentContributor
 		}
 	}
 
+	private <T extends BaseModel<T>> int _getStatus(
+		long ctCollectionId, T model) {
+
+		Map<String, Object> modelAttributes = model.getModelAttributes();
+
+		if (modelAttributes.containsKey("status")) {
+			return (int)modelAttributes.get("status");
+		}
+
+		if (model instanceof JournalArticleResource) {
+			try (SafeCloseable safeCloseable =
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ctCollectionId)) {
+
+				JournalArticleResource journalArticleResource =
+					(JournalArticleResource)model;
+
+				return journalArticleResource.getLatestArticleStatus();
+			}
+		}
+
+		return -1;
+	}
+
 	private <T extends BaseModel<T>> Map<Locale, String> _getTitleMap(
 		long ctCollectionId, CTEntry ctEntry, Locale[] locales) {
 
@@ -353,11 +378,9 @@ public class CTEntryModelDocumentContributor
 			_ctDisplayRendererRegistry.isHideable(
 				model, ctEntry.getModelClassNameId()));
 
-		Map<String, Object> modelAttributes = model.getModelAttributes();
+		int status = _getStatus(ctCollectionId, model);
 
-		if (modelAttributes.containsKey("status")) {
-			int status = (int)modelAttributes.get("status");
-
+		if (status > -1) {
 			document.addKeyword(Field.STATUS, status);
 			document.addLocalizedKeyword(
 				"statusLabel",
