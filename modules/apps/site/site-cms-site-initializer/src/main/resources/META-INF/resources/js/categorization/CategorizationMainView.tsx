@@ -14,11 +14,16 @@ const SECTIONS = {
 	HOME: 'home',
 };
 
-export default function CategorizationMainView(){
-
-	const [activeSection, setActiveSection] = useState(
-		SECTIONS.HOME
-	);
+export default function CategorizationMainView({
+	defaultLanguageId,
+	locales,
+	spritemap,
+}: {
+	defaultLanguageId: string;
+	locales: any[];
+	spritemap: string;
+}) {
+	const [activeSection, setActiveSection] = useState(SECTIONS.HOME);
 
 	return (
 		<div className="categorization-section">
@@ -28,7 +33,10 @@ export default function CategorizationMainView(){
 
 			{activeSection === SECTIONS.EDIT_VOCABULARY && (
 				<EditVocabulary
+					defaultLanguageId={defaultLanguageId}
+					locales={locales}
 					onChangeActiveSection={setActiveSection}
+					spritemap={spritemap}
 				/>
 			)}
 		</div>

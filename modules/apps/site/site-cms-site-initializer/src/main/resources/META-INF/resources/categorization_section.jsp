@@ -7,10 +7,15 @@
 
 <%@ include file="/init.jsp" %>
 
+<%
+CategorizationSectionDisplayContext categorizationSectionDisplayContext = (CategorizationSectionDisplayContext)request.getAttribute(CategorizationSectionDisplayContext.class.getName());
+%>
+
 <div class="cms-section">
 	<div id="<%= CMSSiteInitializerFDSNames.CATEGORIZATION_SECTION %>">
 		<react:component
 			module="{CategorizationMainView} from site-cms-site-initializer"
+			props="<%= categorizationSectionDisplayContext.getReactData() %>"
 		/>
 	</div>
 </div>

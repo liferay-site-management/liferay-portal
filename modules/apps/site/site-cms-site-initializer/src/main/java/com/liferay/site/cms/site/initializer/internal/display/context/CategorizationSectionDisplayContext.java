@@ -5,21 +5,62 @@
 
 package com.liferay.site.cms.site.initializer.internal.display.context;
 
+import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.site.cms.site.initializer.internal.configuration.CMSSiteInitializerConfiguration;
+
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Sam Ziemer
  */
-public class CategorizationSectionDisplayContext
-	extends BaseSectionDisplayContext {
+public class CategorizationSectionDisplayContext {
 
 	public CategorizationSectionDisplayContext(
 		CMSSiteInitializerConfiguration cmsSiteInitializerConfiguration,
-		HttpServletRequest httpServletRequest) {
+		HttpServletRequest httpServletRequest, ThemeDisplay themeDisplay) {
 
-		super(cmsSiteInitializerConfiguration, httpServletRequest);
+		_cmsSiteInitializerConfiguration = cmsSiteInitializerConfiguration;
+		_httpServletRequest = httpServletRequest;
+		_themeDisplay = themeDisplay;
 	}
+
+	public Map<String, Object> getReactData() throws Exception {
+		return HashMapBuilder.<String, Object>put(
+			"defaultLanguageId",
+			LocaleUtil.toLanguageId(_themeDisplay.getSiteDefaultLocale())
+		).put(
+			"locales",
+			JSONUtil.toJSONArray(
+				LanguageUtil.getCompanyAvailableLocales(
+					_themeDisplay.getCompanyId()),
+				locale -> {
+					String w3cLanguageId = LocaleUtil.toW3cLanguageId(locale);
+
+					return JSONUtil.put(
+						"id", LocaleUtil.toLanguageId(locale)
+					).put(
+						"label", w3cLanguageId
+					).put(
+						"name", locale.getDisplayName()
+					).put(
+						"symbol", StringUtil.toLowerCase(w3cLanguageId)
+					);
+				})
+		).put(
+			"spritemap", _themeDisplay.getPathThemeSpritemap()
+		).build();
+	}
+
+	private final CMSSiteInitializerConfiguration
+		_cmsSiteInitializerConfiguration;
+	private final HttpServletRequest _httpServletRequest;
+	private final ThemeDisplay _themeDisplay;
 
 }
