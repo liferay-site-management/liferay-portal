@@ -11,15 +11,19 @@ import {ManagementToolbar} from 'frontend-js-components-web';
 import {navigate, sub} from 'frontend-js-web';
 import React, {useState} from 'react';
 
+import {AssetType} from '../types/AssetType';
+import EditAssociatedAssetTypes from './EditAssociatedAssetTypes';
 import EditGeneralInfo from './EditGeneralInfo';
 
 export default function EditVocabulary({
+	assetTypes,
 	backURL,
 	defaultLanguageId,
 	locales,
 	spritemap,
 	vocabulary,
 }: {
+	assetTypes: AssetType[];
 	backURL: string;
 	defaultLanguageId: string;
 	locales: any[];
@@ -115,6 +119,10 @@ export default function EditVocabulary({
 									locales={locales}
 									spritemap={spritemap}
 								/>
+							)}
+
+							{activeVerticalNavKey === 'assetTypes' && (
+								<EditAssociatedAssetTypes assetTypes={assetTypes} />
 							)}
 						</ClayLayout.Col>
 					</ClayLayout.Row>
