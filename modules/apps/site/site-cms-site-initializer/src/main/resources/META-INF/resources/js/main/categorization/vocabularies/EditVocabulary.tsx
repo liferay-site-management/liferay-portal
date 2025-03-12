@@ -11,11 +11,19 @@ import {ManagementToolbar} from 'frontend-js-components-web';
 import {navigate, sub} from 'frontend-js-web';
 import React, {useState} from 'react';
 
+import EditGeneralInfo from './EditGeneralInfo';
+
 export default function EditVocabulary({
 	backURL,
+	defaultLanguageId,
+	locales,
+	spritemap,
 	vocabulary,
 }: {
 	backURL: string;
+	defaultLanguageId: string;
+	locales: any[];
+	spritemap: string;
 }) {
 	const [activeVerticalNavKey, setActiveVerticalNavKey] = useState('general');
 
@@ -101,7 +109,13 @@ export default function EditVocabulary({
 						</ClayLayout.Col>
 
 						<ClayLayout.Col md={9} sm={12}>
-
+							{activeVerticalNavKey === 'general' && (
+								<EditGeneralInfo
+									defaultLanguageId={defaultLanguageId}
+									locales={locales}
+									spritemap={spritemap}
+								/>
+							)}
 						</ClayLayout.Col>
 					</ClayLayout.Row>
 				</ClayLayout.ContainerFluid>
