@@ -6,6 +6,7 @@
 import React, {useState} from 'react';
 
 import '../../css/categorization/Categorization.scss';
+import {AssetType} from '../types/AssetType';
 import CategorizationHome from './CategorizationHome';
 import EditVocabulary from './vocabulary/EditVocabulary';
 
@@ -18,10 +19,12 @@ export default function CategorizationMainView({
 	defaultLanguageId,
 	locales,
 	spritemap,
+	vocabularyAssetTypes,
 }: {
 	defaultLanguageId: string;
 	locales: any[];
 	spritemap: string;
+	vocabularyAssetTypes: AssetType[];
 }) {
 	const [activeSection, setActiveSection] = useState(SECTIONS.HOME);
 
@@ -33,6 +36,7 @@ export default function CategorizationMainView({
 
 			{activeSection === SECTIONS.EDIT_VOCABULARY && (
 				<EditVocabulary
+					assetTypes={vocabularyAssetTypes}
 					defaultLanguageId={defaultLanguageId}
 					locales={locales}
 					onChangeActiveSection={setActiveSection}

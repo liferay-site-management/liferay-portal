@@ -5,14 +5,20 @@
 
 package com.liferay.site.cms.site.initializer.internal.display.context;
 
+import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
+import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.site.cms.site.initializer.internal.configuration.CMSSiteInitializerConfiguration;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +35,42 @@ public class CategorizationSectionDisplayContext {
 		_cmsSiteInitializerConfiguration = cmsSiteInitializerConfiguration;
 		_httpServletRequest = httpServletRequest;
 		_themeDisplay = themeDisplay;
+	}
+
+	public List<AssetRendererFactory<?>> getAvailableAssetRendererFactories() {
+		return ListUtil.filter(
+			AssetRendererFactoryRegistryUtil.getAssetRendererFactories(
+				_themeDisplay.getCompanyId()),
+			AssetRendererFactory::isCategorizable);
+	}
+
+	public List<Map<String, String>> getClassNameIdOptions() {
+		List<Map<String, String>> selectOptions = new ArrayList<>();
+
+		List<AssetRendererFactory<?>> availableAssetRendererFactories =
+			getAvailableAssetRendererFactories();
+
+		for (AssetRendererFactory<?> availableAssetRendererFactory :
+				availableAssetRendererFactories) {
+
+			selectOptions.add(
+				HashMapBuilder.put(
+					"icon", availableAssetRendererFactory.getIconCssClass()
+				).put(
+					"label",
+					ResourceActionsUtil.getModelResource(
+						_themeDisplay.getLocale(),
+						availableAssetRendererFactory.getClassName())
+				).put(
+					"restricted", Boolean.FALSE.toString()
+				).put(
+					"value",
+					String.valueOf(
+						availableAssetRendererFactory.getClassNameId())
+				).build());
+		}
+
+		return selectOptions;
 	}
 
 	public Map<String, Object> getReactData() throws Exception {
@@ -55,6 +97,8 @@ public class CategorizationSectionDisplayContext {
 				})
 		).put(
 			"spritemap", _themeDisplay.getPathThemeSpritemap()
+		).put(
+			"vocabularyAssetTypes", getClassNameIdOptions()
 		).build();
 	}
 
