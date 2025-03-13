@@ -8,6 +8,11 @@ package com.liferay.portal.kernel.service.persistence.impl;
 import com.liferay.portal.kernel.internal.service.persistence.TableMapperImpl;
 import com.liferay.portal.kernel.internal.service.persistence.change.tracking.CTTableMapper;
 import com.liferay.portal.kernel.model.BaseModel;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.Organization;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.model.UserGroup;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.service.persistence.BasePersistence;
 import com.liferay.portal.kernel.util.PropsKeys;
@@ -16,6 +21,8 @@ import com.liferay.portal.kernel.util.SetUtil;
 
 import java.io.Serializable;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -73,7 +80,9 @@ public class TableMapperFactory {
 			Class<R> rightModelClass = rightPersistence.getModelClass();
 
 			if (CTModel.class.isAssignableFrom(leftModelClass) &&
-				CTModel.class.isAssignableFrom(rightModelClass)) {
+				CTModel.class.isAssignableFrom(rightModelClass) &&
+				!_ctTableMapperExclusions.contains(leftModelClass) &&
+				!_ctTableMapperExclusions.contains(rightModelClass)) {
 
 				tableMapper = new CTTableMapper<>(
 					tableName, companyColumnName, leftColumnName,
@@ -102,6 +111,11 @@ public class TableMapperFactory {
 		SetUtil.fromArray(
 			PropsUtil.getArray(
 				PropsKeys.TABLE_MAPPER_CACHELESS_MAPPING_TABLE_NAMES));
+	private static final Set<Class<? extends BaseModel<?>>>
+		_ctTableMapperExclusions = new HashSet<>(
+			Arrays.asList(
+				Group.class, Organization.class, Role.class, User.class,
+				UserGroup.class));
 	private static final Map<String, TableMapper<?, ?>> _tableMappers =
 		new ConcurrentHashMap<>();
 
