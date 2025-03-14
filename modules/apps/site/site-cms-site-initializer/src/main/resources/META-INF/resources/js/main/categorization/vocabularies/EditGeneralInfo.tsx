@@ -14,6 +14,8 @@ import ClayIcon from '@clayui/icon';
 import {ClayTooltipProvider} from '@clayui/tooltip';
 import React, {useState} from 'react';
 
+import {IVocabulary} from '../types/IVocabulary';
+
 const VISIBILITY_OPTIONS = [
 	{
 		label: Liferay.Language.get('public'),
@@ -29,10 +31,14 @@ export default function EditGeneralInfo({
 	defaultLanguageId,
 	locales,
 	spritemap,
+	updateVocabulary,
+	vocabulary,
 }: {
 	defaultLanguageId: string;
 	locales: any[];
 	spritemap: string;
+	updateVocabulary: Function;
+	vocabulary: IVocabulary;
 }) {
 	const [isChecked, setIsChecked] = useState(true);
 	const [toggled, setToggle] = useState(true);
@@ -70,15 +76,32 @@ export default function EditGeneralInfo({
 
 					<ClayInput
 						id={Liferay.Language.get('name')}
+						onChange={({target: {value}}) =>
+							updateVocabulary(() => ({
+								...vocabulary,
+								name: value,
+							}))
+						}
 						required
 						type="text"
+						value={vocabulary.name}
 					/>
 				</div>
 
 				<div>
 					<label>{Liferay.Language.get('description')}</label>
 
-					<ClayInput component="textarea" type="text" />
+					<ClayInput
+						component="textarea"
+						onChange={({target: {value}}) =>
+							updateVocabulary(() => ({
+								...vocabulary,
+								description: value,
+							}))
+						}
+						type="text"
+						value={vocabulary.description}
+					/>
 				</div>
 
 				<ClayToggle
