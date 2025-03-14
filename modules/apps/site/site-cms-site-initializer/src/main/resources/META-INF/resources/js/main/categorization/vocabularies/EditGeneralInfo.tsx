@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
+import ClayAlert from '@clayui/alert';
 import {LanguagePicker, Provider} from '@clayui/core';
 import ClayForm, {
 	ClayCheckbox,
@@ -12,6 +13,7 @@ import ClayForm, {
 } from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import {ClayTooltipProvider} from '@clayui/tooltip';
+import {sub} from 'frontend-js-web';
 import React, {useState} from 'react';
 
 import {IVocabulary} from '../types/IVocabulary';
@@ -30,18 +32,41 @@ const VISIBILITY_OPTIONS = [
 export default function EditGeneralInfo({
 	defaultLanguageId,
 	locales,
+	nameInputError,
+	setNameInputError,
 	spritemap,
 	updateVocabulary,
 	vocabulary,
 }: {
 	defaultLanguageId: string;
 	locales: any[];
+	nameInputError: string;
+	setNameInputError: Function;
 	spritemap: string;
 	updateVocabulary: Function;
 	vocabulary: IVocabulary;
 }) {
-	const [isChecked, setIsChecked] = useState(true);
-	const [toggled, setToggle] = useState(true);
+	const [isChecked, setIsChecked] = useState<boolean>(true);
+	const [toggled, setToggle] = useState<boolean>(true);
+
+	const onChangeName = (newName: string) => {
+		if (newName) {
+			setNameInputError('');
+		}
+		else {
+			setNameInputError(
+				sub(
+					Liferay.Language.get('the-x-field-is-required'),
+					Liferay.Language.get('name')
+				)
+			);
+		}
+
+		updateVocabulary(() => ({
+			...vocabulary,
+			name: newName,
+		}));
+	};
 
 	return (
 		<div className="vertical-nav-content-wrapper">
@@ -76,16 +101,19 @@ export default function EditGeneralInfo({
 
 					<ClayInput
 						id={Liferay.Language.get('name')}
-						onChange={({target: {value}}) =>
-							updateVocabulary(() => ({
-								...vocabulary,
-								name: value,
-							}))
-						}
+						onChange={({target: {value}}) => {
+							onChangeName(value);
+						}}
 						required
 						type="text"
 						value={vocabulary.name}
 					/>
+
+					{nameInputError && (
+						<ClayAlert displayType="danger" variant="feedback">
+							{nameInputError}
+						</ClayAlert>
+					)}
 				</div>
 
 				<div>
