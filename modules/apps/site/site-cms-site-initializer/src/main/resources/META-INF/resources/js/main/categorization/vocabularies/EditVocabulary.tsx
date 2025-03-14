@@ -46,13 +46,34 @@ export default function EditVocabulary({
 					},
 				}
 	);
+	const [nameInputError, setNameInputError] = useState<string>('');
 
 	const handleVerticalNavChange = (verticalNav: string) => {
 		setActiveVerticalNavKey(verticalNav);
 	};
 
+	const verifyInputs = () => {
+		if (nameInputError || initialItemData.name === '') {
+			setNameInputError(
+				sub(
+					Liferay.Language.get('the-x-field-is-required'),
+					Liferay.Language.get('name')
+				)
+			);
+
+			setActiveVerticalNavKey('general');
+
+			return false;
+		}
+
+		return true;
+	};
+
 	const onSave = async () => {
 		try {
+			if (!verifyInputs()) {
+				return;
+			}
 
 			await VocabularyService.createVocabulary(siteId, initialItemData);
 
@@ -167,6 +188,8 @@ export default function EditVocabulary({
 								<EditGeneralInfo
 									defaultLanguageId={defaultLanguageId}
 									locales={locales}
+									nameInputError={nameInputError}
+									setNameInputError={setNameInputError}
 									spritemap={spritemap}
 									updateVocabulary={setInitialItemData}
 									vocabulary={initialItemData}

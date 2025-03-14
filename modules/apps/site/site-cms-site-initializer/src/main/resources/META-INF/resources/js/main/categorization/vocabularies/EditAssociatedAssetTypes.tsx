@@ -3,33 +3,39 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
+import ClayAlert from '@clayui/alert';
 import ClayForm, {ClayCheckbox, ClayToggle} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayMultiSelect from '@clayui/multi-select';
 import ClayTable from '@clayui/table';
+import {sub} from 'frontend-js-web';
 import React, {useState} from 'react';
 
 import {AssetType} from '../types/AssetType';
+import {IVocabulary} from '../types/IVocabulary';
+
+const ALL_ASSET_TYPES: AssetType[] = [
+	{
+		label: Liferay.Language.get('all-asset-types'),
+		required: false,
+		value: '0',
+	},
+];
 
 export default function EditAssociatedAssetTypes({
 	assetTypes,
 	vocabulary,
 }: {
 	assetTypes: AssetType[];
+	vocabulary: IVocabulary;
 }) {
-	const [selectedAssetTypes, setSelectedAssetTypes] = useState<AssetType[]>(
-		vocabulary
-			? vocabulary.assetTypes
-			: [
-					{
-						label: Liferay.Language.get('all-asset-types'),
-						required: false,
-						value: 0,
-					},
-				]
-	);
 	const [allAssetTypesSelected, setAllAssetTypesSelected] =
 		useState<boolean>(true);
+	const [inputError, setInputError] = useState<string>('');
+
+	const [selectedAssetTypes, setSelectedAssetTypes] = useState<AssetType[]>(
+		vocabulary ? vocabulary.assetTypes : ALL_ASSET_TYPES
+	);
 
 	const isChecked = (items: AssetType[], item: AssetType) => {
 		return !!items.find((val) => val.value === item.value);
@@ -42,13 +48,7 @@ export default function EditAssociatedAssetTypes({
 			setSelectedAssetTypes([]);
 		}
 		else {
-			setSelectedAssetTypes([
-				{
-					label: Liferay.Language.get('all-asset-types'),
-					required: false,
-					value: 0,
-				},
-			]);
+			setSelectedAssetTypes(ALL_ASSET_TYPES);
 		}
 	};
 
@@ -56,6 +56,18 @@ export default function EditAssociatedAssetTypes({
 		setSelectedAssetTypes(
 			selectedItems.filter((item, i, self) => i === self.indexOf(item))
 		);
+
+		if (selectedItems.length) {
+			setInputError('');
+		}
+		else {
+			setInputError(
+				sub(
+					Liferay.Language.get('the-x-field-is-required'),
+					Liferay.Language.get('asset-types')
+				)
+			);
+		}
 	};
 
 	const toggleItemChecked = (item: AssetType) => {
@@ -158,6 +170,12 @@ export default function EditAssociatedAssetTypes({
 							</ClayMultiSelect.Item>
 						)}
 					</ClayMultiSelect>
+
+					{inputError && (
+						<ClayAlert displayType="danger" variant="feedback">
+							{inputError}
+						</ClayAlert>
+					)}
 				</div>
 
 				<ClayCheckbox
