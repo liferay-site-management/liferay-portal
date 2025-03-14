@@ -7,8 +7,8 @@ import ClayButton from '@clayui/button';
 import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
 import {ClayVerticalNav} from '@clayui/nav';
-import {ManagementToolbar} from 'frontend-js-components-web';
-import {openToast, sub} from 'frontend-js-web';
+import {ManagementToolbar, openToast} from 'frontend-js-components-web';
+import {sub} from 'frontend-js-web';
 import React, {useState} from 'react';
 
 import VocabularyService from '../services/VocabularyService';
@@ -46,29 +46,55 @@ export default function EditVocabulary({
 					},
 				}
 	);
+	const [nameInputError, setNameInputError] = useState<string>('');
 
 	const handleVerticalNavChange = (verticalNav) => {
 		setActiveVerticalNavKey(verticalNav);
 	};
 
+	const verifyInputs = () => {
+		if (nameInputError || initialItemData.name === '') {
+			setNameInputError(
+				sub(
+					Liferay.Language.get('the-x-field-is-required'),
+					Liferay.Language.get('name')
+				)
+			);
+
+			setActiveVerticalNavKey('general');
+
+			return false;
+		}
+
+		return true;
+	};
+
 	const onSave = async () => {
+		if (!verifyInputs()) {
+			return;
+		}
 
-		// try {
+		try {
+			await VocabularyService.createVocabulary(siteId, initialItemData);
 
-		await VocabularyService.createVocabulary(siteId, initialItemData);
+			onChangeActiveSection('home');
 
-		onChangeActiveSection('home');
-
-		openToast({
-			message: Liferay.Util.sub(
-				Liferay.Language.get('x-was-published-successfully'),
-				initialItemData.name
-			),
-			type: 'success',
-		});
-
-		// }
-
+			openToast({
+				message: Liferay.Util.sub(
+					Liferay.Language.get('x-was-published-successfully'),
+					initialItemData.name
+				),
+				type: 'success',
+			});
+		}
+		catch (error) {
+			Liferay.Util.openToast({
+				message: Liferay.Language.get(
+					'an-unexpected-system-error-occurred'
+				),
+				type: 'danger',
+			});
+		}
 	};
 
 	return (
@@ -146,18 +172,6 @@ export default function EditVocabulary({
 												'assetTypes'
 											),
 									},
-									{
-										active:
-											activeVerticalNavKey ===
-											'permissions',
-										label: Liferay.Language.get(
-											'permissions'
-										),
-										onClick: () =>
-											handleVerticalNavChange(
-												'permissions'
-											),
-									},
 								]}
 							/>
 						</div>
@@ -168,6 +182,8 @@ export default function EditVocabulary({
 							<EditGeneralInfo
 								defaultLanguageId={defaultLanguageId}
 								locales={locales}
+								nameInputError={nameInputError}
+								setNameInputError={setNameInputError}
 								spritemap={spritemap}
 								updateVocabulary={setInitialItemData}
 								vocabulary={initialItemData}
