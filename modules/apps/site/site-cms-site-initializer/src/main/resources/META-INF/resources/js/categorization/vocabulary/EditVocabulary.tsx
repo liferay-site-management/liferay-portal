@@ -8,10 +8,12 @@ import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
 import {ClayVerticalNav} from '@clayui/nav';
 import {ManagementToolbar} from 'frontend-js-components-web';
-import {sub} from 'frontend-js-web';
+import {openToast, sub} from 'frontend-js-web';
 import React, {useState} from 'react';
 
+import VocabularyService from '../services/VocabularyService';
 import {AssetType} from '../types/AssetType';
+import {IVocabulary} from '../types/IVocabulary';
 import EditAssociatedAssetTypes from './EditAssociatedAssetTypes';
 import EditGeneralInfo from './EditGeneralInfo';
 
@@ -20,6 +22,7 @@ export default function EditVocabulary({
 	defaultLanguageId,
 	locales,
 	onChangeActiveSection,
+	siteId,
 	spritemap,
 	vocabulary,
 }: {
@@ -27,12 +30,45 @@ export default function EditVocabulary({
 	defaultLanguageId: string;
 	locales: any[];
 	onChangeActiveSection: Function;
+	siteId: number;
 	spritemap: string;
+	vocabulary: IVocabulary;
 }) {
 	const [activeVerticalNavKey, setActiveVerticalNavKey] = useState('general');
+	const [initialItemData, setInitialItemData] = useState<IVocabulary>(
+		vocabulary
+			? vocabulary
+			: {
+					description: '',
+					name: '',
+					name_i18n: {
+						'en-US': '',
+					},
+				}
+	);
 
 	const handleVerticalNavChange = (verticalNav) => {
 		setActiveVerticalNavKey(verticalNav);
+	};
+
+	const onSave = async () => {
+
+		// try {
+
+		await VocabularyService.createVocabulary(siteId, initialItemData);
+
+		onChangeActiveSection('home');
+
+		openToast({
+			message: Liferay.Util.sub(
+				Liferay.Language.get('x-was-published-successfully'),
+				initialItemData.name
+			),
+			type: 'success',
+		});
+
+		// }
+
 	};
 
 	return (
@@ -70,7 +106,11 @@ export default function EditVocabulary({
 					</ManagementToolbar.Item>
 
 					<ManagementToolbar.Item>
-						<ClayButton displayType="primary" size="sm">
+						<ClayButton
+							displayType="primary"
+							onClick={onSave}
+							size="sm"
+						>
 							{Liferay.Language.get('save')}
 						</ClayButton>
 					</ManagementToolbar.Item>
@@ -129,6 +169,8 @@ export default function EditVocabulary({
 								defaultLanguageId={defaultLanguageId}
 								locales={locales}
 								spritemap={spritemap}
+								updateVocabulary={setInitialItemData}
+								vocabulary={initialItemData}
 							/>
 						)}
 

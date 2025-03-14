@@ -8,6 +8,7 @@ import React, {useState} from 'react';
 import '../../css/categorization/Categorization.scss';
 import CategorizationToolbar from './CategorizationToolbar';
 import TagsView from './tags/TagsView';
+import {AssetType} from './types/AssetType';
 import VocabulariesView from './vocabulary/VocabulariesView';
 
 const TABS: string[] = [
@@ -17,8 +18,12 @@ const TABS: string[] = [
 
 export default function CategorizationHome({
 	onChangeActiveSection,
+	siteId,
+	vocabularyAssetTypes,
 }: {
 	onChangeActiveSection: Function;
+	siteId: number;
+	vocabularyAssetTypes: AssetType[];
 }) {
 	const [tab, setTab] = useState(TABS[0]);
 
@@ -34,7 +39,9 @@ export default function CategorizationHome({
 				return (
 					<>
 						<VocabulariesView
+							assetTypes={vocabularyAssetTypes}
 							onChangeActiveSection={onChangeActiveSection}
+							siteId={siteId}
 						/>
 					</>
 				);

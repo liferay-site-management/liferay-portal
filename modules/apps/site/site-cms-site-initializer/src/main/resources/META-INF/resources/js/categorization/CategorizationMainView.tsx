@@ -18,11 +18,13 @@ const SECTIONS = {
 export default function CategorizationMainView({
 	defaultLanguageId,
 	locales,
+	siteId,
 	spritemap,
 	vocabularyAssetTypes,
 }: {
 	defaultLanguageId: string;
 	locales: any[];
+	siteId: number;
 	spritemap: string;
 	vocabularyAssetTypes: AssetType[];
 }) {
@@ -31,7 +33,11 @@ export default function CategorizationMainView({
 	return (
 		<div className="categorization-section">
 			{activeSection === SECTIONS.HOME && (
-				<CategorizationHome onChangeActiveSection={setActiveSection} />
+				<CategorizationHome
+					onChangeActiveSection={setActiveSection}
+					siteId={siteId}
+					vocabularyAssetTypes={vocabularyAssetTypes}
+				/>
 			)}
 
 			{activeSection === SECTIONS.EDIT_VOCABULARY && (
@@ -40,6 +46,7 @@ export default function CategorizationMainView({
 					defaultLanguageId={defaultLanguageId}
 					locales={locales}
 					onChangeActiveSection={setActiveSection}
+					siteId={siteId}
 					spritemap={spritemap}
 				/>
 			)}

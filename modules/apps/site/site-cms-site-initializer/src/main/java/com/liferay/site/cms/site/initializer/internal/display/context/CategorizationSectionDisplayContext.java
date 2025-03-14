@@ -96,6 +96,8 @@ public class CategorizationSectionDisplayContext {
 					);
 				})
 		).put(
+			"siteId", _themeDisplay.getScopeGroupId()
+		).put(
 			"spritemap", _themeDisplay.getPathThemeSpritemap()
 		).put(
 			"vocabularyAssetTypes", getClassNameIdOptions()
