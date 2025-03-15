@@ -81,8 +81,8 @@ public class ViewRelatedEntriesDisplayContext {
 		String mvcRenderCommand = ParamUtil.getString(
 			renderRequest, "mvcRenderCommandName");
 
-		_skipRequired = mvcRenderCommand.equals(
-			"/change_tracking/view_discard");
+		_includeConflictedEntries = mvcRenderCommand.equals(
+			"/change_tracking/view_move_changes");
 	}
 
 	public long getCTCollectionId() {
@@ -105,7 +105,7 @@ public class ViewRelatedEntriesDisplayContext {
 			_ctCollectionLocalService.getRelatedCTEntriesMap(
 				_ctCollectionId,
 				ListUtil.toLongArray(_ctEntryIds, GetterUtil::getLong),
-				_skipRequired);
+				_includeConflictedEntries);
 
 		Set<CTEntry> ctEntries = new HashSet<>();
 
@@ -273,11 +273,11 @@ public class ViewRelatedEntriesDisplayContext {
 	private final CTEntryLocalService _ctEntryLocalService;
 	private final boolean _force;
 	private final HttpServletRequest _httpServletRequest;
+	private final boolean _includeConflictedEntries;
 	private final long _modelClassNameId;
 	private final long _modelClassPK;
 	private final RenderRequest _renderRequest;
 	private final RenderResponse _renderResponse;
-	private final boolean _skipRequired;
 	private final ThemeDisplay _themeDisplay;
 	private final UserLocalService _userLocalService;
 

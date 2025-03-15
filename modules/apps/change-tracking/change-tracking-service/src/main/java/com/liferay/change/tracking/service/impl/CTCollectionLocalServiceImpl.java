@@ -594,24 +594,12 @@ public class CTCollectionLocalServiceImpl
 		}
 
 		Map<Long, List<CTEntry>> relateCTEntriesMap = getRelatedCTEntriesMap(
-			ctCollection.getCtCollectionId(), ctEntries, true);
+			ctCollection.getCtCollectionId(), ctEntries, false);
 
 		for (Map.Entry<Long, List<CTEntry>> entry :
 				relateCTEntriesMap.entrySet()) {
 
-			ctEntries.addAll(entry.getValue());
-
 			_discardCTEntries(ctCollection, entry.getKey(), entry.getValue());
-		}
-
-		Indexer<CTEntry> indexer = _indexerRegistry.getIndexer(CTEntry.class);
-
-		if (indexer != null) {
-			_indexWriterHelper.deleteDocuments(
-				ctCollection.getCompanyId(),
-				TransformUtil.transform(
-					ctEntries, ctEntry -> _uidFactory.getUID(ctEntry)),
-				indexer.isCommitImmediately());
 		}
 
 		_ctClosureFactory.clearCache(ctCollection.getCtCollectionId());
@@ -714,12 +702,13 @@ public class CTCollectionLocalServiceImpl
 
 	@Override
 	public List<CTEntry> getRelatedCTEntries(
-			long ctCollectionId, long[] ctEntryIds, boolean skipRequired)
+			long ctCollectionId, long[] ctEntryIds,
+			boolean includeConflictedEntries)
 		throws PortalException {
 
 		Map<Long, List<CTEntry>> relatedCTEntriesMap = getRelatedCTEntriesMap(
 			ctCollectionId, _ctEntryLocalService.getCTEntries(ctEntryIds),
-			skipRequired);
+			includeConflictedEntries);
 
 		Set<CTEntry> relatedCTEntries = new HashSet<>();
 
@@ -732,7 +721,8 @@ public class CTCollectionLocalServiceImpl
 
 	@Override
 	public Map<Long, List<CTEntry>> getRelatedCTEntriesMap(
-			long ctCollectionId, List<CTEntry> ctEntries, boolean skipRequired)
+			long ctCollectionId, List<CTEntry> ctEntries,
+			boolean includeConflictedEntries)
 		throws PortalException {
 
 		CTCollection ctCollection = ctCollectionPersistence.findByPrimaryKey(
@@ -755,16 +745,17 @@ public class CTCollectionLocalServiceImpl
 					key, value, (v1, v2) -> ListUtil.concat(v1, v2)));
 		}
 
-		if (!skipRequired) {
+		if (includeConflictedEntries) {
 			return relatedCTEntriesMap;
 		}
 
-		List<CTEntry> remainCTEntries = new ArrayList<>(
+		List<CTEntry> remainingCTEntries = new ArrayList<>(
 			_ctEntryLocalService.getCTCollectionCTEntries(ctCollectionId));
 
-		remainCTEntries.removeIf(ctEntry -> movableCTEntries.contains(ctEntry));
+		remainingCTEntries.removeIf(
+			ctEntry -> movableCTEntries.contains(ctEntry));
 
-		for (CTEntry ctEntry : remainCTEntries) {
+		for (CTEntry ctEntry : remainingCTEntries) {
 			List<CTEntry> relatedCTEntries = relatedCTEntriesMap.get(
 				ctEntry.getModelClassNameId());
 
@@ -792,23 +783,25 @@ public class CTCollectionLocalServiceImpl
 
 	public Map<Long, List<CTEntry>> getRelatedCTEntriesMap(
 			long ctCollectionId, long modelClassNameId, long modelClassPK,
-			boolean skipRequired)
+			boolean includeConflictedEntries)
 		throws PortalException {
 
 		CTEntry ctEntry = _ctEntryPersistence.findByC_MCNI_MCPK(
 			ctCollectionId, modelClassNameId, modelClassPK);
 
 		return getRelatedCTEntriesMap(
-			ctCollectionId, Collections.singletonList(ctEntry), skipRequired);
+			ctCollectionId, Collections.singletonList(ctEntry),
+			includeConflictedEntries);
 	}
 
 	public Map<Long, List<CTEntry>> getRelatedCTEntriesMap(
-			long ctCollectionId, long[] ctEntryIds, boolean skipRequired)
+			long ctCollectionId, long[] ctEntryIds,
+			boolean includeConflictedEntries)
 		throws PortalException {
 
 		return getRelatedCTEntriesMap(
 			ctCollectionId, _ctEntryLocalService.getCTEntries(ctEntryIds),
-			skipRequired);
+			includeConflictedEntries);
 	}
 
 	@Override
@@ -946,12 +939,12 @@ public class CTCollectionLocalServiceImpl
 		}
 
 		Map<Long, List<CTEntry>> relatedCTEntriesMap = getRelatedCTEntriesMap(
-			fromCTCollection.getCtCollectionId(), ctEntries, false);
+			fromCTCollection.getCtCollectionId(), ctEntries, true);
 
 		List<CTEntry> combinedCTEntries = new ArrayList<>();
 
 		for (List<CTEntry> curCTEntries : relatedCTEntriesMap.values()) {
-				combinedCTEntries.addAll(curCTEntries);
+			combinedCTEntries.addAll(curCTEntries);
 		}
 
 		Map<Long, List<ConflictInfo>> conflictInfoMap = checkConflicts(
@@ -972,7 +965,7 @@ public class CTCollectionLocalServiceImpl
 		}
 
 		relatedCTEntriesMap = getRelatedCTEntriesMap(
-			toCTCollection.getCtCollectionId(), ctEntries, false);
+			toCTCollection.getCtCollectionId(), ctEntries, true);
 
 		combinedCTEntries = new ArrayList<>();
 
@@ -1423,14 +1416,14 @@ public class CTCollectionLocalServiceImpl
 			ctEntry.getCtCollectionId(), ctSQLMode,
 			ctEntry.getModelClassNameId(), ctEntry.getModelClassPK());
 
-		if ((model == null) ||
-			!_ctDisplayRendererRegistry.isMovable(
-				model, ctEntry.getModelClassNameId())) {
-
-			return false;
+		if (model == null) {
+			return isCTEntryEnclosed(
+				ctEntry.getCtCollectionId(), ctEntry.getModelClassNameId(),
+				ctEntry.getModelClassPK());
 		}
 
-		return true;
+		return _ctDisplayRendererRegistry.isMovable(
+			model, ctEntry.getModelClassNameId());
 	}
 
 	private void _moveCTEntries(
