@@ -172,6 +172,15 @@ public class CTCollectionLocalServiceUtil {
 	}
 
 	public static void discardCTEntry(
+			long ctCollectionId,
+			List<com.liferay.change.tracking.model.CTEntry> ctEntries,
+			boolean force)
+		throws PortalException {
+
+		getService().discardCTEntry(ctCollectionId, ctEntries, force);
+	}
+
+	public static void discardCTEntry(
 			long ctCollectionId, long modelClassNameId, long modelClassPK,
 			boolean force)
 		throws PortalException {
@@ -420,19 +429,45 @@ public class CTCollectionLocalServiceUtil {
 	}
 
 	public static List<com.liferay.change.tracking.model.CTEntry>
-			getRelatedCTEntries(long ctCollectionId, long[] ctEntryIds)
+			getRelatedCTEntries(
+				long ctCollectionId, long[] ctEntryIds,
+				boolean includeConflictedEntries)
 		throws PortalException {
 
-		return getService().getRelatedCTEntries(ctCollectionId, ctEntryIds);
+		return getService().getRelatedCTEntries(
+			ctCollectionId, ctEntryIds, includeConflictedEntries);
 	}
 
 	public static Map<Long, List<com.liferay.change.tracking.model.CTEntry>>
 			getRelatedCTEntriesMap(
-				long ctCollectionId, long modelClassNameId, long modelClassPK)
+				long ctCollectionId,
+				List<com.liferay.change.tracking.model.CTEntry> ctEntries,
+				boolean includeConflictedEntries)
 		throws PortalException {
 
 		return getService().getRelatedCTEntriesMap(
-			ctCollectionId, modelClassNameId, modelClassPK);
+			ctCollectionId, ctEntries, includeConflictedEntries);
+	}
+
+	public static Map<Long, List<com.liferay.change.tracking.model.CTEntry>>
+			getRelatedCTEntriesMap(
+				long ctCollectionId, long modelClassNameId, long modelClassPK,
+				boolean includeConflictedEntries)
+		throws PortalException {
+
+		return getService().getRelatedCTEntriesMap(
+			ctCollectionId, modelClassNameId, modelClassPK,
+			includeConflictedEntries);
+	}
+
+	public static Map<Long, List<com.liferay.change.tracking.model.CTEntry>>
+			getRelatedCTEntriesMap(
+				long ctCollectionId, long[] ctEntryIds,
+				boolean includeConflictedEntries)
+		throws PortalException {
+
+		return getService().getRelatedCTEntriesMap(
+			ctCollectionId, ctEntryIds, includeConflictedEntries);
 	}
 
 	public static boolean hasUnapprovedChanges(long ctCollectionId)
