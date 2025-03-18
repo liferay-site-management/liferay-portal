@@ -8,6 +8,7 @@ package com.liferay.change.tracking.service.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.change.tracking.constants.CTActionKeys;
 import com.liferay.change.tracking.constants.CTConstants;
+import com.liferay.change.tracking.exception.CTPublishConflictException;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTProcess;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
@@ -30,6 +31,7 @@ import com.liferay.portal.kernel.backgroundtask.display.BackgroundTaskDisplayFac
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.Role;
@@ -45,6 +47,9 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.RoleTestUtil;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.test.log.LogCapture;
+import com.liferay.portal.test.log.LogEntry;
+import com.liferay.portal.test.log.LoggerTestUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -163,6 +168,56 @@ public class CTCollectionServiceTest {
 			Assert.assertTrue(resultSet.next());
 
 			Assert.assertEquals(0, resultSet.getInt(1));
+		}
+	}
+
+	@Test
+	public void testMoveCTEntryWithoutParent() throws Exception {
+		UserTestUtil.setUser(_user);
+
+		CTCollection fromCollection = _ctCollectionService.addCTCollection(
+			null, _user.getCompanyId(), _user.getUserId(), 0,
+			RandomTestUtil.randomString(), RandomTestUtil.randomString());
+
+		JournalArticle article = null;
+
+		try (SafeCloseable safeCloseable =
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					fromCollection.getCtCollectionId())) {
+
+			article = JournalTestUtil.addArticle(
+				_group.getGroupId(),
+				JournalFolderConstants.DEFAULT_PARENT_FOLDER_ID);
+		}
+
+		long articleClassNameId = _classNameLocalService.getClassNameId(
+			JournalArticle.class);
+
+		CTCollection toCTCollection = _ctCollectionService.addCTCollection(
+			null, _user.getCompanyId(), _user.getUserId(), 0,
+			RandomTestUtil.randomString(), RandomTestUtil.randomString());
+
+		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
+				"com.liferay.change.tracking.service.impl." +
+					"CTCollectionLocalServiceImpl",
+				LoggerTestUtil.ERROR)) {
+
+			_ctCollectionService.moveCTEntry(
+				fromCollection.getCtCollectionId(),
+				toCTCollection.getCtCollectionId(), articleClassNameId,
+				article.getPrimaryKey());
+
+			List<LogEntry> logEntries = logCapture.getLogEntries();
+
+			Assert.assertEquals(logEntries.toString(), 1, logEntries.size());
+
+			LogEntry logEntry = logEntries.get(0);
+
+			Assert.assertEquals("Conflict detected", logEntry.getMessage());
+		}
+		catch (PortalException portalException) {
+			Assert.assertTrue(
+				portalException instanceof CTPublishConflictException);
 		}
 	}
 
