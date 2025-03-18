@@ -133,7 +133,7 @@ public class CTCollectionServiceTest {
 			_ctCollection.getCtCollectionId(), articleClassNameId,
 			article.getPrimaryKey());
 
-		Assert.assertNull(
+		Assert.assertNotNull(
 			_ctEntryLocalService.fetchCTEntry(
 				_ctCollection.getCtCollectionId(), articleClassNameId,
 				article.getPrimaryKey()));
