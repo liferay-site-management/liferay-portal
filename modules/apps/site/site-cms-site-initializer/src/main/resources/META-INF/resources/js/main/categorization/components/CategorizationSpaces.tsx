@@ -16,7 +16,11 @@ type Space = {
 	value: any;
 };
 
-export default function CategorizationSpaces() {
+export default function CategorizationSpaces({
+	setSpaceChange,
+}: {
+	setSpaceChange?: (value: boolean) => void;
+}) {
 	const [allSpaces, setAllSpaces] = useState<Space[]>([]);
 	const [availableSpaces, setAvailableSpaces] = useState<Space[]>([]);
 	const [checkbox, setCheckbox] = useState(true);
@@ -60,9 +64,11 @@ export default function CategorizationSpaces() {
 			setSelectedSpaces(allSpaces.flatMap((item) => item.value));
 		}
 		else {
+			if (setSpaceChange) setSpaceChange(true);
+
 			setSelectedSpaces([]);
 		}
-	}, [checkbox, allSpaces]);
+	}, [allSpaces, checkbox, setSpaceChange]);
 
 	return (
 		<>
