@@ -14,11 +14,9 @@ import CreateTagsModal from './CreateTagsModal';
 import EditTagsModal from './EditTagsModal';
 
 export default function ViewTags({
-	assetLibraryId,
 	tagsURL,
 	vocabulariesURL,
 }: {
-	assetLibraryId: string;
 	tagsURL: string;
 	vocabulariesURL: string;
 }) {
@@ -32,7 +30,6 @@ export default function ViewTags({
 					openModal({
 						contentComponent: () =>
 							CreateTagsModal({
-								assetLibraryId,
 								tagsURL,
 							}),
 						size: 'md',
@@ -54,11 +51,20 @@ export default function ViewTags({
 	];
 
 	const ViewsSpaceTableCell = ({itemData}: {itemData: any}) => {
-		return (
-			<span className="align-items-center d-flex space-renderer-sticker">
-				<SpaceSticker name={itemData.assetLibraryKey} size="sm" />
-			</span>
-		);
+		if (itemData?.assetLibraryKey) {
+			return (
+				<span className="align-items-center d-flex space-renderer-sticker">
+					<SpaceSticker name={itemData.assetLibraryKey} size="sm" />
+				</span>
+			);
+		}
+		else {
+			return (
+				<span className="align-items-center d-flex space-renderer-sticker">
+					<SpaceSticker name="All Spaces" size="sm" />
+				</span>
+			);
+		}
 	};
 
 	const views = [
@@ -178,7 +184,7 @@ export default function ViewTags({
 			/>
 
 			<FrontendDataSet
-				apiURL={`/o/headless-admin-taxonomy/v1.0/asset-libraries/${assetLibraryId}/keywords`}
+				apiURL="/o/headless-admin-taxonomy/v1.0/keywords"
 				creationMenu={creationMenu}
 				customRenderers={{
 					tableCell: [

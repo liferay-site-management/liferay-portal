@@ -17,14 +17,16 @@ type Space = {
 };
 
 export default function CategorizationSpaces({
+	setSelectedSpaces,
 	setSpaceChange,
 }: {
+	setSelectedSpaces: (value: any) => void;
 	setSpaceChange?: (value: boolean) => void;
 }) {
 	const [allSpaces, setAllSpaces] = useState<Space[]>([]);
 	const [availableSpaces, setAvailableSpaces] = useState<Space[]>([]);
 	const [checkbox, setCheckbox] = useState(true);
-	const [selectedSpaces, setSelectedSpaces] = useState<string[]>([]);
+	const [internalValue, setInternalValue] = useState<any[]>([]);
 
 	useEffect(() => {
 		SpaceService.getSpaces().then((response) => {
@@ -45,11 +47,11 @@ export default function CategorizationSpaces({
 	}, []);
 
 	const isChecked = (itemValue: string) => {
-		return selectedSpaces.includes(itemValue);
+		return internalValue.includes(itemValue);
 	};
 
 	const handleCheckboxChange = (itemValue: any) => {
-		setSelectedSpaces((prevSelectedSpaces) => {
+		setInternalValue((prevSelectedSpaces) => {
 			if (isChecked(itemValue)) {
 				return prevSelectedSpaces.filter((id) => id !== itemValue);
 			}
@@ -61,14 +63,22 @@ export default function CategorizationSpaces({
 
 	useEffect(() => {
 		if (checkbox) {
+			setInternalValue(allSpaces.flatMap((item) => item.value));
 			setSelectedSpaces(allSpaces.flatMap((item) => item.value));
 		}
 		else {
-			if (setSpaceChange) setSpaceChange(true);
+			if (setSpaceChange) {
+				setSpaceChange(true);
+			}
 
+			setInternalValue([]);
 			setSelectedSpaces([]);
 		}
-	}, [allSpaces, checkbox, setSpaceChange]);
+	}, [allSpaces, checkbox, setSpaceChange, setSelectedSpaces]);
+
+	useEffect(() => {
+		setSelectedSpaces(internalValue);
+	}, [internalValue, setSelectedSpaces]);
 
 	return (
 		<>
@@ -94,7 +104,7 @@ export default function CategorizationSpaces({
 					id="multiSelect"
 					loadingState={3}
 					onItemsChange={(items: Space[]) => {
-						setSelectedSpaces(items.map((item) => item.value));
+						setInternalValue(items.map((item) => item.value));
 					}}
 					sourceItems={availableSpaces}
 				>

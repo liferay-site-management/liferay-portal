@@ -14,7 +14,7 @@ import {FieldText} from '../../components/forms';
 import {required, validate} from '../../components/forms/validations';
 import CategorizationSpaces from '../components/CategorizationSpaces';
 
-export default function CreationTagModalContent({
+export default function EditTagsModalContent({
 	tagId,
 	tagName,
 	tagsURL,
@@ -23,12 +23,18 @@ export default function CreationTagModalContent({
 	tagName: string;
 	tagsURL: string;
 }) {
+	const [selectedSpaces, setSelectedSpaces] = useState<string[]>([]);
 	const [spaceChange, setSpaceChange] = useState(false);
+
+	const assetLibraries = selectedSpaces.map((number) => ({
+		id: number,
+	}));
 
 	const updateTag = (values: any) => {
 		const url = '/o/headless-admin-taxonomy/v1.0/keywords/' + tagId;
 
 		const body = {
+			assetLibraries,
 			name: values.tagName,
 		};
 
@@ -123,7 +129,10 @@ export default function CreationTagModalContent({
 					value={values.tagName}
 				/>
 
-				<CategorizationSpaces setSpaceChange={setSpaceChange} />
+				<CategorizationSpaces
+					setSelectedSpaces={setSelectedSpaces}
+					setSpaceChange={setSpaceChange}
+				/>
 			</ClayModal.Body>
 
 			<ClayModal.Footer
