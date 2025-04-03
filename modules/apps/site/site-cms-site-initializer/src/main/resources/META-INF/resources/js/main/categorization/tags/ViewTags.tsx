@@ -51,18 +51,32 @@ export default function ViewTags({
 	];
 
 	const ViewsSpaceTableCell = ({itemData}: {itemData: any}) => {
-		if (itemData?.assetLibraryKey) {
+		const assetLibraryNames = itemData.assetLibraries.map(
+			(assetLibrary: any) => assetLibrary.name
+		);
+		const assetLibraryIds = itemData.assetLibraries.map(
+			(assetLibrary: any) => assetLibrary.id
+		);
+
+		if (assetLibraryIds.includes(-1)) {
 			return (
 				<span className="align-items-center d-flex space-renderer-sticker">
-					<SpaceSticker name={itemData.assetLibraryKey} size="sm" />
+					<SpaceSticker name="All Spaces" size="sm" />
 				</span>
 			);
 		}
 		else {
 			return (
-				<span className="align-items-center d-flex space-renderer-sticker">
-					<SpaceSticker name="All Spaces" size="sm" />
-				</span>
+				<>
+					{assetLibraryNames.map((name: string, index: number) => (
+						<span
+							className="align-items-center d-flex space-renderer-sticker"
+							key={index}
+						>
+							<SpaceSticker name={name} size="sm" />
+						</span>
+					))}
+				</>
 			);
 		}
 	};
@@ -82,7 +96,7 @@ export default function ViewTags({
 					},
 					{
 						contentRenderer: VIEWS_SPACE_TABLE_CELL_RENDERER_NAME,
-						fieldName: 'assetLibraryKey',
+						fieldName: 'assetLibraries',
 						label: Liferay.Language.get('space'),
 						sortable: false,
 					},

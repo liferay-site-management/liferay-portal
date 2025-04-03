@@ -40,7 +40,7 @@ export default function CategorizationSpaces({
 			setAllSpaces([
 				{
 					label: 'All Spaces',
-					value: response.map(({id}) => id),
+					value: [-1],
 				},
 			]);
 		});
@@ -63,8 +63,7 @@ export default function CategorizationSpaces({
 
 	useEffect(() => {
 		if (checkbox) {
-			setInternalValue(allSpaces.flatMap((item) => item.value));
-			setSelectedSpaces(allSpaces.flatMap((item) => item.value));
+			setInternalValue([-1]);
 		}
 		else {
 			if (setSpaceChange) {
@@ -72,7 +71,6 @@ export default function CategorizationSpaces({
 			}
 
 			setInternalValue([]);
-			setSelectedSpaces([]);
 		}
 	}, [allSpaces, checkbox, setSpaceChange, setSelectedSpaces]);
 
