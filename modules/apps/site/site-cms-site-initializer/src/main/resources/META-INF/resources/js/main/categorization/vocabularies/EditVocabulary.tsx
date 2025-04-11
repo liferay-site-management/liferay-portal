@@ -28,7 +28,6 @@ export default function EditVocabulary({
 	backURL,
 	defaultLanguageId,
 	locales,
-	siteId,
 	spritemap,
 	vocabularyId,
 }: {
@@ -36,7 +35,6 @@ export default function EditVocabulary({
 	backURL: string;
 	defaultLanguageId: string;
 	locales: any[];
-	siteId: number;
 	spritemap: string;
 	vocabularyId: number;
 }) {
@@ -132,7 +130,7 @@ export default function EditVocabulary({
 				await VocabularyService.createVocabulary(vocabulary);
 			}
 			else {
-				await VocabularyService.updateVocabulary(siteId, vocabulary);
+				await VocabularyService.updateVocabulary(vocabulary);
 			}
 
 			await navigate(backURL);
