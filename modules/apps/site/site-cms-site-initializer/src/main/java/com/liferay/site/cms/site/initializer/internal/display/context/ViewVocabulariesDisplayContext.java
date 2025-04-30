@@ -85,15 +85,17 @@ public class ViewVocabulariesDisplayContext {
 		return selectOptions;
 	}
 
-	public CreationMenu getCreationMenu() {
+	public CreationMenu getCreationMenu() throws PortalException {
 		return CreationMenuBuilder.addDropdownItem(
 			dropdownItem -> {
 				dropdownItem.setHref(
-					PortalUtil.getLayoutFullURL(
-						LayoutLocalServiceUtil.getLayoutByFriendlyURL(
-							_themeDisplay.getScopeGroupId(), false,
-							"/categorization/new_vocabulary"),
-						_themeDisplay));
+					HttpComponentsUtil.addParameters(
+						PortalUtil.getLayoutFullURL(
+							LayoutLocalServiceUtil.getLayoutByFriendlyURL(
+								_themeDisplay.getScopeGroupId(), false,
+								"/categorization/new_vocabulary"),
+							_themeDisplay),
+						"backURL", _themeDisplay.getURLCurrent()));
 				dropdownItem.setLabel(
 					LanguageUtil.get(_httpServletRequest, "new-vocabulary"));
 			}
@@ -111,9 +113,11 @@ public class ViewVocabulariesDisplayContext {
 
 		return ListUtil.fromArray(
 			new FDSActionDropdownItem(
-				fullLayoutURL + "?vocabularyId={id}", "pencil", "edit",
-				LanguageUtil.get(_httpServletRequest, "edit"), "get", "update",
-				null),
+				HttpComponentsUtil.addParameters(
+					fullLayoutURL, "vocabularyId", "{id}", "backURL",
+					_themeDisplay.getURLCurrent()),
+				"pencil", "edit", LanguageUtil.get(_httpServletRequest, "edit"),
+				"get", "update", null),
 			new FDSActionDropdownItem(
 				PortletURLBuilder.create(
 					PortalUtil.getControlPanelPortletURL(

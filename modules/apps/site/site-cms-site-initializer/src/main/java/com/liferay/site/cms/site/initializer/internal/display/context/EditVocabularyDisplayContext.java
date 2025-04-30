@@ -10,13 +10,11 @@ import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
-import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 
 import java.util.ArrayList;
@@ -77,12 +75,7 @@ public class EditVocabularyDisplayContext {
 		return HashMapBuilder.<String, Object>put(
 			"assetTypes", getClassNameIdOptions()
 		).put(
-			"backURL",
-			PortalUtil.getLayoutFullURL(
-				LayoutLocalServiceUtil.getLayoutByFriendlyURL(
-					_themeDisplay.getScopeGroupId(), false,
-					"/categorization/view_vocabularies"),
-				_themeDisplay)
+			"backURL", ParamUtil.getString(_httpServletRequest, "backURL")
 		).put(
 			"defaultLanguageId",
 			LocaleUtil.toLanguageId(_themeDisplay.getSiteDefaultLocale())
