@@ -28,20 +28,22 @@ const ALL_SPACES: Space[] = [
 export default function CategorizationSpaces({
 	assetLibraries,
 	checkboxText,
+	selectedSpaces,
 	setSelectedSpaces,
 	setSpaceChange,
 	setSpaceInputError,
+	spaceInputError,
 }: {
 	assetLibraries?: any;
 	checkboxText: string;
+	selectedSpaces: number[];
 	setSelectedSpaces: (value: any) => void;
 	setSpaceChange?: (value: boolean) => void;
 	setSpaceInputError: (value: string) => void;
+	spaceInputError: string;
 }) {
 	const [availableSpaces, setAvailableSpaces] = useState<Space[]>([]);
 	const [checkbox, setCheckbox] = useState(true);
-	const [inputError, setInputError] = useState('');
-	const [newSelectedSpaces, setNewSelectedSpaces] = useState<number[]>([]);
 	const [selectedItems, setSelectedItems] = useState<Space[]>([]);
 	const [initialSelectedSpaces, setInitialSelectedSpaces] = useState<
 		number[]
@@ -56,56 +58,40 @@ export default function CategorizationSpaces({
 
 			setAvailableSpaces(spaces);
 
-			const initialSelectedSpaces = assetLibraries?.map(
+			const initialSpaces = assetLibraries?.map(
 				(item: {name: string}) =>
 					spaces.find((space) => space.label === item.name)?.value
 			);
 
-			setInitialSelectedSpaces(initialSelectedSpaces);
+			setInitialSelectedSpaces(initialSpaces);
+
+			if (
+				!assetLibraries.length ||
+				assetLibraries?.some((item: {id: number}) => item.id === -1)
+			) {
+				setCheckbox(true);
+
+				setSelectedItems(ALL_SPACES);
+			}
+			else if (initialSpaces) {
+				setCheckbox(false);
+
+				setSelectedItems(
+					spaces.filter((item) => initialSpaces.includes(item.value))
+				);
+			}
 		});
 	}, [assetLibraries]);
 
-	const isChecked = (itemValue: number) => {
-		return newSelectedSpaces.includes(itemValue);
-	};
-
-	const handleCheckboxChange = (itemValue: any) => {
-		setNewSelectedSpaces((prevSelectedSpaces) => {
-			if (isChecked(itemValue)) {
-				return prevSelectedSpaces.filter((id) => id !== itemValue);
+	useEffect(() => {
+		if (setSpaceChange) {
+			if (selectedSpaces?.find((spaceId) => spaceId === -1)) {
+				setSpaceChange(false);
 			}
-			else {
-				return [...prevSelectedSpaces, itemValue];
-			}
-		});
-	};
-
-	useEffect(() => {
-		if (checkbox) {
-			setNewSelectedSpaces([-1]);
-		}
-	}, [checkbox]);
-
-	useEffect(() => {
-		if (assetLibraries?.some((item: {id: number}) => item.id === -1)) {
-			setCheckbox(true);
-
-			setNewSelectedSpaces([-1]);
-		}
-		else if (assetLibraries) {
-			setCheckbox(false);
-
-			setNewSelectedSpaces(initialSelectedSpaces);
-		}
-	}, [assetLibraries, initialSelectedSpaces]);
-
-	useEffect(() => {
-		setSelectedSpaces(newSelectedSpaces);
-
-		if (setSpaceChange && !checkbox) {
-			if (
+			else if (
 				initialSelectedSpaces?.some(
-					(item: number) => !newSelectedSpaces.includes(item)
+					(item: number) =>
+						!selectedSpaces.find((spaceId) => spaceId === item)
 				)
 			) {
 				setSpaceChange(true);
@@ -115,11 +101,11 @@ export default function CategorizationSpaces({
 			}
 		}
 
-		if (newSelectedSpaces.length) {
-			setInputError('');
+		if (selectedSpaces.length) {
+			setSpaceInputError('');
 		}
 		else {
-			setInputError(
+			setSpaceInputError(
 				sub(
 					Liferay.Language.get('the-x-field-is-required'),
 					Liferay.Language.get('space')
@@ -127,28 +113,47 @@ export default function CategorizationSpaces({
 			);
 		}
 	}, [
-		checkbox,
 		initialSelectedSpaces,
-		newSelectedSpaces,
-		setSelectedSpaces,
+		selectedSpaces,
 		setSpaceChange,
+		setSpaceInputError,
 	]);
 
-	useEffect(() => {
+	const _handleChangeAllSpaces = () => {
 		if (checkbox) {
+			setSelectedItems([]);
+			setSelectedSpaces([]);
+		}
+		else {
 			setSelectedItems(ALL_SPACES);
+			setSelectedSpaces([-1]);
 		}
 
-		setSelectedItems(
-			availableSpaces.filter((item) =>
-				newSelectedSpaces.includes(item.value)
-			)
-		);
-	}, [availableSpaces, checkbox, newSelectedSpaces]);
+		setCheckbox(!checkbox);
+	};
 
-	useEffect(() => {
-		setSpaceInputError(inputError);
-	}, [inputError, setSpaceInputError]);
+	const _handleChangeSpaces = (items: Space[]) => {
+		setSelectedItems(
+			availableSpaces.filter((item) => items.includes(item))
+		);
+
+		setSelectedSpaces(items.map((item) => item.value));
+	};
+
+	const isChecked = (itemValue: number) => {
+		return selectedSpaces.includes(itemValue);
+	};
+
+	const _handleCheckboxChange = (itemValue: any) => {
+		setSelectedSpaces((prevSelectedSpaces: number[]) => {
+			if (isChecked(itemValue)) {
+				return prevSelectedSpaces.filter((id) => id !== itemValue);
+			}
+			else {
+				return [...prevSelectedSpaces, itemValue];
+			}
+		});
+	};
 
 	return (
 		<div className="categorization-spaces">
@@ -168,7 +173,7 @@ export default function CategorizationSpaces({
 				/>
 			)}
 
-			<div className={inputError ? 'has-error' : ''}>
+			<div className={spaceInputError ? 'has-error' : ''}>
 				{!checkbox && (
 					<ClayMultiSelect
 						aria-label={Liferay.Language.get('space-selector')}
@@ -177,9 +182,7 @@ export default function CategorizationSpaces({
 						items={selectedItems}
 						loadingState={3}
 						onItemsChange={(items: Space[]) => {
-							setNewSelectedSpaces(
-								items.map((item) => item.value)
-							);
+							_handleChangeSpaces(items);
 						}}
 						sourceItems={availableSpaces}
 					>
@@ -194,7 +197,7 @@ export default function CategorizationSpaces({
 											aria-label={item.label}
 											checked={isChecked(item.value)}
 											onChange={() => {
-												handleCheckboxChange(
+												_handleCheckboxChange(
 													item.value
 												);
 											}}
@@ -213,11 +216,11 @@ export default function CategorizationSpaces({
 					</ClayMultiSelect>
 				)}
 
-				{inputError && (
+				{spaceInputError && (
 					<ClayAlert displayType="danger" variant="feedback">
 						<strong>{Liferay.Language.get('error')}: </strong>
 
-						{inputError}
+						{spaceInputError}
 					</ClayAlert>
 				)}
 			</div>
@@ -234,10 +237,7 @@ export default function CategorizationSpaces({
 									'make-this-vocabulary-available-in-all-spaces'
 								)
 					}
-					onChange={() => {
-						setCheckbox(!checkbox);
-						setNewSelectedSpaces([]);
-					}}
+					onChange={_handleChangeAllSpaces}
 				/>
 			</div>
 		</div>
