@@ -30,6 +30,7 @@ import com.liferay.petra.sql.dsl.spi.query.Select;
 import com.liferay.petra.sql.dsl.spi.query.SetOperation;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.configuration.Filter;
 import com.liferay.portal.kernel.dao.db.DB;
@@ -680,6 +681,10 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 		}
 
 		for (ModelListener<T> modelListener : modelListeners) {
+			if (!CTCollectionThreadLocal.isProductionMode()) {
+				flush();
+			}
+
 			modelListener.onAfterRemove(model);
 		}
 

@@ -49,8 +49,6 @@ public class ExpandoRowLocalServiceImpl extends ExpandoRowLocalServiceBaseImpl {
 
 		expandoRowPersistence.remove(row);
 
-		expandoRowPersistence.flush();
-
 		// Values
 
 		_expandoValueLocalService.deleteRowValues(row.getRowId());
