@@ -1103,21 +1103,22 @@ public class JournalArticleLocalServiceUtil {
 	}
 
 	public static String getArticleDescription(
-		long articlePK, java.util.Locale locale) {
+		long companyId, long articlePK, java.util.Locale locale) {
 
-		return getService().getArticleDescription(articlePK, locale);
+		return getService().getArticleDescription(companyId, articlePK, locale);
 	}
 
 	public static String getArticleDescription(
-		long articlePK, String languageId) {
+		long companyId, long articlePK, String languageId) {
 
-		return getService().getArticleDescription(articlePK, languageId);
+		return getService().getArticleDescription(
+			companyId, articlePK, languageId);
 	}
 
 	public static Map<java.util.Locale, String> getArticleDescriptionMap(
-		long articlePK) {
+		long companyId, long articlePK) {
 
-		return getService().getArticleDescriptionMap(articlePK);
+		return getService().getArticleDescriptionMap(companyId, articlePK);
 	}
 
 	/**
@@ -1344,9 +1345,10 @@ public class JournalArticleLocalServiceUtil {
 	}
 
 	public static List<String> getArticleLocalizationLanguageIds(
-		long articlePK) {
+		long companyId, long articlePK) {
 
-		return getService().getArticleLocalizationLanguageIds(articlePK);
+		return getService().getArticleLocalizationLanguageIds(
+			companyId, articlePK);
 	}
 
 	/**
@@ -1679,19 +1681,21 @@ public class JournalArticleLocalServiceUtil {
 	}
 
 	public static String getArticleTitle(
-		long articlePK, java.util.Locale locale) {
+		long companyId, long articlePK, java.util.Locale locale) {
 
-		return getService().getArticleTitle(articlePK, locale);
+		return getService().getArticleTitle(companyId, articlePK, locale);
 	}
 
-	public static String getArticleTitle(long articlePK, String languageId) {
-		return getService().getArticleTitle(articlePK, languageId);
+	public static String getArticleTitle(
+		long companyId, long articlePK, String languageId) {
+
+		return getService().getArticleTitle(companyId, articlePK, languageId);
 	}
 
 	public static Map<java.util.Locale, String> getArticleTitleMap(
-		long articlePK) {
+		long companyId, long articlePK) {
 
-		return getService().getArticleTitleMap(articlePK);
+		return getService().getArticleTitleMap(companyId, articlePK);
 	}
 
 	/**

@@ -1183,23 +1183,26 @@ public class JournalArticleLocalServiceWrapper
 
 	@Override
 	public String getArticleDescription(
-		long articlePK, java.util.Locale locale) {
+		long companyId, long articlePK, java.util.Locale locale) {
 
 		return _journalArticleLocalService.getArticleDescription(
-			articlePK, locale);
+			companyId, articlePK, locale);
 	}
 
 	@Override
-	public String getArticleDescription(long articlePK, String languageId) {
+	public String getArticleDescription(
+		long companyId, long articlePK, String languageId) {
+
 		return _journalArticleLocalService.getArticleDescription(
-			articlePK, languageId);
+			companyId, articlePK, languageId);
 	}
 
 	@Override
 	public java.util.Map<java.util.Locale, String> getArticleDescriptionMap(
-		long articlePK) {
+		long companyId, long articlePK) {
 
-		return _journalArticleLocalService.getArticleDescriptionMap(articlePK);
+		return _journalArticleLocalService.getArticleDescriptionMap(
+			companyId, articlePK);
 	}
 
 	/**
@@ -1425,10 +1428,10 @@ public class JournalArticleLocalServiceWrapper
 
 	@Override
 	public java.util.List<String> getArticleLocalizationLanguageIds(
-		long articlePK) {
+		long companyId, long articlePK) {
 
 		return _journalArticleLocalService.getArticleLocalizationLanguageIds(
-			articlePK);
+			companyId, articlePK);
 	}
 
 	/**
@@ -1798,21 +1801,27 @@ public class JournalArticleLocalServiceWrapper
 	}
 
 	@Override
-	public String getArticleTitle(long articlePK, java.util.Locale locale) {
-		return _journalArticleLocalService.getArticleTitle(articlePK, locale);
+	public String getArticleTitle(
+		long companyId, long articlePK, java.util.Locale locale) {
+
+		return _journalArticleLocalService.getArticleTitle(
+			companyId, articlePK, locale);
 	}
 
 	@Override
-	public String getArticleTitle(long articlePK, String languageId) {
+	public String getArticleTitle(
+		long companyId, long articlePK, String languageId) {
+
 		return _journalArticleLocalService.getArticleTitle(
-			articlePK, languageId);
+			companyId, articlePK, languageId);
 	}
 
 	@Override
 	public java.util.Map<java.util.Locale, String> getArticleTitleMap(
-		long articlePK) {
+		long companyId, long articlePK) {
 
-		return _journalArticleLocalService.getArticleTitleMap(articlePK);
+		return _journalArticleLocalService.getArticleTitleMap(
+			companyId, articlePK);
 	}
 
 	/**

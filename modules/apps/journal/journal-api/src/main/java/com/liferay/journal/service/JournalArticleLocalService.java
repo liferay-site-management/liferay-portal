@@ -943,13 +943,16 @@ public interface JournalArticleLocalService
 		throws PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public String getArticleDescription(long articlePK, Locale locale);
+	public String getArticleDescription(
+		long companyId, long articlePK, Locale locale);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public String getArticleDescription(long articlePK, String languageId);
+	public String getArticleDescription(
+		long companyId, long articlePK, String languageId);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public Map<Locale, String> getArticleDescriptionMap(long articlePK);
+	public Map<Locale, String> getArticleDescriptionMap(
+		long companyId, long articlePK);
 
 	/**
 	 * Returns a web content article display for the specified page of the
@@ -1130,7 +1133,8 @@ public interface JournalArticleLocalService
 		throws PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<String> getArticleLocalizationLanguageIds(long articlePK);
+	public List<String> getArticleLocalizationLanguageIds(
+		long companyId, long articlePK);
 
 	/**
 	 * Returns all the web content articles present in the system.
@@ -1401,13 +1405,16 @@ public interface JournalArticleLocalService
 	public int getArticlesCountByResourcePrimKey(long resourcePrimKey);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public String getArticleTitle(long articlePK, Locale locale);
+	public String getArticleTitle(
+		long companyId, long articlePK, Locale locale);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public String getArticleTitle(long articlePK, String languageId);
+	public String getArticleTitle(
+		long companyId, long articlePK, String languageId);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public Map<Locale, String> getArticleTitleMap(long articlePK);
+	public Map<Locale, String> getArticleTitleMap(
+		long companyId, long articlePK);
 
 	/**
 	 * Returns an ordered range of all the web content articles matching the
