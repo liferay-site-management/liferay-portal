@@ -154,33 +154,23 @@ public class JournalFolderServiceUtil {
 	}
 
 	public static List<Object> getFoldersAndArticles(
-		long groupId, long userId, long folderId, int status,
-		java.util.Locale locale, int start, int end,
+		long groupId, long userId, long folderId, long ddmStructureId,
+		int status, int start, int end,
 		OrderByComparator<?> orderByComparator) {
 
 		return getService().getFoldersAndArticles(
-			groupId, userId, folderId, status, locale, start, end,
+			groupId, userId, folderId, ddmStructureId, status, start, end,
 			orderByComparator);
 	}
 
 	public static List<Object> getFoldersAndArticles(
 		long groupId, long userId, long folderId, long ddmStructureId,
-		int status, java.util.Locale locale, int start, int end,
+		int status, int[] excludedStatuses, int start, int end,
 		OrderByComparator<?> orderByComparator) {
 
 		return getService().getFoldersAndArticles(
-			groupId, userId, folderId, ddmStructureId, status, locale, start,
-			end, orderByComparator);
-	}
-
-	public static List<Object> getFoldersAndArticles(
-		long groupId, long userId, long folderId, long ddmStructureId,
-		int status, java.util.Locale locale, int[] excludedStatuses, int start,
-		int end, OrderByComparator<?> orderByComparator) {
-
-		return getService().getFoldersAndArticles(
-			groupId, userId, folderId, ddmStructureId, status, locale,
-			excludedStatuses, start, end, orderByComparator);
+			groupId, userId, folderId, ddmStructureId, status, excludedStatuses,
+			start, end, orderByComparator);
 	}
 
 	public static int getFoldersAndArticlesCount(

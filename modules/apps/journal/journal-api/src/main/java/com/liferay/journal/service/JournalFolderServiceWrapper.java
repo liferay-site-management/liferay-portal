@@ -173,36 +173,24 @@ public class JournalFolderServiceWrapper
 
 	@Override
 	public java.util.List<Object> getFoldersAndArticles(
-		long groupId, long userId, long folderId, int status,
-		java.util.Locale locale, int start, int end,
+		long groupId, long userId, long folderId, long ddmStructureId,
+		int status, int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator<?> orderByComparator) {
 
 		return _journalFolderService.getFoldersAndArticles(
-			groupId, userId, folderId, status, locale, start, end,
+			groupId, userId, folderId, ddmStructureId, status, start, end,
 			orderByComparator);
 	}
 
 	@Override
 	public java.util.List<Object> getFoldersAndArticles(
 		long groupId, long userId, long folderId, long ddmStructureId,
-		int status, java.util.Locale locale, int start, int end,
+		int status, int[] excludedStatuses, int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator<?> orderByComparator) {
 
 		return _journalFolderService.getFoldersAndArticles(
-			groupId, userId, folderId, ddmStructureId, status, locale, start,
-			end, orderByComparator);
-	}
-
-	@Override
-	public java.util.List<Object> getFoldersAndArticles(
-		long groupId, long userId, long folderId, long ddmStructureId,
-		int status, java.util.Locale locale, int[] excludedStatuses, int start,
-		int end,
-		com.liferay.portal.kernel.util.OrderByComparator<?> orderByComparator) {
-
-		return _journalFolderService.getFoldersAndArticles(
-			groupId, userId, folderId, ddmStructureId, status, locale,
-			excludedStatuses, start, end, orderByComparator);
+			groupId, userId, folderId, ddmStructureId, status, excludedStatuses,
+			start, end, orderByComparator);
 	}
 
 	@Override

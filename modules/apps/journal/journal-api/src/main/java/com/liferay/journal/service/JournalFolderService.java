@@ -20,7 +20,6 @@ import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.OrderByComparator;
 
 import java.util.List;
-import java.util.Locale;
 
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -119,19 +118,13 @@ public interface JournalFolderService extends BaseService {
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<Object> getFoldersAndArticles(
-		long groupId, long userId, long folderId, int status, Locale locale,
-		int start, int end, OrderByComparator<?> orderByComparator);
+		long groupId, long userId, long folderId, long ddmStructureId,
+		int status, int start, int end, OrderByComparator<?> orderByComparator);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<Object> getFoldersAndArticles(
 		long groupId, long userId, long folderId, long ddmStructureId,
-		int status, Locale locale, int start, int end,
-		OrderByComparator<?> orderByComparator);
-
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<Object> getFoldersAndArticles(
-		long groupId, long userId, long folderId, long ddmStructureId,
-		int status, Locale locale, int[] excludedStatuses, int start, int end,
+		int status, int[] excludedStatuses, int start, int end,
 		OrderByComparator<?> orderByComparator);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
