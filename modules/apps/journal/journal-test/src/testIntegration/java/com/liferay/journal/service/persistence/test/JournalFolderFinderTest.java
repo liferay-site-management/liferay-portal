@@ -21,7 +21,6 @@ import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.transaction.Propagation;
-import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -201,9 +200,9 @@ public class JournalFolderFinderTest {
 		Assert.assertEquals(4, count);
 
 		List<Object> results =
-			_journalFolderFinder.filterFindF_A_ByG_F_DDMSI_L_NotS(
-				_group.getGroupId(), _folder1.getFolderId(), 0,
-				LocaleUtil.getDefault(), null, queryDefinition);
+			_journalFolderFinder.filterFindF_A_ByG_F_DDMSI_NotS(
+				_group.getGroupId(), _folder1.getFolderId(), 0, null,
+				queryDefinition);
 
 		Assert.assertEquals(results.toString(), 4, results.size());
 
@@ -225,9 +224,8 @@ public class JournalFolderFinderTest {
 			}
 		}
 
-		results = _journalFolderFinder.filterFindF_A_ByG_F_DDMSI_L_NotS(
+		results = _journalFolderFinder.filterFindF_A_ByG_F_DDMSI_NotS(
 			_group.getGroupId(), _folder1.getFolderId(), 0,
-			LocaleUtil.getDefault(),
 			new int[] {WorkflowConstants.STATUS_EXPIRED}, queryDefinition);
 
 		Assert.assertEquals(results.toString(), 3, results.size());

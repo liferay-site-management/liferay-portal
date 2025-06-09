@@ -37,7 +37,6 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -232,43 +231,30 @@ public class JournalFolderServiceImpl extends JournalFolderServiceBaseImpl {
 
 	@Override
 	public List<Object> getFoldersAndArticles(
-		long groupId, long userId, long folderId, int status, Locale locale,
-		int start, int end, OrderByComparator<?> orderByComparator) {
-
-		QueryDefinition<?> queryDefinition = new QueryDefinition<>(
-			status, userId, true, start, end,
-			(OrderByComparator<Object>)orderByComparator);
-
-		return journalFolderFinder.filterFindF_A_ByG_F_DDMSI_L(
-			groupId, folderId, 0, locale, queryDefinition);
-	}
-
-	@Override
-	public List<Object> getFoldersAndArticles(
 		long groupId, long userId, long folderId, long ddmStructureId,
-		int status, Locale locale, int start, int end,
+		int status, int start, int end,
 		OrderByComparator<?> orderByComparator) {
 
 		QueryDefinition<?> queryDefinition = new QueryDefinition<>(
 			status, userId, true, start, end,
 			(OrderByComparator<Object>)orderByComparator);
 
-		return journalFolderFinder.filterFindF_A_ByG_F_DDMSI_L(
-			groupId, folderId, ddmStructureId, locale, queryDefinition);
+		return journalFolderFinder.filterFindF_A_ByG_F_DDMSI(
+			groupId, folderId, ddmStructureId, queryDefinition);
 	}
 
 	@Override
 	public List<Object> getFoldersAndArticles(
 		long groupId, long userId, long folderId, long ddmStructureId,
-		int status, Locale locale, int[] excludedStatuses, int start, int end,
+		int status, int[] excludedStatuses, int start, int end,
 		OrderByComparator<?> orderByComparator) {
 
 		QueryDefinition<?> queryDefinition = new QueryDefinition<>(
 			status, userId, true, start, end,
 			(OrderByComparator<Object>)orderByComparator);
 
-		return journalFolderFinder.filterFindF_A_ByG_F_DDMSI_L_NotS(
-			groupId, folderId, ddmStructureId, locale, excludedStatuses,
+		return journalFolderFinder.filterFindF_A_ByG_F_DDMSI_NotS(
+			groupId, folderId, ddmStructureId, excludedStatuses,
 			queryDefinition);
 	}
 
