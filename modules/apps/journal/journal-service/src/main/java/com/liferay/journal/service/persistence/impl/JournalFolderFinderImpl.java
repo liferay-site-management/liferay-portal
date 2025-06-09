@@ -24,7 +24,6 @@ import com.liferay.portal.kernel.dao.orm.Type;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.security.permission.InlineSQLHelperUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -32,7 +31,6 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -54,17 +52,14 @@ public class JournalFolderFinderImpl
 	public static final String FIND_A_BY_G_U_F_DDMSI =
 		JournalFolderFinder.class.getName() + ".findA_ByG_U_F_DDMSI";
 
-	public static final String FIND_A_BY_G_U_F_DDMSI_L_NOT_S =
-		JournalFolderFinder.class.getName() + ".findA_ByG_U_F_DDMSI_L_NotS";
+	public static final String FIND_A_BY_G_U_F_DDMSI_NOT_S =
+		JournalFolderFinder.class.getName() + ".findA_ByG_U_F_DDMSI_NotS";
 
 	public static final String FIND_F_BY_NO_ASSETS =
 		JournalFolderFinder.class.getName() + ".findF_ByNoAssets";
 
 	public static final String FIND_F_BY_G_F =
 		JournalFolderFinder.class.getName() + ".findF_ByG_F";
-
-	public static final String FIND_F_BY_G_F_L =
-		JournalFolderFinder.class.getName() + ".findF_ByG_F_L";
 
 	@Override
 	public int countF_A_ByG_F_DDMSI(
@@ -103,22 +98,12 @@ public class JournalFolderFinderImpl
 			groupId, folderId, ddmStructureId, queryDefinition, true);
 	}
 
-	@Override
-	public List<Object> filterFindF_A_ByG_F_DDMSI_L(
-		long groupId, long folderId, long ddmStructureId, Locale locale,
-		QueryDefinition<?> queryDefinition) {
-
-		return doFindF_A_ByG_F_DDMSI_L_NotS(
-			groupId, folderId, ddmStructureId, locale, null, queryDefinition,
-			true);
-	}
-
-	public List<Object> filterFindF_A_ByG_F_DDMSI_L_NotS(
-		long groupId, long folderId, long ddmStructureId, Locale locale,
+	public List<Object> filterFindF_A_ByG_F_DDMSI_NotS(
+		long groupId, long folderId, long ddmStructureId,
 		int[] excludedStatuses, QueryDefinition<?> queryDefinition) {
 
-		return doFindF_A_ByG_F_DDMSI_L_NotS(
-			groupId, folderId, ddmStructureId, locale, excludedStatuses,
+		return doFindF_A_ByG_F_DDMSI_NotS(
+			groupId, folderId, ddmStructureId, excludedStatuses,
 			queryDefinition, true);
 	}
 
@@ -331,8 +316,8 @@ public class JournalFolderFinderImpl
 		}
 	}
 
-	protected List<Object> doFindF_A_ByG_F_DDMSI_L_NotS(
-		long groupId, long folderId, long ddmStructureId, Locale locale,
+	protected List<Object> doFindF_A_ByG_F_DDMSI_NotS(
+		long groupId, long folderId, long ddmStructureId,
 		int[] excludedStatuses, QueryDefinition<?> queryDefinition,
 		boolean inlineSQLHelper) {
 
@@ -345,11 +330,11 @@ public class JournalFolderFinderImpl
 				StringBundler.concat(
 					StringPool.OPEN_PARENTHESIS,
 					getFoldersSQL(
-						FIND_F_BY_G_F_L, groupId, queryDefinition,
+						FIND_F_BY_G_F, groupId, queryDefinition,
 						inlineSQLHelper),
 					") UNION ALL (",
 					getArticlesSQL(
-						FIND_A_BY_G_U_F_DDMSI_L_NOT_S, groupId, queryDefinition,
+						FIND_A_BY_G_U_F_DDMSI_NOT_S, groupId, queryDefinition,
 						inlineSQLHelper),
 					StringPool.CLOSE_PARENTHESIS),
 				folderId, ddmStructureId, excludedStatuses);
@@ -389,8 +374,6 @@ public class JournalFolderFinderImpl
 			if (ddmStructureId > 0) {
 				queryPos.add(ddmStructureId);
 			}
-
-			queryPos.add(LocaleUtil.toLanguageId(locale));
 
 			List<Object> models = new ArrayList<>();
 
