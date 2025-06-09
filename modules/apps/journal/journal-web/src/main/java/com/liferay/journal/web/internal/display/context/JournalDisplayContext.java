@@ -1524,7 +1524,7 @@ public class JournalDisplayContext {
 			articleAndFolderSearchContainer.setResultsAndTotal(
 				() -> JournalFolderServiceUtil.getFoldersAndArticles(
 					_themeDisplay.getScopeGroupId(), 0, getFolderId(),
-					WorkflowConstants.STATUS_ANY, _themeDisplay.getLocale(),
+					WorkflowConstants.STATUS_ANY,
 					articleAndFolderSearchContainer.getStart(),
 					articleAndFolderSearchContainer.getEnd(),
 					articleAndFolderSearchContainer.getOrderByComparator()),

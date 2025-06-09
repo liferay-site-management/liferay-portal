@@ -415,7 +415,6 @@ public class JournalArticleItemSelectorViewDisplayContext {
 				return JournalFolderServiceUtil.getFoldersAndArticles(
 					_getGroupId(), 0, _getFolderId(), _getDDMStructureId(),
 					_infoItemItemSelectorCriterion.getStatus(),
-					_themeDisplay.getLocale(),
 					new int[] {WorkflowConstants.STATUS_EXPIRED},
 					articleAndFolderSearchContainer.getStart(),
 					articleAndFolderSearchContainer.getEnd(),
