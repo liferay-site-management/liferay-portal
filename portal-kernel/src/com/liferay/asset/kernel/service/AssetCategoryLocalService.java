@@ -474,6 +474,12 @@ public interface AssetCategoryLocalService
 
 	@Indexable(type = IndexableType.REINDEX)
 	public AssetCategory moveCategory(
+		AssetCategory category, long parentCategoryId, long vocabularyId,
+		ServiceContext serviceContext)
+		throws PortalException;
+
+	@Indexable(type = IndexableType.REINDEX)
+	public AssetCategory moveCategory(
 			long categoryId, long parentCategoryId, long vocabularyId,
 			ServiceContext serviceContext)
 		throws PortalException;
