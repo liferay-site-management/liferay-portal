@@ -5,6 +5,7 @@ dependencies {
 	testIntegrationImplementation project(":apps:blogs:blogs-api")
 	testIntegrationImplementation project(":apps:change-tracking:change-tracking-api")
 	testIntegrationImplementation project(":apps:change-tracking:change-tracking-spi")
+	testIntegrationImplementation project(":apps:change-tracking:change-tracking-test-api")
 	testIntegrationImplementation project(":apps:dispatch:dispatch-api")
 	testIntegrationImplementation project(":apps:document-library:document-library-test-util")
 	testIntegrationImplementation project(":apps:dynamic-data-mapping:dynamic-data-mapping-api")
@@ -31,3 +32,6 @@ dependencies {
 	testIntegrationImplementation project(":core:osgi-service-tracker-collections")
 	testIntegrationImplementation project(":test:arquillian-extension-junit-bridge")
 }
+
+testIntegration.dependsOn(':apps:change-tracking:change-tracking-test-api:deploy')
+testIntegration.dependsOn(':apps:change-tracking:change-tracking-test-service:deploy')
