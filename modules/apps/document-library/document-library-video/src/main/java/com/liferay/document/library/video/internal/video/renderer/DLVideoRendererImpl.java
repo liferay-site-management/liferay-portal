@@ -44,6 +44,19 @@ public class DLVideoRendererImpl implements DLVideoRenderer {
 				(ThemeDisplay)httpServletRequest.getAttribute(
 					WebKeys.THEME_DISPLAY);
 
+			long ctCollectionId = fileVersion.getCtCollectionId();
+
+			if (ctCollectionId != 0) {
+				return StringBundler.concat(
+					"<iframe data-video-liferay height=\"315\" ",
+					"frameborder=\"0\" src=\"",
+					_dlURLHelper.getPreviewURL(
+						fileVersion.getFileEntry(), fileVersion, themeDisplay,
+						"&videoEmbed=true&ctCollectionId=" + ctCollectionId,
+						true, false),
+					"\" width=\"560\"></iframe>");
+			}
+
 			return StringBundler.concat(
 				"<iframe data-video-liferay height=\"315\" frameborder=\"0\" ",
 				"src=\"",
