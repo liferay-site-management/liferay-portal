@@ -9,10 +9,12 @@ import com.liferay.document.library.kernel.exception.NoSuchFileEntryException;
 import com.liferay.document.library.kernel.exception.NoSuchFileVersionException;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.document.library.video.internal.constants.DLVideoPortletKeys;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
 import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.events.EventsProcessorUtil;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.events.ActionException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
@@ -118,8 +120,15 @@ public class DLVideoEmbedFilter extends BasePortalFilter {
 
 		getEmbedVideoURL.setParameter(
 			"mvcRenderCommandName", "/document_library_video/embed_video");
+
+		long ctCollectionId = ParamUtil.getLong(
+			httpServletRequest, "ctCollectionId");
+
 		getEmbedVideoURL.setParameter(
-			"fileVersionId", _getFileVersionId(httpServletRequest));
+			"fileVersionId",
+			_getFileVersionId(ctCollectionId, httpServletRequest));
+		getEmbedVideoURL.setParameter(
+			"ctCollectionId", String.valueOf(ctCollectionId));
 
 		return getEmbedVideoURL.toString();
 	}
@@ -156,7 +165,9 @@ public class DLVideoEmbedFilter extends BasePortalFilter {
 			groupId, folderId, fileName);
 	}
 
-	private String _getFileVersionId(HttpServletRequest httpServletRequest) {
+	private String _getFileVersionId(
+		long ctCollectionId, HttpServletRequest httpServletRequest) {
+
 		String requestURI = httpServletRequest.getRequestURI();
 
 		List<String> pathParts = StringUtil.split(
@@ -167,7 +178,10 @@ public class DLVideoEmbedFilter extends BasePortalFilter {
 			return StringPool.BLANK;
 		}
 
-		try {
+		try (SafeCloseable safeCloseable =
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ctCollectionId)) {
+
 			FileEntry fileEntry = _getFileEntry(httpServletRequest, pathParts);
 
 			String version = ParamUtil.getString(httpServletRequest, "version");

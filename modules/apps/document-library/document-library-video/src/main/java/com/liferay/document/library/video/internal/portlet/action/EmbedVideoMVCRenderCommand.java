@@ -15,6 +15,8 @@ import com.liferay.document.library.service.DLFileVersionPreviewLocalService;
 import com.liferay.document.library.util.DLURLHelper;
 import com.liferay.document.library.video.internal.constants.DLVideoPortletKeys;
 import com.liferay.document.library.video.internal.constants.DLVideoWebKeys;
+import com.liferay.petra.lang.SafeCloseable;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -52,7 +54,11 @@ public class EmbedVideoMVCRenderCommand implements MVCRenderCommand {
 	public String render(
 		RenderRequest renderRequest, RenderResponse renderResponse) {
 
-		try {
+		long ctCollectionId = ParamUtil.getLong(renderRequest, "ctCollectionId");
+
+		try (SafeCloseable safeCloseable =
+				 CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					 ctCollectionId)) {
 			FileVersion fileVersion = _dlAppLocalService.getFileVersion(
 				ParamUtil.getLong(renderRequest, "fileVersionId"));
 
