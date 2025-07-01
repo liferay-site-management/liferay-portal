@@ -54,11 +54,13 @@ public class EmbedVideoMVCRenderCommand implements MVCRenderCommand {
 	public String render(
 		RenderRequest renderRequest, RenderResponse renderResponse) {
 
-		long ctCollectionId = ParamUtil.getLong(renderRequest, "ctCollectionId");
+		long ctCollectionId = ParamUtil.getLong(
+			renderRequest, "ctCollectionId");
 
 		try (SafeCloseable safeCloseable =
-				 CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
-					 ctCollectionId)) {
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ctCollectionId)) {
+
 			FileVersion fileVersion = _dlAppLocalService.getFileVersion(
 				ParamUtil.getLong(renderRequest, "fileVersionId"));
 
@@ -70,14 +72,15 @@ public class EmbedVideoMVCRenderCommand implements MVCRenderCommand {
 
 				if (videoProcessor.hasVideo(fileVersion)) {
 					String videoPosterURL = _getVideoPosterURL(
-						fileVersion,
+						fileVersion, ctCollectionId,
 						(ThemeDisplay)renderRequest.getAttribute(
 							WebKeys.THEME_DISPLAY));
 
 					renderRequest.setAttribute(
 						DLVideoWebKeys.PREVIEW_FILE_URLS,
 						_getPreviewFileURLs(
-							fileVersion, videoPosterURL, renderRequest));
+							fileVersion, ctCollectionId, videoPosterURL,
+							renderRequest));
 					renderRequest.setAttribute(
 						DLVideoWebKeys.VIDEO_POSTER_URL, videoPosterURL);
 
@@ -98,7 +101,7 @@ public class EmbedVideoMVCRenderCommand implements MVCRenderCommand {
 	}
 
 	private List<String> _getPreviewFileURLs(
-			FileVersion fileVersion, String videoPosterURL,
+			FileVersion fileVersion, long ctCollectionId, String videoPosterURL,
 			RenderRequest renderRequest)
 		throws PortalException {
 
@@ -106,6 +109,10 @@ public class EmbedVideoMVCRenderCommand implements MVCRenderCommand {
 			renderRequest, "status", WorkflowConstants.STATUS_ANY);
 
 		String previewQueryString = "&videoPreview=1";
+
+		if (ctCollectionId != 0) {
+			previewQueryString += "&ctCollectionId=" + ctCollectionId;
+		}
 
 		if (status != WorkflowConstants.STATUS_ANY) {
 			previewQueryString += "&status=" + status;
@@ -153,12 +160,18 @@ public class EmbedVideoMVCRenderCommand implements MVCRenderCommand {
 	}
 
 	private String _getVideoPosterURL(
-			FileVersion fileVersion, ThemeDisplay themeDisplay)
+			FileVersion fileVersion, long ctCollectionId,
+			ThemeDisplay themeDisplay)
 		throws PortalException {
 
+		String queryString = "&videoThumbnail=1";
+
+		if (ctCollectionId != 0) {
+			queryString += "&ctCollectionId=" + ctCollectionId;
+		}
+
 		return _dlURLHelper.getPreviewURL(
-			fileVersion.getFileEntry(), fileVersion, themeDisplay,
-			"&videoThumbnail=1");
+			fileVersion.getFileEntry(), fileVersion, themeDisplay, queryString);
 	}
 
 	private boolean _isPreviewFailure(FileVersion fileVersion) {

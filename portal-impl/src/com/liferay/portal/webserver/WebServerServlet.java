@@ -20,11 +20,13 @@ import com.liferay.document.library.kernel.processor.VideoProcessorUtil;
 import com.liferay.document.library.kernel.service.DLAppLocalServiceUtil;
 import com.liferay.document.library.kernel.service.DLAppServiceUtil;
 import com.liferay.document.library.kernel.util.DLUtil;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.image.ImageToolUtil;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.exception.NoSuchUserException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -337,41 +339,51 @@ public class WebServerServlet extends HttpServlet {
 
 			PermissionThreadLocal.getPermissionChecker(user, true);
 
-			_checkResourcePermission(httpServletRequest, httpServletResponse);
+			long ctCollectionId = ParamUtil.getLong(
+				httpServletRequest, "ctCollectionId");
 
-			String ifNoneMatch = httpServletRequest.getHeader(
-				HttpHeaders.IF_NONE_MATCH);
+			try (SafeCloseable safeCloseable =
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ctCollectionId)) {
 
-			if ((ifNoneMatch == null) && _lastModified) {
-				long lastModified = getLastModified(httpServletRequest);
+				_checkResourcePermission(
+					httpServletRequest, httpServletResponse);
 
-				if (lastModified > 0) {
-					long ifModifiedSince = httpServletRequest.getDateHeader(
-						HttpHeaders.IF_MODIFIED_SINCE);
+				String ifNoneMatch = httpServletRequest.getHeader(
+					HttpHeaders.IF_NONE_MATCH);
 
-					if ((ifModifiedSince > 0) &&
-						(ifModifiedSince == lastModified)) {
+				if ((ifNoneMatch == null) && _lastModified) {
+					long lastModified = getLastModified(httpServletRequest);
 
-						httpServletResponse.setStatus(
-							HttpServletResponse.SC_NOT_MODIFIED);
+					if (lastModified > 0) {
+						long ifModifiedSince = httpServletRequest.getDateHeader(
+							HttpHeaders.IF_MODIFIED_SINCE);
 
-						return;
+						if ((ifModifiedSince > 0) &&
+							(ifModifiedSince == lastModified)) {
+
+							httpServletResponse.setStatus(
+								HttpServletResponse.SC_NOT_MODIFIED);
+
+							return;
+						}
+
+						httpServletResponse.setDateHeader(
+							HttpHeaders.LAST_MODIFIED, lastModified);
 					}
-
-					httpServletResponse.setDateHeader(
-						HttpHeaders.LAST_MODIFIED, lastModified);
 				}
+
+				TransactionConfig.Builder builder =
+					new TransactionConfig.Builder();
+
+				builder.setReadOnly(true);
+				builder.setRollbackForClasses(Exception.class);
+
+				TransactionInvokerUtil.invoke(
+					builder.build(),
+					_createFileServingCallable(
+						httpServletRequest, httpServletResponse, user));
 			}
-
-			TransactionConfig.Builder builder = new TransactionConfig.Builder();
-
-			builder.setReadOnly(true);
-			builder.setRollbackForClasses(Exception.class);
-
-			TransactionInvokerUtil.invoke(
-				builder.build(),
-				_createFileServingCallable(
-					httpServletRequest, httpServletResponse, user));
 		}
 		catch (FileEntryExpiredException | NoSuchFileEntryException |
 			   NoSuchFolderException exception) {
