@@ -5,8 +5,10 @@
 
 package com.liferay.portal.action;
 
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.exception.NoSuchLayoutException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -69,8 +71,13 @@ public class UpdateLanguageAction implements Action {
 				httpServletRequest, "persistState", true);
 
 			if (themeDisplay.isSignedIn() && persistState) {
-				UserServiceUtil.updateLanguageId(
-					themeDisplay.getUserId(), languageId);
+				try (SafeCloseable safeCloseable =
+						CTCollectionThreadLocal.
+							setProductionModeWithSafeCloseable()) {
+
+					UserServiceUtil.updateLanguageId(
+						themeDisplay.getUserId(), languageId);
+				}
 			}
 
 			HttpSession httpSession = httpServletRequest.getSession();
