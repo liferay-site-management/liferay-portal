@@ -29,7 +29,9 @@ const CategorizationBreadcrumb = ({breadcrumbItems}: Props) => {
 		>
 			<div className="container-fluid">
 				<ClayToolbar.Nav>
-					<ClayBreadcrumb items={breadcrumbItems} />
+					<li>
+						<ClayBreadcrumb items={breadcrumbItems} />
+					</li>
 
 					<ClayToolbar.Item>
 						<ClayDropDownWithItems
