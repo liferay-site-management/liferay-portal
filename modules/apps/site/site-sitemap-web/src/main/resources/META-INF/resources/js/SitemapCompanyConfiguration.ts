@@ -52,6 +52,8 @@ export default function ({
 	const groupsSearchContainerContentBox =
 		groupsSearchContainer.get('contentBox');
 
+	// @ts-ignore
+
 	const objectDefinitionsSearchContainer = Liferay.SearchContainer.get(
 		`${namespace}objectDefinitionsSearchContainer`
 	);
@@ -73,7 +75,7 @@ export default function ({
 		);
 
 		openSelectionModal({
-			onSelect: (selectedItem: SelectedItem) => {
+			onSelect: (selectedItem) => {
 				if (selectedItem) {
 					const values = JSON.parse(selectedItem.value);
 
