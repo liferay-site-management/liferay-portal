@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import {FrameLocator, Locator, Page} from '@playwright/test';
+import {FrameLocator, Locator, Page, expect} from '@playwright/test';
 
 import {PageEditorPage} from '../../../../pages/layout-content-page-editor-web/PageEditorPage';
 import {DisplayPageTemplatesPage} from '../../../../pages/layout-page-template-admin-web/DisplayPageTemplatesPage';
@@ -367,6 +367,22 @@ export class NavigationMenusPage {
 		await this.saveButton.click();
 
 		await waitForAlert(this.page);
+	}
+	
+	async deleteNavigationMenuItem(navigationMenuItemName: string) {
+		await this.page.getByText(navigationMenuItemName).hover();
+
+		await this.page
+			.getByRole('button', {
+				name: 'View ' + navigationMenuItemName + ' Options',
+			})
+			.click();
+
+		await this.page.getByRole('menuitem', {name: 'Delete'}).click();
+
+		await this.page.waitForTimeout(300);
+
+		await expect(this.page.getByText(navigationMenuItemName)).toBeHidden();
 	}
 
 	async openAddCategoryModal() {
