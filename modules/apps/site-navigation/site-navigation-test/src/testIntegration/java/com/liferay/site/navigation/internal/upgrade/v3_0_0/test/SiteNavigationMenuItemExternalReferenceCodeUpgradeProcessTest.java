@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
@@ -76,19 +77,21 @@ public class SiteNavigationMenuItemExternalReferenceCodeUpgradeProcessTest {
 	public void setUp() throws Exception {
 		_group = GroupTestUtil.addGroup();
 
+		_serviceContext = ServiceContextTestUtil.getServiceContext(
+			_group.getGroupId());
+
 		_siteNavigationMenu = SiteNavigationMenuTestUtil.addSiteNavigationMenu(
 			_group);
 	}
 
 	@Test
-	public void testUpgrade() throws Exception {
-		ServiceContext serviceContext =
-			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
+	public void testUpgradeWithAssetCategoryAndAssetVocabulary()
+		throws Exception {
 
 		AssetVocabulary assetVocabulary =
 			_assetVocabularyLocalService.addVocabulary(
 				TestPropsValues.getUserId(), _group.getGroupId(),
-				RandomTestUtil.randomString(), serviceContext);
+				RandomTestUtil.randomString(), _serviceContext);
 
 		SiteNavigationMenuItem assetVocabularySiteNavigationMenuItem =
 			_addSiteNavigationMenuItem(
@@ -108,7 +111,7 @@ public class SiteNavigationMenuItemExternalReferenceCodeUpgradeProcessTest {
 		AssetCategory assetCategory = _assetCategoryLocalService.addCategory(
 			TestPropsValues.getUserId(), _group.getGroupId(),
 			RandomTestUtil.randomString(), assetVocabulary.getVocabularyId(),
-			serviceContext);
+			_serviceContext);
 
 		SiteNavigationMenuItem assetCategorySiteNavigationMenuItem =
 			_addSiteNavigationMenuItem(
@@ -121,6 +124,19 @@ public class SiteNavigationMenuItemExternalReferenceCodeUpgradeProcessTest {
 					"classPK", assetCategory.getCategoryId()
 				).buildString());
 
+		_runUpgrade();
+
+		_assertEqualsExternalReferenceCode(
+			assetCategory.getExternalReferenceCode(),
+			assetCategorySiteNavigationMenuItem.getSiteNavigationMenuItemId());
+		_assertEqualsExternalReferenceCode(
+			assetVocabulary.getExternalReferenceCode(),
+			assetVocabularySiteNavigationMenuItem.
+				getSiteNavigationMenuItemId());
+	}
+
+	@Test
+	public void testUpgradeWithFileEntry() throws Exception {
 		FileEntry fileEntry = DLAppTestUtil.addFileEntry(_group.getGroupId());
 
 		SiteNavigationMenuItem fileEntrySiteNavigationMenuItem =
@@ -136,6 +152,15 @@ public class SiteNavigationMenuItemExternalReferenceCodeUpgradeProcessTest {
 					"type", FileEntry.class.getName()
 				).buildString());
 
+		_runUpgrade();
+
+		_assertEqualsExternalReferenceCode(
+			fileEntry.getExternalReferenceCode(),
+			fileEntrySiteNavigationMenuItem.getSiteNavigationMenuItemId());
+	}
+
+	@Test
+	public void testUpgradeWithJournalArticle() throws Exception {
 		JournalArticle journalArticle = JournalTestUtil.addArticle(
 			TestPropsValues.getUserId(), _group.getGroupId(), 0);
 
@@ -152,6 +177,15 @@ public class SiteNavigationMenuItemExternalReferenceCodeUpgradeProcessTest {
 					"type", JournalArticle.class.getName()
 				).buildString());
 
+		_runUpgrade();
+
+		_assertEqualsExternalReferenceCode(
+			journalArticle.getExternalReferenceCode(),
+			journalArticleSiteNavigationMenuItem.getSiteNavigationMenuItemId());
+	}
+
+	@Test
+	public void testUpgradeWithKBArticle() throws Exception {
 		KBArticle kbArticle = KBTestUtil.addKBArticle(_group.getGroupId());
 
 		SiteNavigationMenuItem kbArticleSiteNavigationMenuItem =
@@ -167,6 +201,15 @@ public class SiteNavigationMenuItemExternalReferenceCodeUpgradeProcessTest {
 					"type", KBArticle.class.getName()
 				).buildString());
 
+		_runUpgrade();
+
+		_assertEqualsExternalReferenceCode(
+			kbArticle.getExternalReferenceCode(),
+			kbArticleSiteNavigationMenuItem.getSiteNavigationMenuItemId());
+	}
+
+	@Test
+	public void testUpgradeWithLayout() throws Exception {
 		Layout layout = LayoutTestUtil.addTypeContentLayout(_group);
 
 		SiteNavigationMenuItem layoutSiteNavigationMenuItem =
@@ -182,6 +225,15 @@ public class SiteNavigationMenuItemExternalReferenceCodeUpgradeProcessTest {
 					"privateLayout", false
 				).buildString());
 
+		_runUpgrade();
+
+		_assertEqualsExternalReferenceCode(
+			layout.getExternalReferenceCode(),
+			layoutSiteNavigationMenuItem.getSiteNavigationMenuItemId());
+	}
+
+	@Test
+	public void testUpgradeWithObjectEntry() throws Exception {
 		ObjectDefinition objectDefinition =
 			_objectDefinitionLocalService.addCustomObjectDefinition(
 				TestPropsValues.getUserId(), 0, null, false, false, true, false,
@@ -234,6 +286,15 @@ public class SiteNavigationMenuItemExternalReferenceCodeUpgradeProcessTest {
 					"classPK", objectEntry.getObjectEntryId()
 				).buildString());
 
+		_runUpgrade();
+
+		_assertEqualsExternalReferenceCode(
+			objectEntry.getExternalReferenceCode(),
+			objectEntrySiteNavigationMenuItem.getSiteNavigationMenuItemId());
+	}
+
+	@Test
+	public void testUpgradeWithURL() throws Exception {
 		SiteNavigationMenuItem urlSiteNavigationMenuItem =
 			_addSiteNavigationMenuItem(
 				SiteNavigationMenuItemTypeConstants.URL,
@@ -241,35 +302,10 @@ public class SiteNavigationMenuItemExternalReferenceCodeUpgradeProcessTest {
 					true
 				).put(
 					"defaultLanguage",
-					String.valueOf(serviceContext.getLocale())
+					String.valueOf(_serviceContext.getLocale())
 				).buildString());
 
 		_runUpgrade();
-
-		EntityCacheUtil.clearCache();
-
-		_assertEqualsExternalReferenceCode(
-			assetCategory.getExternalReferenceCode(),
-			assetCategorySiteNavigationMenuItem.getSiteNavigationMenuItemId());
-		_assertEqualsExternalReferenceCode(
-			assetVocabulary.getExternalReferenceCode(),
-			assetVocabularySiteNavigationMenuItem.
-				getSiteNavigationMenuItemId());
-		_assertEqualsExternalReferenceCode(
-			fileEntry.getExternalReferenceCode(),
-			fileEntrySiteNavigationMenuItem.getSiteNavigationMenuItemId());
-		_assertEqualsExternalReferenceCode(
-			journalArticle.getExternalReferenceCode(),
-			journalArticleSiteNavigationMenuItem.getSiteNavigationMenuItemId());
-		_assertEqualsExternalReferenceCode(
-			kbArticle.getExternalReferenceCode(),
-			kbArticleSiteNavigationMenuItem.getSiteNavigationMenuItemId());
-		_assertEqualsExternalReferenceCode(
-			layout.getExternalReferenceCode(),
-			layoutSiteNavigationMenuItem.getSiteNavigationMenuItemId());
-		_assertEqualsExternalReferenceCode(
-			objectEntry.getExternalReferenceCode(),
-			objectEntrySiteNavigationMenuItem.getSiteNavigationMenuItemId());
 
 		urlSiteNavigationMenuItem =
 			_siteNavigationMenuItemLocalService.getSiteNavigationMenuItem(
@@ -326,6 +362,8 @@ public class SiteNavigationMenuItemExternalReferenceCodeUpgradeProcessTest {
 			_upgradeStepRegistrator, _CLASS_NAME);
 
 		upgradeProcess.upgrade();
+
+		EntityCacheUtil.clearCache();
 	}
 
 	private static final String _CLASS_NAME =
@@ -348,6 +386,9 @@ public class SiteNavigationMenuItemExternalReferenceCodeUpgradeProcessTest {
 	@Inject
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
 
+	private ServiceContext _serviceContext;
+
+	@DeleteAfterTestRun
 	private SiteNavigationMenu _siteNavigationMenu;
 
 	@Inject
