@@ -532,20 +532,46 @@ public class SitemapManagerImpl implements SitemapManager {
 		for (SitemapURLProvider sitemapURLProvider :
 				_getSitemapURLProviders()) {
 
-			if (!sitemapURLProvider.isInclude(
-					themeDisplay.getCompanyId(),
-					themeDisplay.getScopeGroupId())) {
-
-				continue;
-			}
-
 			if (Validator.isNull(layoutUuid)) {
 				for (LayoutSet curLayoutSet : layoutSets) {
+					Layout layout =
+						_layoutLocalService.fetchLayoutByUuidAndGroupId(
+							curLayoutSet.getLayoutSetPrototypeUuid(),
+							curLayoutSet.getGroupId(),
+							curLayoutSet.isPrivateLayout());
+
+					if (!sitemapURLProvider.isInclude(
+							themeDisplay.getCompanyId(), layout) ||
+						!sitemapURLProvider.isInclude(
+							themeDisplay.getCompanyId(),
+							themeDisplay.getScopeGroupId())) {
+
+						continue;
+					}
+
 					sitemapURLProvider.visitLayoutSet(
 						rootElement, curLayoutSet, themeDisplay);
 				}
 			}
 			else {
+				Layout layout = _layoutLocalService.fetchLayoutByUuidAndGroupId(
+					layoutUuid,
+					layoutSets.get(
+						0
+					).getGroupId(),
+					layoutSets.get(
+						0
+					).isPrivateLayout());
+
+				if (!sitemapURLProvider.isInclude(
+						themeDisplay.getCompanyId(), layout) ||
+					!sitemapURLProvider.isInclude(
+						themeDisplay.getCompanyId(),
+						themeDisplay.getScopeGroupId())) {
+
+					continue;
+				}
+
 				sitemapURLProvider.visitLayout(
 					rootElement, layoutUuid, layoutSets.get(0), themeDisplay);
 			}

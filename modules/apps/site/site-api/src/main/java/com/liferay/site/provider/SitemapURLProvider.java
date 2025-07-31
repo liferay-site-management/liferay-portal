@@ -6,6 +6,7 @@
 package com.liferay.site.provider;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.xml.Element;
@@ -19,6 +20,12 @@ import org.osgi.annotation.versioning.ProviderType;
 public interface SitemapURLProvider {
 
 	public String getClassName();
+
+	public default boolean isInclude(long companyId, Layout layout)
+		throws PortalException {
+
+		return true;
+	}
 
 	public default boolean isInclude(long companyId, long groupId)
 		throws PortalException {
