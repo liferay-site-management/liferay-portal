@@ -50,6 +50,11 @@ public class EmptyLayoutTypeController extends BaseLayoutTypeControllerImpl {
 	}
 
 	@Override
+	public boolean isCheckLayoutViewPermission() {
+		return false;
+	}
+
+	@Override
 	public boolean isFirstPageable() {
 		return true;
 	}

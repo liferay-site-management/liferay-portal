@@ -41,7 +41,7 @@ public class LayoutStructureProviderImpl implements LayoutStructureProvider {
 			Layout layout = _getLayout(plid);
 
 			if (!layout.isTypeAssetDisplay() && !layout.isTypeContent() &&
-				!layout.isTypeUtility()) {
+				!layout.isTypeUtility() && !layout.isTypeEmpty()) {
 
 				String masterLayoutData = _getMasterLayoutData(
 					layout.getMasterLayoutPlid());

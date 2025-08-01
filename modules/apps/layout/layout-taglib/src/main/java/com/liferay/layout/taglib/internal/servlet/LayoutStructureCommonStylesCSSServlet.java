@@ -140,6 +140,7 @@ public class LayoutStructureCommonStylesCSSServlet extends HttpServlet {
 
 		if ((layout == null) ||
 			(!layout.isTypeAssetDisplay() && !layout.isTypeContent() &&
+			 !layout.isTypeEmpty() &&
 			 !layout.isTypeUtility() &&
 			 ((layout.getMasterLayoutPlid() == 0) ||
 			  !layout.isTypePortlet()))) {

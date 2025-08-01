@@ -55,6 +55,7 @@ public class LayoutURLFormNavigatorEntry extends BaseLayoutFormNavigatorEntry {
 		}
 
 		if (layout.isTypeAssetDisplay() ||
+			layout.isTypeEmpty() ||
 			(layout.isTypeContent() && (layout.fetchDraftLayout() == null))) {
 
 			return false;
