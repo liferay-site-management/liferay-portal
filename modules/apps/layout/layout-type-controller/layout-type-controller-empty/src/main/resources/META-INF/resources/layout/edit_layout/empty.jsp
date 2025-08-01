@@ -7,11 +7,7 @@
 
 <%@ include file="/layout/edit_layout/init.jsp" %>
 
-<liferay-ui:success key="layoutAdded" message="the-page-was-created-successfully" />
-
 <liferay-ui:success key="layoutPublished" message="the-page-was-published-successfully" />
-
-<liferay-ui:success key="layoutEmptyPageEntryAdded" message="the-empty-page-was-created-successfully" />
 
 <%
 String portletResource = ParamUtil.getString(request, "portletResource");
