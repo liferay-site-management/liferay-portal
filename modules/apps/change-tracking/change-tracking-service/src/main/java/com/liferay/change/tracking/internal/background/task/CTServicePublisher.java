@@ -349,58 +349,34 @@ public class CTServicePublisher<T extends CTModel<T>> {
 			Map<Serializable, CTEntry> ctEntries, long ctCollectionId)
 		throws Exception {
 
-		StringBundler sb = new StringBundler();
+		StringBundler sb = new StringBundler(12);
 
-		sb.append("select ");
-		sb.append(primaryKeyName);
-		sb.append(", mvccVersion from ");
+		sb.append("update CTEntry set modelMvccVersion = (select mvccVersion ");
+		sb.append("from ");
 		sb.append(tableName);
-		sb.append(" where ctCollectionId = ");
+		sb.append(" where ");
+		sb.append(tableName);
+		sb.append(".ctCollectionId = ");
 		sb.append(ctCollectionId);
-		sb.append(" and (");
+		sb.append(" and ");
+		sb.append(tableName);
+		sb.append(".");
 		sb.append(primaryKeyName);
-		sb.append(" in (");
+		sb.append(" = CTEntry.modelClassPK) where CTEntry.ctEntryId = ?");
 
-		int i = 0;
+		try (PreparedStatement preparedStatement =
+				AutoBatchPreparedStatementUtil.autoBatch(
+					connection, sb.toString())) {
 
-		for (Serializable serializable : ctEntries.keySet()) {
-			if (i == _BATCH_SIZE) {
-				sb.setStringAt(")", sb.index() - 1);
+			for (CTEntry ctEntry : ctEntries.values()) {
+				preparedStatement.setLong(1, ctEntry.getCtEntryId());
 
-				sb.append(" or ");
-				sb.append(primaryKeyName);
-				sb.append(" in (");
-
-				i = 0;
+				preparedStatement.addBatch();
 			}
 
-			sb.append(serializable);
-			sb.append(", ");
-
-			i++;
-		}
-
-		sb.setStringAt(")", sb.index() - 1);
-
-		sb.append(")");
-
-		try (PreparedStatement preparedStatement = connection.prepareStatement(
-				sb.toString());
-			ResultSet resultSet = preparedStatement.executeQuery()) {
-
-			while (resultSet.next()) {
-				long pk = resultSet.getLong(1);
-				long mvccVersion = resultSet.getLong(2);
-
-				CTEntry ctEntry = ctEntries.get(pk);
-
-				_ctEntryLocalService.updateModelMvccVersion(
-					ctEntry.getCtEntryId(), mvccVersion);
-			}
+			preparedStatement.executeBatch();
 		}
 	}
-
-	private static final int _BATCH_SIZE = 1000;
 
 	private Map<Serializable, CTEntry> _additionCTEntries;
 	private final CTEntryLocalService _ctEntryLocalService;
