@@ -13,9 +13,11 @@ import com.liferay.dynamic.data.mapping.util.FieldsToDDMFormValuesConverter;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.journal.util.JournalConverter;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.ModelListenerException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.BaseModelListener;
@@ -66,6 +68,13 @@ public class DDMStructureModelListener extends BaseModelListener<DDMStructure> {
 				dynamicQuery.add(
 					ddmStructureIdProperty.eq(
 						originalDDMStructure.getStructureId()));
+
+				if (!CTCollectionThreadLocal.isProductionMode()) {
+					dynamicQuery.add(
+						RestrictionsFactoryUtil.eq(
+							"ctCollectionId",
+							ddmStructure.getCtCollectionId()));
+				}
 			});
 		actionableDynamicQuery.setCompanyId(
 			originalDDMStructure.getCompanyId());
