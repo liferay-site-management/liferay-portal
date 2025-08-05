@@ -248,7 +248,7 @@ public class CTServicePublisher<T extends CTModel<T>> {
 				for (Serializable primaryKey :
 						_modificationCTEntries.keySet()) {
 
-					preparedStatement.setLong(1, tempCTCollectionId);
+					preparedStatement.setLong(1, (Long)primaryKey);
 
 					preparedStatement.addBatch();
 				}
@@ -349,7 +349,7 @@ public class CTServicePublisher<T extends CTModel<T>> {
 			Map<Serializable, CTEntry> ctEntries, long ctCollectionId)
 		throws Exception {
 
-		StringBundler sb = new StringBundler(12);
+		StringBundler sb = new StringBundler(23);
 
 		sb.append("update CTEntry set modelMvccVersion = (select mvccVersion ");
 		sb.append("from ");
@@ -362,7 +362,18 @@ public class CTServicePublisher<T extends CTModel<T>> {
 		sb.append(tableName);
 		sb.append(".");
 		sb.append(primaryKeyName);
-		sb.append(" = CTEntry.modelClassPK) where CTEntry.ctEntryId = ?");
+		sb.append(" = CTEntry.modelClassPK) where CTEntry.ctEntryId = ? and ");
+		sb.append("exists (select 1 from ");
+		sb.append(tableName);
+		sb.append(" where ");
+		sb.append(tableName);
+		sb.append(".ctCollectionId = ");
+		sb.append(ctCollectionId);
+		sb.append(" and ");
+		sb.append(tableName);
+		sb.append(".");
+		sb.append(primaryKeyName);
+		sb.append(" = ?)");
 
 		try (PreparedStatement preparedStatement =
 				AutoBatchPreparedStatementUtil.autoBatch(
@@ -370,6 +381,7 @@ public class CTServicePublisher<T extends CTModel<T>> {
 
 			for (CTEntry ctEntry : ctEntries.values()) {
 				preparedStatement.setLong(1, ctEntry.getCtEntryId());
+				preparedStatement.setLong(2, ctEntry.getModelClassPK());
 
 				preparedStatement.addBatch();
 			}
