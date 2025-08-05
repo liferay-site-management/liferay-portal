@@ -9,10 +9,13 @@ import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.internal.CTRowUtil;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.CTEntryLocalService;
+import com.liferay.change.tracking.service.persistence.CTEntryPersistence;
+import com.liferay.change.tracking.service.persistence.CTEntryUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.dao.jdbc.CurrentConnectionUtil;
+import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.service.change.tracking.CTService;
@@ -388,6 +391,14 @@ public class CTServicePublisher<T extends CTModel<T>> {
 
 			preparedStatement.executeBatch();
 		}
+
+		CTEntryPersistence ctEntryPersistence = CTEntryUtil.getPersistence();
+
+		Session session = ctEntryPersistence.getCurrentSession();
+
+		session.flush();
+
+		session.clear();
 	}
 
 	private Map<Serializable, CTEntry> _additionCTEntries;
