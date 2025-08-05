@@ -11,7 +11,7 @@
 ViewSpaceMembersSummarySectionDisplayContext viewSpaceMembersSummarySectionDisplayContext = (ViewSpaceMembersSummarySectionDisplayContext)request.getAttribute(ViewSpaceMembersSummarySectionDisplayContext.class.getName());
 %>
 
-<div class="cms-section">
+<div class="cms-section cms-tabs-fluid">
 	<div id="<%= CMSSiteInitializerFDSNames.SPACE_MEMBERS_SUMMARY_SECTION %>">
 		<react:component
 			module="{SpaceSummaryHeader} from site-cms-site-initializer"

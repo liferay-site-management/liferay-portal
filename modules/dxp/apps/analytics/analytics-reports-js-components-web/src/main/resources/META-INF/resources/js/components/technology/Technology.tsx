@@ -3,18 +3,15 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
+import ClayLoadingIndicator from '@clayui/loading-indicator';
 import React, {useContext} from 'react';
 
-import {AnalyticsReportsContext} from '../../AnalyticsReportsContext';
-import {
-	AssetDeviceMetric,
-	fetchAssetDeviceMetric,
-} from '../../apis/analytics-reports';
+import {Context} from '../../Context';
 import useFetch from '../../hooks/useFetch';
-import {AssetTypes, MetricName, MetricType} from '../../types/global';
-import StateRenderer from '../StateRenderer';
+import {MetricName, MetricType} from '../../types/global';
+import {buildQueryString} from '../../utils/buildQueryString';
 import Title from '../Title';
-import StackedBarChart from '../stacked-bar/StackedBarChart';
+import StackedBarChart from '../content-dashboard/stacked-bar/StackedBarChart';
 import {formatData} from './utils';
 
 export type Data = {
@@ -29,33 +26,33 @@ const TITLE: {
 } = {
 	[MetricType.Comments]: Liferay.Language.get('comments-by-technology'),
 	[MetricType.Downloads]: Liferay.Language.get('downloads-by-technology'),
-	[MetricType.Previews]: Liferay.Language.get('previews-by-technology'),
+	[MetricType.Impressions]: Liferay.Language.get('impressions-by-technology'),
 	[MetricType.Undefined]: Liferay.Language.get('undefined'),
 	[MetricType.Views]: Liferay.Language.get('views-by-technology'),
 };
 
 const Technology = () => {
-	const {
-		assetId,
-		assetType: initialAssetType,
-		filters,
-		groupId,
-	} = useContext(AnalyticsReportsContext);
+	const {assetId, assetType, filters, groupId} = useContext(Context);
 
-	const {data, error, loading} = useFetch<Data, AssetDeviceMetric>(
-		fetchAssetDeviceMetric,
-		{
-			variables: {
-				assetId,
-				assetType: initialAssetType || AssetTypes.Undefined,
-				groupId,
-				individual: filters?.individual,
-				rangeSelector: filters.rangeSelector,
-			},
-		}
+	const queryString = buildQueryString({
+		assetId,
+		identityType: filters.individual,
+		rangeKey: filters.rangeSelector,
+	});
+
+	const {data, loading} = useFetch<Data>(
+		`/o/analytics-reports-rest/v1.0/${groupId}/asset-metrics/${assetType}/devices${queryString}`
 	);
 
-	const title = TITLE[filters?.metric ?? MetricType.Undefined];
+	const title = TITLE[filters.metric];
+
+	if (loading) {
+		return <ClayLoadingIndicator className="my-5" />;
+	}
+
+	if (!data) {
+		return null;
+	}
 
 	return (
 		<div>
@@ -67,21 +64,10 @@ const Technology = () => {
 				value={title}
 			/>
 
-			<StateRenderer data={data} error={error} loading={loading}>
-				{({data}) => {
-					const formattedData = formatData(
-						data,
-						filters?.metric || MetricType.Undefined
-					);
-
-					return (
-						<StackedBarChart
-							data={formattedData}
-							tooltipTitle={title}
-						/>
-					);
-				}}
-			</StateRenderer>
+			<StackedBarChart
+				data={formatData(data, filters.metric)}
+				tooltipTitle={title}
+			/>
 		</div>
 	);
 };

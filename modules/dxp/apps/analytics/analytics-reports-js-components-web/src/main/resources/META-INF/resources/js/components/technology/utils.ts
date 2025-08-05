@@ -6,7 +6,7 @@
 import {MetricType} from '../../types/global';
 import {getPercentage} from '../../utils/math';
 import {metricNameByType} from '../../utils/metrics';
-import {ChartData} from '../stacked-bar/StackedBarChart';
+import {ChartData} from '../content-dashboard/stacked-bar/StackedBarChart';
 import {Data} from './Technology';
 
 const getSafePercentage = (value: number, total: number) =>

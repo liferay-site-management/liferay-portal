@@ -63,33 +63,53 @@ describe('SpaceSummaryHeader', () => {
 		expect(screen.queryByRole('link')).not.toBeInTheDocument();
 	});
 
-	it('calls manageMembersAction when the button is clicked', async () => {
-		const spaceModalProps = {
-			action: SpaceSummaryHeaderActions.OPEN_MEMBERS_MODAL,
-			assetLibraryCreatorUserId: '123',
-			assetLibraryId: '456',
-		};
+	describe('manageMembersAction', () => {
+		it.each([
+			[false, undefined],
+			[false, false],
+			[true, true],
+		])(
+			'is called with hasAssignMembersPermission=%s when permissions.hasAssignMembersPermission is %s',
+			async (
+				expectedHasAssignMembersPermission,
+				hasAssignMembersPermission
+			) => {
+				const spaceModalProps = {
+					action: SpaceSummaryHeaderActions.OPEN_MEMBERS_MODAL,
+					assetLibraryCreatorUserId: '123',
+					assetLibraryId: '456',
+				};
 
-		const props = {
-			...defaultProps,
-			spaceModalProps,
-		};
+				const props = {
+					...defaultProps,
+					permissions:
+						hasAssignMembersPermission !== undefined
+							? {hasAssignMembersPermission}
+							: undefined,
+					spaceModalProps,
+				};
 
-		render(<SpaceSummaryHeader {...props} />);
+				render(<SpaceSummaryHeader {...props} />);
 
-		const button = screen.getByRole('button', {name: defaultProps.label});
+				const button = screen.getByRole('button', {
+					name: defaultProps.label,
+				});
 
-		await userEvent.click(button);
+				await userEvent.click(button);
 
-		expect(manageMembersAction).toHaveBeenCalledTimes(1);
-		expect(manageMembersAction).toHaveBeenCalledWith(
-			{
-				assetLibraryCreatorUserId:
-					spaceModalProps.assetLibraryCreatorUserId,
-				assetLibraryId: spaceModalProps.assetLibraryId,
-				title: defaultProps.title,
-			},
-			expect.any(Function)
+				expect(manageMembersAction).toHaveBeenCalledTimes(1);
+				expect(manageMembersAction).toHaveBeenCalledWith(
+					{
+						assetLibraryCreatorUserId:
+							spaceModalProps.assetLibraryCreatorUserId,
+						assetLibraryId: spaceModalProps.assetLibraryId,
+						hasAssignMembersPermission:
+							expectedHasAssignMembersPermission,
+						title: defaultProps.title,
+					},
+					expect.any(Function)
+				);
+			}
 		);
 	});
 

@@ -9,6 +9,7 @@ import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.depot.constants.DepotRolesConstants;
 import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.constants.ObjectEntryFolderConstants;
+import com.liferay.object.entry.folder.subscription.util.ObjectEntryFolderSubscriptionUtil;
 import com.liferay.object.entry.folder.util.ObjectEntryFolderThreadLocal;
 import com.liferay.object.exception.DuplicateObjectEntryFolderExternalReferenceCodeException;
 import com.liferay.object.exception.NoSuchObjectEntryFolderException;
@@ -47,6 +48,7 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.subscription.service.SubscriptionLocalService;
 
 import java.util.Collections;
 import java.util.List;
@@ -200,6 +202,15 @@ public class ObjectEntryFolderLocalServiceImpl
 			ObjectEntryFolder.class.getName(),
 			objectEntryFolder.getObjectEntryFolderId());
 
+		if (FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+			_subscriptionLocalService.deleteSubscriptions(
+				objectEntryFolder.getCompanyId(),
+				ObjectEntryFolder.class.getName(),
+				_getClassPK(
+					objectEntryFolder.getGroupId(),
+					objectEntryFolder.getObjectEntryFolderId()));
+		}
+
 		if (FeatureFlagManagerUtil.isEnabled("LPD-42553")) {
 			_workflowDefinitionLinkLocalService.deleteWorkflowDefinitionLink(
 				objectEntryFolder.getCompanyId(),
@@ -305,6 +316,34 @@ public class ObjectEntryFolderLocalServiceImpl
 	}
 
 	@Override
+	public void subscribeObjectEntryFolder(
+			long userId, long groupId, long objectEntryFolderId)
+		throws PortalException {
+
+		User user = _userLocalService.fetchUser(userId);
+
+		if (ObjectEntryFolderSubscriptionUtil.isSubscribedToObjectEntryFolder(
+				user.getCompanyId(), groupId, objectEntryFolderId, userId)) {
+
+			throw new UnsupportedOperationException();
+		}
+
+		_subscriptionLocalService.addSubscription(
+			userId, groupId, ObjectEntryFolder.class.getName(),
+			_getClassPK(groupId, objectEntryFolderId));
+	}
+
+	@Override
+	public void unsubscribeObjectEntryFolder(
+			long userId, long groupId, long objectEntryFolderId)
+		throws PortalException {
+
+		_subscriptionLocalService.deleteSubscription(
+			userId, ObjectEntryFolder.class.getName(),
+			_getClassPK(groupId, objectEntryFolderId));
+	}
+
+	@Override
 	public ObjectEntryFolder updateObjectEntryFolder(
 			long userId, long objectEntryFolderId,
 			long parentObjectEntryFolderId, String description,
@@ -384,6 +423,17 @@ public class ObjectEntryFolderLocalServiceImpl
 				objectEntryFolder.getObjectEntryFolderId(),
 				serviceContext.getModelPermissions());
 		}
+	}
+
+	private long _getClassPK(long groupId, long objectEntryFolderId) {
+		if (objectEntryFolderId ==
+				ObjectEntryFolderConstants.
+					PARENT_OBJECT_ENTRY_FOLDER_ID_DEFAULT) {
+
+			return groupId;
+		}
+
+		return objectEntryFolderId;
 	}
 
 	private Map<Locale, String> _getLabelMap(
@@ -526,6 +576,9 @@ public class ObjectEntryFolderLocalServiceImpl
 
 	@Reference
 	private ResourceLocalService _resourceLocalService;
+
+	@Reference
+	private SubscriptionLocalService _subscriptionLocalService;
 
 	@Reference
 	private UserLocalService _userLocalService;

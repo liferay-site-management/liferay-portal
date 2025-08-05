@@ -106,6 +106,7 @@ import com.liferay.object.service.ObjectFieldSettingLocalService;
 import com.liferay.object.service.ObjectFilterLocalService;
 import com.liferay.object.service.ObjectRelationshipLocalService;
 import com.liferay.object.test.util.ObjectDefinitionTestUtil;
+import com.liferay.object.test.util.ObjectEntryFolderTestUtil;
 import com.liferay.object.test.util.TreeTestUtil;
 import com.liferay.object.tree.Edge;
 import com.liferay.object.tree.Node;
@@ -6780,7 +6781,7 @@ public class DefaultObjectEntryManagerImplTest
 		_assertObjectEntriesSize1(_objectDefinition3, "Delta", 1);
 	}
 
-	@FeatureFlag("LPD-42577")
+	@FeatureFlag("LPD-17564")
 	@Test
 	public void testSubscribeObjectEntry() throws Exception {
 		ObjectDefinition objectDefinition = _addObjectDefinition(
@@ -6792,17 +6793,52 @@ public class DefaultObjectEntryManagerImplTest
 				).name(
 					"textObjectFieldName"
 				).build()),
-			ObjectDefinitionConstants.SCOPE_COMPANY);
+			ObjectDefinitionConstants.SCOPE_SITE);
+		ObjectEntryFolder objectEntryFolder =
+			ObjectEntryFolderTestUtil.addObjectEntryFolder(_group.getGroupId());
 
 		ObjectEntry objectEntry1 = _addObjectEntry(
-			objectDefinition, Collections.emptyMap());
+			objectDefinition,
+			new ObjectEntry() {
+				{
+					objectEntryFolderExternalReferenceCode =
+						objectEntryFolder.getExternalReferenceCode();
+					properties = Collections.emptyMap();
+				}
+			},
+			_group.getGroupKey());
 		ObjectEntry objectEntry2 = _addObjectEntry(
-			objectDefinition, Collections.emptyMap());
+			objectDefinition,
+			new ObjectEntry() {
+				{
+					objectEntryFolderExternalReferenceCode =
+						objectEntryFolder.getExternalReferenceCode();
+					properties = Collections.emptyMap();
+				}
+			},
+			_group.getGroupKey());
+
+		_objectEntryFolderLocalService.subscribeObjectEntryFolder(
+			adminUser.getUserId(), _group.getGroupId(),
+			objectEntryFolder.getObjectEntryFolderId());
 
 		_assertActions(
-			"subscribe", "unsubscribe", objectDefinition, objectEntry1.getId());
+			null, ListUtil.fromArray("subscribe", "unsubscribe"),
+			objectDefinition, objectEntry1.getId());
 		_assertActions(
-			"subscribe", "unsubscribe", objectDefinition, objectEntry2.getId());
+			null, ListUtil.fromArray("subscribe", "unsubscribe"),
+			objectDefinition, objectEntry2.getId());
+
+		_objectEntryFolderLocalService.unsubscribeObjectEntryFolder(
+			adminUser.getUserId(), _group.getGroupId(),
+			objectEntryFolder.getObjectEntryFolderId());
+
+		_assertActions(
+			ListUtil.fromArray("subscribe"), ListUtil.fromArray("unsubscribe"),
+			objectDefinition, objectEntry1.getId());
+		_assertActions(
+			ListUtil.fromArray("subscribe"), ListUtil.fromArray("unsubscribe"),
+			objectDefinition, objectEntry2.getId());
 
 		_defaultObjectEntryManager.subscribeObjectEntry(
 			dtoConverterContext, objectEntry1.getExternalReferenceCode(),
@@ -6812,9 +6848,11 @@ public class DefaultObjectEntryManagerImplTest
 			objectDefinition, objectEntry2.getScopeKey());
 
 		_assertActions(
-			"unsubscribe", "subscribe", objectDefinition, objectEntry1.getId());
+			ListUtil.fromArray("unsubscribe"), ListUtil.fromArray("subscribe"),
+			objectDefinition, objectEntry1.getId());
 		_assertActions(
-			"unsubscribe", "subscribe", objectDefinition, objectEntry2.getId());
+			ListUtil.fromArray("unsubscribe"), ListUtil.fromArray("subscribe"),
+			objectDefinition, objectEntry2.getId());
 
 		Assert.assertTrue(
 			_subscriptionLocalService.isSubscribed(
@@ -6898,7 +6936,7 @@ public class DefaultObjectEntryManagerImplTest
 				objectDefinition.getClassName(), objectEntry2.getId()));
 	}
 
-	@FeatureFlag("LPD-42577")
+	@FeatureFlag("LPD-17564")
 	@Test
 	public void testSubscribeObjectEntryWithHierarchy() throws Exception {
 		ObjectDefinition objectDefinitionA = _addObjectDefinition(
@@ -8495,8 +8533,8 @@ public class DefaultObjectEntryManagerImplTest
 	}
 
 	private void _assertActions(
-			String action1, String action2, ObjectDefinition objectDefinition,
-			long objectEntryId)
+			List<String> actions1, List<String> actions2,
+			ObjectDefinition objectDefinition, long objectEntryId)
 		throws Exception {
 
 		ObjectEntry objectEntry = _defaultObjectEntryManager.getObjectEntry(
@@ -8505,8 +8543,14 @@ public class DefaultObjectEntryManagerImplTest
 		Map<String, Map<String, String>> objectEntryActions =
 			objectEntry.getActions();
 
-		Assert.assertTrue(objectEntryActions.containsKey(action1));
-		Assert.assertFalse(objectEntryActions.containsKey(action2));
+		ListUtil.isNotEmptyForEach(
+			actions1,
+			action1 -> Assert.assertTrue(
+				objectEntryActions.containsKey(action1)));
+		ListUtil.isNotEmptyForEach(
+			actions2,
+			action2 -> Assert.assertFalse(
+				objectEntryActions.containsKey(action2)));
 	}
 
 	private void _assertAggregationFacetValue(

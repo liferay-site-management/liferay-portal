@@ -18,6 +18,7 @@ export interface AddSpaceMembersProps {
 	assetLibraryId: string;
 	assetLibraryName: string;
 	baseAssetLibraryURL: string;
+	hasAssignMembersPermission: boolean;
 	learnResources: ILearnResourceContext;
 }
 
@@ -26,6 +27,7 @@ export function AddSpaceMembers({
 	assetLibraryId,
 	assetLibraryName,
 	baseAssetLibraryURL,
+	hasAssignMembersPermission,
 	learnResources,
 }: AddSpaceMembersProps) {
 	const [hasSelectedMembers, setHasSelectedMembers] = useState(false);
@@ -53,6 +55,7 @@ export function AddSpaceMembers({
 					<SpaceMembersWithList
 						assetLibraryCreatorUserId={assetLibraryCreatorUserId}
 						assetLibraryId={assetLibraryId}
+						hasAssignMembersPermission={hasAssignMembersPermission}
 						onHasSelectedMembersChange={setHasSelectedMembers}
 					/>
 

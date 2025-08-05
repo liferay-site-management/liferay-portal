@@ -23,6 +23,7 @@ export interface SpaceMembersWithListProps {
 	assetLibraryCreatorUserId: string;
 	assetLibraryId: string;
 	className?: string;
+	hasAssignMembersPermission: boolean;
 	onHasSelectedMembersChange?: (hasSelectedMembers: boolean) => void;
 	pageSize?: number;
 }
@@ -32,6 +33,7 @@ const DEFAULT_PAGE_SIZE = 20;
 export function SpaceMembersWithList({
 	assetLibraryCreatorUserId,
 	assetLibraryId,
+	hasAssignMembersPermission,
 	className,
 	onHasSelectedMembersChange,
 	pageSize = DEFAULT_PAGE_SIZE,
@@ -325,6 +327,7 @@ export function SpaceMembersWithList({
 	return (
 		<div className={classNames('space-members-with-list', className)}>
 			<SpaceMembersInputWithSelect
+				disabled={!hasAssignMembersPermission}
 				onAutocompleteItemSelected={onAutocompleteItemSelected}
 				onSelectChange={(value) => {
 					setSelectedOption(value);
@@ -347,6 +350,7 @@ export function SpaceMembersWithList({
 						emptyMessage={Liferay.Language.get(
 							'this-space-has-no-user-yet'
 						)}
+						hasAssignMembersPermission={hasAssignMembersPermission}
 						itemType="user"
 						items={selectedUsers}
 						onRemoveItem={onRemoveItem}
@@ -356,6 +360,7 @@ export function SpaceMembersWithList({
 						emptyMessage={Liferay.Language.get(
 							'this-space-has-no-group-yet'
 						)}
+						hasAssignMembersPermission={hasAssignMembersPermission}
 						itemType="group"
 						items={selectedUserGroups}
 						onRemoveItem={onRemoveItem}

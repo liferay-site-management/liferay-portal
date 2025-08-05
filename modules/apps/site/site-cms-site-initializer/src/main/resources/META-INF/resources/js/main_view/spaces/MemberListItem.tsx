@@ -12,9 +12,10 @@ import React from 'react';
 import {UserAccount, UserGroup} from '../../common/types/UserAccount';
 
 interface MembersListItemProps {
-	assetLibraryCreatorUserId?: string;
+	assetLibraryCreatorUserId?: string | number;
 	currentUserId?: string;
 	emptyMessage: string;
+	hasAssignMembersPermission: boolean;
 	itemType: 'user' | 'group';
 	items: (UserAccount | UserGroup)[];
 	onRemoveItem: (item: UserAccount | UserGroup) => Promise<void>;
@@ -24,6 +25,7 @@ export function MembersListItem({
 	assetLibraryCreatorUserId,
 	currentUserId,
 	emptyMessage,
+	hasAssignMembersPermission,
 	itemType,
 	items,
 	onRemoveItem,
@@ -39,7 +41,8 @@ export function MembersListItem({
 			{items.map((item) => {
 				const isUser = itemType === 'user';
 				const isOwner =
-					isUser && assetLibraryCreatorUserId === String(item.id);
+					isUser &&
+					String(assetLibraryCreatorUserId) === String(item.id);
 
 				const renderGroupCount = () => {
 					if (!isUser) {
@@ -101,7 +104,7 @@ export function MembersListItem({
 							<span className="text-3 text-capitalize text-secondary">
 								({Liferay.Language.get('owner')})
 							</span>
-						) : (
+						) : hasAssignMembersPermission ? (
 							<ClayButtonWithIcon
 								aria-label={sub(
 									Liferay.Language.get('remove-x'),
@@ -117,7 +120,7 @@ export function MembersListItem({
 								symbol="times-circle"
 								translucent
 							/>
-						)}
+						) : null}
 					</li>
 				);
 			})}

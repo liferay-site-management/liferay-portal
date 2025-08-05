@@ -13,19 +13,37 @@ import i18n from '~/utils/I18n';
 import './AttachmentUploader.css';
 
 import {useParams} from 'react-router-dom';
+import {IUpload} from '~/utils/types';
 
 import DropzoneUpload from '../../components/DropzoneUpload';
 import FileList from '../../components/FileList';
+import useCheckUploadAccess from '../../hooks/useCheckUploadAccess';
 import useGCSUploadFile from '../../hooks/useGCSUploadFile';
 import useGenerateFileMd5 from '../../hooks/useGenerateFileMd5';
 import useTicketAttachmentsDelete from '../../hooks/useTicketAttachmentsDelete';
 import useTicketAttachmentsInitiateUpload from '../../hooks/useTicketAttachmentsInitiateUpload';
+import {
+	CommentPostFailed,
+	ServerUnavailable,
+	UploadConfirmation,
+} from '../AttachmentUploaderMessages';
 
-const AttachmentUploader = () => {
+interface IProps {
+	setUploadStateData: React.Dispatch<React.SetStateAction<IUpload | null>>;
+	uploadStateData: IUpload | null;
+}
+
+const AttachmentUploader = ({setUploadStateData, uploadStateData}: IProps) => {
+	const {loading: accessCheckLoading} = useCheckUploadAccess();
+
 	const [comment, setComment] = useState<string>('');
 	const [file, setFile] = useState<File>();
 	const [hasPersonalData, setHasPersonalData] = useState<boolean>(false);
 	const {helpCenterURL} = useAppPropertiesContext();
+
+	const [uploadResult, setUploadResult] = useState<
+		'IDLE' | 'SUCCESS' | 'COMMENT_ERROR' | 'SERVER_ERROR'
+	>('IDLE');
 
 	const {ticketId} = useParams();
 
@@ -79,33 +97,58 @@ const AttachmentUploader = () => {
 
 		const calculatedMd5 = await generateMd5({file, ticketId});
 
-		if (!calculatedMd5) {
+		if (!calculatedMd5.success || !calculatedMd5.hash) {
+			setUploadStateData(calculatedMd5.uploadProperties ?? null);
+			setUploadResult('SERVER_ERROR');
+
 			return;
 		}
 
 		const initiationResult = await initiateUpload({
-			fileMd5: calculatedMd5,
+			fileMd5: calculatedMd5.hash,
 			fileName: file.name,
 			fileSize: file.size.toString(),
 			ticketId: ticketId as string,
 		});
 
-		if (!initiationResult) {
+		if (!initiationResult?.success) {
+			setUploadStateData(initiationResult?.uploadProperties ?? null);
+
+			if (
+				initiationResult?.uploadProperties?.errorCode ===
+				'ATTACHMENT_ALREADY_EXISTS'
+			) {
+				return;
+			}
+
+			setUploadResult('SERVER_ERROR');
+
 			return;
 		}
 
-		await uploadFile({
-			accountKey: initiationResult.accountKey,
+		const uploadResponse = await uploadFile({
+			accountKey: initiationResult.uploadProperties?.accountKey ?? '',
 			comment,
 			file,
-			gcsSessionURL: initiationResult.gcsSessionURL,
-			ticketAttachmentId: initiationResult.ticketAttachmentId,
-			ticketId: ticketId as string,
+			gcsSessionURL:
+				initiationResult.uploadProperties?.gcsSessionURL ?? '',
+			ticketAttachmentId:
+				initiationResult.uploadProperties?.ticketAttachmentId ?? '',
+			ticketId,
 		});
 
-		setFile(undefined);
-		setComment('');
-		setHasPersonalData(false);
+		if (uploadResponse.success) {
+			setFile(undefined);
+			setComment('');
+			setHasPersonalData(false);
+
+			setUploadStateData(uploadResponse.uploadProperties ?? null);
+			setUploadResult('SUCCESS');
+		}
+		else {
+			setUploadResult('SERVER_ERROR');
+			setUploadStateData(uploadResponse.uploadProperties ?? null);
+		}
 	}, [
 		comment,
 		file,
@@ -116,6 +159,7 @@ const AttachmentUploader = () => {
 		setHasPersonalData,
 		ticketId,
 		uploadFile,
+		setUploadStateData,
 	]);
 
 	const _handleCancelUpload = useCallback(async () => {
@@ -146,6 +190,38 @@ const AttachmentUploader = () => {
 	const _handleRemoveFileFromList = () => {
 		setFile(undefined);
 	};
+
+	if (accessCheckLoading) {
+		return null;
+	}
+
+	if (uploadResult === 'SUCCESS' && uploadStateData) {
+		return (
+			<UploadConfirmation
+				attachmentName={uploadStateData.attachmentName ?? ''}
+				ticketId={uploadStateData.ticketId ?? ''}
+				uploadAccountKey={uploadStateData.uploadAccountKey ?? ''}
+			/>
+		);
+	}
+
+	if (uploadResult === 'COMMENT_ERROR' && uploadStateData) {
+		return (
+			<CommentPostFailed
+				ticketId={uploadStateData.ticketId ?? ''}
+				uploadAccountKey={uploadStateData.uploadAccountKey ?? ''}
+			/>
+		);
+	}
+
+	if (uploadResult === 'SERVER_ERROR' && uploadStateData) {
+		return (
+			<ServerUnavailable
+				ticketId={uploadStateData.ticketId ?? ''}
+				uploadAccountKey={uploadStateData.uploadAccountKey ?? ''}
+			/>
+		);
+	}
 
 	return (
 		<div className="attachment-uploader mt-4">

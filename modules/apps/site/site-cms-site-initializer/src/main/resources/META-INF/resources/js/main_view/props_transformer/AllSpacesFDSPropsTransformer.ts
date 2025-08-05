@@ -71,6 +71,7 @@ export default function AllSpacesFDSPropsTransformer({
 			action: {
 				data: {
 					id: string;
+					permissionKey: string | null;
 				};
 			};
 			itemData: {
@@ -84,12 +85,15 @@ export default function AllSpacesFDSPropsTransformer({
 			}
 
 			if (action.data.id === 'view-members') {
+				const hasAssignMembersPermission =
+					action.data.permissionKey === 'assign-members';
 				const assetLibraryCreatorUserId = itemData.creatorUserId;
 				const assetLibraryId = itemData.id;
 
 				const data: ManageMembersData = {
 					assetLibraryCreatorUserId,
 					assetLibraryId,
+					hasAssignMembersPermission,
 					title: Liferay.Language.get('all-members'),
 				};
 

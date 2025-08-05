@@ -4,8 +4,8 @@
  */
 
 import {useCallback, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
 import {Liferay} from '~/services/liferay';
+import {IUpload} from '~/utils/types';
 
 interface IParams {
 	fileMd5: string;
@@ -15,9 +15,8 @@ interface IParams {
 }
 
 interface IResponse {
-	accountKey: string;
-	gcsSessionURL: string;
-	ticketAttachmentId: string;
+	success: boolean;
+	uploadProperties?: IUpload;
 }
 
 interface IProps {
@@ -29,7 +28,6 @@ interface IProps {
 
 const useTicketAttachmentsInitiateUpload = (): IProps => {
 	const [loading, setLoading] = useState(false);
-	const navigate = useNavigate();
 	const [gcsSessionURL, setGCSSessionURL] = useState('');
 	const [ticketAttachmentId, setTicketAttachmentId] = useState('');
 
@@ -66,36 +64,39 @@ const useTicketAttachmentsInitiateUpload = (): IProps => {
 				setTicketAttachmentId(responseJSON.ticketAttachmentId);
 
 				return {
-					accountKey: responseJSON.accountKey,
-					gcsSessionURL: responseJSON.gcsSessionURL,
-					ticketAttachmentId: responseJSON.ticketAttachmentId,
+					success: true,
+					uploadProperties: {
+						accountKey: responseJSON.accountKey,
+						gcsSessionURL: responseJSON.gcsSessionURL,
+						ticketAttachmentId: responseJSON.ticketAttachmentId,
+					},
 				};
 			}
 			catch (uploadError) {
 				if ((uploadError as any).status === 409) {
-					navigate(`/${ticketId}/attachment-already-exists`, {
-						state: {
+					return {
+						success: false,
+						uploadProperties: {
 							attachmentName: fileName,
+							errorCode: 'ATTACHMENT_ALREADY_EXISTS',
 							ticketId,
 						},
-					});
-
-					return null;
+					};
 				}
 
-				navigate(`/${ticketId}/unexpected-error`, {
-					state: {
-						message: String(uploadError),
+				return {
+					success: false,
+					uploadProperties: {
+						errorCode: 'UNEXPECTED_ERROR',
+						errorMessage: String(uploadError),
 					},
-				});
-
-				return null;
+				};
 			}
 			finally {
 				setLoading(false);
 			}
 		},
-		[navigate]
+		[]
 	);
 
 	return {
