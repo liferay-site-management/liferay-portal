@@ -319,6 +319,15 @@ public class SiteNavigationMenuItemPersistenceTest {
 	}
 
 	@Test
+	public void testCountByType() throws Exception {
+		_persistence.countByType("");
+
+		_persistence.countByType("null");
+
+		_persistence.countByType((String)null);
+	}
+
+	@Test
 	public void testCountByERC_G() throws Exception {
 		_persistence.countByERC_G("", RandomTestUtil.nextLong());
 
