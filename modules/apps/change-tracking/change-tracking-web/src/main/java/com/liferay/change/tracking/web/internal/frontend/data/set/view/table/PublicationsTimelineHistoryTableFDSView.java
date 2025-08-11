@@ -7,6 +7,7 @@
 package com.liferay.change.tracking.web.internal.frontend.data.set.view.table;
 
 import com.liferay.change.tracking.web.internal.constants.PublicationsFDSNames;
+import com.liferay.change.tracking.web.internal.frontend.data.set.view.table.util.PublicationsDateTimeFDSTableUtil;
 import com.liferay.frontend.data.set.view.FDSView;
 import com.liferay.frontend.data.set.view.table.BaseTableFDSView;
 import com.liferay.frontend.data.set.view.table.FDSTableSchema;
@@ -66,14 +67,8 @@ public class PublicationsTimelineHistoryTableFDSView extends BaseTableFDSView {
 			"ctCollectionStatusUserName", "published-by",
 			fdsTableSchemaField -> fdsTableSchemaField.setSortable(true)
 		).add(
-			"ctCollectionStatusDate", "published-date",
-			fdsTableSchemaField -> fdsTableSchemaField.setContentRenderer(
-				"dateTime"
-			).setLocalizeLabel(
-				true
-			).setSortable(
-				true
-			)
+			PublicationsDateTimeFDSTableUtil.addDateFDSTableSchemaField(
+				"ctCollectionStatusDate", "published-date")
 		).build();
 	}
 

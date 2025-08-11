@@ -6,10 +6,9 @@
 package com.liferay.change.tracking.web.internal.frontend.data.set.view.table;
 
 import com.liferay.change.tracking.web.internal.constants.PublicationsFDSNames;
-import com.liferay.frontend.data.set.constants.FDSTimeZoneBehaviorConstants;
+import com.liferay.change.tracking.web.internal.frontend.data.set.view.table.util.PublicationsDateTimeFDSTableUtil;
 import com.liferay.frontend.data.set.view.FDSView;
 import com.liferay.frontend.data.set.view.table.BaseTableFDSView;
-import com.liferay.frontend.data.set.view.table.DateTimeFDSTableSchemaField;
 import com.liferay.frontend.data.set.view.table.FDSTableSchema;
 import com.liferay.frontend.data.set.view.table.FDSTableSchemaBuilder;
 import com.liferay.frontend.data.set.view.table.FDSTableSchemaBuilderFactory;
@@ -42,35 +41,15 @@ public class CTRemotesFDSTableView extends BaseTableFDSView {
 			"url", "url",
 			fdsTableSchemaField -> fdsTableSchemaField.setSortable(true)
 		).add(
-			_addDateFDSTableSchemaField("dateModified", "last-modified")
+			PublicationsDateTimeFDSTableUtil.addDateFDSTableSchemaField(
+				"dateModified", "last-modified")
 		).add(
-			_addDateFDSTableSchemaField("dateCreated", "create-date")
+			PublicationsDateTimeFDSTableUtil.addDateFDSTableSchemaField(
+				"dateCreated", "create-date")
 		).add(
 			"ownerName", "owner",
 			fdsTableSchemaField -> fdsTableSchemaField.setSortable(true)
 		).build();
-	}
-
-	private DateTimeFDSTableSchemaField _addDateFDSTableSchemaField(
-		String fieldName, String label) {
-
-		DateTimeFDSTableSchemaField dateFDSTableSchemaField =
-			new DateTimeFDSTableSchemaField();
-
-		dateFDSTableSchemaField.setContentRenderer(
-			"dateTime"
-		).setFieldName(
-			fieldName
-		).setLabel(
-			label
-		).setSortable(
-			true
-		);
-
-		dateFDSTableSchemaField.setTimeZoneBehavior(
-			FDSTimeZoneBehaviorConstants.APPLY_THEME_DISPLAY_TIME_ZONE);
-
-		return dateFDSTableSchemaField;
 	}
 
 	@Reference
