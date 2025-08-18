@@ -365,6 +365,27 @@ public class LayoutsAdminDisplayContext {
 		).buildString();
 	}
 
+	public String getConvertEmptyLayoutURL(long sourcePlid) {
+		return PortletURLBuilder.createActionURL(
+			_liferayPortletResponse
+		).setActionName(
+			"/layout_admin/convert_empty_layout"
+		).setParameter(
+			"sourcePlid", sourcePlid
+		).setParameter(
+			"type",
+			() -> {
+				String type = ParamUtil.getString(httpServletRequest, "type");
+
+				if (Validator.isNotNull(type)) {
+					return type;
+				}
+
+				return null;
+			}
+		).buildString();
+	}
+
 	public String getCopyLayoutActionURL(
 		boolean copyPermissions, long sourcePlid) {
 
@@ -1152,6 +1173,17 @@ public class LayoutsAdminDisplayContext {
 			).setParameter(
 				"selPlid", selPlid
 			).buildPortletURL();
+
+		if (selPlid != LayoutConstants.DEFAULT_PLID) {
+			Layout layout = LayoutLocalServiceUtil.fetchLayout(selPlid);
+
+			if (layout.isTypeEmpty()) {
+				selectLayoutPageTemplateEntryURL.setParameter(
+					"initialType", LayoutConstants.TYPE_EMPTY);
+				selectLayoutPageTemplateEntryURL.setParameter(
+					"externalReferenceCode", layout.getExternalReferenceCode());
+			}
+		}
 
 		if (layoutPageTemplateCollectionId > 0) {
 			selectLayoutPageTemplateEntryURL.setParameter(
@@ -1948,6 +1980,10 @@ public class LayoutsAdminDisplayContext {
 		}
 
 		return true;
+	}
+
+	public boolean isTypeEmpty(String type) {
+		return Objects.equals(LayoutConstants.TYPE_EMPTY, type);
 	}
 
 	public boolean isURLAdvancedSettingsVisible() {

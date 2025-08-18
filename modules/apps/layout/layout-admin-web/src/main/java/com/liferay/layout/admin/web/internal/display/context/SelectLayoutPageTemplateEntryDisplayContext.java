@@ -13,6 +13,7 @@ import com.liferay.layout.page.template.service.LayoutPageTemplateEntryServiceUt
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.LayoutTypeController;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
@@ -264,6 +265,23 @@ public class SelectLayoutPageTemplateEntryDisplayContext {
 			return _types;
 		}
 
+		if (isEmptyPage()) {
+			_types = ListUtil.filter(
+				ListUtil.fromArray(LayoutTypeControllerTracker.getTypes()),
+				type -> {
+					LayoutTypeController layoutTypeController =
+						LayoutTypeControllerTracker.getLayoutTypeController(
+							type);
+
+					return layoutTypeController.isInstanceable() &&
+						   !layoutTypeController.isPrimaryType() &&
+						   !type.equals(LayoutConstants.TYPE_URL) &&
+						   !type.equals(LayoutConstants.TYPE_EMBEDDED);
+				});
+
+			return _types;
+		}
+
 		_types = ListUtil.filter(
 			ListUtil.fromArray(LayoutTypeControllerTracker.getTypes()),
 			type -> {
@@ -299,6 +317,13 @@ public class SelectLayoutPageTemplateEntryDisplayContext {
 		}
 
 		return false;
+	}
+
+	public boolean isEmptyPage() {
+		String initialType = ParamUtil.getString(
+			_httpServletRequest, "initialType");
+
+		return Objects.equals(initialType, LayoutConstants.TYPE_EMPTY);
 	}
 
 	public boolean isGlobalTemplates() {
