@@ -7,6 +7,7 @@ package com.liferay.change.tracking.internal.search.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.change.tracking.constants.CTConstants;
+import com.liferay.change.tracking.constants.CTDestinationNames;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
@@ -23,6 +24,9 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
+import com.liferay.portal.kernel.messaging.Destination;
+import com.liferay.portal.kernel.messaging.DestinationStatistics;
+import com.liferay.portal.kernel.messaging.MessageBusUtil;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
@@ -79,6 +83,8 @@ public class CTEntrySearcherTest {
 		_ctCollection = _ctCollectionLocalService.addCTCollection(
 			null, TestPropsValues.getCompanyId(), TestPropsValues.getUserId(),
 			0, RandomTestUtil.randomString(), RandomTestUtil.randomString());
+		_destination = MessageBusUtil.getDestination(
+			CTDestinationNames.CT_ENTRY_INDEXER);
 		_group = GroupTestUtil.addGroup();
 		_journalFolderClassNameId = _classNameLocalService.getClassNameId(
 			JournalFolder.class);
@@ -493,6 +499,21 @@ public class CTEntrySearcherTest {
 			Consumer<SearchRequestBuilder>... consumers)
 		throws Exception {
 
+		DestinationStatistics destinationStatistics =
+			_destination.getDestinationStatistics();
+
+		int i = 0;
+
+		while (destinationStatistics.getPendingMessageCount() > 0) {
+			if (i++ > 10) {
+				break;
+			}
+
+			Thread.sleep(500);
+
+			destinationStatistics = _destination.getDestinationStatistics();
+		}
+
 		SearchRequestBuilder searchRequestBuilder =
 			_searchRequestBuilderFactory.builder(
 			).companyId(
@@ -573,6 +594,7 @@ public class CTEntrySearcherTest {
 	@Inject
 	private CTEntryLocalService _ctEntryLocalService;
 
+	private Destination _destination;
 	private Group _group;
 	private long _journalFolderClassNameId;
 	private JournalFolderFixture _journalFolderFixture;
