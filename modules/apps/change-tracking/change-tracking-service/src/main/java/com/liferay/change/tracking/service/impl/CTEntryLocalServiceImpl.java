@@ -53,7 +53,6 @@ import org.osgi.service.component.annotations.Reference;
 @CTAware
 public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 
-	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public CTEntry addCTEntry(
 			String externalReferenceCode, long ctCollectionId,
@@ -85,13 +84,11 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		return ctEntryPersistence.update(ctEntry);
 	}
 
-	@Indexable(type = IndexableType.DELETE)
 	@Override
 	public CTEntry deleteCTEntry(CTEntry ctEntry) throws PortalException {
 		return deleteCTEntry(ctEntry, false);
 	}
 
-	@Indexable(type = IndexableType.DELETE)
 	@Override
 	public CTEntry deleteCTEntry(CTEntry ctEntry, boolean force)
 		throws PortalException {
