@@ -6,8 +6,8 @@
 package com.liferay.change.tracking.service.impl;
 
 import com.liferay.change.tracking.constants.PublicationRoleConstants;
-import com.liferay.change.tracking.internal.CTServiceRegistry;
 import com.liferay.change.tracking.internal.helper.CTUserNotificationHelper;
+import com.liferay.change.tracking.internal.score.CTScoreHelper;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.model.CTScore;
@@ -15,18 +15,8 @@ import com.liferay.change.tracking.model.impl.CTScoreImpl;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.service.base.CTScoreLocalServiceBaseImpl;
 import com.liferay.change.tracking.service.persistence.CTCollectionPersistence;
-import com.liferay.change.tracking.store.model.CTSContent;
-import com.liferay.journal.model.JournalArticle;
-import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.aop.AopService;
-import com.liferay.portal.kernel.cache.MultiVMPool;
-import com.liferay.portal.kernel.cache.PortalCache;
 import com.liferay.portal.kernel.change.tracking.CTAware;
-import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
-import com.liferay.portal.kernel.dao.db.DB;
-import com.liferay.portal.kernel.dao.db.DBManagerUtil;
-import com.liferay.portal.kernel.dao.db.DBType;
-import com.liferay.portal.kernel.dao.jdbc.CurrentConnection;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.LockMode;
 import com.liferay.portal.kernel.dao.orm.Session;
@@ -37,31 +27,17 @@ import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.notifications.UserNotificationDefinition;
-import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.SQLStateAcceptor;
-import com.liferay.portal.kernel.service.change.tracking.CTService;
 import com.liferay.portal.kernel.spring.aop.Property;
 import com.liferay.portal.kernel.spring.aop.Retry;
-import com.liferay.portal.kernel.transaction.Propagation;
-import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -71,7 +47,7 @@ import org.osgi.service.component.annotations.Reference;
 	property = "model.class.name=com.liferay.change.tracking.model.CTScore",
 	service = AopService.class
 )
-@CTAware
+@CTAware(onProduction = true)
 public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 
 	@Override
@@ -89,7 +65,7 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 		int score = 0;
 
 		for (CTEntry ctEntry : ctEntries) {
-			score += _calculate(ctEntry.getModelClassNameId());
+			score += _ctScoreHelper.calculate(ctEntry.getModelClassNameId());
 		}
 
 		long ctScoreId = counterLocalService.increment(CTScore.class.getName());
@@ -114,9 +90,8 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 			)
 		}
 	)
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public CTScore decrementScore(long ctCollectionId, long modelClassNameId) {
-		return _updateScore(ctCollectionId, modelClassNameId, false);
+	public CTScore decrementScore(long ctCollectionId, int score) {
+		return _updateScore(ctCollectionId, -1 * score);
 	}
 
 	@Override
@@ -135,116 +110,8 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 			)
 		}
 	)
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public CTScore incrementScore(long ctCollectionId, long modelClassNameId) {
-		return _updateScore(ctCollectionId, modelClassNameId, true);
-	}
-
-	@Activate
-	protected void activate(
-		BundleContext bundleContext, Map<String, Object> properties) {
-
-		_portalCache = (PortalCache<Long, Integer>)_multiVMPool.getPortalCache(
-			CTScoreLocalServiceImpl.class.getName());
-	}
-
-	@Deactivate
-	@Override
-	protected void deactivate() {
-		super.deactivate();
-
-		_portalCache.removeAll();
-	}
-
-	private int _calculate(long modelClassNameId) {
-		Integer score = _portalCache.get(modelClassNameId);
-
-		if (score != null) {
-			return score;
-		}
-
-		score = 4;
-
-		if (modelClassNameId == _classNameLocalService.getClassNameId(
-				CTSContent.class)) {
-
-			score += 20;
-		}
-		else if (modelClassNameId == _classNameLocalService.getClassNameId(
-					JournalArticle.class)) {
-
-			score++;
-		}
-
-		int countMultiplier = _countTable(modelClassNameId) / _COUNT_DIVISOR;
-
-		if (countMultiplier == 0) {
-			countMultiplier = 1;
-		}
-
-		score *= countMultiplier;
-
-		DB db = DBManagerUtil.getDB();
-
-		DBType dbType = db.getDBType();
-
-		if (dbType.equals(DBType.ORACLE) || dbType.equals(DBType.SQLSERVER)) {
-			score *= 2;
-		}
-
-		_portalCache.put(modelClassNameId, score);
-
-		return score;
-	}
-
-	private int _countTable(long modelClassNameId) {
-		CTService<?> ctService = _ctServiceRegistry.getCTService(
-			modelClassNameId);
-
-		if (ctService == null) {
-			return 0;
-		}
-
-		return ctService.updateWithUnsafeFunction(
-			ctPersistence -> {
-				Set<String> primaryKeyNames = ctPersistence.getCTColumnNames(
-					CTColumnResolutionType.PK);
-
-				if (primaryKeyNames.size() != 1) {
-					throw new IllegalArgumentException(
-						StringBundler.concat(
-							"{primaryKeyNames=", primaryKeyNames,
-							", tableName=", ctPersistence.getTableName(), "}"));
-				}
-
-				Iterator<String> iterator = primaryKeyNames.iterator();
-
-				String primaryKeyName = iterator.next();
-
-				Connection connection = _currentConnection.getConnection(
-					ctPersistence.getDataSource());
-
-				try (PreparedStatement preparedStatement =
-						connection.prepareStatement(
-							StringBundler.concat(
-								"select count(", primaryKeyName, ") from ",
-								ctPersistence.getTableName()));
-					ResultSet resultSet = preparedStatement.executeQuery()) {
-
-					if (resultSet.next()) {
-						return resultSet.getInt(1);
-					}
-
-					return 0;
-				}
-				catch (SQLException sqlException) {
-					if (_log.isWarnEnabled()) {
-						_log.warn(sqlException);
-					}
-				}
-
-				return 0;
-			});
+	public CTScore incrementScore(long ctCollectionId, int score) {
+		return _updateScore(ctCollectionId, score);
 	}
 
 	private void _sendUserNotificationEvents(
@@ -289,9 +156,7 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 		}
 	}
 
-	private CTScore _updateScore(
-		long ctCollectionId, long modelClassNameId, boolean increment) {
-
+	private CTScore _updateScore(long ctCollectionId, int score) {
 		CTCollection ctCollection = _ctCollectionPersistence.fetchByPrimaryKey(
 			ctCollectionId);
 
@@ -308,12 +173,6 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 
 		if (originalCTScore == null) {
 			return addCTScore(ctCollectionId);
-		}
-
-		int score = _calculate(modelClassNameId);
-
-		if (!increment) {
-			score *= -1;
 		}
 
 		Session session = ctScorePersistence.openSession();
@@ -352,13 +211,8 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 		return ctScore;
 	}
 
-	private static final int _COUNT_DIVISOR = 50000000;
-
 	private static final Log _log = LogFactoryUtil.getLog(
 		CTScoreLocalServiceImpl.class);
-
-	@Reference
-	private ClassNameLocalService _classNameLocalService;
 
 	@Reference
 	private CTCollectionPersistence _ctCollectionPersistence;
@@ -367,20 +221,12 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 	private CTEntryLocalService _ctEntryLocalService;
 
 	@Reference
-	private CTServiceRegistry _ctServiceRegistry;
+	private CTScoreHelper _ctScoreHelper;
 
 	@Reference
 	private CTUserNotificationHelper _ctUserNotificationHelper;
 
 	@Reference
-	private CurrentConnection _currentConnection;
-
-	@Reference
 	private EntityCache _entityCache;
-
-	@Reference
-	private MultiVMPool _multiVMPool;
-
-	private PortalCache<Long, Integer> _portalCache;
 
 }
