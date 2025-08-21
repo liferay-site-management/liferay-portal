@@ -16,6 +16,8 @@ if (Validator.isNull(backURL)) {
 	backURL = portletURL.toString();
 }
 
+String addModalTitle = layoutsAdminDisplayContext.getAddModalTitle();
+
 SelectLayoutPageTemplateEntryDisplayContext selectLayoutPageTemplateEntryDisplayContext = (SelectLayoutPageTemplateEntryDisplayContext)request.getAttribute(SelectLayoutPageTemplateEntryDisplayContext.class.getName());
 
 portletDisplay.setShowBackIcon(true);
@@ -136,7 +138,7 @@ renderResponse.setTitle(LanguageUtil.get(request, "select-template"));
 				height: '60vh',
 				id: 'addLayoutDialog',
 				size: 'md',
-				title: '<liferay-ui:message key="add-page" />',
+				title: '<liferay-ui:message key="<%= addModalTitle %>" />',
 				url: event.delegateTarget.dataset.addLayoutUrl,
 			});
 		}
