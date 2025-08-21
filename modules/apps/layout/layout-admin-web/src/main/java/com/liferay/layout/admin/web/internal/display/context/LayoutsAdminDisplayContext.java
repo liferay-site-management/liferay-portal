@@ -2030,7 +2030,8 @@ public class LayoutsAdminDisplayContext {
 
 		if (LayoutPermissionUtil.contains(
 				themeDisplay.getPermissionChecker(), layout,
-				ActionKeys.PERMISSIONS)) {
+				ActionKeys.PERMISSIONS) &&
+			!layout.isTypeEmpty()) {
 
 			availableActions.add("changePermissions");
 		}
