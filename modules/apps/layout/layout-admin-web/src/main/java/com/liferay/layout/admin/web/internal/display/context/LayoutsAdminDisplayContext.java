@@ -1174,17 +1174,6 @@ public class LayoutsAdminDisplayContext {
 				"selPlid", selPlid
 			).buildPortletURL();
 
-		if (selPlid != LayoutConstants.DEFAULT_PLID) {
-			Layout layout = LayoutLocalServiceUtil.fetchLayout(selPlid);
-
-			if (layout.isTypeEmpty()) {
-				selectLayoutPageTemplateEntryURL.setParameter(
-					"initialType", LayoutConstants.TYPE_EMPTY);
-				selectLayoutPageTemplateEntryURL.setParameter(
-					"externalReferenceCode", layout.getExternalReferenceCode());
-			}
-		}
-
 		if (layoutPageTemplateCollectionId > 0) {
 			selectLayoutPageTemplateEntryURL.setParameter(
 				"layoutPageTemplateCollectionId",
@@ -1753,6 +1742,14 @@ public class LayoutsAdminDisplayContext {
 		return false;
 	}
 
+	public boolean isConvertEmptyPage(String type, boolean editAction) {
+		if (!editAction) {
+			return false;
+		}
+
+		return Objects.equals(type, LayoutConstants.TYPE_EMPTY);
+	}
+
 	public boolean isDraft() {
 		Layout layout = getSelLayout();
 
@@ -1980,10 +1977,6 @@ public class LayoutsAdminDisplayContext {
 		}
 
 		return true;
-	}
-
-	public boolean isTypeEmpty(String type) {
-		return Objects.equals(LayoutConstants.TYPE_EMPTY, type);
 	}
 
 	public boolean isURLAdvancedSettingsVisible() {

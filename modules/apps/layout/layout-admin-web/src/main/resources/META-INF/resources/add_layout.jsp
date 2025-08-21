@@ -10,6 +10,7 @@
 <%
 boolean copyPermissions = ParamUtil.getBoolean(request, "copyPermissions");
 long sourcePlid = ParamUtil.getLong(request, "sourcePlid");
+boolean editAction = ParamUtil.getBoolean(request, "editAction");
 String initialType = ParamUtil.getString(request, "initialType");
 String externalReferenceCode = ParamUtil.getString(request, "externalReferenceCode");
 
@@ -17,7 +18,7 @@ List<SiteNavigationMenu> autoSiteNavigationMenus = layoutsAdminDisplayContext.ge
 
 String actionURL;
 
-if (layoutsAdminDisplayContext.isTypeEmpty(initialType)) {
+if (layoutsAdminDisplayContext.isConvertEmptyPage(initialType, editAction)) {
 	actionURL = layoutsAdminDisplayContext.getConvertEmptyLayoutURL(sourcePlid);
 }
 else {
@@ -36,7 +37,7 @@ else {
 	>
 		<liferay-frontend:edit-form-body>
 			<c:choose>
-				<c:when test="<%= layoutsAdminDisplayContext.isTypeEmpty(initialType) %>">
+				<c:when test="<%= layoutsAdminDisplayContext.isConvertEmptyPage(initialType, editAction) %>">
 					<aui:input data-qa-id="addPageNameInput" label="name" name="name" required="<%= true %>" value="<%= externalReferenceCode %>" />
 				</c:when>
 				<c:otherwise>
