@@ -99,9 +99,9 @@ public class ConvertEmptyLayoutMVCActionCommand
 					layout.getGroupId(), layout.isPrivateLayout(),
 					layout.getLayoutId(), layout.getParentLayoutId(), nameMap,
 					layout.getTitleMap(), layout.getDescriptionMap(),
-					layout.getKeywordsMap(), layout.getRobotsMap(), type,
-					layout.isHidden(), layout.getFriendlyURLMap(),
-					layout.isIconImage(), null, layout.getStyleBookEntryId(),
+					layout.getKeywordsMap(), layout.getRobotsMap(), type, false,
+					layout.getFriendlyURLMap(), layout.isIconImage(), null,
+					layout.getStyleBookEntryId(),
 					layout.getFaviconFileEntryId(),
 					layout.getMasterLayoutPlid(), serviceContext);
 			}
@@ -140,9 +140,9 @@ public class ConvertEmptyLayoutMVCActionCommand
 					layout.getGroupId(), layout.isPrivateLayout(),
 					layout.getLayoutId(), layout.getParentLayoutId(), nameMap,
 					layout.getTitleMap(), layout.getDescriptionMap(),
-					layout.getKeywordsMap(), layout.getRobotsMap(), type,
-					layout.isHidden(), layout.getFriendlyURLMap(),
-					layout.isIconImage(), null, layout.getStyleBookEntryId(),
+					layout.getKeywordsMap(), layout.getRobotsMap(), type, false,
+					layout.getFriendlyURLMap(), layout.isIconImage(), null,
+					layout.getStyleBookEntryId(),
 					layout.getFaviconFileEntryId(),
 					layout.getMasterLayoutPlid(), serviceContext);
 
