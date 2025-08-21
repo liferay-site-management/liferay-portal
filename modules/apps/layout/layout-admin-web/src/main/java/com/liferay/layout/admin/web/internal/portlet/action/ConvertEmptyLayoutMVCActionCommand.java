@@ -7,6 +7,7 @@ package com.liferay.layout.admin.web.internal.portlet.action;
 
 import com.liferay.layout.admin.constants.LayoutAdminPortletKeys;
 import com.liferay.layout.admin.web.internal.handler.LayoutExceptionRequestHandlerUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
@@ -16,6 +17,7 @@ import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -53,8 +55,17 @@ public class ConvertEmptyLayoutMVCActionCommand
 		throws Exception {
 
 		try {
-			long selPlid = ParamUtil.getLong(actionRequest, "selPlid");
 			String type = ParamUtil.getString(actionRequest, "type");
+
+			if (type.equals(LayoutConstants.TYPE_EMBEDDED) ||
+				type.equals(LayoutConstants.TYPE_LINK_TO_LAYOUT)) {
+
+				SessionErrors.add(actionRequest, PortalException.class);
+
+				return;
+			}
+
+			long selPlid = ParamUtil.getLong(actionRequest, "selPlid");
 
 			Map<Locale, String> nameMap = HashMapBuilder.put(
 				LocaleUtil.getSiteDefault(),
