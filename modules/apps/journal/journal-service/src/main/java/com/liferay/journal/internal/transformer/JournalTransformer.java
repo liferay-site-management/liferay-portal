@@ -7,6 +7,8 @@ package com.liferay.journal.internal.transformer;
 
 import com.liferay.asset.display.page.util.AssetDisplayPageUtil;
 import com.liferay.asset.kernel.service.AssetTagLocalServiceUtil;
+import com.liferay.change.tracking.model.CTCollection;
+import com.liferay.change.tracking.service.CTCollectionLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.form.field.type.constants.DDMFormFieldTypeConstants;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
@@ -69,6 +71,7 @@ import com.liferay.portal.kernel.util.PropertiesUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.xml.Attribute;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.DocumentException;
@@ -91,6 +94,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Brian Wing Shun Chan
@@ -459,6 +464,10 @@ public class JournalTransformer {
 			data = dynamicContentElement.getText();
 		}
 
+		if (data.contains("previewCTCollectionId")) {
+			data = _replacePreviewCTCollectionId(data);
+		}
+
 		String type = dynamicElementElement.attributeValue(
 			"type", ddmFormField.getType());
 
@@ -788,6 +797,28 @@ public class JournalTransformer {
 			StringPool.SLASH, groupId, StringPool.SLASH, classNameId);
 	}
 
+	private String _replacePreviewCTCollectionId(String data) {
+		Matcher matcher = _previewCTCollectionIdPattern.matcher(data);
+
+		if (matcher.find()) {
+			String previewCTCollectionId = matcher.group(1);
+
+			CTCollection ctCollection =
+				CTCollectionLocalServiceUtil.fetchCTCollection(
+					Long.valueOf(previewCTCollectionId));
+
+			if ((ctCollection != null) &&
+				(ctCollection.getStatus() ==
+					WorkflowConstants.STATUS_APPROVED)) {
+
+				data = data.replaceAll(
+					"previewCTCollectionId=\\d+", StringPool.BLANK);
+			}
+		}
+
+		return data;
+	}
+
 	private String _transform(
 			JournalArticle article, DDMTemplate ddmTemplate,
 			JournalHelper journalHelper, String languageId,
@@ -1083,6 +1114,8 @@ public class JournalTransformer {
 		JournalTransformer.class.getName() + ".XmlAfterListener");
 	private static final Log _logXmlBeforeListener = LogFactoryUtil.getLog(
 		JournalTransformer.class.getName() + ".XmlBeforeListener");
+	private static final Pattern _previewCTCollectionIdPattern =
+		Pattern.compile("previewCTCollectionId=(\\d+)");
 	private static final ThreadLocal<Set<String>> _transformedArticleIds =
 		new CentralizedThreadLocal<>(
 			JournalTransformer.class.getName() + "._transformedArticleIds",
