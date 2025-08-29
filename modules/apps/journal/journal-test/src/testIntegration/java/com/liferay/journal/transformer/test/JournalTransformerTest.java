@@ -6,9 +6,15 @@
 package com.liferay.journal.transformer.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.change.tracking.model.CTCollection;
+import com.liferay.change.tracking.service.CTCollectionLocalService;
+import com.liferay.change.tracking.service.CTCollectionService;
 import com.liferay.data.engine.rest.dto.v2_0.DataDefinition;
 import com.liferay.data.engine.rest.resource.v2_0.DataDefinitionResource;
 import com.liferay.data.engine.rest.test.util.DataDefinitionTestUtil;
+import com.liferay.document.library.kernel.model.DLFolderConstants;
+import com.liferay.document.library.kernel.service.DLAppLocalService;
+import com.liferay.document.library.util.DLURLHelper;
 import com.liferay.dynamic.data.mapping.form.field.type.constants.DDMFormFieldTypeConstants;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
@@ -28,10 +34,12 @@ import com.liferay.layout.display.page.LayoutDisplayPageProviderRegistry;
 import com.liferay.layout.test.util.LayoutTestUtil;
 import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerList;
 import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerListFactory;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.test.util.ConfigurationTestUtil;
 import com.liferay.portal.kernel.cache.CacheRegistryUtil;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.Language;
@@ -41,6 +49,7 @@ import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.PortletRequestModel;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
@@ -60,10 +69,12 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
+import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
+import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 import com.liferay.portal.kernel.util.HtmlUtil;
@@ -84,6 +95,7 @@ import com.liferay.portal.test.log.LogEntry;
 import com.liferay.portal.test.log.LoggerTestUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 
 import java.lang.reflect.Method;
 
@@ -118,7 +130,9 @@ public class JournalTransformerTest {
 	@ClassRule
 	@Rule
 	public static final AggregateTestRule aggregateTestRule =
-		new LiferayIntegrationTestRule();
+		new AggregateTestRule(
+			new LiferayIntegrationTestRule(),
+			PermissionCheckerMethodTestRule.INSTANCE);
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -556,6 +570,73 @@ public class JournalTransformerTest {
 	}
 
 	@Test
+	public void testReplacePreviewCTCollectionIdAfterPublish()
+		throws Exception {
+
+		CTCollection ctCollection = _ctCollectionLocalService.addCTCollection(
+			null, TestPropsValues.getCompanyId(), TestPropsValues.getUserId(),
+			0, JournalTransformerTest.class.getName(), null);
+
+		TemplateNode templateNode = null;
+
+		try (SafeCloseable safeCloseable =
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					ctCollection.getCtCollectionId())) {
+
+			FileEntry fileEntry = _dlAppLocalService.addFileEntry(
+				null, TestPropsValues.getUserId(), _group.getGroupId(),
+				DLFolderConstants.DEFAULT_PARENT_FOLDER_ID,
+				RandomTestUtil.randomString(),
+				ContentTypes.APPLICATION_OCTET_STREAM,
+				RandomTestUtil.randomString(), RandomTestUtil.randomString(),
+				RandomTestUtil.randomString(), RandomTestUtil.randomString(),
+				(byte[])null, null, null, null,
+				ServiceContextTestUtil.getServiceContext(
+					_group.getGroupId(), TestPropsValues.getUserId()));
+
+			DDMFormField ddmFormField = new DDMFormField(
+				"name", DDMFormFieldTypeConstants.DOCUMENT_LIBRARY);
+
+			ddmFormField.setDataType("document_library");
+
+			Document document = SAXReaderUtil.createDocument();
+
+			Element rootElement = document.addElement("root");
+
+			Element dynamicContentElement = rootElement.addElement(
+				"dynamic-content");
+
+			dynamicContentElement.setText(
+				JSONUtil.put(
+					"previewURL",
+					_dlURLHelper.getPreviewURL(
+						fileEntry, fileEntry.getFileVersion(),
+						new ThemeDisplay(), StringPool.BLANK, true, false)
+				).toString());
+
+			templateNode = ReflectionTestUtil.invoke(
+				_journalTransformer, "_createTemplateNode",
+				new Class<?>[] {
+					DDMFormField.class, Element.class, Locale.class,
+					ThemeDisplay.class
+				},
+				ddmFormField, rootElement, LocaleUtil.getDefault(),
+				new ThemeDisplay());
+
+			String previewURL = templateNode.getAttribute("previewURL");
+
+			Assert.assertTrue(previewURL.contains("previewCTCollectionId"));
+		}
+
+		_ctCollectionService.publishCTCollection(
+			TestPropsValues.getUserId(), ctCollection.getCtCollectionId());
+
+		String previewURL = templateNode.getData();
+
+		Assert.assertFalse(previewURL.contains("previewCTCollectionId"));
+	}
+
+	@Test
 	public void testTokensTransformerListener() throws Exception {
 		Assert.assertEquals(
 			String.valueOf(TestPropsValues.getCompanyId()),
@@ -920,10 +1001,22 @@ public class JournalTransformerTest {
 	private CompanyLocalService _companyLocalService;
 
 	@Inject
+	private CTCollectionLocalService _ctCollectionLocalService;
+
+	@Inject
+	private CTCollectionService _ctCollectionService;
+
+	@Inject
 	private DataDefinitionResource.Factory _dataDefinitionResourceFactory;
 
 	@Inject
 	private DDMFormValuesToFieldsConverter _ddmFormValuesToFieldsConverter;
+
+	@Inject
+	private DLAppLocalService _dlAppLocalService;
+
+	@Inject
+	private DLURLHelper _dlURLHelper;
 
 	@DeleteAfterTestRun
 	private Group _group;
