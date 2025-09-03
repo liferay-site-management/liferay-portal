@@ -74,8 +74,8 @@ public class EmptyLayoutTypeControllerTest {
 			null, TestPropsValues.getUserId(), _group.getGroupId(), false,
 			LayoutConstants.DEFAULT_PARENT_LAYOUT_ID,
 			RandomTestUtil.randomString(), StringPool.BLANK, StringPool.BLANK,
-			LayoutConstants.TYPE_EMPTY, false, StringPool.BLANK,
-			_serviceContext);
+			LayoutConstants.TYPE_EMPTY, false,
+			StringPool.SLASH + RandomTestUtil.randomString(), _serviceContext);
 
 		_layoutTypeController =
 			LayoutTypeControllerTracker.getLayoutTypeController(
@@ -89,7 +89,8 @@ public class EmptyLayoutTypeControllerTest {
 
 		try {
 			_layoutTypeController.includeLayoutContent(
-				_getMockHttpServletRequest(TestPropsValues.getUser()),
+				_getMockHttpServletRequest(
+					TestPropsValues.getUser(), _layout.getFriendlyURL()),
 				new MockHttpServletResponse(), _layout);
 
 			Assert.fail();
@@ -103,18 +104,19 @@ public class EmptyLayoutTypeControllerTest {
 		Assert.assertEquals(
 			StringPool.BLANK,
 			_layoutTypeController.includeEditContent(
-				_getMockHttpServletRequest(TestPropsValues.getUser()),
+				_getMockHttpServletRequest(
+					TestPropsValues.getUser(), _layout.getFriendlyURL()),
 				new MockHttpServletResponse(), _layout));
 	}
 
-	private MockHttpServletRequest _getMockHttpServletRequest(User user)
+	private MockHttpServletRequest _getMockHttpServletRequest(
+			User user, String currentURL)
 		throws Exception {
 
 		MockHttpServletRequest mockHttpServletRequest =
 			new MockHttpServletRequest();
 
-		mockHttpServletRequest.setAttribute(
-			WebKeys.CURRENT_URL, "http://www.liferay.com");
+		mockHttpServletRequest.setAttribute(WebKeys.CURRENT_URL, currentURL);
 
 		UserTestUtil.setUser(user);
 
@@ -151,6 +153,8 @@ public class EmptyLayoutTypeControllerTest {
 		themeDisplay.setServerPort(8080);
 		themeDisplay.setSignedIn(true);
 		themeDisplay.setSiteGroupId(_group.getGroupId());
+		themeDisplay.setURLCurrent(
+			(String)mockHttpServletRequest.getAttribute(WebKeys.CURRENT_URL));
 		themeDisplay.setUser(user);
 
 		return themeDisplay;
