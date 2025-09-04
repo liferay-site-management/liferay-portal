@@ -14,11 +14,14 @@ import com.liferay.fragment.service.FragmentEntryLocalService;
 import com.liferay.friendly.url.service.FriendlyURLEntryLocalServiceUtil;
 import com.liferay.layout.test.util.ContentLayoutTestUtil;
 import com.liferay.layout.test.util.LayoutTestUtil;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.DuplicateLayoutExternalReferenceCodeException;
 import com.liferay.portal.kernel.exception.LayoutJavaScriptException;
+import com.liferay.portal.kernel.exception.LayoutTypeException;
 import com.liferay.portal.kernel.exception.MasterLayoutException;
+import com.liferay.portal.kernel.lazy.referencing.LazyReferencingThreadLocal;
 import com.liferay.portal.kernel.model.ColorScheme;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
@@ -708,6 +711,54 @@ public class LayoutLocalServiceTest {
 			UnicodePropertiesBuilder.put(
 				"javascript", "</script>"
 			).buildString());
+	}
+
+	@Test
+	public void testUpdateLayoutWithLazyReferencingEnabled() throws Exception {
+		try (SafeCloseable safeCloseable =
+				LazyReferencingThreadLocal.setEnabledWithSafeCloseable(true)) {
+
+			_serviceContext.setAttribute(
+				"layout.instanceable.allowed", Boolean.TRUE);
+
+			Layout layout = _layoutLocalService.getOrAddEmptyLayout(
+				RandomTestUtil.randomString(), TestPropsValues.getUserId(),
+				_group.getGroupId(), _serviceContext);
+
+			Assert.assertEquals(
+				WorkflowConstants.STATUS_EMPTY, layout.getStatus());
+
+			try {
+				layout = _layoutLocalService.updateLayout(
+					_group.getGroupId(), layout.isPrivateLayout(),
+					layout.getLayoutId(), layout.getParentLayoutId(),
+					layout.getNameMap(), layout.getTitleMap(),
+					layout.getDescriptionMap(), layout.getKeywordsMap(),
+					layout.getRobotsMap(), layout.getType(), false,
+					layout.getFriendlyURLMap(), layout.isIconImage(), null,
+					layout.getStyleBookEntryId(),
+					layout.getFaviconFileEntryId(),
+					layout.getMasterLayoutPlid(), _serviceContext);
+
+				Assert.fail();
+			}
+			catch (LayoutTypeException layoutTypeException) {
+				Assert.assertNotNull(layoutTypeException);
+			}
+
+			layout = _layoutLocalService.updateLayout(
+				_group.getGroupId(), layout.isPrivateLayout(),
+				layout.getLayoutId(), layout.getParentLayoutId(),
+				layout.getNameMap(), layout.getTitleMap(),
+				layout.getDescriptionMap(), layout.getKeywordsMap(),
+				layout.getRobotsMap(), LayoutConstants.TYPE_CONTENT, false,
+				layout.getFriendlyURLMap(), layout.isIconImage(), null,
+				layout.getStyleBookEntryId(), layout.getFaviconFileEntryId(),
+				layout.getMasterLayoutPlid(), _serviceContext);
+
+			Assert.assertEquals(
+				WorkflowConstants.STATUS_DRAFT, layout.getStatus());
+		}
 	}
 
 	@Test
