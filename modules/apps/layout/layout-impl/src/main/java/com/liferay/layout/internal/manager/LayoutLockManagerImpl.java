@@ -157,9 +157,6 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 					).and(
 						LayoutTable.INSTANCE.system.eq(true)
 					).and(
-						LayoutTable.INSTANCE.status.eq(
-							WorkflowConstants.STATUS_DRAFT)
-					).and(
 						LayoutTable.INSTANCE.type.in(
 							new String[] {
 								LayoutConstants.TYPE_ASSET_DISPLAY,
