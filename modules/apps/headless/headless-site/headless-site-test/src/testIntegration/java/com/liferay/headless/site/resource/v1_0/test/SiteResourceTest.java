@@ -11,6 +11,7 @@ import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.exportimport.test.rule.LazyReferencing;
 import com.liferay.exportimport.test.rule.LazyReferencingTestRule;
+import com.liferay.google.places.constants.GooglePlacesWebKeys;
 import com.liferay.headless.site.client.dto.v1_0.Site;
 import com.liferay.headless.site.client.pagination.Page;
 import com.liferay.headless.site.client.pagination.Pagination;
@@ -43,6 +44,8 @@ import com.liferay.portal.kernel.util.LinkedHashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.UnicodeProperties;
+import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 import com.liferay.portal.test.log.LogCapture;
 import com.liferay.portal.test.log.LoggerTestUtil;
 import com.liferay.portal.test.rule.Inject;
@@ -53,6 +56,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -208,7 +212,10 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 		_testPostSiteSuccessMembershipTypePrivate();
 		_testPostSiteSuccessSiteInitializer();
 		_testPostSiteSuccessSiteTemplate();
+		_testPostSiteWithLocalizedDescription();
+		_testPostSiteWithLocalizedName();
 		_testPostSiteWithNondefaultLocales();
+		_testPostSiteWithTypeSettings();
 		_testPostSiteWithoutAuthentication();
 	}
 
@@ -218,6 +225,7 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 		super.testPutSite();
 
 		_testPutSiteBatch();
+		_testPutSiteWithDefaultUserAssociations();
 	}
 
 	@Override
@@ -272,7 +280,7 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 	@Override
 	protected String[] getAdditionalAssertFieldNames() {
 		return new String[] {
-			"active", "externalReferenceCode", "friendlyUrlPath",
+			"active", "description", "externalReferenceCode", "friendlyUrlPath",
 			"manualMembership", "name"
 		};
 	}
@@ -290,6 +298,10 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 		return new Site() {
 			{
 				active = RandomTestUtil.randomBoolean();
+				description = LinkedHashMapBuilder.put(
+					String.valueOf(LocaleUtil.getDefault()),
+					RandomTestUtil.randomString()
+				).build();
 				externalReferenceCode = StringUtil.toLowerCase(
 					RandomTestUtil.randomString());
 				friendlyUrlPath =
@@ -300,7 +312,10 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 					GroupConstants.DEFAULT_MEMBERSHIP_RESTRICTION;
 				membershipType = MembershipType.create(
 					GroupConstants.getTypeLabel(GroupConstants.TYPE_SITE_OPEN));
-				name = StringUtil.toLowerCase(RandomTestUtil.randomString());
+				name = LinkedHashMapBuilder.put(
+					String.valueOf(LocaleUtil.getDefault()),
+					RandomTestUtil.randomString()
+				).build();
 				typeSettings = LinkedHashMapBuilder.put(
 					RandomTestUtil.randomString(), RandomTestUtil.randomString()
 				).build();
@@ -380,6 +395,12 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 		throws Exception {
 
 		Assert.assertEquals(site.getActive(), group.isActive());
+		Assert.assertEquals(
+			site.getDescription(
+			).get(
+				String.valueOf(LocaleUtil.getDefault())
+			),
+			group.getDescription(LocaleUtil.getDefault()));
 		Assert.assertEquals(site.getFriendlyUrlPath(), group.getFriendlyURL());
 		Assert.assertEquals(
 			site.getManualMembership(), group.isManualMembership());
@@ -391,7 +412,11 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 			Site.MembershipType.create(
 				GroupConstants.getTypeLabel(group.getType())));
 		Assert.assertEquals(
-			site.getName(), group.getName(LocaleUtil.getDefault()));
+			site.getName(
+			).get(
+				String.valueOf(LocaleUtil.getDefault())
+			),
+			group.getName(LocaleUtil.getDefault()));
 
 		_sites.add(
 			siteResource.getSiteByExternalReferenceCode(
@@ -522,7 +547,10 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 
 		Site randomSite = new Site();
 
-		randomSite.setName(name);
+		randomSite.setName(
+			LinkedHashMapBuilder.put(
+				String.valueOf(LocaleUtil.getDefault()), name
+			).build());
 
 		Site postSite = _testPostSite_addSite(randomSite);
 
@@ -578,7 +606,11 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 	private void _testPostSiteFailureDuplicateName() throws Exception {
 		Site randomSite = new Site() {
 			{
-				name = StringUtil.toLowerCase(RandomTestUtil.randomString());
+				name = LinkedHashMapBuilder.put(
+					StringUtil.toLowerCase(
+						String.valueOf(LocaleUtil.getDefault())),
+					RandomTestUtil.randomString()
+				).build();
 			}
 		};
 
@@ -605,7 +637,10 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 	private void _testPostSiteFailureInvalidKey() throws Exception {
 		Site randomSite = randomSite();
 
-		randomSite.setName("*");
+		randomSite.setName(
+			LinkedHashMapBuilder.put(
+				String.valueOf(LocaleUtil.getDefault()), "*"
+			).build());
 
 		try {
 			_testPostSite_addSite(randomSite);
@@ -623,7 +658,12 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 	private void _testPostSiteFailureNoName() throws Exception {
 		Site randomSite = randomSite();
 
-		randomSite.setName((String)null);
+		randomSite.setName(
+			new LinkedHashMap<String, String>() {
+				{
+					put(String.valueOf(LocaleUtil.getDefault()), null);
+				}
+			});
 
 		try {
 			_testPostSite_addSite(randomSite);
@@ -878,7 +918,6 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 
 	private void _testPostSiteSuccessSiteTemplate() throws Exception {
 		Site randomSite = randomSite();
-
 		LayoutSetPrototype layoutSetPrototype =
 			_layoutSetPrototypeLocalService.addLayoutSetPrototype(
 				TestPropsValues.getUserId(), TestPropsValues.getCompanyId(),
@@ -904,6 +943,54 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 		Assert.assertEquals(
 			layoutSetPrototype.getLayoutSetPrototypeId(),
 			publicLayoutSet.getLayoutSetPrototypeId());
+	}
+
+	private void _testPostSiteWithLocalizedDescription() throws Exception {
+		String description1 = RandomTestUtil.randomString();
+		String description2 = RandomTestUtil.randomString();
+
+		Site randomSite = randomSite();
+
+		randomSite.setDescription(
+			LinkedHashMapBuilder.put(
+				String.valueOf(LocaleUtil.getDefault()), description1
+			).put(
+				String.valueOf(LocaleUtil.BRAZIL), description2
+			).build());
+
+		Site postSite = _testPostSite_addSite(randomSite);
+
+		Map<String, String> descriptionMap = postSite.getDescription();
+
+		Assert.assertEquals(
+			description1,
+			descriptionMap.get(String.valueOf(LocaleUtil.getDefault())));
+		Assert.assertEquals(
+			description2,
+			descriptionMap.get(String.valueOf(LocaleUtil.BRAZIL)));
+	}
+
+	private void _testPostSiteWithLocalizedName() throws Exception {
+		String name1 = RandomTestUtil.randomString();
+		String name2 = RandomTestUtil.randomString();
+
+		Site randomSite = randomSite();
+
+		randomSite.setName(
+			LinkedHashMapBuilder.put(
+				String.valueOf(LocaleUtil.getDefault()), name1
+			).put(
+				String.valueOf(LocaleUtil.BRAZIL), name2
+			).build());
+
+		Site postSite = _testPostSite_addSite(randomSite);
+
+		Map<String, String> nameMap = postSite.getName();
+
+		Assert.assertEquals(
+			name1, nameMap.get(String.valueOf(LocaleUtil.getDefault())));
+		Assert.assertEquals(
+			name2, nameMap.get(String.valueOf(LocaleUtil.BRAZIL)));
 	}
 
 	private void _testPostSiteWithNondefaultLocales() throws Exception {
@@ -946,6 +1033,39 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 		}
 	}
 
+	private void _testPostSiteWithTypeSettings() throws Exception {
+		Site randomSite = randomSite();
+
+		randomSite.setTypeSettings(
+			LinkedHashMapBuilder.put(
+				GroupConstants.TYPE_SETTINGS_KEY_INHERIT_LOCALES, "true"
+			).put(
+				GooglePlacesWebKeys.GOOGLE_PLACES_API_KEY,
+				RandomTestUtil.randomString()
+			).put(
+				"defaultSiteRoleIds", RandomTestUtil.randomString()
+			).put(
+				"defaultTeamIds", RandomTestUtil.randomString()
+			).put(
+				"googleMapsAPIKey", RandomTestUtil.randomString()
+			).build());
+
+		Site postSite = _testPostSite_addSite(randomSite);
+
+		Map<String, String> typeSettingsMap = postSite.getTypeSettings();
+
+		Assert.assertEquals(
+			"true",
+			typeSettingsMap.get(
+				GroupConstants.TYPE_SETTINGS_KEY_INHERIT_LOCALES));
+		Assert.assertNotNull(typeSettingsMap.get(PropsKeys.LOCALES));
+		Assert.assertNull(
+			typeSettingsMap.get(GooglePlacesWebKeys.GOOGLE_PLACES_API_KEY));
+		Assert.assertNull(typeSettingsMap.get("defaultSiteRoleIds"));
+		Assert.assertNull(typeSettingsMap.get("defaultTeamIds"));
+		Assert.assertNull(typeSettingsMap.get("googleMapsAPIKey"));
+	}
+
 	private void _testPutSiteBatch() throws Exception {
 		Site site = randomSite();
 
@@ -979,6 +1099,53 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 			TestPropsValues.getCompanyId());
 
 		_assertSiteEqualsGroup(group, updatedSite);
+	}
+
+	private void _testPutSiteWithDefaultUserAssociations() throws Exception {
+		Site postSite = testPutSite_addSite();
+
+		Group group = _groupLocalService.getGroupByExternalReferenceCode(
+			postSite.getExternalReferenceCode(),
+			TestPropsValues.getCompanyId());
+
+		UnicodeProperties unicodeProperties = UnicodePropertiesBuilder.putAll(
+			postSite.getTypeSettings()
+		).put(
+			"defaultSiteRoleIds", RandomTestUtil.randomString()
+		).put(
+			"defaultTeamIds", RandomTestUtil.randomString()
+		).build();
+
+		_groupLocalService.updateGroup(
+			group.getGroupId(), unicodeProperties.toString());
+
+		Site randomSite = randomSite();
+
+		randomSite.setExternalReferenceCode(
+			postSite.getExternalReferenceCode());
+
+		Site putSite = siteResource.putSite(randomSite);
+
+		Map<String, String> postSiteTypeSettings = postSite.getTypeSettings();
+		Map<String, String> putSiteTypeSettings = putSite.getTypeSettings();
+
+		Assert.assertEquals(
+			postSiteTypeSettings.get("defaultSiteRoleIds"),
+			putSiteTypeSettings.get("defaultSiteRoleIds"));
+		Assert.assertEquals(
+			postSiteTypeSettings.get("defaultTeamIds"),
+			putSiteTypeSettings.get("defaultTeamIds"));
+
+		Map<String, String> randomSiteTypeSettings =
+			randomSite.getTypeSettings();
+
+		for (Map.Entry<String, String> randomSiteTypeSetting :
+				randomSiteTypeSettings.entrySet()) {
+
+			Assert.assertEquals(
+				putSiteTypeSettings.get(randomSiteTypeSetting.getKey()),
+				randomSiteTypeSetting.getValue());
+		}
 	}
 
 	private static final String _CLASS_NAME_EXCEPTION_MAPPER =
