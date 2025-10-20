@@ -11,10 +11,12 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
@@ -27,8 +29,10 @@ import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.site.navigation.admin.constants.SiteNavigationAdminPortletKeys;
 import com.liferay.site.navigation.exception.SiteNavigationMenuItemNameException;
+import com.liferay.site.navigation.model.SiteNavigationMenu;
 import com.liferay.site.navigation.model.SiteNavigationMenuItem;
 import com.liferay.site.navigation.service.SiteNavigationMenuItemService;
+import com.liferay.site.navigation.service.SiteNavigationMenuLocalService;
 
 import jakarta.portlet.ActionRequest;
 import jakarta.portlet.ActionResponse;
@@ -86,11 +90,14 @@ public class AddLayoutSiteNavigationMenuItemMVCActionCommand
 
 				String externalReferenceCode = itemJSONObject.getString(
 					"externalReferenceCode");
-				long groupId = itemJSONObject.getLong("groupId");
+
+				SiteNavigationMenu siteNavigationMenu =
+					_siteNavigationMenuLocalService.getSiteNavigationMenu(
+						siteNavigationMenuId);
 
 				Layout layout =
 					_layoutLocalService.fetchLayoutByExternalReferenceCode(
-						externalReferenceCode, groupId);
+						externalReferenceCode, siteNavigationMenu.getGroupId());
 
 				if (layout == null) {
 					continue;
@@ -109,13 +116,26 @@ public class AddLayoutSiteNavigationMenuItemMVCActionCommand
 						).put(
 							"externalReferenceCode", externalReferenceCode
 						).put(
-							"groupId", String.valueOf(groupId)
-						).put(
 							"layoutUuid", itemJSONObject.getString("id")
 						).put(
 							"privateLayout",
 							String.valueOf(
 								itemJSONObject.getBoolean("privateLayout"))
+						).put(
+							"scopeExternalReferenceCode",
+							() -> {
+								Group group = _groupLocalService.fetchGroup(
+									siteNavigationMenu.getGroupId());
+
+								if ((group == null) ||
+									(group.getGroupId() ==
+										themeDisplay.getScopeGroupId())) {
+
+									return null;
+								}
+
+								return group.getExternalReferenceCode();
+							}
 						).put(
 							"title", layout.getName(themeDisplay.getLocale())
 						).buildString(),
@@ -219,6 +239,9 @@ public class AddLayoutSiteNavigationMenuItemMVCActionCommand
 		AddLayoutSiteNavigationMenuItemMVCActionCommand.class);
 
 	@Reference
+	private GroupLocalService _groupLocalService;
+
+	@Reference
 	private JSONFactory _jsonFactory;
 
 	@Reference
@@ -232,5 +255,8 @@ public class AddLayoutSiteNavigationMenuItemMVCActionCommand
 
 	@Reference
 	private SiteNavigationMenuItemService _siteNavigationMenuItemService;
+
+	@Reference
+	private SiteNavigationMenuLocalService _siteNavigationMenuLocalService;
 
 }
