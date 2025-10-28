@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutFriendlyURLLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -149,6 +150,26 @@ public class LayoutSiteNavigationMenuItemType
 		).setParameter(
 			"siteNavigationMenuItemType", getType()
 		).buildPortletURL();
+	}
+
+	@Override
+	public long getGroupId(
+		long companyId, long defaultGroupId,
+		String groupExternalReferenceCode) {
+
+		Group group = _groupLocalService.fetchGroupByExternalReferenceCode(
+			groupExternalReferenceCode, companyId);
+
+		if (group == null) {
+			_log.error(
+				StringBundler.concat(
+					"No Group exists with group external reference code ",
+					groupExternalReferenceCode, " and company ID ", companyId));
+
+			return defaultGroupId;
+		}
+
+		return group.getGroupId();
 	}
 
 	@Override
@@ -404,7 +425,12 @@ public class LayoutSiteNavigationMenuItemType
 			).put(
 				"externalReferenceCode", layout.getExternalReferenceCode()
 			).put(
-				"groupId", String.valueOf(layout.getGroupId())
+				"groupExternalReferenceCode",
+				() -> {
+					Group group = layout.getGroup();
+
+					return group.getExternalReferenceCode();
+				}
 			).put(
 				"layoutUuid", layout.getUuid()
 			).put(
@@ -538,21 +564,24 @@ public class LayoutSiteNavigationMenuItemType
 				siteNavigationMenuItem.getTypeSettings()
 			).build();
 
-		String layoutUuid = typeSettingsUnicodeProperties.get("layoutUuid");
+		String externalReferenceCode = typeSettingsUnicodeProperties.get(
+			"externalReferenceCode");
 
-		boolean privateLayout = GetterUtil.getBoolean(
-			typeSettingsUnicodeProperties.get("privateLayout"));
+		long groupId = getGroupId(
+			siteNavigationMenuItem.getCompanyId(), 0,
+			typeSettingsUnicodeProperties.getProperty(
+				"groupExternalReferenceCode"));
 
-		Layout layout = _layoutLocalService.fetchLayoutByUuidAndGroupId(
-			layoutUuid, siteNavigationMenuItem.getGroupId(), privateLayout);
+		Layout layout = _layoutLocalService.fetchLayoutByExternalReferenceCode(
+			externalReferenceCode, groupId);
 
 		if ((layout == null) && _log.isWarnEnabled()) {
 			_log.warn(
 				StringBundler.concat(
 					"No layout found for site navigation menu item ID ",
 					siteNavigationMenuItem.getSiteNavigationMenuItemId(),
-					" with layout UUID ", layoutUuid, " and private layout ",
-					privateLayout));
+					" with  external reference code  ", externalReferenceCode,
+					" and group ID ", groupId));
 		}
 
 		return layout;
@@ -567,8 +596,6 @@ public class LayoutSiteNavigationMenuItemType
 				siteNavigationMenuItem.getTypeSettings()
 			).build();
 
-		String layoutUuid = typeSettingsUnicodeProperties.get("layoutUuid");
-
 		boolean privateLayout = GetterUtil.getBoolean(
 			typeSettingsUnicodeProperties.get("privateLayout"));
 
@@ -577,15 +604,21 @@ public class LayoutSiteNavigationMenuItemType
 		}
 
 		try {
-			Layout layout = _layoutLocalService.fetchLayoutByUuidAndGroupId(
-				layoutUuid, siteNavigationMenuItem.getGroupId(), privateLayout);
+			long groupId = getGroupId(
+				siteNavigationMenuItem.getCompanyId(), 0,
+				typeSettingsUnicodeProperties.getProperty(
+					"groupExternalReferenceCode"));
 
-			if ((layout == null) &&
-				ExportImportThreadLocal.isImportInProcess()) {
+			Layout layout =
+				_layoutLocalService.fetchLayoutByExternalReferenceCode(
+					typeSettingsUnicodeProperties.get("externalReferenceCode"),
+					groupId);
 
-				layout = _layoutLocalService.fetchLayoutByUuidAndGroupId(
-					layoutUuid, siteNavigationMenuItem.getGroupId(),
-					!privateLayout);
+			if ((layout != null) &&
+				(layout.isPrivateLayout() != privateLayout) &&
+				!ExportImportThreadLocal.isImportInProcess()) {
+
+				layout = null;
 			}
 
 			if (layout == null) {
@@ -597,8 +630,7 @@ public class LayoutSiteNavigationMenuItemType
 
 				LayoutFriendlyURL layoutFriendlyURL =
 					_layoutFriendlyURLLocalService.fetchFirstLayoutFriendlyURL(
-						siteNavigationMenuItem.getGroupId(), privateLayout,
-						friendlyURL);
+						groupId, privateLayout, friendlyURL);
 
 				if (layoutFriendlyURL != null) {
 					layout = _layoutLocalService.fetchLayout(
@@ -651,6 +683,9 @@ public class LayoutSiteNavigationMenuItemType
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		LayoutSiteNavigationMenuItemType.class);
+
+	@Reference
+	private GroupLocalService _groupLocalService;
 
 	@Reference
 	private ItemSelector _itemSelector;
