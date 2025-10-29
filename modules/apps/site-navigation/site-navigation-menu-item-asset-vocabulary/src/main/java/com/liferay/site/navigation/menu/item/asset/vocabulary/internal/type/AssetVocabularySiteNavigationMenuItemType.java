@@ -14,9 +14,10 @@ import com.liferay.asset.vocabulary.item.selector.AssetVocabularyItemSelectorCri
 import com.liferay.asset.vocabulary.item.selector.AssetVocabularyItemSelectorReturnType;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.frontend.taglib.servlet.taglib.util.JSPRenderer;
-import com.liferay.info.item.ClassPKInfoItemIdentifier;
+import com.liferay.info.item.ERCInfoItemIdentifier;
 import com.liferay.info.item.InfoItemReference;
 import com.liferay.item.selector.ItemSelector;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -26,11 +27,13 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.JavaConstants;
@@ -96,11 +99,16 @@ public class AssetVocabularySiteNavigationMenuItemType
 
 		String externalReferenceCode = GetterUtil.getString(
 			typeSettingsUnicodeProperties.get("externalReferenceCode"));
+		String groupExternalReferenceCode = GetterUtil.getString(
+			typeSettingsUnicodeProperties.get("groupExternalReferenceCode"));
 
 		AssetVocabulary assetVocabulary =
 			_assetVocabularyLocalService.
 				fetchAssetVocabularyByExternalReferenceCode(
-					externalReferenceCode, siteNavigationMenuItem.getGroupId());
+					externalReferenceCode,
+					getGroupId(
+						siteNavigationMenuItem.getCompanyId(), 0,
+						groupExternalReferenceCode));
 
 		if (assetVocabulary == null) {
 			return false;
@@ -108,6 +116,9 @@ public class AssetVocabularySiteNavigationMenuItemType
 
 		siteNavigationMenuItemElement.addAttribute(
 			"asset-vocabulary-external-reference-code", externalReferenceCode);
+		siteNavigationMenuItemElement.addAttribute(
+			"asset-vocabulary-group-external-reference-code",
+			groupExternalReferenceCode);
 
 		portletDataContext.addReferenceElement(
 			siteNavigationMenuItem, siteNavigationMenuItemElement,
@@ -154,18 +165,48 @@ public class AssetVocabularySiteNavigationMenuItemType
 
 			return _getChildrenSiteNavigationMenuItems(
 				0,
-				GetterUtil.getLong(
-					typeSettingsUnicodeProperties.get("classPK")),
+				GetterUtil.getString(
+					typeSettingsUnicodeProperties.get("externalReferenceCode")),
 				httpServletRequest,
 				siteNavigationMenuItem.getSiteNavigationMenuItemId());
 		}
 
+		AssetCategory assetCategory =
+			_assetCategoryLocalService.getAssetCategoryByExternalReferenceCode(
+				typeSettingsUnicodeProperties.get("externalReferenceCode"),
+				getGroupId(
+					siteNavigationMenuItem.getCompanyId(), 0,
+					typeSettingsUnicodeProperties.get(
+						"groupExternalReferenceCode")));
+
+		AssetVocabulary assetVocabulary =
+			_assetVocabularyLocalService.getAssetVocabulary(
+				assetCategory.getVocabularyId());
+
 		return _getChildrenSiteNavigationMenuItems(
-			GetterUtil.getLong(typeSettingsUnicodeProperties.get("classPK")),
-			GetterUtil.getLong(
-				typeSettingsUnicodeProperties.get("assetVocabularyId")),
-			httpServletRequest,
+			assetCategory.getCategoryId(),
+			assetVocabulary.getExternalReferenceCode(), httpServletRequest,
 			siteNavigationMenuItem.getSiteNavigationMenuItemId());
+	}
+
+	@Override
+	public long getGroupId(
+		long companyId, long defaultGroupId,
+		String groupExternalReferenceCode) {
+
+		Group group = _groupLocalService.fetchGroupByExternalReferenceCode(
+			groupExternalReferenceCode, companyId);
+
+		if (group == null) {
+			_log.error(
+				StringBundler.concat(
+					"No Group exists with group external reference code ",
+					groupExternalReferenceCode, " and company ID ", companyId));
+
+			return defaultGroupId;
+		}
+
+		return group.getGroupId();
 	}
 
 	@Override
@@ -262,7 +303,7 @@ public class AssetVocabularySiteNavigationMenuItemType
 		}
 
 		return _getChildrenSiteNavigationMenuItems(
-			0, GetterUtil.getLong(typeSettingsUnicodeProperties.get("classPK")),
+			0, typeSettingsUnicodeProperties.get("externalReferenceCode"),
 			httpServletRequest,
 			siteNavigationMenuItem.getSiteNavigationMenuItemId());
 	}
@@ -274,12 +315,20 @@ public class AssetVocabularySiteNavigationMenuItemType
 				siteNavigationMenuItem.getTypeSettings()
 			).build();
 
-		int numCategories =
-			_assetCategoryLocalService.getVocabularyCategoriesCount(
-				GetterUtil.getLong(
-					typeSettingsUnicodeProperties.get("classPK")));
+		AssetVocabulary assetVocabulary =
+			_assetVocabularyLocalService.
+				fetchAssetVocabularyByExternalReferenceCode(
+					GetterUtil.getString(
+						typeSettingsUnicodeProperties.get(
+							"externalReferenceCode")),
+					getGroupId(
+						siteNavigationMenuItem.getCompanyId(), 0,
+						typeSettingsUnicodeProperties.get(
+							"groupExternalReferenceCode")));
 
-		if (numCategories > 0) {
+		if ((assetVocabulary != null) &&
+			(assetVocabulary.getCategoriesCount() > 0)) {
+
 			return SiteNavigationMenuItemType.super.getStatusIcon(
 				siteNavigationMenuItem);
 		}
@@ -306,9 +355,13 @@ public class AssetVocabularySiteNavigationMenuItemType
 			"title");
 
 		AssetVocabulary assetVocabulary =
-			_assetVocabularyLocalService.fetchAssetVocabulary(
-				GetterUtil.getLong(
-					typeSettingsUnicodeProperties.get("classPK")));
+			_assetVocabularyLocalService.
+				fetchAssetVocabularyByExternalReferenceCode(
+					typeSettingsUnicodeProperties.get("externalReferenceCode"),
+					getGroupId(
+						siteNavigationMenuItem.getCompanyId(), 0,
+						typeSettingsUnicodeProperties.get(
+							"groupExternalReferenceCode")));
 
 		String defaultLanguageId = typeSettingsUnicodeProperties.getProperty(
 			Field.DEFAULT_LANGUAGE_ID,
@@ -361,10 +414,17 @@ public class AssetVocabularySiteNavigationMenuItemType
 				siteNavigationMenuItem.getTypeSettings()
 			).build();
 
+		AssetVocabulary assetVocabulary =
+			_assetVocabularyLocalService.
+				getAssetVocabularyByExternalReferenceCode(
+					typeSettingsUnicodeProperties.get("externalReferenceCode"),
+					getGroupId(
+						siteNavigationMenuItem.getCompanyId(), 0,
+						typeSettingsUnicodeProperties.get(
+							"groupExternalReferenceCode")));
+
 		return AssetVocabularyPermission.contains(
-			permissionChecker,
-			GetterUtil.getLong(typeSettingsUnicodeProperties.get("classPK")),
-			ActionKeys.VIEW);
+			permissionChecker, assetVocabulary, ActionKeys.VIEW);
 	}
 
 	@Override
@@ -383,14 +443,36 @@ public class AssetVocabularySiteNavigationMenuItemType
 			return false;
 		}
 
-		AssetVocabulary assetVocabulary =
-			_assetVocabularyLocalService.
-				fetchAssetVocabularyByExternalReferenceCode(
-					externalReferenceCode, siteNavigationMenuItem.getGroupId());
+		AssetVocabulary assetVocabulary = null;
+
+		long groupId = getGroupId(
+			importedSiteNavigationMenuItem.getCompanyId(), 0,
+			GetterUtil.getString(
+				element.attributeValue(
+					"asset-vocabulary-group-external-reference-code")));
+
+		if (groupId > 0) {
+			assetVocabulary =
+				_assetVocabularyLocalService.
+					fetchAssetVocabularyByExternalReferenceCode(
+						externalReferenceCode, groupId);
+		}
+
+		if (assetVocabulary == null) {
+			assetVocabulary =
+				_assetVocabularyLocalService.
+					fetchAssetVocabularyByExternalReferenceCode(
+						externalReferenceCode,
+						importedSiteNavigationMenuItem.getGroupId());
+
+			groupId = importedSiteNavigationMenuItem.getGroupId();
+		}
 
 		if (assetVocabulary == null) {
 			return false;
 		}
+
+		Group group = _groupLocalService.fetchGroup(groupId);
 
 		importedSiteNavigationMenuItem.setTypeSettings(
 			UnicodePropertiesBuilder.fastLoad(
@@ -407,7 +489,7 @@ public class AssetVocabularySiteNavigationMenuItemType
 			).put(
 				"externalReferenceCode", externalReferenceCode
 			).put(
-				"groupId", String.valueOf(assetVocabulary.getGroupId())
+				"groupExternalReferenceCode", group.getExternalReferenceCode()
 			).put(
 				"title", assetVocabulary.getTitle(LocaleUtil.getSiteDefault())
 			).put(
@@ -469,7 +551,7 @@ public class AssetVocabularySiteNavigationMenuItemType
 	}
 
 	private List<SiteNavigationMenuItem> _getChildrenSiteNavigationMenuItems(
-			long parentCategoryId, long vocabularyId,
+			long parentCategoryId, String vocabularyExternalReferenceCode,
 			HttpServletRequest httpServletRequest,
 			long vocabularySiteNavigationMenuItemId)
 		throws Exception {
@@ -489,10 +571,26 @@ public class AssetVocabularySiteNavigationMenuItemType
 			_siteNavigationMenuItemLocalService.getSiteNavigationMenuItem(
 				vocabularySiteNavigationMenuItemId);
 
+		UnicodeProperties typeSettingsUnicodeProperties =
+			UnicodePropertiesBuilder.fastLoad(
+				vocabularySiteNavigationMenuItem.getTypeSettings()
+			).build();
+
+		String groupExternalReferenceCode = typeSettingsUnicodeProperties.get(
+			"groupExternalReferenceCode");
+
+		AssetVocabulary assetVocabulary =
+			_assetVocabularyLocalService.
+				getAssetVocabularyByExternalReferenceCode(
+					vocabularyExternalReferenceCode,
+					getGroupId(
+						vocabularySiteNavigationMenuItem.getCompanyId(), 0,
+						groupExternalReferenceCode));
+
 		for (AssetCategory assetCategory :
 				_assetCategoryLocalService.getVocabularyCategories(
-					parentCategoryId, vocabularyId, QueryUtil.ALL_POS,
-					QueryUtil.ALL_POS, null)) {
+					parentCategoryId, assetVocabulary.getVocabularyId(),
+					QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
 
 			if (!AssetCategoryPermission.contains(
 					themeDisplay.getPermissionChecker(), assetCategory,
@@ -508,19 +606,23 @@ public class AssetVocabularySiteNavigationMenuItemType
 				UnicodePropertiesBuilder.create(
 					true
 				).put(
-					"assetVocabularyId",
-					String.valueOf(assetCategory.getVocabularyId())
+					"assetVocabularyExternalReferenceCode",
+					String.valueOf(assetVocabulary.getExternalReferenceCode())
 				).put(
 					"classPK", String.valueOf(assetCategory.getCategoryId())
 				).put(
-					"groupId", String.valueOf(assetCategory.getGroupId())
+					"externalReferenceCode",
+					assetCategory.getExternalReferenceCode()
+				).put(
+					"groupExternalReferenceCode", groupExternalReferenceCode
 				).put(
 					"regularURL",
 					_assetDisplayPageFriendlyURLProvider.getFriendlyURL(
 						new InfoItemReference(
 							AssetCategory.class.getName(),
-							new ClassPKInfoItemIdentifier(
-								assetCategory.getCategoryId())),
+							new ERCInfoItemIdentifier(
+								assetCategory.getExternalReferenceCode(),
+								groupExternalReferenceCode)),
 						themeDisplay)
 				).put(
 					"title", assetCategory.getTitle(themeDisplay.getLocale())
@@ -546,6 +648,9 @@ public class AssetVocabularySiteNavigationMenuItemType
 
 	@Reference
 	private AssetVocabularyLocalService _assetVocabularyLocalService;
+
+	@Reference
+	private GroupLocalService _groupLocalService;
 
 	@Reference
 	private ItemSelector _itemSelector;
