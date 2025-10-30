@@ -32,10 +32,9 @@ import java.util.Objects;
 /**
  * @author Gislayne Vitorino
  */
-public class SiteNavigationMenuItemClassNameUpgradeProcess
-	extends UpgradeProcess {
+public class SiteNavigationMenuItemUpgradeProcess extends UpgradeProcess {
 
-	public SiteNavigationMenuItemClassNameUpgradeProcess(
+	public SiteNavigationMenuItemUpgradeProcess(
 		ClassNameLocalService classNameLocalService) {
 
 		_classNameLocalService = classNameLocalService;
