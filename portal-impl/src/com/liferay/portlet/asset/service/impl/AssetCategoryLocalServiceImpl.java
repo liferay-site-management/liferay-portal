@@ -617,10 +617,28 @@ public class AssetCategoryLocalServiceImpl
 			ServiceContext serviceContext)
 		throws PortalException {
 
+		return assetCategoryLocalService.updateCategory(
+			StringPool.BLANK, userId, categoryId, parentCategoryId, titleMap,
+			descriptionMap, vocabularyId, categoryProperties, serviceContext);
+	}
+
+	@Indexable(type = IndexableType.REINDEX)
+	@Override
+	public AssetCategory updateCategory(
+			String externalReferenceCode, long userId, long categoryId,
+			long parentCategoryId, Map<Locale, String> titleMap,
+			Map<Locale, String> descriptionMap, long vocabularyId,
+			String[] categoryProperties, ServiceContext serviceContext)
+		throws PortalException {
+
 		// Category
 
 		AssetCategory category = assetCategoryPersistence.findByPrimaryKey(
 			categoryId);
+
+		if (Validator.isNotNull(externalReferenceCode)) {
+			category.setExternalReferenceCode(externalReferenceCode);
+		}
 
 		Map<Locale, String> trimmedTitleMap = _getTrimmedTitleMap(titleMap);
 

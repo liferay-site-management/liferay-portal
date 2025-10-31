@@ -613,6 +613,23 @@ public class AssetCategoryServiceImpl extends AssetCategoryServiceBaseImpl {
 			vocabularyId, categoryProperties, serviceContext);
 	}
 
+	@Override
+	public AssetCategory updateCategory(
+			String externalReferenceCode, long categoryId,
+			long parentCategoryId, Map<Locale, String> titleMap,
+			Map<Locale, String> descriptionMap, long vocabularyId,
+			String[] categoryProperties, ServiceContext serviceContext)
+		throws PortalException {
+
+		AssetCategoryPermission.check(
+			getPermissionChecker(), categoryId, ActionKeys.UPDATE);
+
+		return assetCategoryLocalService.updateCategory(
+			externalReferenceCode, getUserId(), categoryId, parentCategoryId,
+			titleMap, descriptionMap, vocabularyId, categoryProperties,
+			serviceContext);
+	}
+
 	protected List<AssetCategory> filterCategories(
 			List<AssetCategory> categories)
 		throws PortalException {
