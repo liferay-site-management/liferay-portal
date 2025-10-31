@@ -1686,6 +1686,53 @@ public class AssetCategoryServiceHttp {
 		}
 	}
 
+	public static com.liferay.asset.kernel.model.AssetCategory updateCategory(
+			HttpPrincipal httpPrincipal, String externalReferenceCode,
+			long categoryId, long parentCategoryId,
+			java.util.Map<java.util.Locale, String> titleMap,
+			java.util.Map<java.util.Locale, String> descriptionMap,
+			long vocabularyId, String[] categoryProperties,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		try {
+			MethodKey methodKey = new MethodKey(
+				AssetCategoryServiceUtil.class, "updateCategory",
+				_updateCategoryParameterTypes40);
+
+			MethodHandler methodHandler = new MethodHandler(
+				methodKey, externalReferenceCode, categoryId, parentCategoryId,
+				titleMap, descriptionMap, vocabularyId, categoryProperties,
+				serviceContext);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception exception) {
+				if (exception instanceof
+						com.liferay.portal.kernel.exception.PortalException) {
+
+					throw (com.liferay.portal.kernel.exception.PortalException)
+						exception;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					exception);
+			}
+
+			return (com.liferay.asset.kernel.model.AssetCategory)returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException
+					systemException) {
+
+			_log.error(systemException, systemException);
+
+			throw systemException;
+		}
+	}
+
 	private static Log _log = LogFactoryUtil.getLog(
 		AssetCategoryServiceHttp.class);
 
@@ -1841,6 +1888,12 @@ public class AssetCategoryServiceHttp {
 		new Class[] {
 			long.class, long.class, java.util.Map.class, java.util.Map.class,
 			long.class, String[].class,
+			com.liferay.portal.kernel.service.ServiceContext.class
+		};
+	private static final Class<?>[] _updateCategoryParameterTypes40 =
+		new Class[] {
+			String.class, long.class, long.class, java.util.Map.class,
+			java.util.Map.class, long.class, String[].class,
 			com.liferay.portal.kernel.service.ServiceContext.class
 		};
 

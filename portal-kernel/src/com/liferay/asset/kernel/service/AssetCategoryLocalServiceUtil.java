@@ -680,6 +680,20 @@ public class AssetCategoryLocalServiceUtil {
 			vocabularyId, categoryProperties, serviceContext);
 	}
 
+	public static AssetCategory updateCategory(
+			String externalReferenceCode, long userId, long categoryId,
+			long parentCategoryId, Map<java.util.Locale, String> titleMap,
+			Map<java.util.Locale, String> descriptionMap, long vocabularyId,
+			String[] categoryProperties,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws PortalException {
+
+		return getService().updateCategory(
+			externalReferenceCode, userId, categoryId, parentCategoryId,
+			titleMap, descriptionMap, vocabularyId, categoryProperties,
+			serviceContext);
+	}
+
 	public static AssetCategoryLocalService getService() {
 		return _service;
 	}

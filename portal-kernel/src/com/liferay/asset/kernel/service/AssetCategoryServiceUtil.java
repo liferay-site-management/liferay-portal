@@ -408,6 +408,19 @@ public class AssetCategoryServiceUtil {
 			vocabularyId, categoryProperties, serviceContext);
 	}
 
+	public static AssetCategory updateCategory(
+			String externalReferenceCode, long categoryId,
+			long parentCategoryId, Map<java.util.Locale, String> titleMap,
+			Map<java.util.Locale, String> descriptionMap, long vocabularyId,
+			String[] categoryProperties,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws PortalException {
+
+		return getService().updateCategory(
+			externalReferenceCode, categoryId, parentCategoryId, titleMap,
+			descriptionMap, vocabularyId, categoryProperties, serviceContext);
+	}
+
 	public static AssetCategoryService getService() {
 		return _service;
 	}
