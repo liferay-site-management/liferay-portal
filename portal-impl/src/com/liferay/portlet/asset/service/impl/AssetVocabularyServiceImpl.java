@@ -524,6 +524,21 @@ public class AssetVocabularyServiceImpl extends AssetVocabularyServiceBaseImpl {
 			serviceContext);
 	}
 
+	@Override
+	public AssetVocabulary updateVocabulary(
+			String externalReferenceCode, long vocabularyId, String title,
+			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
+			String settings, ServiceContext serviceContext)
+		throws PortalException {
+
+		AssetVocabularyPermission.check(
+			getPermissionChecker(), vocabularyId, ActionKeys.UPDATE);
+
+		return assetVocabularyLocalService.updateVocabulary(
+			externalReferenceCode, vocabularyId, title, titleMap,
+			descriptionMap, settings, serviceContext);
+	}
+
 	@BeanReference(type = ClassNameLocalService.class)
 	private ClassNameLocalService _classNameLocalService;
 

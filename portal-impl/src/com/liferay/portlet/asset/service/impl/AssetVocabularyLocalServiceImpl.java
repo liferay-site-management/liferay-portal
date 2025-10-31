@@ -524,8 +524,25 @@ public class AssetVocabularyLocalServiceImpl
 			ServiceContext serviceContext)
 		throws PortalException {
 
+		return assetVocabularyLocalService.updateVocabulary(
+			StringPool.BLANK, vocabularyId, title, titleMap, descriptionMap,
+			settings, serviceContext);
+	}
+
+	@Indexable(type = IndexableType.REINDEX)
+	@Override
+	public AssetVocabulary updateVocabulary(
+			String externalReferenceCode, long vocabularyId, String title,
+			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
+			String settings, ServiceContext serviceContext)
+		throws PortalException {
+
 		AssetVocabulary vocabulary =
 			assetVocabularyPersistence.findByPrimaryKey(vocabularyId);
+
+		if (Validator.isNotNull(externalReferenceCode)) {
+			vocabulary.setExternalReferenceCode(externalReferenceCode);
+		}
 
 		vocabulary.setTitleMap(_getTrimmedTitleMap(titleMap));
 

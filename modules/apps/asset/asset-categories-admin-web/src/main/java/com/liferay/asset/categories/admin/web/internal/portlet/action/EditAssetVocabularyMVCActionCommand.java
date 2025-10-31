@@ -60,6 +60,9 @@ public class EditAssetVocabularyMVCActionCommand extends BaseMVCActionCommand {
 
 		long vocabularyId = ParamUtil.getLong(actionRequest, "vocabularyId");
 
+		String externalReferenceCode = ParamUtil.getString(
+			actionRequest, "externalReferenceCode");
+
 		Map<Locale, String> titleMap = _localization.getLocalizationMap(
 			actionRequest, "title");
 		Map<Locale, String> descriptionMap = _localization.getLocalizationMap(
@@ -79,17 +82,17 @@ public class EditAssetVocabularyMVCActionCommand extends BaseMVCActionCommand {
 				AssetVocabularyConstants.VISIBILITY_TYPE_PUBLIC);
 
 			vocabulary = _assetVocabularyService.addVocabulary(
-				serviceContext.getScopeGroupId(), StringPool.BLANK, titleMap,
-				descriptionMap, _getSettings(actionRequest), visibilityType,
-				serviceContext);
+				externalReferenceCode, serviceContext.getScopeGroupId(),
+				StringPool.BLANK, StringPool.BLANK, titleMap, descriptionMap,
+				_getSettings(actionRequest), visibilityType, serviceContext);
 		}
 		else {
 
 			// Update vocabulary
 
 			vocabulary = _assetVocabularyService.updateVocabulary(
-				vocabularyId, StringPool.BLANK, titleMap, descriptionMap,
-				_getSettings(actionRequest), serviceContext);
+				externalReferenceCode, vocabularyId, StringPool.BLANK, titleMap,
+				descriptionMap, _getSettings(actionRequest), serviceContext);
 		}
 
 		actionRequest.setAttribute(
