@@ -487,6 +487,13 @@ public interface AssetVocabularyLocalService
 			ServiceContext serviceContext)
 		throws PortalException;
 
+	@Indexable(type = IndexableType.REINDEX)
+	public AssetVocabulary updateVocabulary(
+			String externalReferenceCode, long vocabularyId, String title,
+			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
+			String settings, ServiceContext serviceContext)
+		throws PortalException;
+
 	@Override
 	@Transactional(enabled = false)
 	public CTPersistence<AssetVocabulary> getCTPersistence();

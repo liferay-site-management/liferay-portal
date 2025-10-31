@@ -217,4 +217,10 @@ public interface AssetVocabularyService extends BaseService {
 			ServiceContext serviceContext)
 		throws PortalException;
 
+	public AssetVocabulary updateVocabulary(
+			String externalReferenceCode, long vocabularyId, String title,
+			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
+			String settings, ServiceContext serviceContext)
+		throws PortalException;
+
 }

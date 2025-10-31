@@ -701,6 +701,20 @@ public class AssetVocabularyLocalServiceWrapper
 	}
 
 	@Override
+	public AssetVocabulary updateVocabulary(
+			String externalReferenceCode, long vocabularyId, String title,
+			java.util.Map<java.util.Locale, String> titleMap,
+			java.util.Map<java.util.Locale, String> descriptionMap,
+			String settings,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _assetVocabularyLocalService.updateVocabulary(
+			externalReferenceCode, vocabularyId, title, titleMap,
+			descriptionMap, settings, serviceContext);
+	}
+
+	@Override
 	public BasePersistence<?> getBasePersistence() {
 		return _assetVocabularyLocalService.getBasePersistence();
 	}
