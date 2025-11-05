@@ -39,6 +39,16 @@ public class CTCollectionTemplateServiceWrapper
 	}
 
 	@Override
+	public void deleteCTCollectionTemplate(
+			com.liferay.change.tracking.model.CTCollectionTemplate
+				ctCollectionTemplate)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		_ctCollectionTemplateService.deleteCTCollectionTemplate(
+			ctCollectionTemplate);
+	}
+
+	@Override
 	public java.util.List
 		<com.liferay.change.tracking.model.CTCollectionTemplate>
 			getCTCollectionTemplates(
