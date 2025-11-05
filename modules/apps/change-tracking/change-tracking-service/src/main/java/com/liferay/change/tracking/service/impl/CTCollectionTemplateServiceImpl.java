@@ -55,6 +55,15 @@ public class CTCollectionTemplateServiceImpl
 	}
 
 	@Override
+	public void deleteCTCollectionTemplate(
+			CTCollectionTemplate ctCollectionTemplate)
+		throws PortalException {
+
+		ctCollectionTemplateLocalService.deleteCTCollectionTemplate(
+			ctCollectionTemplate);
+	}
+
+	@Override
 	public List<CTCollectionTemplate> getCTCollectionTemplates(
 		String keywords, int start, int end,
 		OrderByComparator<CTCollectionTemplate> orderByComparator) {
