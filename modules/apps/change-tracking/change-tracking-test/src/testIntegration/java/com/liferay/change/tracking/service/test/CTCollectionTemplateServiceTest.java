@@ -20,6 +20,7 @@ import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -44,19 +45,26 @@ public class CTCollectionTemplateServiceTest {
 	public void setUp() throws Exception {
 		_name = RandomTestUtil.randomString();
 
-		_ctCollectionTemplateService.addCTCollectionTemplate(
-			_name, RandomTestUtil.randomString(),
-			JSONUtil.put(
-				"description", RandomTestUtil.randomString()
-			).put(
-				"name", RandomTestUtil.randomString()
-			).put(
-				"publicationsUserRoleUserIds", Collections.emptyList()
-			).put(
-				"roleValues", Collections.emptyList()
-			).put(
-				"userIds", new long[] {RandomTestUtil.randomLong()}
-			).toString());
+		_ctCollectionTemplate =
+			_ctCollectionTemplateService.addCTCollectionTemplate(
+				_name, RandomTestUtil.randomString(),
+				JSONUtil.put(
+					"description", RandomTestUtil.randomString()
+				).put(
+					"name", RandomTestUtil.randomString()
+				).put(
+					"publicationsUserRoleUserIds", Collections.emptyList()
+				).put(
+					"roleValues", Collections.emptyList()
+				).put(
+					"userIds", new long[] {RandomTestUtil.randomLong()}
+				).toString());
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		_ctCollectionTemplateService.deleteCTCollectionTemplate(
+			_ctCollectionTemplate);
 	}
 
 	@Test
@@ -95,6 +103,7 @@ public class CTCollectionTemplateServiceTest {
 	@Inject
 	private static CTCollectionTemplateService _ctCollectionTemplateService;
 
+	private CTCollectionTemplate _ctCollectionTemplate;
 	private String _name;
 
 }
