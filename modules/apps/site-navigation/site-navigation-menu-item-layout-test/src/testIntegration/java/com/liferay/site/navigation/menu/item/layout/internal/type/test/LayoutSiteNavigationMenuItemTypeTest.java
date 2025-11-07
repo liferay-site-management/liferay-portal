@@ -166,9 +166,11 @@ public class LayoutSiteNavigationMenuItemTypeTest {
 				SiteNavigationMenuItemTypeConstants.LAYOUT);
 
 		String layoutUuid = RandomTestUtil.randomString();
+		String externalReferenceCode = RandomTestUtil.randomString();
 
 		if (layout != null) {
 			layoutUuid = layout.getUuid();
+			externalReferenceCode = layout.getExternalReferenceCode();
 		}
 
 		SiteNavigationMenuItem siteNavigationMenuItem =
@@ -179,7 +181,10 @@ public class LayoutSiteNavigationMenuItemTypeTest {
 				UnicodePropertiesBuilder.create(
 					true
 				).put(
-					"groupId", String.valueOf(_group.getGroupId())
+					"externalReferenceCode", externalReferenceCode
+				).put(
+					"groupExternalReferenceCode",
+					_group.getExternalReferenceCode()
 				).put(
 					"layoutUuid", layoutUuid
 				).put(
@@ -215,8 +220,8 @@ public class LayoutSiteNavigationMenuItemTypeTest {
 				StringBundler.concat(
 					"No layout found for site navigation menu item ID ",
 					siteNavigationMenuItem.getSiteNavigationMenuItemId(),
-					" with layout UUID ", layoutUuid,
-					" and private layout false"),
+					" with  external reference code  ", externalReferenceCode,
+					" and group ID ", _group.getGroupId()),
 				logEntry.getMessage());
 		}
 	}

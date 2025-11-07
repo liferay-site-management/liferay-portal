@@ -7,6 +7,7 @@ package com.liferay.site.navigation.test.util;
 
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
@@ -38,7 +39,12 @@ public class SiteNavigationMenuItemTestUtil {
 			).put(
 				"externalReferenceCode", layout.getExternalReferenceCode()
 			).put(
-				"groupId", String.valueOf(layout.getGroupId())
+				"groupExternalReferenceCode",
+				() -> {
+					Group group = layout.getGroup();
+
+					return group.getExternalReferenceCode();
+				}
 			).put(
 				"layoutUuid", layout.getUuid()
 			).put(
