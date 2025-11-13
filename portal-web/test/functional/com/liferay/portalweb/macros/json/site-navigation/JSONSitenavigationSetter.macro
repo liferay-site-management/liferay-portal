@@ -62,12 +62,17 @@ definition {
 		Variables.assertDefined(parameterList = "${siteNavigationMenuItemName},${type}");
 
 		if (${type} == "layout") {
+			var externalReferenceCode = JSONSitenavigationAPI._getLayoutExternalReferenceCodeByName(
+				groupId = ${groupId},
+				layoutName = ${siteNavigationMenuItemName},
+				privateLayout = ${privateLayout});
+			var groupExternalReferenceCode = JSONSitenavigationAPI._getGroupExternalReferenceCode(groupId = ${groupId});
 			var layoutUuid = JSONLayoutAPI._getUuidByName(
 				groupId = ${groupId},
 				layoutName = ${siteNavigationMenuItemName},
 				privateLayout = ${privateLayout});
 
-			var typeSettings = '''groupId=${groupId}%0AlayoutUuid=${layoutUuid}%0AprivateLayout=${privateLayout}%0Atitle=${siteNavigationMenuItemName}%0A''';
+			var typeSettings = '''externalReferenceCode=${externalReferenceCode}%0AgroupExternalReferenceCode=${groupExternalReferenceCode}%0AlayoutUuid=${layoutUuid}%0AprivateLayout=${privateLayout}%0Atitle=${siteNavigationMenuItemName}%0A''';
 		}
 
 		if (${type} == "node") {
