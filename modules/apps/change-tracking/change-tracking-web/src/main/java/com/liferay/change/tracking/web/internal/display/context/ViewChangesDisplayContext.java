@@ -1584,7 +1584,7 @@ public class ViewChangesDisplayContext {
 			List<WorkflowTask> workflowTasks = _getWorkflowTasks(
 				ctEntry, classPK, groupId);
 
-			if (workflowTasks == null) {
+			if (ListUtil.isEmpty(workflowTasks)) {
 				return true;
 			}
 
@@ -1600,7 +1600,7 @@ public class ViewChangesDisplayContext {
 			List<WorkflowTask> workflowTasks = _getWorkflowTasks(
 				ctEntry, classPK, groupId);
 
-			if (workflowTasks == null) {
+			if (ListUtil.isEmpty(workflowTasks)) {
 				return true;
 			}
 
