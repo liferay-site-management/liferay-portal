@@ -1597,14 +1597,8 @@ public class ViewChangesDisplayContext {
 				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
 					ctEntry.getCtCollectionId())) {
 
-			List<WorkflowTask> workflowTasks = _getWorkflowTasks(
-				ctEntry, classPK, groupId);
-
-			if (ListUtil.isEmpty(workflowTasks)) {
-				return true;
-			}
-
-			return false;
+			return ListUtil.isEmpty(
+				_getWorkflowTasks(ctEntry, classPK, groupId));
 		}
 	}
 
