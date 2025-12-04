@@ -191,11 +191,9 @@ public class LayoutSiteNavigationMenuItemTypeTest {
 				SiteNavigationMenuItemTypeConstants.LAYOUT);
 
 		String externalReferenceCode = RandomTestUtil.randomString();
-		String layoutUuid = RandomTestUtil.randomString();
 
 		if (layout != null) {
 			externalReferenceCode = layout.getExternalReferenceCode();
-			layoutUuid = layout.getUuid();
 		}
 
 		SiteNavigationMenuItem siteNavigationMenuItem =
@@ -207,8 +205,6 @@ public class LayoutSiteNavigationMenuItemTypeTest {
 					true
 				).put(
 					"externalReferenceCode", externalReferenceCode
-				).put(
-					"layoutUuid", layoutUuid
 				).put(
 					"privateLayout", false
 				).put(
@@ -242,7 +238,7 @@ public class LayoutSiteNavigationMenuItemTypeTest {
 				StringBundler.concat(
 					"No layout found for site navigation menu item ID ",
 					siteNavigationMenuItem.getSiteNavigationMenuItemId(),
-					" with  external reference code ", externalReferenceCode,
+					" with external reference code ", externalReferenceCode,
 					" and group ID ", _group.getGroupId()),
 				logEntry.getMessage());
 		}
