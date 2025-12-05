@@ -286,7 +286,8 @@ public class DisplayPageTypeSiteNavigationMenuTypeDisplayContext {
 		InfoItemFormVariation infoItemFormVariation =
 			infoItemFormVariationsProvider.getInfoItemFormVariation(
 				layoutDisplayPageObjectProvider.getGroupId(),
-				String.valueOf(layoutDisplayPageObjectProvider.getClassTypeId()));
+				String.valueOf(
+					layoutDisplayPageObjectProvider.getClassTypeId()));
 
 		if (infoItemFormVariation != null) {
 			return infoItemFormVariation.getLabel(_themeDisplay.getLocale());

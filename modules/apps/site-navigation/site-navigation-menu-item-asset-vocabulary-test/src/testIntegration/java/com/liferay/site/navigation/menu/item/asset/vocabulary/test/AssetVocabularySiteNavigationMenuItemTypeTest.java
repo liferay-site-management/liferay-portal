@@ -137,8 +137,6 @@ public class AssetVocabularySiteNavigationMenuItemTypeTest {
 					"title", assetVocabulary1.getTitle()
 				).put(
 					"type", "asset-vocabulary"
-				).put(
-					"uuid", assetVocabulary1.getUuid()
 				).buildString(),
 				_serviceContext);
 

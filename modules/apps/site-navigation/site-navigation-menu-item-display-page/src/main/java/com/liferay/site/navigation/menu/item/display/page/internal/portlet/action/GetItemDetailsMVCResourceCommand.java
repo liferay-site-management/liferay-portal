@@ -187,7 +187,8 @@ public class GetItemDetailsMVCResourceCommand extends BaseMVCResourceCommand {
 		InfoItemFormVariation infoItemFormVariation =
 			infoItemFormVariationsProvider.getInfoItemFormVariation(
 				layoutDisplayPageObjectProvider.getGroupId(),
-				String.valueOf(layoutDisplayPageObjectProvider.getClassTypeId()));
+				String.valueOf(
+					layoutDisplayPageObjectProvider.getClassTypeId()));
 
 		if (infoItemFormVariation != null) {
 			return infoItemFormVariation.getLabel(themeDisplay.getLocale());
