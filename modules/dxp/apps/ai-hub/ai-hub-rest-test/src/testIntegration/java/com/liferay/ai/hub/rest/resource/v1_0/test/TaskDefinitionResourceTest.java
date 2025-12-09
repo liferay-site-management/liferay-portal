@@ -5,16 +5,76 @@
 
 package com.liferay.ai.hub.rest.resource.v1_0.test;
 
+import com.liferay.ai.hub.rest.client.dto.v1_0.TaskDefinition;
+import com.liferay.ai.hub.rest.client.pagination.Page;
+import com.liferay.ai.hub.rest.client.pagination.Pagination;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
+import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.test.rule.FeatureFlag;
+import com.liferay.portal.test.rule.FeatureFlags;
+import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.workflow.constants.WorkflowDefinitionConstants;
+import com.liferay.site.initializer.SiteInitializer;
+import com.liferay.site.initializer.SiteInitializerRegistry;
 
-import org.junit.Ignore;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
  * @author Feliphe Marinho
  */
-@Ignore
+@FeatureFlags(featureFlags = @FeatureFlag(value = "LPD-62272"))
 @RunWith(Arquillian.class)
 public class TaskDefinitionResourceTest
 	extends BaseTaskDefinitionResourceTestCase {
+
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		_originalName = PrincipalThreadLocal.getName();
+
+		PrincipalThreadLocal.setName(TestPropsValues.getUserId());
+
+		SiteInitializer siteInitializer =
+			_siteInitializerRegistry.getSiteInitializer("ai-hub-initializer");
+
+		siteInitializer.initialize(TestPropsValues.getGroupId());
+	}
+
+	@AfterClass
+	public static void tearDownClass() {
+		PrincipalThreadLocal.setName(_originalName);
+	}
+
+	@Test
+	public void testGetTaskDefinitionsPage() throws Exception {
+		Page<TaskDefinition> page =
+			taskDefinitionResource.getTaskDefinitionsPage(
+				null, null, Pagination.of(1, 10), null);
+
+		List<String> taskDefinitionNames = Arrays.asList(
+			WorkflowDefinitionConstants.NAME_CHANGE_TONE,
+			WorkflowDefinitionConstants.NAME_CHAT_MESSAGE_PIPELINE,
+			WorkflowDefinitionConstants.NAME_FIX_SPELLING_AND_GRAMMAR,
+			WorkflowDefinitionConstants.NAME_IMPROVE_WRITING,
+			WorkflowDefinitionConstants.NAME_MAKE_LONGER,
+			WorkflowDefinitionConstants.NAME_MAKE_SHORTER);
+
+		for (TaskDefinition taskDefinition : page.getItems()) {
+			Assert.assertTrue(
+				taskDefinitionNames.contains(taskDefinition.getName()));
+		}
+	}
+
+	private static String _originalName;
+
+	@Inject
+	private static SiteInitializerRegistry _siteInitializerRegistry;
+
 }
