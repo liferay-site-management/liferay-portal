@@ -1180,6 +1180,26 @@ public class LayoutCTTest {
 		}
 
 		Assert.assertTrue(hasConflict);
+
+		otherCTCollection.setStatus(WorkflowConstants.STATUS_INCOMPLETE);
+
+		hasConflict = false;
+
+		for (ConflictInfo conflictInfo : conflictInfos) {
+			if ((conflictInfo.getSourcePrimaryKey() == layout.getPlid()) &&
+				Objects.equals(
+					conflictInfo.getResolutionDescription(
+						conflictInfo.getResourceBundle(LocaleUtil.ENGLISH)),
+					_language.get(
+						LocaleUtil.ENGLISH,
+						"deletion-conflicts-with-modifications-in-another-" +
+						"publication"))) {
+
+				hasConflict = true;
+			}
+		}
+
+		Assert.assertTrue(hasConflict);
 	}
 
 	@Test
