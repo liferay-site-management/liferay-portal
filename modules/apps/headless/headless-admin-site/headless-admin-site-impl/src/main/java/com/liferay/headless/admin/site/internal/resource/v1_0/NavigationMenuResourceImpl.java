@@ -7,8 +7,12 @@ package com.liferay.headless.admin.site.internal.resource.v1_0;
 
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.exportimport.vulcan.batch.engine.ExportImportVulcanBatchEngineTaskItemDelegate;
+import com.liferay.headless.admin.site.dto.v1_0.DisplayPageNavigationMenuItemSettings;
 import com.liferay.headless.admin.site.dto.v1_0.NavigationMenu;
 import com.liferay.headless.admin.site.dto.v1_0.NavigationMenuItem;
+import com.liferay.headless.admin.site.dto.v1_0.PageNavigationMenuItemSettings;
+import com.liferay.headless.admin.site.dto.v1_0.UrlNavigationMenuItemSettings;
+import com.liferay.headless.admin.site.dto.v1_0.VocabularyNavigationMenuItemSettings;
 import com.liferay.headless.admin.site.internal.odata.entity.v1_0.NavigationMenuEntityModel;
 import com.liferay.headless.admin.site.internal.resource.v1_0.util.GroupUtil;
 import com.liferay.headless.admin.site.resource.v1_0.NavigationMenuResource;
@@ -51,11 +55,14 @@ import com.liferay.portal.vulcan.util.SearchUtil;
 import com.liferay.site.navigation.admin.constants.SiteNavigationAdminPortletKeys;
 import com.liferay.site.navigation.constants.SiteNavigationActionKeys;
 import com.liferay.site.navigation.constants.SiteNavigationConstants;
+import com.liferay.site.navigation.menu.item.layout.constants.SiteNavigationMenuItemTypeConstants;
 import com.liferay.site.navigation.model.SiteNavigationMenu;
 import com.liferay.site.navigation.model.SiteNavigationMenuItem;
 import com.liferay.site.navigation.service.SiteNavigationMenuItemService;
 import com.liferay.site.navigation.service.SiteNavigationMenuLocalService;
 import com.liferay.site.navigation.service.SiteNavigationMenuService;
+import com.liferay.site.navigation.type.SiteNavigationMenuItemType;
+import com.liferay.site.navigation.type.SiteNavigationMenuItemTypeRegistry;
 import com.liferay.site.navigation.util.comparator.SiteNavigationMenuItemOrderComparator;
 
 import jakarta.ws.rs.core.MultivaluedMap;
@@ -440,6 +447,80 @@ public class NavigationMenuResourceImpl
 		return unicodeProperties.getProperty("title");
 	}
 
+	private Object _getNavigationMenuItemSettings(
+		String type, UnicodeProperties unicodeProperties) {
+
+		if (Objects.equals(
+				type, SiteNavigationMenuItemTypeConstants.ASSET_VOCABULARY)) {
+
+			return new VocabularyNavigationMenuItemSettings() {
+				{
+					setExternalReferenceCode(
+						() -> unicodeProperties.getProperty(
+							"externalReferenceCode"));
+					setScopeExternalReferenceCode(
+						() -> unicodeProperties.getProperty(
+							"scopeExternalReferenceCode"));
+					setShowAssetVocabularyLevel(
+						() -> Boolean.valueOf(
+							unicodeProperties.getProperty(
+								"showAssetVocabularyLevel")));
+					setTitle(() -> unicodeProperties.getProperty("title"));
+					setType(() -> unicodeProperties.getProperty("type"));
+				}
+			};
+		}
+		else if (Objects.equals(
+					type, SiteNavigationMenuItemTypeConstants.LAYOUT)) {
+
+			return new PageNavigationMenuItemSettings() {
+				{
+					setExternalReferenceCode(
+						() -> unicodeProperties.getProperty(
+							"externalReferenceCode"));
+					setPrivatePage(
+						() -> Boolean.valueOf(
+							unicodeProperties.getProperty("privatePage")));
+				}
+			};
+		}
+		else if (Objects.equals(
+					type, SiteNavigationMenuItemTypeConstants.URL)) {
+
+			return new UrlNavigationMenuItemSettings() {
+				{
+					setUrl(() -> unicodeProperties.getProperty("url"));
+					setUseNewTab(
+						() -> Boolean.valueOf(
+							unicodeProperties.getProperty("useNewTab")));
+				}
+			};
+		}
+
+		SiteNavigationMenuItemType siteNavigationMenuItemType =
+			_siteNavigationMenuItemTypeRegistry.getSiteNavigationMenuItemType(
+				type);
+
+		Class<?> clazz = siteNavigationMenuItemType.getClass();
+
+		if (Objects.equals(
+				clazz.getName(),
+				SiteNavigationMenuItemTypeConstants.DISPLAY_PAGE_CLASS_NAME)) {
+
+			return new DisplayPageNavigationMenuItemSettings() {
+				{
+					setExternalReferenceCode(
+						() -> unicodeProperties.getProperty(
+							"externalReferenceCode"));
+					setTitle(() -> unicodeProperties.getProperty("title"));
+					setType(() -> unicodeProperties.getProperty("type"));
+				}
+			};
+		}
+
+		return null;
+	}
+
 	private int _getNavigationMenuType(NavigationMenu navigationMenu) {
 		int type = SiteNavigationConstants.TYPE_DEFAULT;
 
@@ -657,6 +738,10 @@ public class NavigationMenuResourceImpl
 						contextAcceptLanguage.getPreferredLocale()));
 				setDateCreated(siteNavigationMenuItem::getCreateDate);
 				setDateModified(siteNavigationMenuItem::getModifiedDate);
+				setDefaultLanguageId(
+					() -> unicodeProperties.getProperty("defaultLanguageId"));
+				setDisplayIcon(
+					() -> unicodeProperties.getProperty("displayIcon"));
 				setExternalReferenceCode(
 					siteNavigationMenuItem::getExternalReferenceCode);
 				setId(siteNavigationMenuItem::getSiteNavigationMenuItemId);
@@ -691,7 +776,16 @@ public class NavigationMenuResourceImpl
 							item, siteNavigationMenuItemsMap),
 						NavigationMenuItem.class));
 				setType(siteNavigationMenuItem::getType);
-				setTypeSettings(() -> unicodeProperties);
+
+				Object navigationMenuItemSettings =
+					_getNavigationMenuItemSettings(
+						siteNavigationMenuItem.getType(), unicodeProperties);
+
+				if (navigationMenuItemSettings != null) {
+					setNavigationMenuItemSettings(
+						() -> navigationMenuItemSettings);
+				}
+
 				setUseCustomName(
 					() -> Boolean.valueOf(
 						unicodeProperties.getProperty("useCustomName")));
@@ -848,6 +942,10 @@ public class NavigationMenuResourceImpl
 
 	@Reference
 	private SiteNavigationMenuItemService _siteNavigationMenuItemService;
+
+	@Reference
+	private SiteNavigationMenuItemTypeRegistry
+		_siteNavigationMenuItemTypeRegistry;
 
 	@Reference
 	private SiteNavigationMenuLocalService _siteNavigationMenuLocalService;
