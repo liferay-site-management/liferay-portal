@@ -307,15 +307,12 @@ public class NavigationMenuResourceImpl
 			long groupId, long siteNavigationMenuId)
 		throws Exception {
 
-		UnicodeProperties unicodeProperties = UnicodePropertiesBuilder.putAll(
-			navigationMenuItem.getTypeSettings()
-		).build();
-
 		SiteNavigationMenuItem siteNavigationMenuItem =
 			_siteNavigationMenuItemService.addSiteNavigationMenuItem(
 				navigationMenuItem.getExternalReferenceCode(), groupId,
 				siteNavigationMenuId, parentNavigationMenuId,
-				navigationMenuItem.getType(), unicodeProperties.toString(),
+				navigationMenuItem.getType(),
+				_getTypeSettings(navigationMenuItem),
 				ServiceContextBuilder.create(
 					groupId, contextHttpServletRequest, null
 				).expandoBridgeAttributes(
@@ -378,6 +375,15 @@ public class NavigationMenuResourceImpl
 			StringUtil.removeSubstring(property.getKey(), "name_"));
 	}
 
+	private String _getLocalizedNamesFromI18nMap(
+		Map<String, String> nameI18nMap) {
+
+		JSONObject localizedNamesJSONObject = _jsonFactory.createJSONObject(
+			nameI18nMap);
+
+		return localizedNamesJSONObject.toString();
+	}
+
 	private Map<Locale, String> _getLocalizedNamesFromProperties(
 		UnicodeProperties unicodeProperties) {
 
@@ -396,6 +402,20 @@ public class NavigationMenuResourceImpl
 		}
 
 		return properties;
+	}
+
+	private Map<String, String> _getLocalizedPropertiesMapFromI18nMap(
+		Map<String, String> nameI18nMap) {
+
+		Map<String, String> localizedPropertyMap = new HashMap<>();
+
+		for (Map.Entry<String, String> entry : nameI18nMap.entrySet()) {
+			localizedPropertyMap.put(
+				"name_" + LocaleUtil.fromLanguageId(entry.getKey()),
+				nameI18nMap.get(entry.getKey()));
+		}
+
+		return localizedPropertyMap;
 	}
 
 	private String _getName(
@@ -480,7 +500,7 @@ public class NavigationMenuResourceImpl
 							"externalReferenceCode"));
 					setPrivatePage(
 						() -> Boolean.valueOf(
-							unicodeProperties.getProperty("privatePage")));
+							unicodeProperties.getProperty("privateLayout")));
 				}
 			};
 		}
@@ -576,6 +596,188 @@ public class NavigationMenuResourceImpl
 		}
 
 		return siteNavigationMenuItemsMap;
+	}
+
+	private String _getTypeSettings(NavigationMenuItem navigationMenuItem) {
+		UnicodeProperties unicodeProperties = UnicodePropertiesBuilder.create(
+			true
+		).put(
+			"defaultLanguageId", navigationMenuItem.getDefaultLanguageId()
+		).put(
+			"displayIcon", navigationMenuItem.getDisplayIcon()
+		).put(
+			"useCustomName",
+			() -> {
+				if (navigationMenuItem.getUseCustomName() != null) {
+					return String.valueOf(
+						navigationMenuItem.getUseCustomName());
+				}
+
+				return null;
+			}
+		).build();
+
+		Object navigationMenuItemSettings =
+			navigationMenuItem.getNavigationMenuItemSettings();
+
+		if (navigationMenuItemSettings != null) {
+			String localizedNames = _getLocalizedNamesFromI18nMap(
+				navigationMenuItem.getName_i18n());
+
+			Map<String, String> localizedPropertyMap =
+				_getLocalizedPropertiesMapFromI18nMap(
+					navigationMenuItem.getName_i18n());
+
+			String type = navigationMenuItem.getType();
+
+			if (Objects.equals(
+					type,
+					SiteNavigationMenuItemTypeConstants.ASSET_VOCABULARY)) {
+
+				VocabularyNavigationMenuItemSettings
+					vocabularyNavigationMenuItemSettings =
+						(VocabularyNavigationMenuItemSettings)
+							navigationMenuItemSettings;
+
+				String externalReferenceCode =
+					vocabularyNavigationMenuItemSettings.
+						getExternalReferenceCode();
+
+				if (externalReferenceCode != null) {
+					unicodeProperties.put(
+						"externalReferenceCode", externalReferenceCode);
+				}
+
+				unicodeProperties.put("localizedNames", localizedNames);
+
+				String scopeExternalReferenceCode =
+					vocabularyNavigationMenuItemSettings.
+						getScopeExternalReferenceCode();
+
+				if (scopeExternalReferenceCode != null) {
+					unicodeProperties.put(
+						"scopeExternalReferenceCode",
+						scopeExternalReferenceCode);
+				}
+
+				Boolean showAssetVocabularyLevel =
+					vocabularyNavigationMenuItemSettings.
+						getShowAssetVocabularyLevel();
+
+				if (showAssetVocabularyLevel != null) {
+					unicodeProperties.put(
+						"showAssetVocabularyLevel",
+						String.valueOf(showAssetVocabularyLevel));
+				}
+
+				if (vocabularyNavigationMenuItemSettings.getTitle() != null) {
+					unicodeProperties.put(
+						"title",
+						vocabularyNavigationMenuItemSettings.getTitle());
+				}
+
+				if (vocabularyNavigationMenuItemSettings.getType() != null) {
+					unicodeProperties.put(
+						"type", vocabularyNavigationMenuItemSettings.getType());
+				}
+			}
+			else if (Objects.equals(
+						type, SiteNavigationMenuItemTypeConstants.LAYOUT)) {
+
+				PageNavigationMenuItemSettings pageNavigationMenuItemSettings =
+					(PageNavigationMenuItemSettings)navigationMenuItemSettings;
+
+				if (pageNavigationMenuItemSettings.getExternalReferenceCode() !=
+						null) {
+
+					unicodeProperties.put(
+						"externalReferenceCode",
+						pageNavigationMenuItemSettings.
+							getExternalReferenceCode());
+				}
+
+				if (pageNavigationMenuItemSettings.getPrivatePage() != null) {
+					unicodeProperties.put(
+						"privateLayout",
+						String.valueOf(
+							pageNavigationMenuItemSettings.getPrivatePage()));
+				}
+
+				unicodeProperties.putAll(localizedPropertyMap);
+			}
+			else if (Objects.equals(
+						type, SiteNavigationMenuItemTypeConstants.NODE)) {
+
+				unicodeProperties.putAll(localizedPropertyMap);
+			}
+			else if (Objects.equals(
+						type, SiteNavigationMenuItemTypeConstants.URL)) {
+
+				UrlNavigationMenuItemSettings urlNavigationMenuItemSettings =
+					(UrlNavigationMenuItemSettings)navigationMenuItemSettings;
+
+				if (urlNavigationMenuItemSettings.getUrl() != null) {
+					unicodeProperties.put(
+						"url", urlNavigationMenuItemSettings.getUrl());
+				}
+
+				if (urlNavigationMenuItemSettings.getUseNewTab() != null) {
+					unicodeProperties.put(
+						"useNewTab",
+						String.valueOf(
+							urlNavigationMenuItemSettings.getUseNewTab()));
+				}
+
+				unicodeProperties.putAll(localizedPropertyMap);
+			}
+			else {
+				SiteNavigationMenuItemType siteNavigationMenuItemType =
+					_siteNavigationMenuItemTypeRegistry.
+						getSiteNavigationMenuItemType(type);
+
+				Class<?> clazz = siteNavigationMenuItemType.getClass();
+
+				if (Objects.equals(
+						clazz.getName(),
+						SiteNavigationMenuItemTypeConstants.
+							DISPLAY_PAGE_CLASS_NAME)) {
+
+					DisplayPageNavigationMenuItemSettings
+						displayPageNavigationMenuItemSettings =
+							(DisplayPageNavigationMenuItemSettings)
+								navigationMenuItemSettings;
+
+					String externalReferenceCode =
+						displayPageNavigationMenuItemSettings.
+							getExternalReferenceCode();
+
+					if (externalReferenceCode != null) {
+						unicodeProperties.put(
+							"externalReferenceCode", externalReferenceCode);
+					}
+
+					unicodeProperties.put("localizedNames", localizedNames);
+
+					if (displayPageNavigationMenuItemSettings.getTitle() !=
+							null) {
+
+						unicodeProperties.put(
+							"title",
+							displayPageNavigationMenuItemSettings.getTitle());
+					}
+
+					if (displayPageNavigationMenuItemSettings.getType() !=
+							null) {
+
+						unicodeProperties.put(
+							"type",
+							displayPageNavigationMenuItemSettings.getType());
+					}
+				}
+			}
+		}
+
+		return unicodeProperties.toString();
 	}
 
 	private UnicodeProperties _getUnicodeProperties(
@@ -894,7 +1096,7 @@ public class NavigationMenuResourceImpl
 				SiteNavigationMenuItem updatedSiteNavigationMenuItem =
 					_siteNavigationMenuItemService.updateSiteNavigationMenuItem(
 						siteNavigationMenuItem.getSiteNavigationMenuItemId(),
-						String.valueOf(navigationMenuItem.getTypeSettings()),
+						_getTypeSettings(navigationMenuItem),
 						ServiceContextBuilder.create(
 							groupId, contextHttpServletRequest, null
 						).expandoBridgeAttributes(
