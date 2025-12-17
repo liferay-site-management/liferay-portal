@@ -471,10 +471,13 @@ public class NavigationMenuResourceImpl
 		String type, UnicodeProperties unicodeProperties) {
 
 		if (Objects.equals(
-				type, SiteNavigationMenuItemTypeConstants.ASSET_VOCABULARY)) {
+				type, SiteNavigationMenuItemTypeConstants.ASSET_VOCABULARY) ||
+			StringUtil.containsIgnoreCase(type, "category")) {
 
 			return new VocabularyNavigationMenuItemSettings() {
 				{
+					setClassName(
+						() -> unicodeProperties.getProperty("className"));
 					setExternalReferenceCode(
 						() -> unicodeProperties.getProperty(
 							"externalReferenceCode"));
@@ -501,6 +504,9 @@ public class NavigationMenuResourceImpl
 					setPrivatePage(
 						() -> Boolean.valueOf(
 							unicodeProperties.getProperty("privateLayout")));
+					setScopeExternalReferenceCode(
+						() -> unicodeProperties.getProperty(
+							"scopeExternalReferenceCode"));
 				}
 			};
 		}
@@ -529,6 +535,8 @@ public class NavigationMenuResourceImpl
 
 			return new DisplayPageNavigationMenuItemSettings() {
 				{
+					setClassName(
+						() -> unicodeProperties.getProperty("className"));
 					setExternalReferenceCode(
 						() -> unicodeProperties.getProperty(
 							"externalReferenceCode"));
@@ -639,6 +647,13 @@ public class NavigationMenuResourceImpl
 						(VocabularyNavigationMenuItemSettings)
 							navigationMenuItemSettings;
 
+				String className =
+					vocabularyNavigationMenuItemSettings.getClassName();
+
+				if (className != null) {
+					unicodeProperties.put("className", className);
+				}
+
 				String externalReferenceCode =
 					vocabularyNavigationMenuItemSettings.
 						getExternalReferenceCode();
@@ -703,6 +718,16 @@ public class NavigationMenuResourceImpl
 							pageNavigationMenuItemSettings.getPrivatePage()));
 				}
 
+				String scopeExternalReferenceCode =
+					pageNavigationMenuItemSettings.
+						getScopeExternalReferenceCode();
+
+				if (scopeExternalReferenceCode != null) {
+					unicodeProperties.put(
+						"scopeExternalReferenceCode",
+						scopeExternalReferenceCode);
+				}
+
 				unicodeProperties.putAll(localizedPropertyMap);
 			}
 			else if (Objects.equals(
@@ -746,6 +771,13 @@ public class NavigationMenuResourceImpl
 						displayPageNavigationMenuItemSettings =
 							(DisplayPageNavigationMenuItemSettings)
 								navigationMenuItemSettings;
+
+					String className =
+						displayPageNavigationMenuItemSettings.getClassName();
+
+					if (className != null) {
+						unicodeProperties.put("className", className);
+					}
 
 					String externalReferenceCode =
 						displayPageNavigationMenuItemSettings.
