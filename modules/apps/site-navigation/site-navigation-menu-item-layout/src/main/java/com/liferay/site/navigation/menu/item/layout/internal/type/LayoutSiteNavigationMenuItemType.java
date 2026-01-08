@@ -240,7 +240,19 @@ public class LayoutSiteNavigationMenuItemType
 		Layout layout = _fetchLayout(siteNavigationMenuItem);
 
 		if (layout == null) {
-			return StringPool.BLANK;
+			UnicodeProperties typeSettingsUnicodeProperties =
+				UnicodePropertiesBuilder.fastLoad(
+					siteNavigationMenuItem.getTypeSettings()
+				).build();
+
+			String privateLayout = typeSettingsUnicodeProperties.getProperty(
+				"privateLayout");
+
+			if (privateLayout.equals("true")) {
+				return _language.get(locale, "private-page");
+			}
+
+			return _language.get(locale, "page");
 		}
 
 		Group group = layout.getGroup();
@@ -293,8 +305,14 @@ public class LayoutSiteNavigationMenuItemType
 			defaultTitle = layout.getName(locale);
 		}
 
-		return typeSettingsUnicodeProperties.getProperty(
+		String name = typeSettingsUnicodeProperties.getProperty(
 			"name_" + LocaleUtil.toLanguageId(locale), defaultTitle);
+
+		if ((layout == null) && Validator.isNull(name)) {
+			return typeSettingsUnicodeProperties.getProperty("title");
+		}
+
+		return name;
 	}
 
 	@Override

@@ -7,7 +7,6 @@ package com.liferay.site.navigation.service.impl;
 
 import com.liferay.batch.engine.thread.local.BatchEngineThreadLocal;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -16,12 +15,11 @@ import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
-import com.liferay.portal.kernel.service.LayoutService;
+import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 import com.liferay.portal.kernel.util.Validator;
@@ -38,7 +36,6 @@ import com.liferay.site.navigation.type.SiteNavigationMenuItemType;
 import com.liferay.site.navigation.type.SiteNavigationMenuItemTypeRegistry;
 import com.liferay.site.navigation.util.comparator.SiteNavigationMenuItemOrderComparator;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -97,18 +94,23 @@ public class SiteNavigationMenuItemLocalServiceImpl
 			_siteNavigationMenuItemTypeRegistry.getSiteNavigationMenuItemType(
 				type);
 
-		if (!BatchEngineThreadLocal.isBatchImportInProcess() && siteNavigationMenuItemType == null) {
+		if (!BatchEngineThreadLocal.isBatchImportInProcess() &&
+			(siteNavigationMenuItemType == null)) {
+
 			throw new InvalidSiteNavigationMenuItemTypeException(type);
 		}
 
-		String name = StringPool.BLANK;
+		String name = null;
 
 		if (BatchEngineThreadLocal.isBatchImportInProcess()) {
 			UnicodeProperties typeSettingsUnicodeProperties =
-				UnicodePropertiesBuilder.fastLoad(typeSettings).build();
+				UnicodePropertiesBuilder.fastLoad(
+					typeSettings
+				).build();
 
 			name = typeSettingsUnicodeProperties.getProperty("title");
-		} else {
+		}
+		else {
 			name = siteNavigationMenuItemType.getName(typeSettings);
 		}
 
@@ -449,6 +451,15 @@ public class SiteNavigationMenuItemLocalServiceImpl
 
 		String name = siteNavigationMenuItemType.getName(typeSettings);
 
+		if (name == null) {
+			UnicodeProperties typeSettingsUnicodeProperties =
+				UnicodePropertiesBuilder.fastLoad(
+					typeSettings
+				).build();
+
+			name = typeSettingsUnicodeProperties.getProperty("title");
+		}
+
 		_validateName(name);
 
 		_validateLayout(
@@ -491,8 +502,8 @@ public class SiteNavigationMenuItemLocalServiceImpl
 		}
 	}
 
-	private void _validateLayout(long groupId, String type, String typeSettings)
-		throws PortalException {
+	private void _validateLayout(
+		long groupId, String type, String typeSettings) {
 
 		if (!Objects.equals(type, SiteNavigationMenuItemTypeConstants.LAYOUT)) {
 			return;
@@ -512,7 +523,7 @@ public class SiteNavigationMenuItemLocalServiceImpl
 			return;
 		}
 
-		_layoutService.getLayoutByExternalReferenceCode(
+		_layoutLocalService.fetchLayoutByExternalReferenceCode(
 			externalReferenceCode, groupId);
 	}
 
@@ -531,7 +542,7 @@ public class SiteNavigationMenuItemLocalServiceImpl
 	}
 
 	@Reference
-	private LayoutService _layoutService;
+	private LayoutLocalService _layoutLocalService;
 
 	@Reference
 	private SiteNavigationMenuItemTypeRegistry
