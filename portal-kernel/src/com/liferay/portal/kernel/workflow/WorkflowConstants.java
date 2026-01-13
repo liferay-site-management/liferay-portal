@@ -74,6 +74,8 @@ public class WorkflowConstants {
 
 	public static final String LABEL_PENDING = "pending";
 
+	public static final String LABEL_READY = "ready";
+
 	public static final String LABEL_SCHEDULED = "scheduled";
 
 	public static final String RESOURCE_NAME = "com.liferay.portal.workflow";
@@ -99,6 +101,8 @@ public class WorkflowConstants {
 	public static final int STATUS_INCOMPLETE = 6;
 
 	public static final int STATUS_PENDING = 1;
+
+	public static final int STATUS_READY = 10;
 
 	public static final int STATUS_SCHEDULED = 7;
 
@@ -136,6 +140,9 @@ public class WorkflowConstants {
 		}
 		else if (label.equals(LABEL_PENDING)) {
 			return STATUS_PENDING;
+		}
+		else if (label.equals(LABEL_READY)) {
+			return STATUS_READY;
 		}
 		else if (label.equals(LABEL_SCHEDULED)) {
 			return STATUS_SCHEDULED;
@@ -175,6 +182,9 @@ public class WorkflowConstants {
 		else if (status == STATUS_PENDING) {
 			return LABEL_PENDING;
 		}
+		else if (status == STATUS_READY) {
+			return LABEL_READY;
+		}
 		else if (status == STATUS_SCHEDULED) {
 			return LABEL_SCHEDULED;
 		}
@@ -213,6 +223,9 @@ public class WorkflowConstants {
 		else if (status == STATUS_PENDING) {
 			return LABEL_PENDING;
 		}
+		else if (status == STATUS_READY) {
+			return LABEL_READY;
+		}
 		else if (status == STATUS_SCHEDULED) {
 			return LABEL_SCHEDULED;
 		}
@@ -246,6 +259,9 @@ public class WorkflowConstants {
 			return "warning";
 		}
 		else if (status == WorkflowConstants.STATUS_PENDING) {
+			return "info";
+		}
+		else if (status == WorkflowConstants.STATUS_READY) {
 			return "info";
 		}
 		else if (status == WorkflowConstants.STATUS_SCHEDULED) {
