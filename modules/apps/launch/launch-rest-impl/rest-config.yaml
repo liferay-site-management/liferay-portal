@@ -1,0 +1,13 @@
+apiDir: ../launch-rest-api/src/main/java
+apiPackagePath: com.liferay.launch.rest
+application:
+    baseURI: /launch-rest
+    className: LaunchRESTApplication
+    name: Liferay.Launch.REST
+author: David Truong
+clientDir: ../launch-rest-client/src/main/java
+compatibilityVersion: 14
+forcePredictableOperationId: true
+generateClientJS: true
+javaEEPackage: jakarta
+testDir: ../launch-rest-test/src/testIntegration/java
