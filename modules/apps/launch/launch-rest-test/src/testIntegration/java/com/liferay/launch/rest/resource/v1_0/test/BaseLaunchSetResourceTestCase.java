@@ -1,0 +1,2601 @@
+/**
+ * SPDX-FileCopyrightText: (c) 2026 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
+ */
+
+package com.liferay.launch.rest.resource.v1_0.test;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+
+import com.liferay.headless.batch.engine.client.dto.v1_0.ImportTask;
+import com.liferay.headless.batch.engine.client.http.HttpInvoker.HttpResponse;
+import com.liferay.headless.batch.engine.client.resource.v1_0.ImportTaskResource;
+import com.liferay.launch.rest.client.dto.v1_0.LaunchSet;
+import com.liferay.launch.rest.client.http.HttpInvoker;
+import com.liferay.launch.rest.client.pagination.Page;
+import com.liferay.launch.rest.client.pagination.Pagination;
+import com.liferay.launch.rest.client.resource.v1_0.LaunchSetResource;
+import com.liferay.launch.rest.client.serdes.v1_0.LaunchSetSerDes;
+import com.liferay.oauth2.provider.scope.ScopeChecker;
+import com.liferay.petra.function.UnsafeTriConsumer;
+import com.liferay.petra.function.transform.TransformUtil;
+import com.liferay.petra.reflect.ReflectionUtil;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
+import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.service.ResourceActionLocalService;
+import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
+import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.util.GroupTestUtil;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
+import com.liferay.portal.kernel.test.util.UserTestUtil;
+import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.PropsValues;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Time;
+import com.liferay.portal.odata.entity.EntityField;
+import com.liferay.portal.odata.entity.EntityModel;
+import com.liferay.portal.search.test.rule.SearchTestRule;
+import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
+import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
+import com.liferay.portal.vulcan.crud.VulcanCRUDItemDelegate;
+import com.liferay.portal.vulcan.crud.VulcanCRUDItemDelegateBuilderRegistry;
+import com.liferay.portal.vulcan.resource.EntityModelResource;
+
+import jakarta.annotation.Generated;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.PathSegment;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
+
+import java.lang.reflect.Method;
+
+import java.net.URI;
+
+import java.text.Format;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+
+/**
+ * @author David Truong
+ * @generated
+ */
+@Generated("")
+public abstract class BaseLaunchSetResourceTestCase {
+
+	@ClassRule
+	@Rule
+	public static final AggregateTestRule aggregateTestRule =
+		new AggregateTestRule(
+			new LiferayIntegrationTestRule(),
+			PermissionCheckerMethodTestRule.INSTANCE);
+
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		_format = FastDateFormatFactoryUtil.getSimpleDateFormat(
+			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+	}
+
+	@Before
+	public void setUp() throws Exception {
+		irrelevantGroup = GroupTestUtil.addGroup();
+		testGroup = GroupTestUtil.addGroup();
+
+		testCompany = CompanyLocalServiceUtil.getCompany(
+			testGroup.getCompanyId());
+
+		_launchSetResource.setContextCompany(testCompany);
+
+		_testCompanyAdminUser = UserTestUtil.getAdminUser(
+			testCompany.getCompanyId());
+
+		launchSetResource = LaunchSetResource.builder(
+		).authentication(
+			_testCompanyAdminUser.getEmailAddress(),
+			PropsValues.DEFAULT_ADMIN_PASSWORD
+		).endpoint(
+			testCompany.getVirtualHostname(), 8080, "http"
+		).locale(
+			LocaleUtil.getDefault()
+		).build();
+
+		importTaskResource = ImportTaskResource.builder(
+		).authentication(
+			_testCompanyAdminUser.getEmailAddress(),
+			PropsValues.DEFAULT_ADMIN_PASSWORD
+		).endpoint(
+			testCompany.getVirtualHostname(), 8080, "http"
+		).locale(
+			LocaleUtil.getDefault()
+		).build();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		GroupTestUtil.deleteGroup(irrelevantGroup);
+		GroupTestUtil.deleteGroup(testGroup);
+	}
+
+	@Test
+	public void testClientSerDesToDTO() throws Exception {
+		ObjectMapper objectMapper = getClientSerDesObjectMapper();
+
+		LaunchSet launchSet1 = randomLaunchSet();
+
+		String json = objectMapper.writeValueAsString(launchSet1);
+
+		LaunchSet launchSet2 = LaunchSetSerDes.toDTO(json);
+
+		Assert.assertTrue(equals(launchSet1, launchSet2));
+	}
+
+	@Test
+	public void testClientSerDesToJSON() throws Exception {
+		ObjectMapper objectMapper = getClientSerDesObjectMapper();
+
+		LaunchSet launchSet = randomLaunchSet();
+
+		String json1 = objectMapper.writeValueAsString(launchSet);
+		String json2 = LaunchSetSerDes.toJSON(launchSet);
+
+		Assert.assertEquals(
+			objectMapper.readTree(json1), objectMapper.readTree(json2));
+	}
+
+	protected ObjectMapper getClientSerDesObjectMapper() {
+		return new ObjectMapper() {
+			{
+				configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
+				configure(
+					SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
+				enable(SerializationFeature.INDENT_OUTPUT);
+				setDateFormat(new ISO8601DateFormat());
+				setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+				setSerializationInclusion(JsonInclude.Include.NON_NULL);
+				setVisibility(
+					PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+				setVisibility(
+					PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
+			}
+		};
+	}
+
+	@Test
+	public void testEscapeRegexInStringFields() throws Exception {
+		String regex = "^[0-9]+(\\.[0-9]{1,2})\"?";
+
+		LaunchSet launchSet = randomLaunchSet();
+
+		launchSet.setDescription(regex);
+		launchSet.setExternalReferenceCode(regex);
+		launchSet.setName(regex);
+		launchSet.setOwnerName(regex);
+		launchSet.setStatusMessage(regex);
+
+		String json = LaunchSetSerDes.toJSON(launchSet);
+
+		Assert.assertFalse(json.contains(regex));
+
+		launchSet = LaunchSetSerDes.toDTO(json);
+
+		Assert.assertEquals(regex, launchSet.getDescription());
+		Assert.assertEquals(regex, launchSet.getExternalReferenceCode());
+		Assert.assertEquals(regex, launchSet.getName());
+		Assert.assertEquals(regex, launchSet.getOwnerName());
+		Assert.assertEquals(regex, launchSet.getStatusMessage());
+	}
+
+	@Test
+	public void testDeleteLaunchSet() throws Exception {
+		@SuppressWarnings("PMD.UnusedLocalVariable")
+		LaunchSet launchSet = testDeleteLaunchSet_addLaunchSet();
+
+		assertHttpResponseStatusCode(
+			204,
+			launchSetResource.deleteLaunchSetHttpResponse(launchSet.getId()));
+
+		assertHttpResponseStatusCode(
+			404, launchSetResource.getLaunchSetHttpResponse(launchSet.getId()));
+		assertHttpResponseStatusCode(
+			404, launchSetResource.getLaunchSetHttpResponse(0L));
+	}
+
+	protected LaunchSet testDeleteLaunchSet_addLaunchSet() throws Exception {
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	@Test
+	public void testGraphQLDeleteLaunchSet() throws Exception {
+
+		// No namespace
+
+		LaunchSet launchSet1 = testGraphQLDeleteLaunchSet_addLaunchSet();
+
+		Assert.assertTrue(
+			JSONUtil.getValueAsBoolean(
+				invokeGraphQLMutation(
+					new GraphQLField(
+						"deleteLaunchSet",
+						new HashMap<String, Object>() {
+							{
+								put("launchSetId", launchSet1.getId());
+							}
+						})),
+				"JSONObject/data", "Object/deleteLaunchSet"));
+
+		JSONArray errorsJSONArray1 = JSONUtil.getValueAsJSONArray(
+			invokeGraphQLQuery(
+				new GraphQLField(
+					"launchSet",
+					new HashMap<String, Object>() {
+						{
+							put("launchSetId", launchSet1.getId());
+						}
+					},
+					getGraphQLFields())),
+			"JSONArray/errors");
+
+		Assert.assertTrue(errorsJSONArray1.length() > 0);
+
+		// Using the namespace launch_v1_0
+
+		LaunchSet launchSet2 = testGraphQLDeleteLaunchSet_addLaunchSet();
+
+		Assert.assertTrue(
+			JSONUtil.getValueAsBoolean(
+				invokeGraphQLMutation(
+					new GraphQLField(
+						"launch_v1_0",
+						new GraphQLField(
+							"deleteLaunchSet",
+							new HashMap<String, Object>() {
+								{
+									put("launchSetId", launchSet2.getId());
+								}
+							}))),
+				"JSONObject/data", "JSONObject/launch_v1_0",
+				"Object/deleteLaunchSet"));
+
+		JSONArray errorsJSONArray2 = JSONUtil.getValueAsJSONArray(
+			invokeGraphQLQuery(
+				new GraphQLField(
+					"launch_v1_0",
+					new GraphQLField(
+						"launchSet",
+						new HashMap<String, Object>() {
+							{
+								put("launchSetId", launchSet2.getId());
+							}
+						},
+						getGraphQLFields()))),
+			"JSONArray/errors");
+
+		Assert.assertTrue(errorsJSONArray2.length() > 0);
+	}
+
+	protected LaunchSet testGraphQLDeleteLaunchSet_addLaunchSet()
+		throws Exception {
+
+		return testGraphQLLaunchSet_addLaunchSet();
+	}
+
+	@Test
+	public void testDeleteLaunchSetBatch() throws Exception {
+		LaunchSet launchSet1 = testDeleteLaunchSetBatch_addLaunchSet();
+
+		testDeleteLaunchSetBatch_deleteLaunchSet(
+			202, launchSet1.getExternalReferenceCode(), null);
+
+		assertHttpResponseStatusCode(
+			404,
+			launchSetResource.getLaunchSetHttpResponse(launchSet1.getId()));
+
+		launchSet1 = testDeleteLaunchSetBatch_addLaunchSet();
+
+		testDeleteLaunchSetBatch_deleteLaunchSet(202, null, launchSet1.getId());
+
+		assertHttpResponseStatusCode(
+			404,
+			launchSetResource.getLaunchSetHttpResponse(launchSet1.getId()));
+
+		launchSet1 = testDeleteLaunchSetBatch_addLaunchSet();
+		LaunchSet launchSet2 = testDeleteLaunchSetBatch_addLaunchSet();
+
+		testDeleteLaunchSetBatch_deleteLaunchSet(
+			202, launchSet2.getExternalReferenceCode(), launchSet1.getId());
+
+		assertHttpResponseStatusCode(
+			404,
+			launchSetResource.getLaunchSetHttpResponse(launchSet1.getId()));
+		assertHttpResponseStatusCode(
+			200,
+			launchSetResource.getLaunchSetHttpResponse(launchSet2.getId()));
+
+		testDeleteLaunchSetBatch_deleteLaunchSet(
+			202, launchSet2.getExternalReferenceCode(), launchSet1.getId());
+
+		assertHttpResponseStatusCode(
+			404,
+			launchSetResource.getLaunchSetHttpResponse(launchSet2.getId()));
+	}
+
+	protected LaunchSet testDeleteLaunchSetBatch_addLaunchSet()
+		throws Exception {
+
+		return testDeleteLaunchSet_addLaunchSet();
+	}
+
+	protected void testDeleteLaunchSetBatch_deleteLaunchSet(
+			int expectedStatusCode, String externalReferenceCode, Long id)
+		throws Exception {
+
+		HttpInvoker.HttpResponse httpResponse =
+			launchSetResource.deleteLaunchSetBatchHttpResponse(
+				null,
+				JSONUtil.putAll(
+					JSONUtil.put(
+						"externalReferenceCode", () -> externalReferenceCode
+					).put(
+						"id", () -> id
+					)));
+
+		Assert.assertEquals(expectedStatusCode, httpResponse.getStatusCode());
+
+		waitForFinish(
+			"COMPLETED",
+			JSONFactoryUtil.createJSONObject(httpResponse.getContent()));
+	}
+
+	@Test
+	public void testDeleteLaunchSetByExternalReferenceCode() throws Exception {
+		@SuppressWarnings("PMD.UnusedLocalVariable")
+		LaunchSet launchSet =
+			testDeleteLaunchSetByExternalReferenceCode_addLaunchSet();
+
+		assertHttpResponseStatusCode(
+			204,
+			launchSetResource.
+				deleteLaunchSetByExternalReferenceCodeHttpResponse(
+					launchSet.getExternalReferenceCode()));
+
+		assertHttpResponseStatusCode(
+			404,
+			launchSetResource.getLaunchSetByExternalReferenceCodeHttpResponse(
+				launchSet.getExternalReferenceCode()));
+		assertHttpResponseStatusCode(
+			404,
+			launchSetResource.getLaunchSetByExternalReferenceCodeHttpResponse(
+				"-"));
+	}
+
+	protected LaunchSet
+			testDeleteLaunchSetByExternalReferenceCode_addLaunchSet()
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	@Test
+	public void testGraphQLDeleteLaunchSetByExternalReferenceCode()
+		throws Exception {
+
+		// No namespace
+
+		LaunchSet launchSet1 =
+			testGraphQLDeleteLaunchSetByExternalReferenceCode_addLaunchSet();
+
+		Assert.assertTrue(
+			JSONUtil.getValueAsBoolean(
+				invokeGraphQLMutation(
+					new GraphQLField(
+						"deleteLaunchSetByExternalReferenceCode",
+						new HashMap<String, Object>() {
+							{
+								put(
+									"externalReferenceCode",
+									"\"" +
+										launchSet1.getExternalReferenceCode() +
+											"\"");
+							}
+						})),
+				"JSONObject/data",
+				"Object/deleteLaunchSetByExternalReferenceCode"));
+
+		JSONArray errorsJSONArray1 = JSONUtil.getValueAsJSONArray(
+			invokeGraphQLQuery(
+				new GraphQLField(
+					"launchSetByExternalReferenceCode",
+					new HashMap<String, Object>() {
+						{
+							put(
+								"externalReferenceCode",
+								"\"" + launchSet1.getExternalReferenceCode() +
+									"\"");
+						}
+					},
+					getGraphQLFields())),
+			"JSONArray/errors");
+
+		Assert.assertTrue(errorsJSONArray1.length() > 0);
+
+		// Using the namespace launch_v1_0
+
+		LaunchSet launchSet2 =
+			testGraphQLDeleteLaunchSetByExternalReferenceCode_addLaunchSet();
+
+		Assert.assertTrue(
+			JSONUtil.getValueAsBoolean(
+				invokeGraphQLMutation(
+					new GraphQLField(
+						"launch_v1_0",
+						new GraphQLField(
+							"deleteLaunchSetByExternalReferenceCode",
+							new HashMap<String, Object>() {
+								{
+									put(
+										"externalReferenceCode",
+										"\"" +
+											launchSet2.
+												getExternalReferenceCode() +
+													"\"");
+								}
+							}))),
+				"JSONObject/data", "JSONObject/launch_v1_0",
+				"Object/deleteLaunchSetByExternalReferenceCode"));
+
+		JSONArray errorsJSONArray2 = JSONUtil.getValueAsJSONArray(
+			invokeGraphQLQuery(
+				new GraphQLField(
+					"launch_v1_0",
+					new GraphQLField(
+						"launchSetByExternalReferenceCode",
+						new HashMap<String, Object>() {
+							{
+								put(
+									"externalReferenceCode",
+									"\"" +
+										launchSet2.getExternalReferenceCode() +
+											"\"");
+							}
+						},
+						getGraphQLFields()))),
+			"JSONArray/errors");
+
+		Assert.assertTrue(errorsJSONArray2.length() > 0);
+	}
+
+	protected LaunchSet
+			testGraphQLDeleteLaunchSetByExternalReferenceCode_addLaunchSet()
+		throws Exception {
+
+		return testGraphQLLaunchSet_addLaunchSet();
+	}
+
+	@Test
+	public void testGetLaunchSet() throws Exception {
+		LaunchSet postLaunchSet = testGetLaunchSet_addLaunchSet();
+
+		LaunchSet getLaunchSet = launchSetResource.getLaunchSet(
+			postLaunchSet.getId());
+
+		assertEquals(postLaunchSet, getLaunchSet);
+		assertValid(getLaunchSet);
+	}
+
+	@Test
+	public void testVulcanCRUDItemDelegateGetItem() throws Exception {
+		LaunchSet postLaunchSet = testGetLaunchSet_addLaunchSet();
+
+		LaunchSet getLaunchSet = launchSetResource.getLaunchSet(
+			postLaunchSet.getId());
+
+		VulcanCRUDItemDelegate vulcanCRUDItemDelegate =
+			_vulcanCRUDItemDelegateBuilderRegistry.builder(
+				testCompany, "com.liferay.launch.rest.dto.v1_0.LaunchSet"
+			).acceptLanguage(
+				new AcceptLanguage() {
+
+					@Override
+					public List<Locale> getLocales() {
+						return Arrays.asList(LocaleUtil.getDefault());
+					}
+
+					@Override
+					public String getPreferredLanguageId() {
+						return LocaleUtil.toLanguageId(LocaleUtil.getDefault());
+					}
+
+					@Override
+					public Locale getPreferredLocale() {
+						return LocaleUtil.getDefault();
+					}
+
+				}
+			).groupLocalService(
+				_groupLocalService
+			).httpServletRequest(
+				testVulcanCRUDItemDelegate_getHttpServletRequest()
+			).httpServletResponse(
+				new MockHttpServletResponse()
+			).resourceActionLocalService(
+				_resourceActionLocalService
+			).resourcePermissionLocalService(
+				_resourcePermissionLocalService
+			).roleLocalService(
+				_roleLocalService
+			).scopeChecker(
+				_scopeChecker
+			).uriInfo(
+				testVulcanCRUDItemDelegate_getUriInfo()
+			).user(
+				testVulcanCRUDItemDelegate_getUser()
+			).build();
+
+		Object item = vulcanCRUDItemDelegate.getItem(postLaunchSet.getId());
+
+		assertEquals(getLaunchSet, LaunchSetSerDes.toDTO(item.toString()));
+	}
+
+	protected HttpServletRequest
+		testVulcanCRUDItemDelegate_getHttpServletRequest() {
+
+		return new MockHttpServletRequest() {
+
+			@Override
+			public StringBuffer getRequestURL() {
+				return new StringBuffer(
+					StringBundler.concat(
+						"http://localhost:8080/o/v1.0/",
+						RandomTestUtil.randomString(), "/",
+						RandomTestUtil.randomString()));
+			}
+
+		};
+	}
+
+	protected UriInfo testVulcanCRUDItemDelegate_getUriInfo() {
+		String applicationPath = RandomTestUtil.randomString() + "/";
+		String resourcePath = RandomTestUtil.randomString();
+
+		return new UriInfo() {
+
+			@Override
+			public String getPath() {
+				return resourcePath;
+			}
+
+			@Override
+			public String getPath(boolean decode) {
+				return getPath();
+			}
+
+			@Override
+			public List<PathSegment> getPathSegments() {
+				return Collections.emptyList();
+			}
+
+			@Override
+			public List<PathSegment> getPathSegments(boolean decode) {
+				return getPathSegments();
+			}
+
+			@Override
+			public URI getRequestUri() {
+				return URI.create(
+					"http://localhost:8080/o/" + applicationPath +
+						resourcePath);
+			}
+
+			@Override
+			public UriBuilder getRequestUriBuilder() {
+				return UriBuilder.fromUri(getRequestUri());
+			}
+
+			@Override
+			public URI getAbsolutePath() {
+				return getRequestUri();
+			}
+
+			@Override
+			public UriBuilder getAbsolutePathBuilder() {
+				return getRequestUriBuilder();
+			}
+
+			@Override
+			public URI getBaseUri() {
+				return URI.create("http://localhost:8080/o/" + applicationPath);
+			}
+
+			@Override
+			public UriBuilder getBaseUriBuilder() {
+				return UriBuilder.fromUri(getBaseUri());
+			}
+
+			@Override
+			public MultivaluedMap<String, String> getPathParameters() {
+				return new MultivaluedHashMap<>();
+			}
+
+			@Override
+			public MultivaluedMap<String, String> getPathParameters(
+				boolean decode) {
+
+				return getPathParameters();
+			}
+
+			@Override
+			public MultivaluedMap<String, String> getQueryParameters() {
+				return new MultivaluedHashMap<>();
+			}
+
+			@Override
+			public MultivaluedMap<String, String> getQueryParameters(
+				boolean decode) {
+
+				return getQueryParameters();
+			}
+
+			@Override
+			public List<String> getMatchedURIs() {
+				return Collections.emptyList();
+			}
+
+			@Override
+			public List<String> getMatchedURIs(boolean decode) {
+				return getMatchedURIs();
+			}
+
+			@Override
+			public List<Object> getMatchedResources() {
+				return Collections.emptyList();
+			}
+
+			@Override
+			public URI resolve(URI requestUri) {
+				return getBaseUri().resolve(requestUri);
+			}
+
+			@Override
+			public URI relativize(URI uri) {
+				return getBaseUri().relativize(uri);
+			}
+
+		};
+	}
+
+	protected com.liferay.portal.kernel.model.User
+		testVulcanCRUDItemDelegate_getUser() {
+
+		return _testCompanyAdminUser;
+	}
+
+	protected LaunchSet testGetLaunchSet_addLaunchSet() throws Exception {
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	@Test
+	public void testGraphQLGetLaunchSet() throws Exception {
+		LaunchSet launchSet = testGraphQLGetLaunchSet_addLaunchSet();
+
+		// No namespace
+
+		Assert.assertTrue(
+			equals(
+				launchSet,
+				LaunchSetSerDes.toDTO(
+					JSONUtil.getValueAsString(
+						invokeGraphQLQuery(
+							new GraphQLField(
+								"launchSet",
+								new HashMap<String, Object>() {
+									{
+										put("launchSetId", launchSet.getId());
+									}
+								},
+								getGraphQLFields())),
+						"JSONObject/data", "Object/launchSet"))));
+
+		// Using the namespace launch_v1_0
+
+		Assert.assertTrue(
+			equals(
+				launchSet,
+				LaunchSetSerDes.toDTO(
+					JSONUtil.getValueAsString(
+						invokeGraphQLQuery(
+							new GraphQLField(
+								"launch_v1_0",
+								new GraphQLField(
+									"launchSet",
+									new HashMap<String, Object>() {
+										{
+											put(
+												"launchSetId",
+												launchSet.getId());
+										}
+									},
+									getGraphQLFields()))),
+						"JSONObject/data", "JSONObject/launch_v1_0",
+						"Object/launchSet"))));
+	}
+
+	@Test
+	public void testGraphQLGetLaunchSetNotFound() throws Exception {
+		Long irrelevantLaunchSetId = RandomTestUtil.randomLong();
+
+		// No namespace
+
+		Assert.assertEquals(
+			"Not Found",
+			JSONUtil.getValueAsString(
+				invokeGraphQLQuery(
+					new GraphQLField(
+						"launchSet",
+						new HashMap<String, Object>() {
+							{
+								put("launchSetId", irrelevantLaunchSetId);
+							}
+						},
+						getGraphQLFields())),
+				"JSONArray/errors", "Object/0", "JSONObject/extensions",
+				"Object/code"));
+
+		// Using the namespace launch_v1_0
+
+		Assert.assertEquals(
+			"Not Found",
+			JSONUtil.getValueAsString(
+				invokeGraphQLQuery(
+					new GraphQLField(
+						"launch_v1_0",
+						new GraphQLField(
+							"launchSet",
+							new HashMap<String, Object>() {
+								{
+									put("launchSetId", irrelevantLaunchSetId);
+								}
+							},
+							getGraphQLFields()))),
+				"JSONArray/errors", "Object/0", "JSONObject/extensions",
+				"Object/code"));
+	}
+
+	protected LaunchSet testGraphQLGetLaunchSet_addLaunchSet()
+		throws Exception {
+
+		return testGraphQLLaunchSet_addLaunchSet();
+	}
+
+	@Test
+	public void testGetLaunchSetByExternalReferenceCode() throws Exception {
+		LaunchSet postLaunchSet =
+			testGetLaunchSetByExternalReferenceCode_addLaunchSet();
+
+		LaunchSet getLaunchSet =
+			launchSetResource.getLaunchSetByExternalReferenceCode(
+				postLaunchSet.getExternalReferenceCode());
+
+		assertEquals(postLaunchSet, getLaunchSet);
+		assertValid(getLaunchSet);
+	}
+
+	protected LaunchSet testGetLaunchSetByExternalReferenceCode_addLaunchSet()
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	@Test
+	public void testGraphQLGetLaunchSetByExternalReferenceCode()
+		throws Exception {
+
+		LaunchSet launchSet =
+			testGraphQLGetLaunchSetByExternalReferenceCode_addLaunchSet();
+
+		// No namespace
+
+		Assert.assertTrue(
+			equals(
+				launchSet,
+				LaunchSetSerDes.toDTO(
+					JSONUtil.getValueAsString(
+						invokeGraphQLQuery(
+							new GraphQLField(
+								"launchSetByExternalReferenceCode",
+								new HashMap<String, Object>() {
+									{
+										put(
+											"externalReferenceCode",
+											"\"" +
+												launchSet.
+													getExternalReferenceCode() +
+														"\"");
+									}
+								},
+								getGraphQLFields())),
+						"JSONObject/data",
+						"Object/launchSetByExternalReferenceCode"))));
+
+		// Using the namespace launch_v1_0
+
+		Assert.assertTrue(
+			equals(
+				launchSet,
+				LaunchSetSerDes.toDTO(
+					JSONUtil.getValueAsString(
+						invokeGraphQLQuery(
+							new GraphQLField(
+								"launch_v1_0",
+								new GraphQLField(
+									"launchSetByExternalReferenceCode",
+									new HashMap<String, Object>() {
+										{
+											put(
+												"externalReferenceCode",
+												"\"" +
+													launchSet.
+														getExternalReferenceCode() +
+															"\"");
+										}
+									},
+									getGraphQLFields()))),
+						"JSONObject/data", "JSONObject/launch_v1_0",
+						"Object/launchSetByExternalReferenceCode"))));
+	}
+
+	@Test
+	public void testGraphQLGetLaunchSetByExternalReferenceCodeNotFound()
+		throws Exception {
+
+		String irrelevantExternalReferenceCode =
+			"\"" + RandomTestUtil.randomString() + "\"";
+
+		// No namespace
+
+		Assert.assertEquals(
+			"Not Found",
+			JSONUtil.getValueAsString(
+				invokeGraphQLQuery(
+					new GraphQLField(
+						"launchSetByExternalReferenceCode",
+						new HashMap<String, Object>() {
+							{
+								put(
+									"externalReferenceCode",
+									irrelevantExternalReferenceCode);
+							}
+						},
+						getGraphQLFields())),
+				"JSONArray/errors", "Object/0", "JSONObject/extensions",
+				"Object/code"));
+
+		// Using the namespace launch_v1_0
+
+		Assert.assertEquals(
+			"Not Found",
+			JSONUtil.getValueAsString(
+				invokeGraphQLQuery(
+					new GraphQLField(
+						"launch_v1_0",
+						new GraphQLField(
+							"launchSetByExternalReferenceCode",
+							new HashMap<String, Object>() {
+								{
+									put(
+										"externalReferenceCode",
+										irrelevantExternalReferenceCode);
+								}
+							},
+							getGraphQLFields()))),
+				"JSONArray/errors", "Object/0", "JSONObject/extensions",
+				"Object/code"));
+	}
+
+	protected LaunchSet
+			testGraphQLGetLaunchSetByExternalReferenceCode_addLaunchSet()
+		throws Exception {
+
+		return testGraphQLLaunchSet_addLaunchSet();
+	}
+
+	@Test
+	public void testGetLaunchSetsPage() throws Exception {
+		Page<LaunchSet> page = launchSetResource.getLaunchSetsPage(
+			null, null, null, Pagination.of(1, 10), null);
+
+		long totalCount = page.getTotalCount();
+
+		LaunchSet launchSet1 = testGetLaunchSetsPage_addLaunchSet(
+			randomLaunchSet());
+
+		LaunchSet launchSet2 = testGetLaunchSetsPage_addLaunchSet(
+			randomLaunchSet());
+
+		page = launchSetResource.getLaunchSetsPage(
+			null, null, null, Pagination.of(1, 10), null);
+
+		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+
+		assertContains(launchSet1, (List<LaunchSet>)page.getItems());
+		assertContains(launchSet2, (List<LaunchSet>)page.getItems());
+		assertValid(page, testGetLaunchSetsPage_getExpectedActions());
+
+		launchSetResource.deleteLaunchSet(launchSet1.getId());
+
+		launchSetResource.deleteLaunchSet(launchSet2.getId());
+	}
+
+	protected Map<String, Map<String, String>>
+			testGetLaunchSetsPage_getExpectedActions()
+		throws Exception {
+
+		Map<String, Map<String, String>> expectedActions = new HashMap<>();
+
+		return expectedActions;
+	}
+
+	@Test
+	public void testGetLaunchSetsPageWithFilterDateTimeEquals()
+		throws Exception {
+
+		List<EntityField> entityFields = getEntityFields(
+			EntityField.Type.DATE_TIME);
+
+		if (entityFields.isEmpty()) {
+			return;
+		}
+
+		LaunchSet launchSet1 = randomLaunchSet();
+
+		launchSet1 = testGetLaunchSetsPage_addLaunchSet(launchSet1);
+
+		for (EntityField entityField : entityFields) {
+			Page<LaunchSet> page = launchSetResource.getLaunchSetsPage(
+				null, null, getFilterString(entityField, "between", launchSet1),
+				Pagination.of(1, 2), null);
+
+			assertEquals(
+				Collections.singletonList(launchSet1),
+				(List<LaunchSet>)page.getItems());
+		}
+	}
+
+	@Test
+	public void testGetLaunchSetsPageWithFilterDoubleEquals() throws Exception {
+		testGetLaunchSetsPageWithFilter("eq", EntityField.Type.DOUBLE);
+	}
+
+	@Test
+	public void testGetLaunchSetsPageWithFilterStringContains()
+		throws Exception {
+
+		testGetLaunchSetsPageWithFilter("contains", EntityField.Type.STRING);
+	}
+
+	@Test
+	public void testGetLaunchSetsPageWithFilterStringEquals() throws Exception {
+		testGetLaunchSetsPageWithFilter("eq", EntityField.Type.STRING);
+	}
+
+	@Test
+	public void testGetLaunchSetsPageWithFilterStringStartsWith()
+		throws Exception {
+
+		testGetLaunchSetsPageWithFilter("startswith", EntityField.Type.STRING);
+	}
+
+	protected void testGetLaunchSetsPageWithFilter(
+			String operator, EntityField.Type type)
+		throws Exception {
+
+		List<EntityField> entityFields = getEntityFields(type);
+
+		if (entityFields.isEmpty()) {
+			return;
+		}
+
+		LaunchSet launchSet1 = testGetLaunchSetsPage_addLaunchSet(
+			randomLaunchSet());
+
+		@SuppressWarnings("PMD.UnusedLocalVariable")
+		LaunchSet launchSet2 = testGetLaunchSetsPage_addLaunchSet(
+			randomLaunchSet());
+
+		for (EntityField entityField : entityFields) {
+			Page<LaunchSet> page = launchSetResource.getLaunchSetsPage(
+				null, null, getFilterString(entityField, operator, launchSet1),
+				Pagination.of(1, 2), null);
+
+			assertEquals(
+				Collections.singletonList(launchSet1),
+				(List<LaunchSet>)page.getItems());
+		}
+	}
+
+	@Test
+	public void testGetLaunchSetsPageWithPagination() throws Exception {
+		Page<LaunchSet> launchSetsPage = launchSetResource.getLaunchSetsPage(
+			null, null, null, null, null);
+
+		int totalCount = GetterUtil.getInteger(launchSetsPage.getTotalCount());
+
+		LaunchSet launchSet1 = testGetLaunchSetsPage_addLaunchSet(
+			randomLaunchSet());
+
+		LaunchSet launchSet2 = testGetLaunchSetsPage_addLaunchSet(
+			randomLaunchSet());
+
+		LaunchSet launchSet3 = testGetLaunchSetsPage_addLaunchSet(
+			randomLaunchSet());
+
+		// See com.liferay.portal.vulcan.internal.configuration.HeadlessAPICompanyConfiguration#pageSizeLimit
+
+		int pageSizeLimit = 500;
+
+		if (totalCount >= (pageSizeLimit - 2)) {
+			Page<LaunchSet> page1 = launchSetResource.getLaunchSetsPage(
+				null, null, null,
+				Pagination.of(
+					(int)Math.ceil((totalCount + 1.0) / pageSizeLimit),
+					pageSizeLimit),
+				null);
+
+			Assert.assertEquals(totalCount + 3, page1.getTotalCount());
+
+			assertContains(launchSet1, (List<LaunchSet>)page1.getItems());
+
+			Page<LaunchSet> page2 = launchSetResource.getLaunchSetsPage(
+				null, null, null,
+				Pagination.of(
+					(int)Math.ceil((totalCount + 2.0) / pageSizeLimit),
+					pageSizeLimit),
+				null);
+
+			assertContains(launchSet2, (List<LaunchSet>)page2.getItems());
+
+			Page<LaunchSet> page3 = launchSetResource.getLaunchSetsPage(
+				null, null, null,
+				Pagination.of(
+					(int)Math.ceil((totalCount + 3.0) / pageSizeLimit),
+					pageSizeLimit),
+				null);
+
+			assertContains(launchSet3, (List<LaunchSet>)page3.getItems());
+		}
+		else {
+			Page<LaunchSet> page1 = launchSetResource.getLaunchSetsPage(
+				null, null, null, Pagination.of(1, totalCount + 2), null);
+
+			List<LaunchSet> launchSets1 = (List<LaunchSet>)page1.getItems();
+
+			Assert.assertEquals(
+				launchSets1.toString(), totalCount + 2, launchSets1.size());
+
+			Page<LaunchSet> page2 = launchSetResource.getLaunchSetsPage(
+				null, null, null, Pagination.of(2, totalCount + 2), null);
+
+			Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+
+			List<LaunchSet> launchSets2 = (List<LaunchSet>)page2.getItems();
+
+			Assert.assertEquals(launchSets2.toString(), 1, launchSets2.size());
+
+			Page<LaunchSet> page3 = launchSetResource.getLaunchSetsPage(
+				null, null, null, Pagination.of(1, (int)totalCount + 3), null);
+
+			assertContains(launchSet1, (List<LaunchSet>)page3.getItems());
+			assertContains(launchSet2, (List<LaunchSet>)page3.getItems());
+			assertContains(launchSet3, (List<LaunchSet>)page3.getItems());
+		}
+	}
+
+	@Test
+	public void testGetLaunchSetsPageWithSortDateTime() throws Exception {
+		testGetLaunchSetsPageWithSort(
+			EntityField.Type.DATE_TIME,
+			(entityField, launchSet1, launchSet2) -> {
+				BeanTestUtil.setProperty(
+					launchSet1, entityField.getName(),
+					new Date(System.currentTimeMillis() - (2 * Time.MINUTE)));
+			});
+	}
+
+	@Test
+	public void testGetLaunchSetsPageWithSortDouble() throws Exception {
+		testGetLaunchSetsPageWithSort(
+			EntityField.Type.DOUBLE,
+			(entityField, launchSet1, launchSet2) -> {
+				BeanTestUtil.setProperty(
+					launchSet1, entityField.getName(), 0.1);
+				BeanTestUtil.setProperty(
+					launchSet2, entityField.getName(), 0.5);
+			});
+	}
+
+	@Test
+	public void testGetLaunchSetsPageWithSortInteger() throws Exception {
+		testGetLaunchSetsPageWithSort(
+			EntityField.Type.INTEGER,
+			(entityField, launchSet1, launchSet2) -> {
+				BeanTestUtil.setProperty(launchSet1, entityField.getName(), 0);
+				BeanTestUtil.setProperty(launchSet2, entityField.getName(), 1);
+			});
+	}
+
+	@Test
+	public void testGetLaunchSetsPageWithSortString() throws Exception {
+		testGetLaunchSetsPageWithSort(
+			EntityField.Type.STRING,
+			(entityField, launchSet1, launchSet2) -> {
+				Class<?> clazz = launchSet1.getClass();
+
+				String entityFieldName = entityField.getName();
+
+				Method method = clazz.getMethod(
+					"get" + StringUtil.upperCaseFirstLetter(entityFieldName));
+
+				Class<?> returnType = method.getReturnType();
+
+				if (returnType.isAssignableFrom(Map.class)) {
+					BeanTestUtil.setProperty(
+						launchSet1, entityFieldName,
+						Collections.singletonMap("Aaa", "Aaa"));
+					BeanTestUtil.setProperty(
+						launchSet2, entityFieldName,
+						Collections.singletonMap("Bbb", "Bbb"));
+				}
+				else if (entityFieldName.contains("email")) {
+					BeanTestUtil.setProperty(
+						launchSet1, entityFieldName,
+						"aaa" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()) +
+									"@liferay.com");
+					BeanTestUtil.setProperty(
+						launchSet2, entityFieldName,
+						"bbb" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()) +
+									"@liferay.com");
+				}
+				else {
+					BeanTestUtil.setProperty(
+						launchSet1, entityFieldName,
+						"aaa" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()));
+					BeanTestUtil.setProperty(
+						launchSet2, entityFieldName,
+						"bbb" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()));
+				}
+			});
+	}
+
+	protected void testGetLaunchSetsPageWithSort(
+			EntityField.Type type,
+			UnsafeTriConsumer<EntityField, LaunchSet, LaunchSet, Exception>
+				unsafeTriConsumer)
+		throws Exception {
+
+		List<EntityField> entityFields = getEntityFields(type);
+
+		if (entityFields.isEmpty()) {
+			return;
+		}
+
+		LaunchSet launchSet1 = randomLaunchSet();
+		LaunchSet launchSet2 = randomLaunchSet();
+
+		for (EntityField entityField : entityFields) {
+			unsafeTriConsumer.accept(entityField, launchSet1, launchSet2);
+		}
+
+		launchSet1 = testGetLaunchSetsPage_addLaunchSet(launchSet1);
+
+		launchSet2 = testGetLaunchSetsPage_addLaunchSet(launchSet2);
+
+		Page<LaunchSet> page = launchSetResource.getLaunchSetsPage(
+			null, null, null, null, null);
+
+		for (EntityField entityField : entityFields) {
+			Page<LaunchSet> ascPage = launchSetResource.getLaunchSetsPage(
+				null, null, null,
+				Pagination.of(1, (int)page.getTotalCount() + 1),
+				entityField.getName() + ":asc");
+
+			assertContains(launchSet1, (List<LaunchSet>)ascPage.getItems());
+			assertContains(launchSet2, (List<LaunchSet>)ascPage.getItems());
+
+			Page<LaunchSet> descPage = launchSetResource.getLaunchSetsPage(
+				null, null, null,
+				Pagination.of(1, (int)page.getTotalCount() + 1),
+				entityField.getName() + ":desc");
+
+			assertContains(launchSet2, (List<LaunchSet>)descPage.getItems());
+			assertContains(launchSet1, (List<LaunchSet>)descPage.getItems());
+		}
+	}
+
+	protected LaunchSet testGetLaunchSetsPage_addLaunchSet(LaunchSet launchSet)
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	@Test
+	public void testPatchLaunchSet() throws Exception {
+		LaunchSet postLaunchSet = testPatchLaunchSet_addLaunchSet();
+
+		LaunchSet randomPatchLaunchSet = randomPatchLaunchSet();
+
+		@SuppressWarnings("PMD.UnusedLocalVariable")
+		LaunchSet patchLaunchSet = launchSetResource.patchLaunchSet(
+			postLaunchSet.getId(), randomPatchLaunchSet);
+
+		LaunchSet expectedPatchLaunchSet = postLaunchSet.clone();
+
+		BeanTestUtil.copyProperties(
+			randomPatchLaunchSet, expectedPatchLaunchSet);
+
+		LaunchSet getLaunchSet = launchSetResource.getLaunchSet(
+			patchLaunchSet.getId());
+
+		assertEquals(expectedPatchLaunchSet, getLaunchSet);
+		assertValid(getLaunchSet);
+	}
+
+	protected LaunchSet testPatchLaunchSet_addLaunchSet() throws Exception {
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	@Test
+	public void testPatchLaunchSetByExternalReferenceCode() throws Exception {
+		LaunchSet postLaunchSet =
+			testPatchLaunchSetByExternalReferenceCode_addLaunchSet();
+
+		LaunchSet randomPatchLaunchSet = randomPatchLaunchSet();
+
+		@SuppressWarnings("PMD.UnusedLocalVariable")
+		LaunchSet patchLaunchSet =
+			launchSetResource.patchLaunchSetByExternalReferenceCode(
+				postLaunchSet.getExternalReferenceCode(), randomPatchLaunchSet);
+
+		LaunchSet expectedPatchLaunchSet = postLaunchSet.clone();
+
+		BeanTestUtil.copyProperties(
+			randomPatchLaunchSet, expectedPatchLaunchSet);
+
+		LaunchSet getLaunchSet =
+			launchSetResource.getLaunchSetByExternalReferenceCode(
+				patchLaunchSet.getExternalReferenceCode());
+
+		assertEquals(expectedPatchLaunchSet, getLaunchSet);
+		assertValid(getLaunchSet);
+	}
+
+	protected LaunchSet testPatchLaunchSetByExternalReferenceCode_addLaunchSet()
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	@Test
+	public void testPutLaunchSet() throws Exception {
+		LaunchSet postLaunchSet = testPutLaunchSet_addLaunchSet();
+
+		LaunchSet randomLaunchSet = randomLaunchSet();
+
+		LaunchSet putLaunchSet = launchSetResource.putLaunchSet(
+			postLaunchSet.getId(), randomLaunchSet);
+
+		assertEquals(randomLaunchSet, putLaunchSet);
+		assertValid(putLaunchSet);
+
+		LaunchSet getLaunchSet = launchSetResource.getLaunchSet(
+			putLaunchSet.getId());
+
+		assertEquals(randomLaunchSet, getLaunchSet);
+		assertValid(getLaunchSet);
+	}
+
+	protected LaunchSet testPutLaunchSet_addLaunchSet() throws Exception {
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	@Test
+	public void testBatchEngineDeleteImportTask() throws Exception {
+		LaunchSet launchSet1 = testBatchEngineDeleteImportTask_addLaunchSet();
+
+		testBatchEngineDeleteImportTask_deleteLaunchSet(
+			200, launchSet1.getExternalReferenceCode(), null);
+
+		assertHttpResponseStatusCode(
+			404,
+			launchSetResource.getLaunchSetHttpResponse(launchSet1.getId()));
+
+		launchSet1 = testBatchEngineDeleteImportTask_addLaunchSet();
+
+		testBatchEngineDeleteImportTask_deleteLaunchSet(
+			200, null, launchSet1.getId());
+
+		assertHttpResponseStatusCode(
+			404,
+			launchSetResource.getLaunchSetHttpResponse(launchSet1.getId()));
+
+		launchSet1 = testBatchEngineDeleteImportTask_addLaunchSet();
+		LaunchSet launchSet2 = testBatchEngineDeleteImportTask_addLaunchSet();
+
+		testBatchEngineDeleteImportTask_deleteLaunchSet(
+			200, launchSet2.getExternalReferenceCode(), launchSet1.getId());
+
+		assertHttpResponseStatusCode(
+			404,
+			launchSetResource.getLaunchSetHttpResponse(launchSet1.getId()));
+		assertHttpResponseStatusCode(
+			200,
+			launchSetResource.getLaunchSetHttpResponse(launchSet2.getId()));
+
+		testBatchEngineDeleteImportTask_deleteLaunchSet(
+			200, launchSet2.getExternalReferenceCode(), launchSet1.getId());
+
+		assertHttpResponseStatusCode(
+			404,
+			launchSetResource.getLaunchSetHttpResponse(launchSet2.getId()));
+	}
+
+	protected LaunchSet testBatchEngineDeleteImportTask_addLaunchSet()
+		throws Exception {
+
+		return testDeleteLaunchSet_addLaunchSet();
+	}
+
+	protected void testBatchEngineDeleteImportTask_deleteLaunchSet(
+			int expectedStatusCode, String externalReferenceCode, Long id,
+			String... parameters)
+		throws Exception {
+
+		ImportTaskResource importTaskResource = ImportTaskResource.builder(
+		).authentication(
+			_testCompanyAdminUser.getEmailAddress(),
+			PropsValues.DEFAULT_ADMIN_PASSWORD
+		).endpoint(
+			testCompany.getVirtualHostname(), 8080, "http"
+		).parameters(
+			parameters
+		).build();
+
+		HttpResponse httpResponse =
+			importTaskResource.deleteImportTaskHttpResponse(
+				"com.liferay.launch.rest.dto.v1_0.LaunchSet", null, null, null,
+				null,
+				JSONUtil.putAll(
+					JSONUtil.put(
+						"externalReferenceCode", () -> externalReferenceCode
+					).put(
+						"id", () -> id
+					)));
+
+		Assert.assertEquals(expectedStatusCode, httpResponse.getStatusCode());
+
+		if (expectedStatusCode == 200) {
+			waitForFinish(
+				"COMPLETED",
+				JSONFactoryUtil.createJSONObject(httpResponse.getContent()));
+		}
+	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
+
+	protected LaunchSet testGraphQLLaunchSet_addLaunchSet() throws Exception {
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	protected void assertContains(
+		LaunchSet launchSet, List<LaunchSet> launchSets) {
+
+		boolean contains = false;
+
+		for (LaunchSet item : launchSets) {
+			if (equals(launchSet, item)) {
+				contains = true;
+
+				break;
+			}
+		}
+
+		Assert.assertTrue(
+			launchSets + " does not contain " + launchSet, contains);
+	}
+
+	protected void assertHttpResponseStatusCode(
+		int expectedHttpResponseStatusCode,
+		HttpInvoker.HttpResponse actualHttpResponse) {
+
+		Assert.assertEquals(
+			expectedHttpResponseStatusCode, actualHttpResponse.getStatusCode());
+	}
+
+	protected void assertEquals(LaunchSet launchSet1, LaunchSet launchSet2) {
+		Assert.assertTrue(
+			launchSet1 + " does not equal " + launchSet2,
+			equals(launchSet1, launchSet2));
+	}
+
+	protected void assertEquals(
+		List<LaunchSet> launchSets1, List<LaunchSet> launchSets2) {
+
+		Assert.assertEquals(launchSets1.size(), launchSets2.size());
+
+		for (int i = 0; i < launchSets1.size(); i++) {
+			LaunchSet launchSet1 = launchSets1.get(i);
+			LaunchSet launchSet2 = launchSets2.get(i);
+
+			assertEquals(launchSet1, launchSet2);
+		}
+	}
+
+	protected void assertEqualsIgnoringOrder(
+		List<LaunchSet> launchSets1, List<LaunchSet> launchSets2) {
+
+		Assert.assertEquals(launchSets1.size(), launchSets2.size());
+
+		for (LaunchSet launchSet1 : launchSets1) {
+			boolean contains = false;
+
+			for (LaunchSet launchSet2 : launchSets2) {
+				if (equals(launchSet1, launchSet2)) {
+					contains = true;
+
+					break;
+				}
+			}
+
+			Assert.assertTrue(
+				launchSets2 + " does not contain " + launchSet1, contains);
+		}
+	}
+
+	protected void assertValid(LaunchSet launchSet) throws Exception {
+		boolean valid = true;
+
+		if (launchSet.getDateCreated() == null) {
+			valid = false;
+		}
+
+		if (launchSet.getDateModified() == null) {
+			valid = false;
+		}
+
+		if (launchSet.getId() == null) {
+			valid = false;
+		}
+
+		for (String additionalAssertFieldName :
+				getAdditionalAssertFieldNames()) {
+
+			if (Objects.equals("actions", additionalAssertFieldName)) {
+				if (launchSet.getActions() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("dateScheduled", additionalAssertFieldName)) {
+				if (launchSet.getDateScheduled() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("description", additionalAssertFieldName)) {
+				if (launchSet.getDescription() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals(
+					"externalReferenceCode", additionalAssertFieldName)) {
+
+				if (launchSet.getExternalReferenceCode() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("name", additionalAssertFieldName)) {
+				if (launchSet.getName() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("ownerName", additionalAssertFieldName)) {
+				if (launchSet.getOwnerName() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("status", additionalAssertFieldName)) {
+				if (launchSet.getStatus() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("statusMessage", additionalAssertFieldName)) {
+				if (launchSet.getStatusMessage() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			throw new IllegalArgumentException(
+				"Invalid additional assert field name " +
+					additionalAssertFieldName);
+		}
+
+		Assert.assertTrue(valid);
+	}
+
+	protected void assertValid(Page<LaunchSet> page) {
+		assertValid(page, Collections.emptyMap());
+	}
+
+	protected void assertValid(
+		Page<LaunchSet> page,
+		Map<String, Map<String, String>> expectedActions) {
+
+		boolean valid = false;
+
+		java.util.Collection<LaunchSet> launchSets = page.getItems();
+
+		int size = launchSets.size();
+
+		if ((page.getLastPage() > 0) && (page.getPage() > 0) &&
+			(page.getPageSize() > 0) && (page.getTotalCount() > 0) &&
+			(size > 0)) {
+
+			valid = true;
+		}
+
+		Assert.assertTrue(valid);
+
+		assertValid(page.getActions(), expectedActions);
+	}
+
+	protected void assertValid(
+		Map<String, Map<String, String>> actions1,
+		Map<String, Map<String, String>> actions2) {
+
+		for (String key : actions2.keySet()) {
+			Map action = actions1.get(key);
+
+			Assert.assertNotNull(key + " does not contain an action", action);
+
+			Map<String, String> expectedAction = actions2.get(key);
+
+			Assert.assertEquals(
+				expectedAction.get("method"), action.get("method"));
+			Assert.assertEquals(expectedAction.get("href"), action.get("href"));
+		}
+	}
+
+	protected String[] getAdditionalAssertFieldNames() {
+		return new String[0];
+	}
+
+	protected List<GraphQLField> getGraphQLFields() throws Exception {
+		List<GraphQLField> graphQLFields = new ArrayList<>();
+
+		graphQLFields.add(new GraphQLField("externalReferenceCode"));
+
+		graphQLFields.add(new GraphQLField("id"));
+
+		for (java.lang.reflect.Field field :
+				getDeclaredFields(
+					com.liferay.launch.rest.dto.v1_0.LaunchSet.class)) {
+
+			if (!ArrayUtil.contains(
+					getAdditionalAssertFieldNames(), field.getName())) {
+
+				continue;
+			}
+
+			graphQLFields.addAll(getGraphQLFields(field));
+		}
+
+		return graphQLFields;
+	}
+
+	protected List<GraphQLField> getGraphQLFields(
+			java.lang.reflect.Field... fields)
+		throws Exception {
+
+		List<GraphQLField> graphQLFields = new ArrayList<>();
+
+		for (java.lang.reflect.Field field : fields) {
+			com.liferay.portal.vulcan.graphql.annotation.GraphQLField
+				vulcanGraphQLField = field.getAnnotation(
+					com.liferay.portal.vulcan.graphql.annotation.GraphQLField.
+						class);
+
+			if (vulcanGraphQLField != null) {
+				Class<?> clazz = field.getType();
+
+				if (clazz.isArray()) {
+					clazz = clazz.getComponentType();
+				}
+
+				List<GraphQLField> childrenGraphQLFields = getGraphQLFields(
+					getDeclaredFields(clazz));
+
+				graphQLFields.add(
+					new GraphQLField(field.getName(), childrenGraphQLFields));
+			}
+		}
+
+		return graphQLFields;
+	}
+
+	protected String[] getIgnoredEntityFieldNames() {
+		return new String[0];
+	}
+
+	protected boolean equals(LaunchSet launchSet1, LaunchSet launchSet2) {
+		if (launchSet1 == launchSet2) {
+			return true;
+		}
+
+		for (String additionalAssertFieldName :
+				getAdditionalAssertFieldNames()) {
+
+			if (Objects.equals("actions", additionalAssertFieldName)) {
+				if (!equals(
+						(Map)launchSet1.getActions(),
+						(Map)launchSet2.getActions())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("dateCreated", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						launchSet1.getDateCreated(),
+						launchSet2.getDateCreated())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("dateModified", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						launchSet1.getDateModified(),
+						launchSet2.getDateModified())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("dateScheduled", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						launchSet1.getDateScheduled(),
+						launchSet2.getDateScheduled())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("description", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						launchSet1.getDescription(),
+						launchSet2.getDescription())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals(
+					"externalReferenceCode", additionalAssertFieldName)) {
+
+				if (!Objects.deepEquals(
+						launchSet1.getExternalReferenceCode(),
+						launchSet2.getExternalReferenceCode())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("id", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						launchSet1.getId(), launchSet2.getId())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("name", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						launchSet1.getName(), launchSet2.getName())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("ownerName", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						launchSet1.getOwnerName(), launchSet2.getOwnerName())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("status", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						launchSet1.getStatus(), launchSet2.getStatus())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("statusMessage", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						launchSet1.getStatusMessage(),
+						launchSet2.getStatusMessage())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			throw new IllegalArgumentException(
+				"Invalid additional assert field name " +
+					additionalAssertFieldName);
+		}
+
+		return true;
+	}
+
+	protected boolean equals(
+		Map<String, Object> map1, Map<String, Object> map2) {
+
+		if (Objects.equals(map1.keySet(), map2.keySet())) {
+			for (Map.Entry<String, Object> entry : map1.entrySet()) {
+				if (entry.getValue() instanceof Map) {
+					if (!equals(
+							(Map)entry.getValue(),
+							(Map)map2.get(entry.getKey()))) {
+
+						return false;
+					}
+				}
+				else if (!Objects.deepEquals(
+							entry.getValue(), map2.get(entry.getKey()))) {
+
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	protected java.lang.reflect.Field[] getDeclaredFields(Class clazz)
+		throws Exception {
+
+		if (clazz.getClassLoader() == null) {
+			return new java.lang.reflect.Field[0];
+		}
+
+		return TransformUtil.transform(
+			ReflectionUtil.getDeclaredFields(clazz),
+			field -> {
+				if (field.isSynthetic()) {
+					return null;
+				}
+
+				return field;
+			},
+			java.lang.reflect.Field.class);
+	}
+
+	protected java.util.Collection<EntityField> getEntityFields()
+		throws Exception {
+
+		if (!(_launchSetResource instanceof EntityModelResource)) {
+			throw new UnsupportedOperationException(
+				"Resource is not an instance of EntityModelResource");
+		}
+
+		EntityModelResource entityModelResource =
+			(EntityModelResource)_launchSetResource;
+
+		EntityModel entityModel = entityModelResource.getEntityModel(
+			new MultivaluedHashMap());
+
+		if (entityModel == null) {
+			return Collections.emptyList();
+		}
+
+		Map<String, EntityField> entityFieldsMap =
+			entityModel.getEntityFieldsMap();
+
+		return entityFieldsMap.values();
+	}
+
+	protected List<EntityField> getEntityFields(EntityField.Type type)
+		throws Exception {
+
+		return TransformUtil.transform(
+			getEntityFields(),
+			entityField -> {
+				if (!Objects.equals(entityField.getType(), type) ||
+					ArrayUtil.contains(
+						getIgnoredEntityFieldNames(), entityField.getName())) {
+
+					return null;
+				}
+
+				return entityField;
+			});
+	}
+
+	protected String getFilterString(
+		EntityField entityField, String operator, LaunchSet launchSet) {
+
+		StringBundler sb = new StringBundler();
+
+		String entityFieldName = entityField.getName();
+
+		sb.append(entityFieldName);
+
+		sb.append(" ");
+		sb.append(operator);
+		sb.append(" ");
+
+		if (entityFieldName.equals("actions")) {
+			throw new IllegalArgumentException(
+				"Invalid entity field " + entityFieldName);
+		}
+
+		if (entityFieldName.equals("dateCreated")) {
+			if (operator.equals("between")) {
+				Date date = launchSet.getDateCreated();
+
+				sb = new StringBundler();
+
+				sb.append("(");
+				sb.append(entityFieldName);
+				sb.append(" gt ");
+				sb.append(_format.format(date.getTime() - (2 * Time.SECOND)));
+				sb.append(" and ");
+				sb.append(entityFieldName);
+				sb.append(" lt ");
+				sb.append(_format.format(date.getTime() + (2 * Time.SECOND)));
+				sb.append(")");
+			}
+			else {
+				sb.append(entityFieldName);
+
+				sb.append(" ");
+				sb.append(operator);
+				sb.append(" ");
+
+				sb.append(_format.format(launchSet.getDateCreated()));
+			}
+
+			return sb.toString();
+		}
+
+		if (entityFieldName.equals("dateModified")) {
+			if (operator.equals("between")) {
+				Date date = launchSet.getDateModified();
+
+				sb = new StringBundler();
+
+				sb.append("(");
+				sb.append(entityFieldName);
+				sb.append(" gt ");
+				sb.append(_format.format(date.getTime() - (2 * Time.SECOND)));
+				sb.append(" and ");
+				sb.append(entityFieldName);
+				sb.append(" lt ");
+				sb.append(_format.format(date.getTime() + (2 * Time.SECOND)));
+				sb.append(")");
+			}
+			else {
+				sb.append(entityFieldName);
+
+				sb.append(" ");
+				sb.append(operator);
+				sb.append(" ");
+
+				sb.append(_format.format(launchSet.getDateModified()));
+			}
+
+			return sb.toString();
+		}
+
+		if (entityFieldName.equals("dateScheduled")) {
+			if (operator.equals("between")) {
+				Date date = launchSet.getDateScheduled();
+
+				sb = new StringBundler();
+
+				sb.append("(");
+				sb.append(entityFieldName);
+				sb.append(" gt ");
+				sb.append(_format.format(date.getTime() - (2 * Time.SECOND)));
+				sb.append(" and ");
+				sb.append(entityFieldName);
+				sb.append(" lt ");
+				sb.append(_format.format(date.getTime() + (2 * Time.SECOND)));
+				sb.append(")");
+			}
+			else {
+				sb.append(entityFieldName);
+
+				sb.append(" ");
+				sb.append(operator);
+				sb.append(" ");
+
+				sb.append(_format.format(launchSet.getDateScheduled()));
+			}
+
+			return sb.toString();
+		}
+
+		if (entityFieldName.equals("description")) {
+			Object object = launchSet.getDescription();
+
+			String value = String.valueOf(object);
+
+			if (operator.equals("contains")) {
+				sb = new StringBundler();
+
+				sb.append("contains(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 2)) {
+					sb.append(value.substring(1, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else if (operator.equals("startswith")) {
+				sb = new StringBundler();
+
+				sb.append("startswith(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 1)) {
+					sb.append(value.substring(0, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else {
+				sb.append("'");
+				sb.append(value);
+				sb.append("'");
+			}
+
+			return sb.toString();
+		}
+
+		if (entityFieldName.equals("externalReferenceCode")) {
+			Object object = launchSet.getExternalReferenceCode();
+
+			String value = String.valueOf(object);
+
+			if (operator.equals("contains")) {
+				sb = new StringBundler();
+
+				sb.append("contains(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 2)) {
+					sb.append(value.substring(1, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else if (operator.equals("startswith")) {
+				sb = new StringBundler();
+
+				sb.append("startswith(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 1)) {
+					sb.append(value.substring(0, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else {
+				sb.append("'");
+				sb.append(value);
+				sb.append("'");
+			}
+
+			return sb.toString();
+		}
+
+		if (entityFieldName.equals("id")) {
+			throw new IllegalArgumentException(
+				"Invalid entity field " + entityFieldName);
+		}
+
+		if (entityFieldName.equals("name")) {
+			Object object = launchSet.getName();
+
+			String value = String.valueOf(object);
+
+			if (operator.equals("contains")) {
+				sb = new StringBundler();
+
+				sb.append("contains(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 2)) {
+					sb.append(value.substring(1, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else if (operator.equals("startswith")) {
+				sb = new StringBundler();
+
+				sb.append("startswith(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 1)) {
+					sb.append(value.substring(0, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else {
+				sb.append("'");
+				sb.append(value);
+				sb.append("'");
+			}
+
+			return sb.toString();
+		}
+
+		if (entityFieldName.equals("ownerName")) {
+			Object object = launchSet.getOwnerName();
+
+			String value = String.valueOf(object);
+
+			if (operator.equals("contains")) {
+				sb = new StringBundler();
+
+				sb.append("contains(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 2)) {
+					sb.append(value.substring(1, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else if (operator.equals("startswith")) {
+				sb = new StringBundler();
+
+				sb.append("startswith(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 1)) {
+					sb.append(value.substring(0, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else {
+				sb.append("'");
+				sb.append(value);
+				sb.append("'");
+			}
+
+			return sb.toString();
+		}
+
+		if (entityFieldName.equals("status")) {
+			throw new IllegalArgumentException(
+				"Invalid entity field " + entityFieldName);
+		}
+
+		if (entityFieldName.equals("statusMessage")) {
+			Object object = launchSet.getStatusMessage();
+
+			String value = String.valueOf(object);
+
+			if (operator.equals("contains")) {
+				sb = new StringBundler();
+
+				sb.append("contains(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 2)) {
+					sb.append(value.substring(1, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else if (operator.equals("startswith")) {
+				sb = new StringBundler();
+
+				sb.append("startswith(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 1)) {
+					sb.append(value.substring(0, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else {
+				sb.append("'");
+				sb.append(value);
+				sb.append("'");
+			}
+
+			return sb.toString();
+		}
+
+		throw new IllegalArgumentException(
+			"Invalid entity field " + entityFieldName);
+	}
+
+	protected String invoke(String query) throws Exception {
+		HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
+
+		httpInvoker.body(
+			JSONUtil.put(
+				"query", query
+			).toString(),
+			"application/json");
+		httpInvoker.httpMethod(HttpInvoker.HttpMethod.POST);
+		httpInvoker.path("http://localhost:8080/o/graphql");
+		httpInvoker.userNameAndPassword(
+			"test@liferay.com:" + PropsValues.DEFAULT_ADMIN_PASSWORD);
+
+		HttpInvoker.HttpResponse httpResponse = httpInvoker.invoke();
+
+		return httpResponse.getContent();
+	}
+
+	protected JSONObject invokeGraphQLMutation(GraphQLField graphQLField)
+		throws Exception {
+
+		GraphQLField mutationGraphQLField = new GraphQLField(
+			"mutation", graphQLField);
+
+		return JSONFactoryUtil.createJSONObject(
+			invoke(mutationGraphQLField.toString()));
+	}
+
+	protected JSONObject invokeGraphQLQuery(GraphQLField graphQLField)
+		throws Exception {
+
+		GraphQLField queryGraphQLField = new GraphQLField(
+			"query", graphQLField);
+
+		return JSONFactoryUtil.createJSONObject(
+			invoke(queryGraphQLField.toString()));
+	}
+
+	protected LaunchSet randomLaunchSet() throws Exception {
+		return new LaunchSet() {
+			{
+				dateCreated = RandomTestUtil.nextDate();
+				dateModified = RandomTestUtil.nextDate();
+				dateScheduled = RandomTestUtil.nextDate();
+				description = StringUtil.toLowerCase(
+					RandomTestUtil.randomString());
+				externalReferenceCode = StringUtil.toLowerCase(
+					RandomTestUtil.randomString());
+				id = RandomTestUtil.randomLong();
+				name = StringUtil.toLowerCase(RandomTestUtil.randomString());
+				ownerName = StringUtil.toLowerCase(
+					RandomTestUtil.randomString());
+				statusMessage = StringUtil.toLowerCase(
+					RandomTestUtil.randomString());
+			}
+		};
+	}
+
+	protected LaunchSet randomIrrelevantLaunchSet() throws Exception {
+		LaunchSet randomIrrelevantLaunchSet = randomLaunchSet();
+
+		return randomIrrelevantLaunchSet;
+	}
+
+	protected LaunchSet randomPatchLaunchSet() throws Exception {
+		return randomLaunchSet();
+	}
+
+	protected final JSONObject waitForFinish(
+			String expectedExecuteStatus, JSONObject jsonObject)
+		throws Exception {
+
+		while (true) {
+			ImportTask importTask = importTaskResource.getImportTask(
+				jsonObject.getLong("id"));
+
+			ImportTask.ExecuteStatus executeStatus =
+				importTask.getExecuteStatus();
+
+			if (StringUtil.equals(executeStatus.getValue(), "COMPLETED") ||
+				StringUtil.equals(executeStatus.getValue(), "FAILED")) {
+
+				Assert.assertEquals(
+					expectedExecuteStatus, executeStatus.getValue());
+
+				return jsonObject;
+			}
+		}
+	}
+
+	protected LaunchSetResource launchSetResource;
+	protected ImportTaskResource importTaskResource;
+	protected com.liferay.portal.kernel.model.Group irrelevantGroup;
+	protected com.liferay.portal.kernel.model.Company testCompany;
+	protected com.liferay.portal.kernel.model.Group testGroup;
+
+	protected static class BeanTestUtil {
+
+		public static void copyProperties(Object source, Object target)
+			throws Exception {
+
+			Class<?> sourceClass = source.getClass();
+
+			Class<?> targetClass = target.getClass();
+
+			for (java.lang.reflect.Field field :
+					_getAllDeclaredFields(sourceClass)) {
+
+				if (field.isSynthetic()) {
+					continue;
+				}
+
+				Method getMethod = _getMethod(
+					sourceClass, field.getName(), "get");
+
+				try {
+					Method setMethod = _getMethod(
+						targetClass, field.getName(), "set",
+						getMethod.getReturnType());
+
+					setMethod.invoke(target, getMethod.invoke(source));
+				}
+				catch (Exception e) {
+					continue;
+				}
+			}
+		}
+
+		public static boolean hasProperty(Object bean, String name) {
+			Method setMethod = _getMethod(
+				bean.getClass(), "set" + StringUtil.upperCaseFirstLetter(name));
+
+			if (setMethod != null) {
+				return true;
+			}
+
+			return false;
+		}
+
+		public static void setProperty(Object bean, String name, Object value)
+			throws Exception {
+
+			Class<?> clazz = bean.getClass();
+
+			Method setMethod = _getMethod(
+				clazz, "set" + StringUtil.upperCaseFirstLetter(name));
+
+			if (setMethod == null) {
+				throw new NoSuchMethodException();
+			}
+
+			Class<?>[] parameterTypes = setMethod.getParameterTypes();
+
+			setMethod.invoke(bean, _translateValue(parameterTypes[0], value));
+		}
+
+		private static List<java.lang.reflect.Field> _getAllDeclaredFields(
+			Class<?> clazz) {
+
+			List<java.lang.reflect.Field> fields = new ArrayList<>();
+
+			while ((clazz != null) && (clazz != Object.class)) {
+				for (java.lang.reflect.Field field :
+						clazz.getDeclaredFields()) {
+
+					fields.add(field);
+				}
+
+				clazz = clazz.getSuperclass();
+			}
+
+			return fields;
+		}
+
+		private static Method _getMethod(Class<?> clazz, String name) {
+			for (Method method : clazz.getMethods()) {
+				if (name.equals(method.getName()) &&
+					(method.getParameterCount() == 1) &&
+					_parameterTypes.contains(method.getParameterTypes()[0])) {
+
+					return method;
+				}
+			}
+
+			return null;
+		}
+
+		private static Method _getMethod(
+				Class<?> clazz, String fieldName, String prefix,
+				Class<?>... parameterTypes)
+			throws Exception {
+
+			return clazz.getMethod(
+				prefix + StringUtil.upperCaseFirstLetter(fieldName),
+				parameterTypes);
+		}
+
+		private static Object _translateValue(
+			Class<?> parameterType, Object value) {
+
+			if ((value instanceof Integer) &&
+				parameterType.equals(Long.class)) {
+
+				Integer intValue = (Integer)value;
+
+				return intValue.longValue();
+			}
+
+			return value;
+		}
+
+		private static final Set<Class<?>> _parameterTypes = new HashSet<>(
+			Arrays.asList(
+				Boolean.class, Date.class, Double.class, Integer.class,
+				Long.class, Map.class, String.class));
+
+	}
+
+	protected class GraphQLField {
+
+		public GraphQLField(String key, GraphQLField... graphQLFields) {
+			this(key, new HashMap<>(), graphQLFields);
+		}
+
+		public GraphQLField(String key, List<GraphQLField> graphQLFields) {
+			this(key, new HashMap<>(), graphQLFields);
+		}
+
+		public GraphQLField(
+			String key, Map<String, Object> parameterMap,
+			GraphQLField... graphQLFields) {
+
+			_key = key;
+			_parameterMap = parameterMap;
+			_graphQLFields = Arrays.asList(graphQLFields);
+		}
+
+		public GraphQLField(
+			String key, Map<String, Object> parameterMap,
+			List<GraphQLField> graphQLFields) {
+
+			_key = key;
+			_parameterMap = parameterMap;
+			_graphQLFields = graphQLFields;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder(_key);
+
+			if (!_parameterMap.isEmpty()) {
+				sb.append("(");
+
+				for (Map.Entry<String, Object> entry :
+						_parameterMap.entrySet()) {
+
+					sb.append(entry.getKey());
+					sb.append(": ");
+					sb.append(entry.getValue());
+					sb.append(", ");
+				}
+
+				sb.setLength(sb.length() - 2);
+
+				sb.append(")");
+			}
+
+			if (!_graphQLFields.isEmpty()) {
+				sb.append("{");
+
+				for (GraphQLField graphQLField : _graphQLFields) {
+					sb.append(graphQLField.toString());
+					sb.append(", ");
+				}
+
+				sb.setLength(sb.length() - 2);
+
+				sb.append("}");
+			}
+
+			return sb.toString();
+		}
+
+		private final List<GraphQLField> _graphQLFields;
+		private final String _key;
+		private final Map<String, Object> _parameterMap;
+
+	}
+
+	private static final com.liferay.portal.kernel.log.Log _log =
+		LogFactoryUtil.getLog(BaseLaunchSetResourceTestCase.class);
+
+	private static Format _format;
+
+	private com.liferay.portal.kernel.model.User _testCompanyAdminUser;
+
+	@Inject
+	private com.liferay.launch.rest.resource.v1_0.LaunchSetResource
+		_launchSetResource;
+
+	@Inject
+	private GroupLocalService _groupLocalService;
+
+	@Inject
+	private ResourceActionLocalService _resourceActionLocalService;
+
+	@Inject
+	private ResourcePermissionLocalService _resourcePermissionLocalService;
+
+	@Inject
+	private RoleLocalService _roleLocalService;
+
+	@Inject
+	private ScopeChecker _scopeChecker;
+
+	@Inject
+	private UserLocalService _userLocalService;
+
+	@Inject
+	private VulcanCRUDItemDelegateBuilderRegistry
+		_vulcanCRUDItemDelegateBuilderRegistry;
+
+}
