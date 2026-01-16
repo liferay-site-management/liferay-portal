@@ -1,0 +1,11 @@
+Bundle-Name: Liferay Launch REST Client
+Bundle-SymbolicName: com.liferay.launch.rest.client
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.liferay.launch.rest.client.aggregation,\
+	com.liferay.launch.rest.client.dto.v1_0,\
+	com.liferay.launch.rest.client.function,\
+	com.liferay.launch.rest.client.http,\
+	com.liferay.launch.rest.client.json,\
+	com.liferay.launch.rest.client.pagination,\
+	com.liferay.launch.rest.client.resource.v1_0
