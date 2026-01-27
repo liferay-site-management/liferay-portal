@@ -33,6 +33,9 @@ components:
                     format: int64
                     readOnly: true
                     type: integer
+                status:
+                    $ref: "#/components/schemas/Status"
+                    readOnly: true
             type: object
         LaunchSet:
             # @review
@@ -58,12 +61,6 @@ components:
                     format: date-time
                     readOnly: true
                     type: string
-                dateScheduled:
-                    description:
-                        The date that the publication will be published.
-                    format: date-time
-                    readOnly: true
-                    type: string
                 description:
                     type: string
                 externalReferenceCode:
@@ -74,19 +71,9 @@ components:
                     type: integer
                 name:
                     type: string
-                ownerName:
-                    description:
-                        The publication's creator.
-                    readOnly: true
-                    type: string
                 status:
                     $ref: "#/components/schemas/Status"
                     readOnly: true
-                statusMessage:
-                    description:
-                        Info on when a publication was last published or modified.
-                    readOnly: true
-                    type: string
             type: object
         Status:
             properties:
@@ -114,7 +101,7 @@ paths:
             operationId: getLaunchEntry
             parameters:
                 -   in: path
-                    name: ctEntryId
+                    name: launchEntryId
                     required: true
                     schema:
                         format: int64
@@ -321,3 +308,47 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/LaunchSet"
             tags: ["LaunchSet"]
+    "/launch-sets/{launchSetId}/launch-entries":
+        get:
+            operationId: getLaunchSetLaunchEntriesPage
+            parameters:
+                -   in: path
+                    name: launchSetId
+                    required: true
+                    schema:
+                        format: int64
+                        type: integer
+                -   in: query
+                    name: filter
+                    schema:
+                        type: string
+                -   in: query
+                    name: page
+                    schema:
+                        type: integer
+                -   in: query
+                    name: pageSize
+                    schema:
+                        type: integer
+                -   in: query
+                    name: search
+                    schema:
+                        type: string
+                -   in: query
+                    name: sort
+                    schema:
+                        type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/LaunchEntry"
+                                type: array
+                        application/xml:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/LaunchEntry"
+                                type: array
+            tags: ["LaunchEntry"]
