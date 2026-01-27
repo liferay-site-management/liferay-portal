@@ -10,6 +10,8 @@ import com.liferay.launch.service.base.LaunchSetLocalServiceBaseImpl;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.search.Indexable;
+import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.UserLocalService;
 
 import org.osgi.service.component.annotations.Component;
@@ -24,6 +26,7 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class LaunchSetLocalServiceImpl extends LaunchSetLocalServiceBaseImpl {
 
+	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public LaunchSet addLaunchSet(
 			String externalReferenceCode, long userId, String description,
@@ -46,10 +49,14 @@ public class LaunchSetLocalServiceImpl extends LaunchSetLocalServiceBaseImpl {
 		return launchSetPersistence.update(launchSet);
 	}
 
+	@Indexable(type = IndexableType.DELETE)
+	@Override
 	public LaunchSet deleteLaunchSet(long launchSetId) throws PortalException {
 		return launchSetPersistence.remove(launchSetId);
 	}
 
+	@Indexable(type = IndexableType.DELETE)
+	@Override
 	public LaunchSet deleteLaunchSet(
 			String externalReferenceCode, long companyId)
 		throws PortalException {
@@ -58,6 +65,7 @@ public class LaunchSetLocalServiceImpl extends LaunchSetLocalServiceBaseImpl {
 			externalReferenceCode, companyId);
 	}
 
+	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public LaunchSet updateLaunchSet(
 			String externalReferenceCode, long launchSetId, long userId,

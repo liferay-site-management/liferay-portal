@@ -12,6 +12,8 @@ import com.liferay.launch.service.base.LaunchEntryLocalServiceBaseImpl;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 
+import com.liferay.portal.kernel.search.Indexable;
+import com.liferay.portal.kernel.search.IndexableType;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -25,6 +27,7 @@ import org.osgi.service.component.annotations.Reference;
 public class LaunchEntryLocalServiceImpl
 	extends LaunchEntryLocalServiceBaseImpl {
 
+	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public LaunchEntry addLaunchEntry(
 			String externalReferenceCode, long userId, long launchSetId,
