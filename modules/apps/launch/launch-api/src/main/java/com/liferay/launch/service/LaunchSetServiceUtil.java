@@ -5,6 +5,8 @@
 
 package com.liferay.launch.service;
 
+import com.liferay.launch.model.LaunchSet;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.module.service.Snapshot;
 
 /**
@@ -26,6 +28,26 @@ public class LaunchSetServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to <code>com.liferay.launch.service.impl.LaunchSetServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
+	public static LaunchSet addLaunchSet(
+			String externalReferenceCode, String description, String name)
+		throws PortalException {
+
+		return getService().addLaunchSet(
+			externalReferenceCode, description, name);
+	}
+
+	public static LaunchSet deleteLaunchSet(long launchSetId)
+		throws PortalException {
+
+		return getService().deleteLaunchSet(launchSetId);
+	}
+
+	public static LaunchSet deleteLaunchSet(
+			String externalReferenceCode, long companyId)
+		throws PortalException {
+
+		return getService().deleteLaunchSet(externalReferenceCode, companyId);
+	}
 
 	/**
 	 * Returns the OSGi service identifier.
@@ -34,6 +56,15 @@ public class LaunchSetServiceUtil {
 	 */
 	public static String getOSGiServiceIdentifier() {
 		return getService().getOSGiServiceIdentifier();
+	}
+
+	public static LaunchSet updateLaunchSet(
+			String externalReferenceCode, long launchSetId, String description,
+			String name)
+		throws PortalException {
+
+		return getService().updateLaunchSet(
+			externalReferenceCode, launchSetId, description, name);
 	}
 
 	public static LaunchSetService getService() {

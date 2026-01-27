@@ -25,6 +25,31 @@ public class LaunchSetServiceWrapper
 		_launchSetService = launchSetService;
 	}
 
+	@Override
+	public com.liferay.launch.model.LaunchSet addLaunchSet(
+			String externalReferenceCode, String description, String name)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _launchSetService.addLaunchSet(
+			externalReferenceCode, description, name);
+	}
+
+	@Override
+	public com.liferay.launch.model.LaunchSet deleteLaunchSet(long launchSetId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _launchSetService.deleteLaunchSet(launchSetId);
+	}
+
+	@Override
+	public com.liferay.launch.model.LaunchSet deleteLaunchSet(
+			String externalReferenceCode, long companyId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _launchSetService.deleteLaunchSet(
+			externalReferenceCode, companyId);
+	}
+
 	/**
 	 * Returns the OSGi service identifier.
 	 *
@@ -33,6 +58,16 @@ public class LaunchSetServiceWrapper
 	@Override
 	public String getOSGiServiceIdentifier() {
 		return _launchSetService.getOSGiServiceIdentifier();
+	}
+
+	@Override
+	public com.liferay.launch.model.LaunchSet updateLaunchSet(
+			String externalReferenceCode, long launchSetId, String description,
+			String name)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _launchSetService.updateLaunchSet(
+			externalReferenceCode, launchSetId, description, name);
 	}
 
 	@Override

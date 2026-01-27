@@ -114,6 +114,15 @@ public class LaunchSetLocalServiceWrapper
 		return _launchSetLocalService.deleteLaunchSet(launchSetId);
 	}
 
+	@Override
+	public com.liferay.launch.model.LaunchSet deleteLaunchSet(
+			String externalReferenceCode, long companyId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _launchSetLocalService.deleteLaunchSet(
+			externalReferenceCode, companyId);
+	}
+
 	/**
 	 * @throws PortalException
 	 */
@@ -385,6 +394,16 @@ public class LaunchSetLocalServiceWrapper
 		com.liferay.launch.model.LaunchSet launchSet) {
 
 		return _launchSetLocalService.updateLaunchSet(launchSet);
+	}
+
+	@Override
+	public com.liferay.launch.model.LaunchSet updateLaunchSet(
+			String externalReferenceCode, long launchSetId, long userId,
+			String description, String name)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _launchSetLocalService.updateLaunchSet(
+			externalReferenceCode, launchSetId, userId, description, name);
 	}
 
 	@Override

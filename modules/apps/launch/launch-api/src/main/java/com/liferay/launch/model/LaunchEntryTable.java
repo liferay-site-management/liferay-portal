@@ -49,6 +49,8 @@ public class LaunchEntryTable extends BaseTable<LaunchEntryTable> {
 		"classPK", Long.class, Types.BIGINT, Column.FLAG_DEFAULT);
 	public final Column<LaunchEntryTable, String> classVersion = createColumn(
 		"classVersion", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
+	public final Column<LaunchEntryTable, Integer> status = createColumn(
+		"status", Integer.class, Types.INTEGER, Column.FLAG_DEFAULT);
 
 	private LaunchEntryTable() {
 		super("LaunchEntry", LaunchEntryTable::new);

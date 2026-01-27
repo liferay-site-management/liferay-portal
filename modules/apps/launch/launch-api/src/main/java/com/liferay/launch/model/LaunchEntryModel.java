@@ -264,6 +264,20 @@ public interface LaunchEntryModel
 	 */
 	public void setClassVersion(String classVersion);
 
+	/**
+	 * Returns the status of this launch entry.
+	 *
+	 * @return the status of this launch entry
+	 */
+	public int getStatus();
+
+	/**
+	 * Sets the status of this launch entry.
+	 *
+	 * @param status the status of this launch entry
+	 */
+	public void setStatus(int status);
+
 	@Override
 	public LaunchEntry cloneWithOriginalValues();
 

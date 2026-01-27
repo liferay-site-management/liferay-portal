@@ -14,6 +14,7 @@
 		<field name="classNameId" type="long" />
 		<field name="classPK" type="long" />
 		<field name="classVersion" type="String" />
+		<field name="status" type="int" />
 	</model>
 	<model name="com.liferay.launch.model.LaunchSet">
 		<field name="mvccVersion" type="long" />

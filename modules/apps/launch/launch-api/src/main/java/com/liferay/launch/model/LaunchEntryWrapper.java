@@ -46,6 +46,7 @@ public class LaunchEntryWrapper
 		attributes.put("classNameId", getClassNameId());
 		attributes.put("classPK", getClassPK());
 		attributes.put("classVersion", getClassVersion());
+		attributes.put("status", getStatus());
 
 		return attributes;
 	}
@@ -123,6 +124,12 @@ public class LaunchEntryWrapper
 
 		if (classVersion != null) {
 			setClassVersion(classVersion);
+		}
+
+		Integer status = (Integer)attributes.get("status");
+
+		if (status != null) {
+			setStatus(status);
 		}
 	}
 
@@ -249,6 +256,16 @@ public class LaunchEntryWrapper
 	@Override
 	public long getPrimaryKey() {
 		return model.getPrimaryKey();
+	}
+
+	/**
+	 * Returns the status of this launch entry.
+	 *
+	 * @return the status of this launch entry
+	 */
+	@Override
+	public int getStatus() {
+		return model.getStatus();
 	}
 
 	/**
@@ -399,6 +416,16 @@ public class LaunchEntryWrapper
 	@Override
 	public void setPrimaryKey(long primaryKey) {
 		model.setPrimaryKey(primaryKey);
+	}
+
+	/**
+	 * Sets the status of this launch entry.
+	 *
+	 * @param status the status of this launch entry
+	 */
+	@Override
+	public void setStatus(int status) {
+		model.setStatus(status);
 	}
 
 	/**

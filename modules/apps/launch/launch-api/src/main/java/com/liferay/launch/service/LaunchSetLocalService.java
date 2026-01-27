@@ -115,6 +115,10 @@ public interface LaunchSetLocalService
 	@Indexable(type = IndexableType.DELETE)
 	public LaunchSet deleteLaunchSet(long launchSetId) throws PortalException;
 
+	public LaunchSet deleteLaunchSet(
+			String externalReferenceCode, long companyId)
+		throws PortalException;
+
 	/**
 	 * @throws PortalException
 	 */
@@ -298,5 +302,10 @@ public interface LaunchSetLocalService
 	 */
 	@Indexable(type = IndexableType.REINDEX)
 	public LaunchSet updateLaunchSet(LaunchSet launchSet);
+
+	public LaunchSet updateLaunchSet(
+			String externalReferenceCode, long launchSetId, long userId,
+			String description, String name)
+		throws PortalException;
 
 }

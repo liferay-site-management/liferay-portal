@@ -138,6 +138,8 @@ public class LaunchEntryPersistenceTest {
 
 		newLaunchEntry.setClassVersion(RandomTestUtil.randomString());
 
+		newLaunchEntry.setStatus(RandomTestUtil.nextInt());
+
 		_launchEntries.add(_persistence.update(newLaunchEntry));
 
 		LaunchEntry existingLaunchEntry = _persistence.findByPrimaryKey(
@@ -175,6 +177,8 @@ public class LaunchEntryPersistenceTest {
 		Assert.assertEquals(
 			existingLaunchEntry.getClassVersion(),
 			newLaunchEntry.getClassVersion());
+		Assert.assertEquals(
+			existingLaunchEntry.getStatus(), newLaunchEntry.getStatus());
 	}
 
 	@Test(expected = DuplicateLaunchEntryExternalReferenceCodeException.class)
@@ -270,7 +274,7 @@ public class LaunchEntryPersistenceTest {
 			"externalReferenceCode", true, "launchEntryId", true, "companyId",
 			true, "userId", true, "createDate", true, "modifiedDate", true,
 			"launchSetId", true, "classNameId", true, "classPK", true,
-			"classVersion", true);
+			"classVersion", true, "status", true);
 	}
 
 	@Test
@@ -589,6 +593,8 @@ public class LaunchEntryPersistenceTest {
 		launchEntry.setClassPK(RandomTestUtil.nextLong());
 
 		launchEntry.setClassVersion(RandomTestUtil.randomString());
+
+		launchEntry.setStatus(RandomTestUtil.nextInt());
 
 		_launchEntries.add(_persistence.update(launchEntry));
 

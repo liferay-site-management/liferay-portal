@@ -111,6 +111,13 @@ public class LaunchSetLocalServiceUtil {
 		return getService().deleteLaunchSet(launchSetId);
 	}
 
+	public static LaunchSet deleteLaunchSet(
+			String externalReferenceCode, long companyId)
+		throws PortalException {
+
+		return getService().deleteLaunchSet(externalReferenceCode, companyId);
+	}
+
 	/**
 	 * @throws PortalException
 	 */
@@ -341,6 +348,15 @@ public class LaunchSetLocalServiceUtil {
 	 */
 	public static LaunchSet updateLaunchSet(LaunchSet launchSet) {
 		return getService().updateLaunchSet(launchSet);
+	}
+
+	public static LaunchSet updateLaunchSet(
+			String externalReferenceCode, long launchSetId, long userId,
+			String description, String name)
+		throws PortalException {
+
+		return getService().updateLaunchSet(
+			externalReferenceCode, launchSetId, userId, description, name);
 	}
 
 	public static LaunchSetLocalService getService() {

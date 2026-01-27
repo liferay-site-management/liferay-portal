@@ -68,7 +68,7 @@ public class LaunchEntryCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(25);
+		StringBundler sb = new StringBundler(27);
 
 		sb.append("{mvccVersion=");
 		sb.append(mvccVersion);
@@ -94,6 +94,8 @@ public class LaunchEntryCacheModel
 		sb.append(classPK);
 		sb.append(", classVersion=");
 		sb.append(classVersion);
+		sb.append(", status=");
+		sb.append(status);
 		sb.append("}");
 
 		return sb.toString();
@@ -148,6 +150,8 @@ public class LaunchEntryCacheModel
 			launchEntryImpl.setClassVersion(classVersion);
 		}
 
+		launchEntryImpl.setStatus(status);
+
 		launchEntryImpl.resetOriginalValues();
 
 		return launchEntryImpl;
@@ -173,6 +177,8 @@ public class LaunchEntryCacheModel
 
 		classPK = objectInput.readLong();
 		classVersion = objectInput.readUTF();
+
+		status = objectInput.readInt();
 	}
 
 	@Override
@@ -213,6 +219,8 @@ public class LaunchEntryCacheModel
 		else {
 			objectOutput.writeUTF(classVersion);
 		}
+
+		objectOutput.writeInt(status);
 	}
 
 	public long mvccVersion;
@@ -227,5 +235,6 @@ public class LaunchEntryCacheModel
 	public long classNameId;
 	public long classPK;
 	public String classVersion;
+	public int status;
 
 }

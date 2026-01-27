@@ -10,7 +10,8 @@ create table LaunchEntry (
 	launchSetId LONG,
 	classNameId LONG,
 	classPK LONG,
-	classVersion VARCHAR(75) null
+	classVersion VARCHAR(75) null,
+	status INTEGER
 );
 
 create table LaunchSet (

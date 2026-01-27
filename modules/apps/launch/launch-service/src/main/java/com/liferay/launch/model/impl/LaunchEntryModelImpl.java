@@ -71,7 +71,7 @@ public class LaunchEntryModelImpl
 		{"userId", Types.BIGINT}, {"createDate", Types.TIMESTAMP},
 		{"modifiedDate", Types.TIMESTAMP}, {"launchSetId", Types.BIGINT},
 		{"classNameId", Types.BIGINT}, {"classPK", Types.BIGINT},
-		{"classVersion", Types.VARCHAR}
+		{"classVersion", Types.VARCHAR}, {"status", Types.INTEGER}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -90,10 +90,11 @@ public class LaunchEntryModelImpl
 		TABLE_COLUMNS_MAP.put("classNameId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("classPK", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("classVersion", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("status", Types.INTEGER);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table LaunchEntry (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,externalReferenceCode VARCHAR(75) null,launchEntryId LONG not null primary key,companyId LONG,userId LONG,createDate DATE null,modifiedDate DATE null,launchSetId LONG,classNameId LONG,classPK LONG,classVersion VARCHAR(75) null)";
+		"create table LaunchEntry (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,externalReferenceCode VARCHAR(75) null,launchEntryId LONG not null primary key,companyId LONG,userId LONG,createDate DATE null,modifiedDate DATE null,launchSetId LONG,classNameId LONG,classPK LONG,classVersion VARCHAR(75) null,status INTEGER)";
 
 	public static final String TABLE_SQL_DROP = "drop table LaunchEntry";
 
@@ -288,6 +289,7 @@ public class LaunchEntryModelImpl
 			attributeGetterFunctions.put("classPK", LaunchEntry::getClassPK);
 			attributeGetterFunctions.put(
 				"classVersion", LaunchEntry::getClassVersion);
+			attributeGetterFunctions.put("status", LaunchEntry::getStatus);
 
 			_attributeGetterFunctions = Collections.unmodifiableMap(
 				attributeGetterFunctions);
@@ -340,6 +342,9 @@ public class LaunchEntryModelImpl
 			attributeSetterBiConsumers.put(
 				"classVersion",
 				(BiConsumer<LaunchEntry, String>)LaunchEntry::setClassVersion);
+			attributeSetterBiConsumers.put(
+				"status",
+				(BiConsumer<LaunchEntry, Integer>)LaunchEntry::setStatus);
 
 			_attributeSetterBiConsumers = Collections.unmodifiableMap(
 				(Map)attributeSetterBiConsumers);
@@ -650,6 +655,21 @@ public class LaunchEntryModelImpl
 		return getColumnOriginalValue("classVersion");
 	}
 
+	@JSON
+	@Override
+	public int getStatus() {
+		return _status;
+	}
+
+	@Override
+	public void setStatus(int status) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_status = status;
+	}
+
 	@Override
 	public StagedModelType getStagedModelType() {
 		return new StagedModelType(
@@ -725,6 +745,7 @@ public class LaunchEntryModelImpl
 		launchEntryImpl.setClassNameId(getClassNameId());
 		launchEntryImpl.setClassPK(getClassPK());
 		launchEntryImpl.setClassVersion(getClassVersion());
+		launchEntryImpl.setStatus(getStatus());
 
 		launchEntryImpl.resetOriginalValues();
 
@@ -757,6 +778,8 @@ public class LaunchEntryModelImpl
 			this.<Long>getColumnOriginalValue("classPK"));
 		launchEntryImpl.setClassVersion(
 			this.<String>getColumnOriginalValue("classVersion"));
+		launchEntryImpl.setStatus(
+			this.<Integer>getColumnOriginalValue("status"));
 
 		return launchEntryImpl;
 	}
@@ -895,6 +918,8 @@ public class LaunchEntryModelImpl
 			launchEntryCacheModel.classVersion = null;
 		}
 
+		launchEntryCacheModel.status = getStatus();
+
 		return launchEntryCacheModel;
 	}
 
@@ -969,6 +994,7 @@ public class LaunchEntryModelImpl
 	private long _classNameId;
 	private long _classPK;
 	private String _classVersion;
+	private int _status;
 
 	public <T> T getColumnValue(String columnName) {
 		columnName = _attributeNames.getOrDefault(columnName, columnName);
@@ -1013,6 +1039,7 @@ public class LaunchEntryModelImpl
 		_columnOriginalValues.put("classNameId", _classNameId);
 		_columnOriginalValues.put("classPK", _classPK);
 		_columnOriginalValues.put("classVersion", _classVersion);
+		_columnOriginalValues.put("status", _status);
 	}
 
 	private static final Map<String, String> _attributeNames;
@@ -1059,6 +1086,8 @@ public class LaunchEntryModelImpl
 		columnBitmasks.put("classPK", 1024L);
 
 		columnBitmasks.put("classVersion", 2048L);
+
+		columnBitmasks.put("status", 4096L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}
