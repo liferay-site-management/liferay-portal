@@ -212,8 +212,6 @@ public abstract class BaseLaunchSetResourceTestCase {
 		launchSet.setDescription(regex);
 		launchSet.setExternalReferenceCode(regex);
 		launchSet.setName(regex);
-		launchSet.setOwnerName(regex);
-		launchSet.setStatusMessage(regex);
 
 		String json = LaunchSetSerDes.toJSON(launchSet);
 
@@ -224,8 +222,6 @@ public abstract class BaseLaunchSetResourceTestCase {
 		Assert.assertEquals(regex, launchSet.getDescription());
 		Assert.assertEquals(regex, launchSet.getExternalReferenceCode());
 		Assert.assertEquals(regex, launchSet.getName());
-		Assert.assertEquals(regex, launchSet.getOwnerName());
-		Assert.assertEquals(regex, launchSet.getStatusMessage());
 	}
 
 	@Test
@@ -1536,14 +1532,6 @@ public abstract class BaseLaunchSetResourceTestCase {
 				continue;
 			}
 
-			if (Objects.equals("dateScheduled", additionalAssertFieldName)) {
-				if (launchSet.getDateScheduled() == null) {
-					valid = false;
-				}
-
-				continue;
-			}
-
 			if (Objects.equals("description", additionalAssertFieldName)) {
 				if (launchSet.getDescription() == null) {
 					valid = false;
@@ -1570,24 +1558,8 @@ public abstract class BaseLaunchSetResourceTestCase {
 				continue;
 			}
 
-			if (Objects.equals("ownerName", additionalAssertFieldName)) {
-				if (launchSet.getOwnerName() == null) {
-					valid = false;
-				}
-
-				continue;
-			}
-
 			if (Objects.equals("status", additionalAssertFieldName)) {
 				if (launchSet.getStatus() == null) {
-					valid = false;
-				}
-
-				continue;
-			}
-
-			if (Objects.equals("statusMessage", additionalAssertFieldName)) {
-				if (launchSet.getStatusMessage() == null) {
 					valid = false;
 				}
 
@@ -1747,17 +1719,6 @@ public abstract class BaseLaunchSetResourceTestCase {
 				continue;
 			}
 
-			if (Objects.equals("dateScheduled", additionalAssertFieldName)) {
-				if (!Objects.deepEquals(
-						launchSet1.getDateScheduled(),
-						launchSet2.getDateScheduled())) {
-
-					return false;
-				}
-
-				continue;
-			}
-
 			if (Objects.equals("description", additionalAssertFieldName)) {
 				if (!Objects.deepEquals(
 						launchSet1.getDescription(),
@@ -1802,30 +1763,9 @@ public abstract class BaseLaunchSetResourceTestCase {
 				continue;
 			}
 
-			if (Objects.equals("ownerName", additionalAssertFieldName)) {
-				if (!Objects.deepEquals(
-						launchSet1.getOwnerName(), launchSet2.getOwnerName())) {
-
-					return false;
-				}
-
-				continue;
-			}
-
 			if (Objects.equals("status", additionalAssertFieldName)) {
 				if (!Objects.deepEquals(
 						launchSet1.getStatus(), launchSet2.getStatus())) {
-
-					return false;
-				}
-
-				continue;
-			}
-
-			if (Objects.equals("statusMessage", additionalAssertFieldName)) {
-				if (!Objects.deepEquals(
-						launchSet1.getStatusMessage(),
-						launchSet2.getStatusMessage())) {
 
 					return false;
 				}
@@ -2003,35 +1943,6 @@ public abstract class BaseLaunchSetResourceTestCase {
 			return sb.toString();
 		}
 
-		if (entityFieldName.equals("dateScheduled")) {
-			if (operator.equals("between")) {
-				Date date = launchSet.getDateScheduled();
-
-				sb = new StringBundler();
-
-				sb.append("(");
-				sb.append(entityFieldName);
-				sb.append(" gt ");
-				sb.append(_format.format(date.getTime() - (2 * Time.SECOND)));
-				sb.append(" and ");
-				sb.append(entityFieldName);
-				sb.append(" lt ");
-				sb.append(_format.format(date.getTime() + (2 * Time.SECOND)));
-				sb.append(")");
-			}
-			else {
-				sb.append(entityFieldName);
-
-				sb.append(" ");
-				sb.append(operator);
-				sb.append(" ");
-
-				sb.append(_format.format(launchSet.getDateScheduled()));
-			}
-
-			return sb.toString();
-		}
-
 		if (entityFieldName.equals("description")) {
 			Object object = launchSet.getDescription();
 
@@ -2175,101 +2086,9 @@ public abstract class BaseLaunchSetResourceTestCase {
 			return sb.toString();
 		}
 
-		if (entityFieldName.equals("ownerName")) {
-			Object object = launchSet.getOwnerName();
-
-			String value = String.valueOf(object);
-
-			if (operator.equals("contains")) {
-				sb = new StringBundler();
-
-				sb.append("contains(");
-				sb.append(entityFieldName);
-				sb.append(",'");
-
-				if ((object != null) && (value.length() > 2)) {
-					sb.append(value.substring(1, value.length() - 1));
-				}
-				else {
-					sb.append(value);
-				}
-
-				sb.append("')");
-			}
-			else if (operator.equals("startswith")) {
-				sb = new StringBundler();
-
-				sb.append("startswith(");
-				sb.append(entityFieldName);
-				sb.append(",'");
-
-				if ((object != null) && (value.length() > 1)) {
-					sb.append(value.substring(0, value.length() - 1));
-				}
-				else {
-					sb.append(value);
-				}
-
-				sb.append("')");
-			}
-			else {
-				sb.append("'");
-				sb.append(value);
-				sb.append("'");
-			}
-
-			return sb.toString();
-		}
-
 		if (entityFieldName.equals("status")) {
 			throw new IllegalArgumentException(
 				"Invalid entity field " + entityFieldName);
-		}
-
-		if (entityFieldName.equals("statusMessage")) {
-			Object object = launchSet.getStatusMessage();
-
-			String value = String.valueOf(object);
-
-			if (operator.equals("contains")) {
-				sb = new StringBundler();
-
-				sb.append("contains(");
-				sb.append(entityFieldName);
-				sb.append(",'");
-
-				if ((object != null) && (value.length() > 2)) {
-					sb.append(value.substring(1, value.length() - 1));
-				}
-				else {
-					sb.append(value);
-				}
-
-				sb.append("')");
-			}
-			else if (operator.equals("startswith")) {
-				sb = new StringBundler();
-
-				sb.append("startswith(");
-				sb.append(entityFieldName);
-				sb.append(",'");
-
-				if ((object != null) && (value.length() > 1)) {
-					sb.append(value.substring(0, value.length() - 1));
-				}
-				else {
-					sb.append(value);
-				}
-
-				sb.append("')");
-			}
-			else {
-				sb.append("'");
-				sb.append(value);
-				sb.append("'");
-			}
-
-			return sb.toString();
 		}
 
 		throw new IllegalArgumentException(
@@ -2319,17 +2138,12 @@ public abstract class BaseLaunchSetResourceTestCase {
 			{
 				dateCreated = RandomTestUtil.nextDate();
 				dateModified = RandomTestUtil.nextDate();
-				dateScheduled = RandomTestUtil.nextDate();
 				description = StringUtil.toLowerCase(
 					RandomTestUtil.randomString());
 				externalReferenceCode = StringUtil.toLowerCase(
 					RandomTestUtil.randomString());
 				id = RandomTestUtil.randomLong();
 				name = StringUtil.toLowerCase(RandomTestUtil.randomString());
-				ownerName = StringUtil.toLowerCase(
-					RandomTestUtil.randomString());
-				statusMessage = StringUtil.toLowerCase(
-					RandomTestUtil.randomString());
 			}
 		};
 	}

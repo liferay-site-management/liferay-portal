@@ -186,51 +186,6 @@ public class LaunchSet implements Serializable {
 	@JsonIgnore
 	private Supplier<Date> _dateModifiedSupplier;
 
-	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The date that the publication will be published."
-	)
-	public Date getDateScheduled() {
-		if (_dateScheduledSupplier != null) {
-			dateScheduled = _dateScheduledSupplier.get();
-
-			_dateScheduledSupplier = null;
-		}
-
-		return dateScheduled;
-	}
-
-	public void setDateScheduled(Date dateScheduled) {
-		this.dateScheduled = dateScheduled;
-
-		_dateScheduledSupplier = null;
-	}
-
-	@JsonIgnore
-	public void setDateScheduled(
-		UnsafeSupplier<Date, Exception> dateScheduledUnsafeSupplier) {
-
-		_dateScheduledSupplier = () -> {
-			try {
-				return dateScheduledUnsafeSupplier.get();
-			}
-			catch (RuntimeException runtimeException) {
-				throw runtimeException;
-			}
-			catch (Exception exception) {
-				throw new RuntimeException(exception);
-			}
-		};
-	}
-
-	@GraphQLField(
-		description = "The date that the publication will be published."
-	)
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	protected Date dateScheduled;
-
-	@JsonIgnore
-	private Supplier<Date> _dateScheduledSupplier;
-
 	@io.swagger.v3.oas.annotations.media.Schema
 	public String getDescription() {
 		if (_descriptionSupplier != null) {
@@ -391,49 +346,6 @@ public class LaunchSet implements Serializable {
 	@JsonIgnore
 	private Supplier<String> _nameSupplier;
 
-	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The publication's creator."
-	)
-	public String getOwnerName() {
-		if (_ownerNameSupplier != null) {
-			ownerName = _ownerNameSupplier.get();
-
-			_ownerNameSupplier = null;
-		}
-
-		return ownerName;
-	}
-
-	public void setOwnerName(String ownerName) {
-		this.ownerName = ownerName;
-
-		_ownerNameSupplier = null;
-	}
-
-	@JsonIgnore
-	public void setOwnerName(
-		UnsafeSupplier<String, Exception> ownerNameUnsafeSupplier) {
-
-		_ownerNameSupplier = () -> {
-			try {
-				return ownerNameUnsafeSupplier.get();
-			}
-			catch (RuntimeException runtimeException) {
-				throw runtimeException;
-			}
-			catch (Exception exception) {
-				throw new RuntimeException(exception);
-			}
-		};
-	}
-
-	@GraphQLField(description = "The publication's creator.")
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	protected String ownerName;
-
-	@JsonIgnore
-	private Supplier<String> _ownerNameSupplier;
-
 	@io.swagger.v3.oas.annotations.media.Schema
 	@Valid
 	public Status getStatus() {
@@ -475,51 +387,6 @@ public class LaunchSet implements Serializable {
 
 	@JsonIgnore
 	private Supplier<Status> _statusSupplier;
-
-	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "Info on when a publication was last published or modified."
-	)
-	public String getStatusMessage() {
-		if (_statusMessageSupplier != null) {
-			statusMessage = _statusMessageSupplier.get();
-
-			_statusMessageSupplier = null;
-		}
-
-		return statusMessage;
-	}
-
-	public void setStatusMessage(String statusMessage) {
-		this.statusMessage = statusMessage;
-
-		_statusMessageSupplier = null;
-	}
-
-	@JsonIgnore
-	public void setStatusMessage(
-		UnsafeSupplier<String, Exception> statusMessageUnsafeSupplier) {
-
-		_statusMessageSupplier = () -> {
-			try {
-				return statusMessageUnsafeSupplier.get();
-			}
-			catch (RuntimeException runtimeException) {
-				throw runtimeException;
-			}
-			catch (Exception exception) {
-				throw new RuntimeException(exception);
-			}
-		};
-	}
-
-	@GraphQLField(
-		description = "Info on when a publication was last published or modified."
-	)
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	protected String statusMessage;
-
-	@JsonIgnore
-	private Supplier<String> _statusMessageSupplier;
 
 	@Override
 	public boolean equals(Object object) {
@@ -595,22 +462,6 @@ public class LaunchSet implements Serializable {
 			sb.append("\"");
 		}
 
-		Date dateScheduled = getDateScheduled();
-
-		if (dateScheduled != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"dateScheduled\": ");
-
-			sb.append("\"");
-
-			sb.append(liferayToJSONDateFormat.format(dateScheduled));
-
-			sb.append("\"");
-		}
-
 		String description = getDescription();
 
 		if (description != null) {
@@ -671,22 +522,6 @@ public class LaunchSet implements Serializable {
 			sb.append("\"");
 		}
 
-		String ownerName = getOwnerName();
-
-		if (ownerName != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"ownerName\": ");
-
-			sb.append("\"");
-
-			sb.append(_escape(ownerName));
-
-			sb.append("\"");
-		}
-
 		Status status = getStatus();
 
 		if (status != null) {
@@ -697,22 +532,6 @@ public class LaunchSet implements Serializable {
 			sb.append("\"status\": ");
 
 			sb.append(String.valueOf(status));
-		}
-
-		String statusMessage = getStatusMessage();
-
-		if (statusMessage != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"statusMessage\": ");
-
-			sb.append("\"");
-
-			sb.append(_escape(statusMessage));
-
-			sb.append("\"");
 		}
 
 		sb.append("}");

@@ -90,21 +90,6 @@ public class LaunchSetSerDes {
 			sb.append("\"");
 		}
 
-		if (launchSet.getDateScheduled() != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"dateScheduled\": ");
-
-			sb.append("\"");
-
-			sb.append(
-				liferayToJSONDateFormat.format(launchSet.getDateScheduled()));
-
-			sb.append("\"");
-		}
-
 		if (launchSet.getDescription() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -157,20 +142,6 @@ public class LaunchSetSerDes {
 			sb.append("\"");
 		}
 
-		if (launchSet.getOwnerName() != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"ownerName\": ");
-
-			sb.append("\"");
-
-			sb.append(_escape(launchSet.getOwnerName()));
-
-			sb.append("\"");
-		}
-
 		if (launchSet.getStatus() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -179,20 +150,6 @@ public class LaunchSetSerDes {
 			sb.append("\"status\": ");
 
 			sb.append(String.valueOf(launchSet.getStatus()));
-		}
-
-		if (launchSet.getStatusMessage() != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"statusMessage\": ");
-
-			sb.append("\"");
-
-			sb.append(_escape(launchSet.getStatusMessage()));
-
-			sb.append("\"");
 		}
 
 		sb.append("}");
@@ -241,15 +198,6 @@ public class LaunchSetSerDes {
 				liferayToJSONDateFormat.format(launchSet.getDateModified()));
 		}
 
-		if (launchSet.getDateScheduled() == null) {
-			map.put("dateScheduled", null);
-		}
-		else {
-			map.put(
-				"dateScheduled",
-				liferayToJSONDateFormat.format(launchSet.getDateScheduled()));
-		}
-
 		if (launchSet.getDescription() == null) {
 			map.put("description", null);
 		}
@@ -280,26 +228,11 @@ public class LaunchSetSerDes {
 			map.put("name", String.valueOf(launchSet.getName()));
 		}
 
-		if (launchSet.getOwnerName() == null) {
-			map.put("ownerName", null);
-		}
-		else {
-			map.put("ownerName", String.valueOf(launchSet.getOwnerName()));
-		}
-
 		if (launchSet.getStatus() == null) {
 			map.put("status", null);
 		}
 		else {
 			map.put("status", String.valueOf(launchSet.getStatus()));
-		}
-
-		if (launchSet.getStatusMessage() == null) {
-			map.put("statusMessage", null);
-		}
-		else {
-			map.put(
-				"statusMessage", String.valueOf(launchSet.getStatusMessage()));
 		}
 
 		return map;
@@ -328,9 +261,6 @@ public class LaunchSetSerDes {
 			else if (Objects.equals(jsonParserFieldName, "dateModified")) {
 				return false;
 			}
-			else if (Objects.equals(jsonParserFieldName, "dateScheduled")) {
-				return false;
-			}
 			else if (Objects.equals(jsonParserFieldName, "description")) {
 				return false;
 			}
@@ -345,13 +275,7 @@ public class LaunchSetSerDes {
 			else if (Objects.equals(jsonParserFieldName, "name")) {
 				return false;
 			}
-			else if (Objects.equals(jsonParserFieldName, "ownerName")) {
-				return false;
-			}
 			else if (Objects.equals(jsonParserFieldName, "status")) {
-				return false;
-			}
-			else if (Objects.equals(jsonParserFieldName, "statusMessage")) {
 				return false;
 			}
 
@@ -381,12 +305,6 @@ public class LaunchSetSerDes {
 						toDate((String)jsonParserFieldValue));
 				}
 			}
-			else if (Objects.equals(jsonParserFieldName, "dateScheduled")) {
-				if (jsonParserFieldValue != null) {
-					launchSet.setDateScheduled(
-						toDate((String)jsonParserFieldValue));
-				}
-			}
 			else if (Objects.equals(jsonParserFieldName, "description")) {
 				if (jsonParserFieldValue != null) {
 					launchSet.setDescription((String)jsonParserFieldValue);
@@ -410,20 +328,10 @@ public class LaunchSetSerDes {
 					launchSet.setName((String)jsonParserFieldValue);
 				}
 			}
-			else if (Objects.equals(jsonParserFieldName, "ownerName")) {
-				if (jsonParserFieldValue != null) {
-					launchSet.setOwnerName((String)jsonParserFieldValue);
-				}
-			}
 			else if (Objects.equals(jsonParserFieldName, "status")) {
 				if (jsonParserFieldValue != null) {
 					launchSet.setStatus(
 						StatusSerDes.toDTO((String)jsonParserFieldValue));
-				}
-			}
-			else if (Objects.equals(jsonParserFieldName, "statusMessage")) {
-				if (jsonParserFieldValue != null) {
-					launchSet.setStatusMessage((String)jsonParserFieldValue);
 				}
 			}
 		}

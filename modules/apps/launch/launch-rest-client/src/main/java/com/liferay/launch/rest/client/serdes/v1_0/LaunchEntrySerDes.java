@@ -132,6 +132,16 @@ public class LaunchEntrySerDes {
 			sb.append(launchEntry.getLaunchSetId());
 		}
 
+		if (launchEntry.getStatus() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"status\": ");
+
+			sb.append(String.valueOf(launchEntry.getStatus()));
+		}
+
 		sb.append("}");
 
 		return sb.toString();
@@ -209,6 +219,13 @@ public class LaunchEntrySerDes {
 				"launchSetId", String.valueOf(launchEntry.getLaunchSetId()));
 		}
 
+		if (launchEntry.getStatus() == null) {
+			map.put("status", null);
+		}
+		else {
+			map.put("status", String.valueOf(launchEntry.getStatus()));
+		}
+
 		return map;
 	}
 
@@ -246,6 +263,9 @@ public class LaunchEntrySerDes {
 				return false;
 			}
 			else if (Objects.equals(jsonParserFieldName, "launchSetId")) {
+				return false;
+			}
+			else if (Objects.equals(jsonParserFieldName, "status")) {
 				return false;
 			}
 
@@ -297,6 +317,12 @@ public class LaunchEntrySerDes {
 				if (jsonParserFieldValue != null) {
 					launchEntry.setLaunchSetId(
 						Long.valueOf((String)jsonParserFieldValue));
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "status")) {
+				if (jsonParserFieldValue != null) {
+					launchEntry.setStatus(
+						StatusSerDes.toDTO((String)jsonParserFieldValue));
 				}
 			}
 		}

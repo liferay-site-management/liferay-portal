@@ -91,27 +91,6 @@ public class LaunchSet implements Cloneable, Serializable {
 
 	protected Date dateModified;
 
-	public Date getDateScheduled() {
-		return dateScheduled;
-	}
-
-	public void setDateScheduled(Date dateScheduled) {
-		this.dateScheduled = dateScheduled;
-	}
-
-	public void setDateScheduled(
-		UnsafeSupplier<Date, Exception> dateScheduledUnsafeSupplier) {
-
-		try {
-			dateScheduled = dateScheduledUnsafeSupplier.get();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected Date dateScheduled;
-
 	public String getDescription() {
 		return description;
 	}
@@ -192,27 +171,6 @@ public class LaunchSet implements Cloneable, Serializable {
 
 	protected String name;
 
-	public String getOwnerName() {
-		return ownerName;
-	}
-
-	public void setOwnerName(String ownerName) {
-		this.ownerName = ownerName;
-	}
-
-	public void setOwnerName(
-		UnsafeSupplier<String, Exception> ownerNameUnsafeSupplier) {
-
-		try {
-			ownerName = ownerNameUnsafeSupplier.get();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected String ownerName;
-
 	public Status getStatus() {
 		return status;
 	}
@@ -233,27 +191,6 @@ public class LaunchSet implements Cloneable, Serializable {
 	}
 
 	protected Status status;
-
-	public String getStatusMessage() {
-		return statusMessage;
-	}
-
-	public void setStatusMessage(String statusMessage) {
-		this.statusMessage = statusMessage;
-	}
-
-	public void setStatusMessage(
-		UnsafeSupplier<String, Exception> statusMessageUnsafeSupplier) {
-
-		try {
-			statusMessage = statusMessageUnsafeSupplier.get();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected String statusMessage;
 
 	@Override
 	public LaunchSet clone() throws CloneNotSupportedException {

@@ -36,6 +36,8 @@ public class ServletDataImpl implements ServletData {
 
 	@Activate
 	public void activate(BundleContext bundleContext) {
+		Mutation.setLaunchEntryResourceComponentServiceObjects(
+			_launchEntryResourceComponentServiceObjects);
 		Mutation.setLaunchSetResourceComponentServiceObjects(
 			_launchSetResourceComponentServiceObjects);
 
@@ -80,6 +82,11 @@ public class ServletDataImpl implements ServletData {
 			new HashMap<String, ObjectValuePair<Class<?>, String>>() {
 				{
 					put(
+						"mutation#createLaunchSetLaunchEntriesPageExportBatch",
+						new ObjectValuePair<>(
+							LaunchEntryResourceImpl.class,
+							"postLaunchSetLaunchEntriesPageExportBatch"));
+					put(
 						"mutation#deleteLaunchSet",
 						new ObjectValuePair<>(
 							LaunchSetResourceImpl.class, "deleteLaunchSet"));
@@ -121,6 +128,11 @@ public class ServletDataImpl implements ServletData {
 						new ObjectValuePair<>(
 							LaunchEntryResourceImpl.class, "getLaunchEntry"));
 					put(
+						"query#launchSetLaunchEntries",
+						new ObjectValuePair<>(
+							LaunchEntryResourceImpl.class,
+							"getLaunchSetLaunchEntriesPage"));
+					put(
 						"query#launchSet",
 						new ObjectValuePair<>(
 							LaunchSetResourceImpl.class, "getLaunchSet"));
@@ -135,6 +147,11 @@ public class ServletDataImpl implements ServletData {
 							LaunchSetResourceImpl.class, "getLaunchSetsPage"));
 
 					put(
+						"query#LaunchSet.launchEntries",
+						new ObjectValuePair<>(
+							LaunchEntryResourceImpl.class,
+							"getLaunchSetLaunchEntriesPage"));
+					put(
 						"query#LaunchEntry.launchSet",
 						new ObjectValuePair<>(
 							LaunchSetResourceImpl.class, "getLaunchSet"));
@@ -142,11 +159,11 @@ public class ServletDataImpl implements ServletData {
 			};
 
 	@Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
-	private ComponentServiceObjects<LaunchSetResource>
-		_launchSetResourceComponentServiceObjects;
-
-	@Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
 	private ComponentServiceObjects<LaunchEntryResource>
 		_launchEntryResourceComponentServiceObjects;
+
+	@Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
+	private ComponentServiceObjects<LaunchSetResource>
+		_launchSetResourceComponentServiceObjects;
 
 }

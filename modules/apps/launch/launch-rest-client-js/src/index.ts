@@ -15,5 +15,6 @@
 	export {FacetValue} from './models/FacetValue';
 	export {LaunchEntry} from './models/LaunchEntry';
 	export {LaunchSet} from './models/LaunchSet';
+	export {PageLaunchEntry} from './models/PageLaunchEntry';
 	export {PageLaunchSet} from './models/PageLaunchSet';
 	export {Status} from './models/Status';

@@ -7,6 +7,7 @@
 	import {FacetValue} from '../models/FacetValue';
 	import {LaunchEntry} from '../models/LaunchEntry';
 	import {LaunchSet} from '../models/LaunchSet';
+	import {PageLaunchEntry} from '../models/PageLaunchEntry';
 	import {PageLaunchSet} from '../models/PageLaunchSet';
 	import {Status} from '../models/Status';
 
@@ -47,6 +48,7 @@ const typeMap: {[index: string]: any} = {
 	FacetValue,
 	LaunchEntry,
 	LaunchSet,
+	PageLaunchEntry,
 	PageLaunchSet,
 	Status,
 };

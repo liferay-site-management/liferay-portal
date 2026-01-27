@@ -60,23 +60,50 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {launchEntry(ctEntryId: ___){actions, classNameId, classPK, dateCreated, dateModified, id, launchSetId}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {launchEntry(launchEntryId: ___){actions, classNameId, classPK, dateCreated, dateModified, id, launchSetId, status}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField
-	public LaunchEntry launchEntry(@GraphQLName("ctEntryId") Long ctEntryId)
+	public LaunchEntry launchEntry(
+			@GraphQLName("launchEntryId") Long launchEntryId)
 		throws Exception {
 
 		return _applyComponentServiceObjects(
 			_launchEntryResourceComponentServiceObjects,
 			this::_populateResourceContext,
 			launchEntryResource -> launchEntryResource.getLaunchEntry(
-				ctEntryId));
+				launchEntryId));
 	}
 
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {launchSet(launchSetId: ___){actions, dateCreated, dateModified, dateScheduled, description, externalReferenceCode, id, name, ownerName, status, statusMessage}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {launchSetLaunchEntries(filter: ___, launchSetId: ___, page: ___, pageSize: ___, search: ___, sorts: ___){items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
+	 */
+	@GraphQLField
+	public LaunchEntryPage launchSetLaunchEntries(
+			@GraphQLName("launchSetId") Long launchSetId,
+			@GraphQLName("search") String search,
+			@GraphQLName("filter") String filterString,
+			@GraphQLName("pageSize") int pageSize,
+			@GraphQLName("page") int page,
+			@GraphQLName("sort") String sortsString)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_launchEntryResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			launchEntryResource -> new LaunchEntryPage(
+				launchEntryResource.getLaunchSetLaunchEntriesPage(
+					launchSetId, search,
+					_filterBiFunction.apply(launchEntryResource, filterString),
+					Pagination.of(page, pageSize),
+					_sortsBiFunction.apply(launchEntryResource, sortsString))));
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {launchSet(launchSetId: ___){actions, dateCreated, dateModified, description, externalReferenceCode, id, name, status}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField
 	public LaunchSet launchSet(@GraphQLName("launchSetId") Long launchSetId)
@@ -91,7 +118,7 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {launchSetByExternalReferenceCode(externalReferenceCode: ___){actions, dateCreated, dateModified, dateScheduled, description, externalReferenceCode, id, name, ownerName, status, statusMessage}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {launchSetByExternalReferenceCode(externalReferenceCode: ___){actions, dateCreated, dateModified, description, externalReferenceCode, id, name, status}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField
 	public LaunchSet launchSetByExternalReferenceCode(
@@ -130,6 +157,39 @@ public class Query {
 					_filterBiFunction.apply(launchSetResource, filterString),
 					Pagination.of(page, pageSize),
 					_sortsBiFunction.apply(launchSetResource, sortsString))));
+	}
+
+	@GraphQLTypeExtension(LaunchSet.class)
+	public class GetLaunchSetLaunchEntriesPageTypeExtension {
+
+		public GetLaunchSetLaunchEntriesPageTypeExtension(LaunchSet launchSet) {
+			_launchSet = launchSet;
+		}
+
+		@GraphQLField
+		public LaunchEntryPage launchEntries(
+				@GraphQLName("search") String search,
+				@GraphQLName("filter") String filterString,
+				@GraphQLName("pageSize") int pageSize,
+				@GraphQLName("page") int page,
+				@GraphQLName("sort") String sortsString)
+			throws Exception {
+
+			return _applyComponentServiceObjects(
+				_launchEntryResourceComponentServiceObjects,
+				Query.this::_populateResourceContext,
+				launchEntryResource -> new LaunchEntryPage(
+					launchEntryResource.getLaunchSetLaunchEntriesPage(
+						_launchSet.getId(), search,
+						_filterBiFunction.apply(
+							launchEntryResource, filterString),
+						Pagination.of(page, pageSize),
+						_sortsBiFunction.apply(
+							launchEntryResource, sortsString))));
+		}
+
+		private LaunchSet _launchSet;
+
 	}
 
 	@GraphQLTypeExtension(LaunchEntry.class)

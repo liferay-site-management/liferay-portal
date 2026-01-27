@@ -16,8 +16,11 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.liferay.launch.rest.client.dto.v1_0.LaunchEntry;
 import com.liferay.launch.rest.client.http.HttpInvoker;
 import com.liferay.launch.rest.client.pagination.Page;
+import com.liferay.launch.rest.client.pagination.Pagination;
 import com.liferay.launch.rest.client.resource.v1_0.LaunchEntryResource;
 import com.liferay.launch.rest.client.serdes.v1_0.LaunchEntrySerDes;
+import com.liferay.oauth2.provider.scope.ScopeChecker;
+import com.liferay.petra.function.UnsafeTriConsumer;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
@@ -26,26 +29,46 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
+import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.service.ResourceActionLocalService;
+import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
+import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.odata.entity.EntityField;
 import com.liferay.portal.odata.entity.EntityModel;
+import com.liferay.portal.search.test.rule.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
+import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
+import com.liferay.portal.vulcan.crud.VulcanCRUDItemDelegate;
+import com.liferay.portal.vulcan.crud.VulcanCRUDItemDelegateBuilderRegistry;
 import com.liferay.portal.vulcan.resource.EntityModelResource;
 
 import jakarta.annotation.Generated;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.PathSegment;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
 
 import java.lang.reflect.Method;
+
+import java.net.URI;
 
 import java.text.Format;
 
@@ -56,6 +79,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -68,6 +92,9 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+
 /**
  * @author David Truong
  * @generated
@@ -77,8 +104,10 @@ public abstract class BaseLaunchEntryResourceTestCase {
 
 	@ClassRule
 	@Rule
-	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
-		new LiferayIntegrationTestRule();
+	public static final AggregateTestRule aggregateTestRule =
+		new AggregateTestRule(
+			new LiferayIntegrationTestRule(),
+			PermissionCheckerMethodTestRule.INSTANCE);
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -178,18 +207,200 @@ public abstract class BaseLaunchEntryResourceTestCase {
 		LaunchEntry postLaunchEntry = testGetLaunchEntry_addLaunchEntry();
 
 		LaunchEntry getLaunchEntry = launchEntryResource.getLaunchEntry(
-			testGetLaunchEntry_getCtEntryId());
+			postLaunchEntry.getId());
 
 		assertEquals(postLaunchEntry, getLaunchEntry);
 		assertValid(getLaunchEntry);
 	}
 
-	protected LaunchEntry testGetLaunchEntry_addLaunchEntry() throws Exception {
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
+	@Test
+	public void testVulcanCRUDItemDelegateGetItem() throws Exception {
+		LaunchEntry postLaunchEntry = testGetLaunchEntry_addLaunchEntry();
+
+		LaunchEntry getLaunchEntry = launchEntryResource.getLaunchEntry(
+			postLaunchEntry.getId());
+
+		VulcanCRUDItemDelegate vulcanCRUDItemDelegate =
+			_vulcanCRUDItemDelegateBuilderRegistry.builder(
+				testCompany, "com.liferay.launch.rest.dto.v1_0.LaunchEntry"
+			).acceptLanguage(
+				new AcceptLanguage() {
+
+					@Override
+					public List<Locale> getLocales() {
+						return Arrays.asList(LocaleUtil.getDefault());
+					}
+
+					@Override
+					public String getPreferredLanguageId() {
+						return LocaleUtil.toLanguageId(LocaleUtil.getDefault());
+					}
+
+					@Override
+					public Locale getPreferredLocale() {
+						return LocaleUtil.getDefault();
+					}
+
+				}
+			).groupLocalService(
+				_groupLocalService
+			).httpServletRequest(
+				testVulcanCRUDItemDelegate_getHttpServletRequest()
+			).httpServletResponse(
+				new MockHttpServletResponse()
+			).resourceActionLocalService(
+				_resourceActionLocalService
+			).resourcePermissionLocalService(
+				_resourcePermissionLocalService
+			).roleLocalService(
+				_roleLocalService
+			).scopeChecker(
+				_scopeChecker
+			).uriInfo(
+				testVulcanCRUDItemDelegate_getUriInfo()
+			).user(
+				testVulcanCRUDItemDelegate_getUser()
+			).build();
+
+		Object item = vulcanCRUDItemDelegate.getItem(postLaunchEntry.getId());
+
+		assertEquals(getLaunchEntry, LaunchEntrySerDes.toDTO(item.toString()));
 	}
 
-	protected Long testGetLaunchEntry_getCtEntryId() throws Exception {
+	protected HttpServletRequest
+		testVulcanCRUDItemDelegate_getHttpServletRequest() {
+
+		return new MockHttpServletRequest() {
+
+			@Override
+			public StringBuffer getRequestURL() {
+				return new StringBuffer(
+					StringBundler.concat(
+						"http://localhost:8080/o/v1.0/",
+						RandomTestUtil.randomString(), "/",
+						RandomTestUtil.randomString()));
+			}
+
+		};
+	}
+
+	protected UriInfo testVulcanCRUDItemDelegate_getUriInfo() {
+		String applicationPath = RandomTestUtil.randomString() + "/";
+		String resourcePath = RandomTestUtil.randomString();
+
+		return new UriInfo() {
+
+			@Override
+			public String getPath() {
+				return resourcePath;
+			}
+
+			@Override
+			public String getPath(boolean decode) {
+				return getPath();
+			}
+
+			@Override
+			public List<PathSegment> getPathSegments() {
+				return Collections.emptyList();
+			}
+
+			@Override
+			public List<PathSegment> getPathSegments(boolean decode) {
+				return getPathSegments();
+			}
+
+			@Override
+			public URI getRequestUri() {
+				return URI.create(
+					"http://localhost:8080/o/" + applicationPath +
+						resourcePath);
+			}
+
+			@Override
+			public UriBuilder getRequestUriBuilder() {
+				return UriBuilder.fromUri(getRequestUri());
+			}
+
+			@Override
+			public URI getAbsolutePath() {
+				return getRequestUri();
+			}
+
+			@Override
+			public UriBuilder getAbsolutePathBuilder() {
+				return getRequestUriBuilder();
+			}
+
+			@Override
+			public URI getBaseUri() {
+				return URI.create("http://localhost:8080/o/" + applicationPath);
+			}
+
+			@Override
+			public UriBuilder getBaseUriBuilder() {
+				return UriBuilder.fromUri(getBaseUri());
+			}
+
+			@Override
+			public MultivaluedMap<String, String> getPathParameters() {
+				return new MultivaluedHashMap<>();
+			}
+
+			@Override
+			public MultivaluedMap<String, String> getPathParameters(
+				boolean decode) {
+
+				return getPathParameters();
+			}
+
+			@Override
+			public MultivaluedMap<String, String> getQueryParameters() {
+				return new MultivaluedHashMap<>();
+			}
+
+			@Override
+			public MultivaluedMap<String, String> getQueryParameters(
+				boolean decode) {
+
+				return getQueryParameters();
+			}
+
+			@Override
+			public List<String> getMatchedURIs() {
+				return Collections.emptyList();
+			}
+
+			@Override
+			public List<String> getMatchedURIs(boolean decode) {
+				return getMatchedURIs();
+			}
+
+			@Override
+			public List<Object> getMatchedResources() {
+				return Collections.emptyList();
+			}
+
+			@Override
+			public URI resolve(URI requestUri) {
+				return getBaseUri().resolve(requestUri);
+			}
+
+			@Override
+			public URI relativize(URI uri) {
+				return getBaseUri().relativize(uri);
+			}
+
+		};
+	}
+
+	protected com.liferay.portal.kernel.model.User
+		testVulcanCRUDItemDelegate_getUser() {
+
+		return _testCompanyAdminUser;
+	}
+
+	protected LaunchEntry testGetLaunchEntry_addLaunchEntry() throws Exception {
 		throw new UnsupportedOperationException(
 			"This method needs to be implemented");
 	}
@@ -211,8 +422,8 @@ public abstract class BaseLaunchEntryResourceTestCase {
 								new HashMap<String, Object>() {
 									{
 										put(
-											"ctEntryId",
-											testGraphQLGetLaunchEntry_getCtEntryId());
+											"launchEntryId",
+											launchEntry.getId());
 									}
 								},
 								getGraphQLFields())),
@@ -233,8 +444,8 @@ public abstract class BaseLaunchEntryResourceTestCase {
 									new HashMap<String, Object>() {
 										{
 											put(
-												"ctEntryId",
-												testGraphQLGetLaunchEntry_getCtEntryId());
+												"launchEntryId",
+												launchEntry.getId());
 										}
 									},
 									getGraphQLFields()))),
@@ -242,14 +453,9 @@ public abstract class BaseLaunchEntryResourceTestCase {
 						"Object/launchEntry"))));
 	}
 
-	protected Long testGraphQLGetLaunchEntry_getCtEntryId() throws Exception {
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
-	}
-
 	@Test
 	public void testGraphQLGetLaunchEntryNotFound() throws Exception {
-		Long irrelevantCtEntryId = RandomTestUtil.randomLong();
+		Long irrelevantLaunchEntryId = RandomTestUtil.randomLong();
 
 		// No namespace
 
@@ -261,7 +467,7 @@ public abstract class BaseLaunchEntryResourceTestCase {
 						"launchEntry",
 						new HashMap<String, Object>() {
 							{
-								put("ctEntryId", irrelevantCtEntryId);
+								put("launchEntryId", irrelevantLaunchEntryId);
 							}
 						},
 						getGraphQLFields())),
@@ -280,7 +486,9 @@ public abstract class BaseLaunchEntryResourceTestCase {
 							"launchEntry",
 							new HashMap<String, Object>() {
 								{
-									put("ctEntryId", irrelevantCtEntryId);
+									put(
+										"launchEntryId",
+										irrelevantLaunchEntryId);
 								}
 							},
 							getGraphQLFields()))),
@@ -293,6 +501,440 @@ public abstract class BaseLaunchEntryResourceTestCase {
 
 		return testGraphQLLaunchEntry_addLaunchEntry();
 	}
+
+	@Test
+	public void testGetLaunchSetLaunchEntriesPage() throws Exception {
+		Long launchSetId = testGetLaunchSetLaunchEntriesPage_getLaunchSetId();
+		Long irrelevantLaunchSetId =
+			testGetLaunchSetLaunchEntriesPage_getIrrelevantLaunchSetId();
+
+		Page<LaunchEntry> page =
+			launchEntryResource.getLaunchSetLaunchEntriesPage(
+				launchSetId, null, null, Pagination.of(1, 10), null);
+
+		long totalCount = page.getTotalCount();
+
+		if (irrelevantLaunchSetId != null) {
+			LaunchEntry irrelevantLaunchEntry =
+				testGetLaunchSetLaunchEntriesPage_addLaunchEntry(
+					irrelevantLaunchSetId, randomIrrelevantLaunchEntry());
+
+			page = launchEntryResource.getLaunchSetLaunchEntriesPage(
+				irrelevantLaunchSetId, null, null,
+				Pagination.of(1, (int)totalCount + 1), null);
+
+			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+
+			assertContains(
+				irrelevantLaunchEntry, (List<LaunchEntry>)page.getItems());
+			assertValid(
+				page,
+				testGetLaunchSetLaunchEntriesPage_getExpectedActions(
+					irrelevantLaunchSetId));
+		}
+
+		LaunchEntry launchEntry1 =
+			testGetLaunchSetLaunchEntriesPage_addLaunchEntry(
+				launchSetId, randomLaunchEntry());
+
+		LaunchEntry launchEntry2 =
+			testGetLaunchSetLaunchEntriesPage_addLaunchEntry(
+				launchSetId, randomLaunchEntry());
+
+		page = launchEntryResource.getLaunchSetLaunchEntriesPage(
+			launchSetId, null, null, Pagination.of(1, 10), null);
+
+		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+
+		assertContains(launchEntry1, (List<LaunchEntry>)page.getItems());
+		assertContains(launchEntry2, (List<LaunchEntry>)page.getItems());
+		assertValid(
+			page,
+			testGetLaunchSetLaunchEntriesPage_getExpectedActions(launchSetId));
+	}
+
+	protected Map<String, Map<String, String>>
+			testGetLaunchSetLaunchEntriesPage_getExpectedActions(
+				Long launchSetId)
+		throws Exception {
+
+		Map<String, Map<String, String>> expectedActions = new HashMap<>();
+
+		return expectedActions;
+	}
+
+	@Test
+	public void testGetLaunchSetLaunchEntriesPageWithFilterDateTimeEquals()
+		throws Exception {
+
+		List<EntityField> entityFields = getEntityFields(
+			EntityField.Type.DATE_TIME);
+
+		if (entityFields.isEmpty()) {
+			return;
+		}
+
+		Long launchSetId = testGetLaunchSetLaunchEntriesPage_getLaunchSetId();
+
+		LaunchEntry launchEntry1 = randomLaunchEntry();
+
+		launchEntry1 = testGetLaunchSetLaunchEntriesPage_addLaunchEntry(
+			launchSetId, launchEntry1);
+
+		for (EntityField entityField : entityFields) {
+			Page<LaunchEntry> page =
+				launchEntryResource.getLaunchSetLaunchEntriesPage(
+					launchSetId, null,
+					getFilterString(entityField, "between", launchEntry1),
+					Pagination.of(1, 2), null);
+
+			assertEquals(
+				Collections.singletonList(launchEntry1),
+				(List<LaunchEntry>)page.getItems());
+		}
+	}
+
+	@Test
+	public void testGetLaunchSetLaunchEntriesPageWithFilterDoubleEquals()
+		throws Exception {
+
+		testGetLaunchSetLaunchEntriesPageWithFilter(
+			"eq", EntityField.Type.DOUBLE);
+	}
+
+	@Test
+	public void testGetLaunchSetLaunchEntriesPageWithFilterStringContains()
+		throws Exception {
+
+		testGetLaunchSetLaunchEntriesPageWithFilter(
+			"contains", EntityField.Type.STRING);
+	}
+
+	@Test
+	public void testGetLaunchSetLaunchEntriesPageWithFilterStringEquals()
+		throws Exception {
+
+		testGetLaunchSetLaunchEntriesPageWithFilter(
+			"eq", EntityField.Type.STRING);
+	}
+
+	@Test
+	public void testGetLaunchSetLaunchEntriesPageWithFilterStringStartsWith()
+		throws Exception {
+
+		testGetLaunchSetLaunchEntriesPageWithFilter(
+			"startswith", EntityField.Type.STRING);
+	}
+
+	protected void testGetLaunchSetLaunchEntriesPageWithFilter(
+			String operator, EntityField.Type type)
+		throws Exception {
+
+		List<EntityField> entityFields = getEntityFields(type);
+
+		if (entityFields.isEmpty()) {
+			return;
+		}
+
+		Long launchSetId = testGetLaunchSetLaunchEntriesPage_getLaunchSetId();
+
+		LaunchEntry launchEntry1 =
+			testGetLaunchSetLaunchEntriesPage_addLaunchEntry(
+				launchSetId, randomLaunchEntry());
+
+		@SuppressWarnings("PMD.UnusedLocalVariable")
+		LaunchEntry launchEntry2 =
+			testGetLaunchSetLaunchEntriesPage_addLaunchEntry(
+				launchSetId, randomLaunchEntry());
+
+		for (EntityField entityField : entityFields) {
+			Page<LaunchEntry> page =
+				launchEntryResource.getLaunchSetLaunchEntriesPage(
+					launchSetId, null,
+					getFilterString(entityField, operator, launchEntry1),
+					Pagination.of(1, 2), null);
+
+			assertEquals(
+				Collections.singletonList(launchEntry1),
+				(List<LaunchEntry>)page.getItems());
+		}
+	}
+
+	@Test
+	public void testGetLaunchSetLaunchEntriesPageWithPagination()
+		throws Exception {
+
+		Long launchSetId = testGetLaunchSetLaunchEntriesPage_getLaunchSetId();
+
+		Page<LaunchEntry> launchEntriesPage =
+			launchEntryResource.getLaunchSetLaunchEntriesPage(
+				launchSetId, null, null, null, null);
+
+		int totalCount = GetterUtil.getInteger(
+			launchEntriesPage.getTotalCount());
+
+		LaunchEntry launchEntry1 =
+			testGetLaunchSetLaunchEntriesPage_addLaunchEntry(
+				launchSetId, randomLaunchEntry());
+
+		LaunchEntry launchEntry2 =
+			testGetLaunchSetLaunchEntriesPage_addLaunchEntry(
+				launchSetId, randomLaunchEntry());
+
+		LaunchEntry launchEntry3 =
+			testGetLaunchSetLaunchEntriesPage_addLaunchEntry(
+				launchSetId, randomLaunchEntry());
+
+		// See com.liferay.portal.vulcan.internal.configuration.HeadlessAPICompanyConfiguration#pageSizeLimit
+
+		int pageSizeLimit = 500;
+
+		if (totalCount >= (pageSizeLimit - 2)) {
+			Page<LaunchEntry> page1 =
+				launchEntryResource.getLaunchSetLaunchEntriesPage(
+					launchSetId, null, null,
+					Pagination.of(
+						(int)Math.ceil((totalCount + 1.0) / pageSizeLimit),
+						pageSizeLimit),
+					null);
+
+			Assert.assertEquals(totalCount + 3, page1.getTotalCount());
+
+			assertContains(launchEntry1, (List<LaunchEntry>)page1.getItems());
+
+			Page<LaunchEntry> page2 =
+				launchEntryResource.getLaunchSetLaunchEntriesPage(
+					launchSetId, null, null,
+					Pagination.of(
+						(int)Math.ceil((totalCount + 2.0) / pageSizeLimit),
+						pageSizeLimit),
+					null);
+
+			assertContains(launchEntry2, (List<LaunchEntry>)page2.getItems());
+
+			Page<LaunchEntry> page3 =
+				launchEntryResource.getLaunchSetLaunchEntriesPage(
+					launchSetId, null, null,
+					Pagination.of(
+						(int)Math.ceil((totalCount + 3.0) / pageSizeLimit),
+						pageSizeLimit),
+					null);
+
+			assertContains(launchEntry3, (List<LaunchEntry>)page3.getItems());
+		}
+		else {
+			Page<LaunchEntry> page1 =
+				launchEntryResource.getLaunchSetLaunchEntriesPage(
+					launchSetId, null, null, Pagination.of(1, totalCount + 2),
+					null);
+
+			List<LaunchEntry> launchEntries1 =
+				(List<LaunchEntry>)page1.getItems();
+
+			Assert.assertEquals(
+				launchEntries1.toString(), totalCount + 2,
+				launchEntries1.size());
+
+			Page<LaunchEntry> page2 =
+				launchEntryResource.getLaunchSetLaunchEntriesPage(
+					launchSetId, null, null, Pagination.of(2, totalCount + 2),
+					null);
+
+			Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+
+			List<LaunchEntry> launchEntries2 =
+				(List<LaunchEntry>)page2.getItems();
+
+			Assert.assertEquals(
+				launchEntries2.toString(), 1, launchEntries2.size());
+
+			Page<LaunchEntry> page3 =
+				launchEntryResource.getLaunchSetLaunchEntriesPage(
+					launchSetId, null, null,
+					Pagination.of(1, (int)totalCount + 3), null);
+
+			assertContains(launchEntry1, (List<LaunchEntry>)page3.getItems());
+			assertContains(launchEntry2, (List<LaunchEntry>)page3.getItems());
+			assertContains(launchEntry3, (List<LaunchEntry>)page3.getItems());
+		}
+	}
+
+	@Test
+	public void testGetLaunchSetLaunchEntriesPageWithSortDateTime()
+		throws Exception {
+
+		testGetLaunchSetLaunchEntriesPageWithSort(
+			EntityField.Type.DATE_TIME,
+			(entityField, launchEntry1, launchEntry2) -> {
+				BeanTestUtil.setProperty(
+					launchEntry1, entityField.getName(),
+					new Date(System.currentTimeMillis() - (2 * Time.MINUTE)));
+			});
+	}
+
+	@Test
+	public void testGetLaunchSetLaunchEntriesPageWithSortDouble()
+		throws Exception {
+
+		testGetLaunchSetLaunchEntriesPageWithSort(
+			EntityField.Type.DOUBLE,
+			(entityField, launchEntry1, launchEntry2) -> {
+				BeanTestUtil.setProperty(
+					launchEntry1, entityField.getName(), 0.1);
+				BeanTestUtil.setProperty(
+					launchEntry2, entityField.getName(), 0.5);
+			});
+	}
+
+	@Test
+	public void testGetLaunchSetLaunchEntriesPageWithSortInteger()
+		throws Exception {
+
+		testGetLaunchSetLaunchEntriesPageWithSort(
+			EntityField.Type.INTEGER,
+			(entityField, launchEntry1, launchEntry2) -> {
+				BeanTestUtil.setProperty(
+					launchEntry1, entityField.getName(), 0);
+				BeanTestUtil.setProperty(
+					launchEntry2, entityField.getName(), 1);
+			});
+	}
+
+	@Test
+	public void testGetLaunchSetLaunchEntriesPageWithSortString()
+		throws Exception {
+
+		testGetLaunchSetLaunchEntriesPageWithSort(
+			EntityField.Type.STRING,
+			(entityField, launchEntry1, launchEntry2) -> {
+				Class<?> clazz = launchEntry1.getClass();
+
+				String entityFieldName = entityField.getName();
+
+				Method method = clazz.getMethod(
+					"get" + StringUtil.upperCaseFirstLetter(entityFieldName));
+
+				Class<?> returnType = method.getReturnType();
+
+				if (returnType.isAssignableFrom(Map.class)) {
+					BeanTestUtil.setProperty(
+						launchEntry1, entityFieldName,
+						Collections.singletonMap("Aaa", "Aaa"));
+					BeanTestUtil.setProperty(
+						launchEntry2, entityFieldName,
+						Collections.singletonMap("Bbb", "Bbb"));
+				}
+				else if (entityFieldName.contains("email")) {
+					BeanTestUtil.setProperty(
+						launchEntry1, entityFieldName,
+						"aaa" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()) +
+									"@liferay.com");
+					BeanTestUtil.setProperty(
+						launchEntry2, entityFieldName,
+						"bbb" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()) +
+									"@liferay.com");
+				}
+				else {
+					BeanTestUtil.setProperty(
+						launchEntry1, entityFieldName,
+						"aaa" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()));
+					BeanTestUtil.setProperty(
+						launchEntry2, entityFieldName,
+						"bbb" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()));
+				}
+			});
+	}
+
+	protected void testGetLaunchSetLaunchEntriesPageWithSort(
+			EntityField.Type type,
+			UnsafeTriConsumer<EntityField, LaunchEntry, LaunchEntry, Exception>
+				unsafeTriConsumer)
+		throws Exception {
+
+		List<EntityField> entityFields = getEntityFields(type);
+
+		if (entityFields.isEmpty()) {
+			return;
+		}
+
+		Long launchSetId = testGetLaunchSetLaunchEntriesPage_getLaunchSetId();
+
+		LaunchEntry launchEntry1 = randomLaunchEntry();
+		LaunchEntry launchEntry2 = randomLaunchEntry();
+
+		for (EntityField entityField : entityFields) {
+			unsafeTriConsumer.accept(entityField, launchEntry1, launchEntry2);
+		}
+
+		launchEntry1 = testGetLaunchSetLaunchEntriesPage_addLaunchEntry(
+			launchSetId, launchEntry1);
+
+		launchEntry2 = testGetLaunchSetLaunchEntriesPage_addLaunchEntry(
+			launchSetId, launchEntry2);
+
+		Page<LaunchEntry> page =
+			launchEntryResource.getLaunchSetLaunchEntriesPage(
+				launchSetId, null, null, null, null);
+
+		for (EntityField entityField : entityFields) {
+			Page<LaunchEntry> ascPage =
+				launchEntryResource.getLaunchSetLaunchEntriesPage(
+					launchSetId, null, null,
+					Pagination.of(1, (int)page.getTotalCount() + 1),
+					entityField.getName() + ":asc");
+
+			assertContains(launchEntry1, (List<LaunchEntry>)ascPage.getItems());
+			assertContains(launchEntry2, (List<LaunchEntry>)ascPage.getItems());
+
+			Page<LaunchEntry> descPage =
+				launchEntryResource.getLaunchSetLaunchEntriesPage(
+					launchSetId, null, null,
+					Pagination.of(1, (int)page.getTotalCount() + 1),
+					entityField.getName() + ":desc");
+
+			assertContains(
+				launchEntry2, (List<LaunchEntry>)descPage.getItems());
+			assertContains(
+				launchEntry1, (List<LaunchEntry>)descPage.getItems());
+		}
+	}
+
+	protected LaunchEntry testGetLaunchSetLaunchEntriesPage_addLaunchEntry(
+			Long launchSetId, LaunchEntry launchEntry)
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	protected Long testGetLaunchSetLaunchEntriesPage_getLaunchSetId()
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	protected Long testGetLaunchSetLaunchEntriesPage_getIrrelevantLaunchSetId()
+		throws Exception {
+
+		return null;
+	}
+
+	@Test
+	public void testBatchEngineDeleteImportTask() throws Exception {
+		Assert.assertTrue(true);
+	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected LaunchEntry testGraphQLLaunchEntry_addLaunchEntry()
 		throws Exception {
@@ -412,6 +1054,14 @@ public abstract class BaseLaunchEntryResourceTestCase {
 
 			if (Objects.equals("launchSetId", additionalAssertFieldName)) {
 				if (launchEntry.getLaunchSetId() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("status", additionalAssertFieldName)) {
+				if (launchEntry.getStatus() == null) {
 					valid = false;
 				}
 
@@ -613,6 +1263,16 @@ public abstract class BaseLaunchEntryResourceTestCase {
 				continue;
 			}
 
+			if (Objects.equals("status", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						launchEntry1.getStatus(), launchEntry2.getStatus())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
 			throw new IllegalArgumentException(
 				"Invalid additional assert field name " +
 					additionalAssertFieldName);
@@ -799,6 +1459,11 @@ public abstract class BaseLaunchEntryResourceTestCase {
 		}
 
 		if (entityFieldName.equals("launchSetId")) {
+			throw new IllegalArgumentException(
+				"Invalid entity field " + entityFieldName);
+		}
+
+		if (entityFieldName.equals("status")) {
 			throw new IllegalArgumentException(
 				"Invalid entity field " + entityFieldName);
 		}
@@ -1076,5 +1741,27 @@ public abstract class BaseLaunchEntryResourceTestCase {
 	@Inject
 	private com.liferay.launch.rest.resource.v1_0.LaunchEntryResource
 		_launchEntryResource;
+
+	@Inject
+	private GroupLocalService _groupLocalService;
+
+	@Inject
+	private ResourceActionLocalService _resourceActionLocalService;
+
+	@Inject
+	private ResourcePermissionLocalService _resourcePermissionLocalService;
+
+	@Inject
+	private RoleLocalService _roleLocalService;
+
+	@Inject
+	private ScopeChecker _scopeChecker;
+
+	@Inject
+	private UserLocalService _userLocalService;
+
+	@Inject
+	private VulcanCRUDItemDelegateBuilderRegistry
+		_vulcanCRUDItemDelegateBuilderRegistry;
 
 }

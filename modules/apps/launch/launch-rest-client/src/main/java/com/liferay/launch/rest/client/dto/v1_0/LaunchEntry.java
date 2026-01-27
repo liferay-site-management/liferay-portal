@@ -173,6 +173,27 @@ public class LaunchEntry implements Cloneable, Serializable {
 
 	protected Long launchSetId;
 
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
+	public void setStatus(
+		UnsafeSupplier<Status, Exception> statusUnsafeSupplier) {
+
+		try {
+			status = statusUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Status status;
+
 	@Override
 	public LaunchEntry clone() throws CloneNotSupportedException {
 		return (LaunchEntry)super.clone();

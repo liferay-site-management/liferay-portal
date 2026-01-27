@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
+			import {Status} from './Status';
 
 /**
  * @author David Truong
@@ -17,6 +18,7 @@
 			"dateModified"?: Date;
 			"id"?: number;
 			"launchSetId"?: number;
+			"status"?: Status;
 
 		static "discriminator": string | undefined = undefined;
 
@@ -59,6 +61,11 @@
 			baseName: "launchSetId",
 			name: "launchSetId",
 			type: "number",
+		},
+		{
+			baseName: "status",
+			name: "status",
+			type: "Status",
 		},
 		];
 

@@ -17,14 +17,11 @@
 			"actions"?: {[key: string]: {[key: string]: string;};};
 			"dateCreated"?: Date;
 			"dateModified"?: Date;
-			"dateScheduled"?: Date;
 			"description"?: string;
 			"externalReferenceCode"?: string;
 			"id"?: number;
 			"name"?: string;
-			"ownerName"?: string;
 			"status"?: Status;
-			"statusMessage"?: string;
 
 		static "discriminator": string | undefined = undefined;
 
@@ -49,11 +46,6 @@
 			type: "Date",
 		},
 		{
-			baseName: "dateScheduled",
-			name: "dateScheduled",
-			type: "Date",
-		},
-		{
 			baseName: "description",
 			name: "description",
 			type: "string",
@@ -74,19 +66,9 @@
 			type: "string",
 		},
 		{
-			baseName: "ownerName",
-			name: "ownerName",
-			type: "string",
-		},
-		{
 			baseName: "status",
 			name: "status",
 			type: "Status",
-		},
-		{
-			baseName: "statusMessage",
-			name: "statusMessage",
-			type: "string",
 		},
 		];
 

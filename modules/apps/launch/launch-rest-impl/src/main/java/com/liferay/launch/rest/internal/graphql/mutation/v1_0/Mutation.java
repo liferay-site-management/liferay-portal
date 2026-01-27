@@ -6,6 +6,7 @@
 package com.liferay.launch.rest.internal.graphql.mutation.v1_0;
 
 import com.liferay.launch.rest.dto.v1_0.LaunchSet;
+import com.liferay.launch.rest.resource.v1_0.LaunchEntryResource;
 import com.liferay.launch.rest.resource.v1_0.LaunchSetResource;
 import com.liferay.petra.function.UnsafeConsumer;
 import com.liferay.petra.function.UnsafeFunction;
@@ -36,12 +37,42 @@ import org.osgi.service.component.ComponentServiceObjects;
 @Generated("")
 public class Mutation {
 
+	public static void setLaunchEntryResourceComponentServiceObjects(
+		ComponentServiceObjects<LaunchEntryResource>
+			launchEntryResourceComponentServiceObjects) {
+
+		_launchEntryResourceComponentServiceObjects =
+			launchEntryResourceComponentServiceObjects;
+	}
+
 	public static void setLaunchSetResourceComponentServiceObjects(
 		ComponentServiceObjects<LaunchSetResource>
 			launchSetResourceComponentServiceObjects) {
 
 		_launchSetResourceComponentServiceObjects =
 			launchSetResourceComponentServiceObjects;
+	}
+
+	@GraphQLField
+	public Response createLaunchSetLaunchEntriesPageExportBatch(
+			@GraphQLName("launchSetId") Long launchSetId,
+			@GraphQLName("search") String search,
+			@GraphQLName("filter") String filterString,
+			@GraphQLName("sort") String sortsString,
+			@GraphQLName("callbackURL") String callbackURL,
+			@GraphQLName("contentType") String contentType,
+			@GraphQLName("fieldNames") String fieldNames)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_launchEntryResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			launchEntryResource ->
+				launchEntryResource.postLaunchSetLaunchEntriesPageExportBatch(
+					launchSetId, search,
+					_filterBiFunction.apply(launchEntryResource, filterString),
+					_sortsBiFunction.apply(launchEntryResource, sortsString),
+					callbackURL, contentType, fieldNames));
 	}
 
 	@GraphQLField
@@ -198,6 +229,26 @@ public class Mutation {
 		}
 	}
 
+	private void _populateResourceContext(
+			LaunchEntryResource launchEntryResource)
+		throws Exception {
+
+		launchEntryResource.setContextAcceptLanguage(_acceptLanguage);
+		launchEntryResource.setContextCompany(_company);
+		launchEntryResource.setContextHttpServletRequest(_httpServletRequest);
+		launchEntryResource.setContextHttpServletResponse(_httpServletResponse);
+		launchEntryResource.setContextUriInfo(_uriInfo);
+		launchEntryResource.setContextUser(_user);
+		launchEntryResource.setGroupLocalService(_groupLocalService);
+		launchEntryResource.setRoleLocalService(_roleLocalService);
+
+		launchEntryResource.setVulcanBatchEngineExportTaskResource(
+			_vulcanBatchEngineExportTaskResource);
+
+		launchEntryResource.setVulcanBatchEngineImportTaskResource(
+			_vulcanBatchEngineImportTaskResource);
+	}
+
 	private void _populateResourceContext(LaunchSetResource launchSetResource)
 		throws Exception {
 
@@ -217,6 +268,8 @@ public class Mutation {
 			_vulcanBatchEngineImportTaskResource);
 	}
 
+	private static ComponentServiceObjects<LaunchEntryResource>
+		_launchEntryResourceComponentServiceObjects;
 	private static ComponentServiceObjects<LaunchSetResource>
 		_launchSetResourceComponentServiceObjects;
 
