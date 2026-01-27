@@ -46,6 +46,36 @@ public class LaunchSetLocalServiceImpl extends LaunchSetLocalServiceBaseImpl {
 		return launchSetPersistence.update(launchSet);
 	}
 
+	public LaunchSet deleteLaunchSet(long launchSetId) throws PortalException {
+		return launchSetPersistence.remove(launchSetId);
+	}
+
+	public LaunchSet deleteLaunchSet(
+			String externalReferenceCode, long companyId)
+		throws PortalException {
+
+		return launchSetPersistence.removeByERC_C(
+			externalReferenceCode, companyId);
+	}
+
+	@Override
+	public LaunchSet updateLaunchSet(
+			String externalReferenceCode, long launchSetId, long userId,
+			String description, String name)
+		throws PortalException {
+
+		LaunchSet launchSet = launchSetPersistence.findByPrimaryKey(
+			launchSetId);
+
+		launchSet.setExternalReferenceCode(externalReferenceCode);
+
+		launchSet.setUserId(userId);
+		launchSet.setDescription(description);
+		launchSet.setName(name);
+
+		return launchSetPersistence.update(launchSet);
+	}
+
 	@Reference
 	private UserLocalService _userLocalService;
 
