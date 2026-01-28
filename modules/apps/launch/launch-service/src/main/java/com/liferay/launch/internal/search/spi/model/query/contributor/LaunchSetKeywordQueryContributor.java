@@ -19,7 +19,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author David Truong
  */
 @Component(
-	property = "indexer.class.name=com.liferay.change.tracking.model.LaunchSet",
+	property = "indexer.class.name=com.liferay.launch.model.LaunchSet",
 	service = KeywordQueryContributor.class
 )
 public class LaunchSetKeywordQueryContributor

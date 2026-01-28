@@ -19,7 +19,7 @@ import org.osgi.service.component.annotations.Component;
  * @author David Truong
  */
 @Component(
-	property = "indexer.class.name=com.liferay.change.tracking.model.LaunchSet",
+	property = "indexer.class.name=com.liferay.launch.model.LaunchSet",
 	service = ModelPreFilterContributor.class
 )
 public class LaunchSetModelPreFilterContributor
