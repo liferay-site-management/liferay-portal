@@ -13,6 +13,7 @@ import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.spi.display.CTDisplayRendererRegistry;
 import com.liferay.change.tracking.web.internal.constants.CTWebKeys;
 import com.liferay.change.tracking.web.internal.security.permission.resource.CTCollectionPermission;
+import com.liferay.fragment.model.FragmentEntryLink;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.SelectOption;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.sql.dsl.expression.Predicate;
@@ -28,6 +29,7 @@ import com.liferay.portal.kernel.model.UserTable;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -86,6 +88,10 @@ public class ViewRelatedEntriesDisplayContext {
 		return _ctCollectionId;
 	}
 
+	public String getCTEntryIds() {
+		return StringUtil.merge(_ctEntryIds);
+	}
+
 	public <T extends BaseModel<T>> Map<String, Object> getReactData()
 		throws Exception {
 
@@ -99,6 +105,21 @@ public class ViewRelatedEntriesDisplayContext {
 				ctEntryIds.add(ctEntry.getCtEntryId());
 			}
 		}
+
+		List<Long> filteredCTEntryIds = new ArrayList<>();
+
+		for (long ctEntryId : ctEntryIds) {
+			CTEntry ctEntry = _ctEntryLocalService.fetchCTEntry(ctEntryId);
+
+			if (ctEntry.getModelClassNameId() !=
+					ClassNameLocalServiceUtil.getClassNameId(
+						FragmentEntryLink.class.getName())) {
+
+				filteredCTEntryIds.add(ctEntryId);
+			}
+		}
+
+		ctEntryIds = filteredCTEntryIds;
 
 		Map<Long, List<CTEntry>> relatedCTEntriesMap =
 			_ctCollectionLocalService.getRelatedCTEntriesMap(
