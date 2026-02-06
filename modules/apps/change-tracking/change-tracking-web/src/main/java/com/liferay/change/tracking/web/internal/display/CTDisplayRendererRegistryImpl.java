@@ -195,8 +195,8 @@ public class CTDisplayRendererRegistryImpl
 		throws PortalException {
 
 		if (ctCollection.getStatus() == WorkflowConstants.STATUS_APPROVED) {
-			if (ctEntry.getChangeType() ==
-					CTConstants.CT_CHANGE_TYPE_DELETION) {
+			if (ctEntry.getChangeType() !=
+					CTConstants.CT_CHANGE_TYPE_ADDITION) {
 
 				return ctCollection.getCtCollectionId();
 			}
