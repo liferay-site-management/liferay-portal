@@ -16,6 +16,7 @@ import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.spi.display.CTDisplayRenderer;
 import com.liferay.change.tracking.spi.display.CTDisplayRendererRegistry;
 import com.liferay.change.tracking.web.internal.util.PublicationsPortletURLUtil;
+import com.liferay.fragment.model.FragmentEntryLink;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.learn.LearnMessage;
 import com.liferay.learn.LearnMessageUtil;
@@ -395,7 +396,9 @@ public class ViewConflictsDisplayContext {
 				String conflictDescription =
 					conflictInfo.getConflictDescription(resourceBundle);
 
-				if (!conflictDescription.equals(
+				if ((ctEntry.getModelClassNameId() == _portal.getClassNameId(
+						FragmentEntryLink.class.getName())) ||
+					!conflictDescription.equals(
 						LanguageUtil.get(
 							resourceBundle,
 							"deletion-modification-conflict"))) {

@@ -21,6 +21,8 @@ import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.util.Validator;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.Locale;
 
 import org.osgi.service.component.annotations.Component;
@@ -32,6 +34,22 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = CTDisplayRenderer.class)
 public class FragmentEntryLinkCTDisplayRender
 	extends BaseCTDisplayRenderer<FragmentEntryLink> {
+
+	@Override
+	public String getEditURL(
+			HttpServletRequest httpServletRequest,
+			FragmentEntryLink fragmentEntryLink)
+		throws Exception {
+
+		Layout layout = _layoutLocalService.fetchLayout(
+			fragmentEntryLink.getPlid());
+
+		if (layout.isDraftLayout()) {
+			layout = _layoutLocalService.fetchLayout(layout.getClassPK());
+		}
+
+		return _layoutCTDisplayRenderer.getEditURL(httpServletRequest, layout);
+	}
 
 	@Override
 	public Class<FragmentEntryLink> getModelClass() {
