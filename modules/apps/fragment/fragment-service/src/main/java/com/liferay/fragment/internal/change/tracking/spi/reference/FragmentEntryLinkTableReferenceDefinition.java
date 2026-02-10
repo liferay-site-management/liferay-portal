@@ -11,6 +11,8 @@ import com.liferay.change.tracking.spi.reference.builder.ParentTableReferenceInf
 import com.liferay.fragment.model.FragmentEntryLink;
 import com.liferay.fragment.model.FragmentEntryLinkTable;
 import com.liferay.fragment.service.persistence.FragmentEntryLinkPersistence;
+import com.liferay.layout.page.template.model.LayoutPageTemplateStructureRelTable;
+import com.liferay.layout.page.template.model.LayoutPageTemplateStructureTable;
 import com.liferay.portal.kernel.model.LayoutTable;
 import com.liferay.portal.kernel.service.persistence.BasePersistence;
 import com.liferay.segments.model.SegmentsExperienceTable;
@@ -56,6 +58,19 @@ public class FragmentEntryLinkTableReferenceDefinition
 					FragmentEntryLinkTable.INSTANCE.plid.eq(
 						LayoutTable.INSTANCE.plid)
 				)
+			)
+		).referenceInnerJoin(
+			fromStep -> fromStep.from(
+				LayoutPageTemplateStructureRelTable.INSTANCE
+			).innerJoinON(
+				FragmentEntryLinkTable.INSTANCE,
+				FragmentEntryLinkTable.INSTANCE.segmentsExperienceId.eq(
+					LayoutPageTemplateStructureRelTable.INSTANCE.
+						segmentsExperienceId)
+			).innerJoinON(
+				LayoutPageTemplateStructureTable.INSTANCE,
+				FragmentEntryLinkTable.INSTANCE.plid.eq(
+					LayoutPageTemplateStructureTable.INSTANCE.plid)
 			)
 		);
 	}
