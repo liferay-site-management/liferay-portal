@@ -12,8 +12,8 @@ import {accountSettingsPagesTest} from '../../../fixtures/accountSettingsPagesTe
 import {apiHelpersTest} from '../../../fixtures/apiHelpersTest';
 import {changeTrackingPagesTest} from '../../../fixtures/changeTrackingPagesTest';
 import {dataApiHelpersTest} from '../../../fixtures/dataApiHelpersTest';
-import {featureFlagsTest} from '../../../fixtures/featureFlagsTest';
 import {documentLibraryPagesTest} from '../../../fixtures/documentLibraryPages.fixtures';
+import {featureFlagsTest} from '../../../fixtures/featureFlagsTest';
 import {isolatedSiteTest} from '../../../fixtures/isolatedSiteTest';
 import {pageEditorPagesTest} from '../../../fixtures/pageEditorPagesTest';
 import {pagesAdminPagesTest} from '../../../fixtures/pagesAdminPagesTest';
@@ -905,4 +905,88 @@ test('LPD-62940 Assert download button is visible and functional in the data tab
 
 	const download = await downloadPromise;
 	expect(download.suggestedFilename()).toEqual('astronaut.png');
+});
+
+test('LPD-51179 Cannot discard fragmentEntryLink changes in a Publication', async ({
+	changeTrackingPage,
+	ctCollection,
+	page,
+	pageEditorPage,
+}) => {
+	await changeTrackingPage.workOnPublication(ctCollection);
+
+	await test.step('Go to home edit page', async () => {
+		await page.goto(`/web/guest/home?p_l_mode=edit`);
+	});
+
+	const headingId = await pageEditorPage.getFragmentId('Paragraph');
+
+	await pageEditorPage.editTextEditable(headingId, 'element-text', 'Edited');
+
+	await pageEditorPage.publishPage();
+
+	await changeTrackingPage.goToReviewChanges(ctCollection.body.name);
+
+	const dropdownMenu = page
+		.getByRole('row', {name: 'Select Fragment Entry Link'})
+		.first()
+		.getByRole('button');
+
+	await clickAndExpectToBeVisible({
+		autoClick: true,
+		target: page.getByRole('menuitem', {name: 'Discard'}),
+		trigger: dropdownMenu,
+	});
+
+	await page.getByLabel('Show All Items').click();
+
+	await expect(page.getByText('No changes were found.')).toBeVisible();
+});
+
+test('LPD-51179 FragmentEntryLinks are discarded with LayoutPageTemplateStructureRel', async ({
+	changeTrackingPage,
+	ctCollection,
+	page,
+	pageEditorPage,
+}) => {
+	await changeTrackingPage.workOnPublication(ctCollection);
+
+	await test.step('Go to home edit page', async () => {
+		await page.goto(`/web/guest/home?p_l_mode=edit`);
+	});
+
+	const headingId = await pageEditorPage.getFragmentId('Paragraph');
+
+	await pageEditorPage.editTextEditable(headingId, 'element-text', 'Edited');
+
+	await pageEditorPage.publishPage();
+
+	await changeTrackingPage.goToReviewChanges(ctCollection.body.name);
+
+	const publicationActionMenu = page.getByLabel('More Actions');
+
+	await publicationActionMenu.click();
+
+	await page
+		.getByRole('menuitem', {
+			name: 'Show System Changes',
+		})
+		.click();
+
+	const pageLayoutTemplateStructureRelMenu = page
+		.getByRole('row', {name: 'Select Page Template Structure Relationship'})
+		.first()
+		.getByRole('button');
+
+	await clickAndExpectToBeVisible({
+		autoClick: true,
+		target: page.getByRole('menuitem', {name: 'Discard'}),
+		trigger: pageLayoutTemplateStructureRelMenu,
+	});
+
+	await page.getByLabel('Show All Items').click();
+
+	await expect(
+		page.getByRole('cell', {exact: true, name: 'Fragment Entry Link'})
+	).toBeVisible();
 });
