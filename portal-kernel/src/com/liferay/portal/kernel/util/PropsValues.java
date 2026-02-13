@@ -2506,6 +2506,10 @@ public class PropsValues {
 	public static String VIRTUAL_HOSTS_DEFAULT_SITE_NAME = PropsUtil.get(
 		PropsKeys.VIRTUAL_HOSTS_DEFAULT_SITE_NAME);
 
+	public static final boolean VIRTUAL_HOSTS_DIRECTORY_MODE =
+		GetterUtil.getBoolean(
+			PropsUtil.get(PropsKeys.VIRTUAL_HOSTS_DIRECTORY_MODE));
+
 	public static final String[] VIRTUAL_HOSTS_IGNORE_EXTENSIONS =
 		PropsUtil.getArray(PropsKeys.VIRTUAL_HOSTS_IGNORE_EXTENSIONS);
 

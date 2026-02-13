@@ -2865,6 +2865,9 @@ public interface PropsKeys {
 	public static final String VIRTUAL_HOSTS_DEFAULT_SITE_NAME =
 		"virtual.hosts.default.site.name";
 
+	public static final String VIRTUAL_HOSTS_DIRECTORY_MODE =
+		"virtual.hosts.directory.mode";
+
 	public static final String VIRTUAL_HOSTS_IGNORE_EXTENSIONS =
 		"virtual.hosts.ignore.extensions";
 

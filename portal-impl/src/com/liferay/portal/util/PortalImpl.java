@@ -7647,7 +7647,10 @@ public class PortalImpl implements Portal {
 					 portalDomain, defaultVirtualHostname) &&
 				  !_containsHostname(virtualHostnames, portalDomain))) {
 
-			sb.append(_PUBLIC_GROUP_SERVLET_MAPPING);
+			if (!PropsValues.VIRTUAL_HOSTS_DIRECTORY_MODE) {
+				sb.append(_PUBLIC_GROUP_SERVLET_MAPPING);
+			}
+
 			sb.append(group.getFriendlyURL());
 		}
 

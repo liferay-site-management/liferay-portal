@@ -15,7 +15,9 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
+import com.liferay.portal.kernel.service.LayoutSetLocalServiceUtil;
 import com.liferay.portal.kernel.struts.LastPath;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.Portal;
@@ -252,8 +254,22 @@ public class VirtualHostFilter extends BasePortalFilter {
 			return;
 		}
 
-		LayoutSet layoutSet = (LayoutSet)httpServletRequest.getAttribute(
-			WebKeys.VIRTUAL_HOST_LAYOUT_SET);
+		LayoutSet layoutSet = _findGroupLayoutSet(friendlyURL);
+
+		if (layoutSet == null) {
+			layoutSet = (LayoutSet)httpServletRequest.getAttribute(
+				WebKeys.VIRTUAL_HOST_LAYOUT_SET);
+		}
+		else {
+			int index = friendlyURL.indexOf(CharPool.SLASH, 1);
+
+			if (index != -1) {
+				friendlyURL = friendlyURL.substring(index);
+			}
+			else {
+				friendlyURL = "/";
+			}
+		}
 
 		if (_log.isDebugEnabled()) {
 			_log.debug("Layout set " + layoutSet);
@@ -391,6 +407,33 @@ public class VirtualHostFilter extends BasePortalFilter {
 				VirtualHostFilter.class.getName(), httpServletRequest,
 				httpServletResponse, filterChain);
 		}
+	}
+
+	private LayoutSet _findGroupLayoutSet(String friendlyURL) {
+		if (!PropsValues.VIRTUAL_HOSTS_DIRECTORY_MODE ||
+			friendlyURL.isEmpty() ||
+			(friendlyURL.charAt(0) != CharPool.SLASH)) {
+
+			return null;
+		}
+
+		String groupFriendlyURL = friendlyURL;
+
+		int index = friendlyURL.indexOf(CharPool.SLASH, 1);
+
+		if (index != -1) {
+			groupFriendlyURL = friendlyURL.substring(0, index);
+		}
+
+		Group group = GroupLocalServiceUtil.fetchFriendlyURLGroup(
+			CompanyThreadLocal.getCompanyId(), groupFriendlyURL);
+
+		if (group == null) {
+			return null;
+		}
+
+		return LayoutSetLocalServiceUtil.fetchLayoutSet(
+			group.getGroupId(), false);
 	}
 
 	private String _findLanguageId(String friendlyURL) {
