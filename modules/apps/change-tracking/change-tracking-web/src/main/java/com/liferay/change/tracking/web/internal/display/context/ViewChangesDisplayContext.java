@@ -444,24 +444,8 @@ public class ViewChangesDisplayContext {
 
 		if (_ctCollection.getStatus() != WorkflowConstants.STATUS_APPROVED) {
 			try {
-				if (!_user.isOnDemandUser()) {
-					ctClosure = _ctClosureFactory.create(
-						_ctCollection.getCtCollectionId());
-				}
-				else {
-					ctClosure = _ctClosureFactory.create(
-						_ctCollection.getCtCollectionId(),
-						new HashSet<>(
-							_ctEntryLocalService.dslQuery(
-								DSLQueryFactoryUtil.selectDistinct(
-									CTEntryTable.INSTANCE.modelClassNameId
-								).from(
-									CTEntryTable.INSTANCE
-								).where(
-									CTEntryTable.INSTANCE.ctCollectionId.eq(
-										_ctCollection.getCtCollectionId())
-								))));
-				}
+				ctClosure = _ctClosureFactory.create(
+					_ctCollection.getCtCollectionId());
 			}
 			catch (Exception exception) {
 				contextViewJSONObject = JSONUtil.put(
