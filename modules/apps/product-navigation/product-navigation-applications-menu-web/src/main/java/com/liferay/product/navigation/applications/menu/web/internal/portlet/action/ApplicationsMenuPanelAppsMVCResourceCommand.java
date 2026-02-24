@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -503,7 +504,20 @@ public class ApplicationsMenuPanelAppsMVCResourceCommand
 				).put(
 					"key", group.getGroupKey()
 				).put(
-					"label", group.getDescriptiveName(themeDisplay.getLocale())
+					"label",
+					() -> {
+						String name = group.getDescriptiveName(
+							themeDisplay.getLocale());
+
+						if (Objects.equals(name, "Liferay DXP")) {
+							String site = LanguageUtil.get(
+								themeDisplay.getLocale(), "site");
+
+							return name + StringPool.SPACE + site;
+						}
+
+						return name;
+					}
 				).put(
 					"logoURL", group.getLogoURL(themeDisplay, false)
 				).put(
