@@ -34,6 +34,11 @@ public class FragmentEntryLinkCTDisplayRender
 	extends BaseCTDisplayRenderer<FragmentEntryLink> {
 
 	@Override
+	public boolean bypassDeletionCheck() {
+		return true;
+	}
+
+	@Override
 	public Class<FragmentEntryLink> getModelClass() {
 		return FragmentEntryLink.class;
 	}
