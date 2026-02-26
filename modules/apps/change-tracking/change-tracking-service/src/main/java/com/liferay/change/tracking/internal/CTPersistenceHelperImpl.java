@@ -8,6 +8,8 @@ package com.liferay.change.tracking.internal;
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.CTEntryLocalService;
+import com.liferay.change.tracking.spi.display.CTDisplayRenderer;
+import com.liferay.change.tracking.spi.display.CTDisplayRendererRegistry;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTRequiredModelException;
@@ -121,8 +123,12 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 
 		long modelClassPK = ctModel.getPrimaryKey();
 
+		CTDisplayRenderer<T> ctDisplayRenderer =
+			_ctDisplayRendererRegistry.getCTDisplayRenderer(modelClassNameId);
+
 		if (ctCollectionId == CTConstants.CT_COLLECTION_ID_PRODUCTION) {
-			if (GetterUtil.getBoolean(
+			if (!ctDisplayRenderer.bypassDeletionCheck() &&
+				GetterUtil.getBoolean(
 					PropsUtil.get(
 						PropsKeys.
 							CHANGE_TRACKING_DELETION_PROTECTION_ENABLED)) &&
@@ -200,6 +206,9 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 
 	@Reference
 	private ClassNameLocalService _classNameLocalService;
+
+	@Reference
+	private CTDisplayRendererRegistry _ctDisplayRendererRegistry;
 
 	@Reference
 	private CTEntryLocalService _ctEntryLocalService;

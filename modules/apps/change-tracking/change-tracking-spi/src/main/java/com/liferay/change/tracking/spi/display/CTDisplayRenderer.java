@@ -23,6 +23,10 @@ import java.util.Locale;
  */
 public interface CTDisplayRenderer<T> {
 
+	public default boolean bypassDeletionCheck() {
+		return false;
+	}
+
 	public default T fetchLatestVersionedModel(T model) {
 		return null;
 	}
