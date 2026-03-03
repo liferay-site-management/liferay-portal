@@ -24,6 +24,7 @@ import jakarta.portlet.PortletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Eudaldo Alonso
@@ -90,13 +91,29 @@ public class ApplicationsMenuDisplayContext {
 				Company company = themeDisplay.getCompany();
 
 				return HashMapBuilder.<String, Object>put(
-					"label", company.getName()
+					"label",
+					() -> {
+						if (Objects.equals(company.getName(), "Liferay DXP")) {
+							return "Liferay";
+						}
+
+						return company.getName();
+					}
 				).put(
 					"logoURL",
-					StringBundler.concat(
-						themeDisplay.getPathImage(), "/company_logo?img_id=",
-						company.getLogoId(), "&t=",
-						WebServerServletTokenUtil.getToken(company.getLogoId()))
+					() -> {
+						String logoPath = "/company_logo?img_id=";
+
+						if (Objects.equals(company.getName(), "Liferay DXP")) {
+							logoPath = "/liferay_instance_logo?img_id=";
+						}
+
+						return StringBundler.concat(
+							themeDisplay.getPathImage(), logoPath,
+							company.getLogoId(), "&t=",
+							WebServerServletTokenUtil.getToken(
+								company.getLogoId()));
+					}
 				).put(
 					"url",
 					PortalUtil.addPreservedParameters(
