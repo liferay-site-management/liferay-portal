@@ -182,7 +182,7 @@ public class LayoutReferencesExportImportContentProcessorTest {
 
 		Assert.assertEquals(
 			_getCompanyHostPortalURL(importGroup) +
-				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 					importGroup.getFriendlyURL() +
 						exportLayout.getFriendlyURL(),
 			_exportAndImportLayoutURL(
@@ -270,7 +270,7 @@ public class LayoutReferencesExportImportContentProcessorTest {
 
 		Assert.assertEquals(
 			_getCompanyHostPortalURL(importGroup) +
-				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 					importGroup.getFriendlyURL() +
 						exportLayout.getFriendlyURL(),
 			_exportAndImportLayoutURL(
@@ -330,7 +330,7 @@ public class LayoutReferencesExportImportContentProcessorTest {
 		Group importGroup = GroupTestUtil.addGroup();
 
 		Assert.assertEquals(
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 				importGroup.getFriendlyURL() + exportLayout.getFriendlyURL(),
 			_exportAndImportLayoutURL(
 				exportLayout.getFriendlyURL(), exportGroup, importGroup, true,
@@ -534,7 +534,7 @@ public class LayoutReferencesExportImportContentProcessorTest {
 
 		Assert.assertEquals(
 			_getCompanyHostPortalURL(importGroup) +
-				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 					importGroup.getFriendlyURL() +
 						exportLayout.getFriendlyURL(),
 			_exportAndImportLayoutURL(
@@ -579,7 +579,7 @@ public class LayoutReferencesExportImportContentProcessorTest {
 		Group importGroup = GroupTestUtil.addGroup();
 
 		Assert.assertEquals(
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 				importGroup.getFriendlyURL() + exportLayout.getFriendlyURL(),
 			_exportAndImportLayoutURL(
 				exportLayout.getFriendlyURL(), exportGroup, importGroup));
@@ -711,7 +711,7 @@ public class LayoutReferencesExportImportContentProcessorTest {
 			LayoutFriendlyURLRandomizerBumper.INSTANCE);
 
 		String exactMatchPattern = StringBundler.concat(
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 			group.getFriendlyURL(), StringPool.SLASH, urlSegment1);
 
 		try (CompanyConfigurationTemporarySwapper
@@ -752,7 +752,7 @@ public class LayoutReferencesExportImportContentProcessorTest {
 			LayoutFriendlyURLRandomizerBumper.INSTANCE);
 
 		String exactMatchPattern = StringBundler.concat(
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 			group.getFriendlyURL(), StringPool.SLASH, urlSegment);
 
 		try (CompanyConfigurationTemporarySwapper
@@ -813,7 +813,8 @@ public class LayoutReferencesExportImportContentProcessorTest {
 					group.getGroupId(),
 					StringBundler.concat(
 						_CONTENT_PREFIX,
-						PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+						TestPropsValues.
+							LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 						group.getFriendlyURL(), StringPool.SLASH,
 						RandomTestUtil.randomString(
 							LayoutFriendlyURLRandomizerBumper.INSTANCE),
@@ -836,7 +837,7 @@ public class LayoutReferencesExportImportContentProcessorTest {
 			LayoutFriendlyURLRandomizerBumper.INSTANCE);
 
 		String prefixPattern = StringBundler.concat(
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 			group.getFriendlyURL(), StringPool.SLASH, urlSegment,
 			StringPool.SLASH);
 

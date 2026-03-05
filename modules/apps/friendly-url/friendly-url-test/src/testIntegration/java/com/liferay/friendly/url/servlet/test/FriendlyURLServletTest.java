@@ -214,7 +214,8 @@ public class FriendlyURLServletTest {
 
 		mockHttpServletRequest.setPathInfo(oldPath);
 		mockHttpServletRequest.setRequestURI(
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING + oldPath);
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+				oldPath);
 
 		MockHttpServletResponse mockHttpServletResponse =
 			new MockHttpServletResponse();
@@ -222,7 +223,7 @@ public class FriendlyURLServletTest {
 		_servlet.service(mockHttpServletRequest, mockHttpServletResponse);
 
 		Assert.assertEquals(
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 				getPath(_group, layout),
 			mockHttpServletResponse.getRedirectedUrl());
 	}
@@ -279,7 +280,8 @@ public class FriendlyURLServletTest {
 			WebKeys.I18N_LANGUAGE_ID, i18nLanguageId);
 		mockHttpServletRequest.setPathInfo(oldPath);
 		mockHttpServletRequest.setRequestURI(
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING + oldPath);
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+				oldPath);
 		mockHttpServletRequest.setServletPath(i18nLanguageId);
 
 		MockHttpServletResponse mockHttpServletResponse =
@@ -288,7 +290,7 @@ public class FriendlyURLServletTest {
 		_servlet.service(mockHttpServletRequest, mockHttpServletResponse);
 
 		Assert.assertEquals(
-			"/pt" + PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+			"/pt" + TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 				_getLocalizedPath(_group, layout, LocaleUtil.BRAZIL),
 			mockHttpServletResponse.getRedirectedUrl());
 	}
@@ -325,7 +327,7 @@ public class FriendlyURLServletTest {
 			"/en-GB/home");
 
 		String publicGroupFriendlyURL =
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 				_group.getFriendlyURL();
 
 		_testGetRedirectForAlternativeSite(
@@ -701,7 +703,7 @@ public class FriendlyURLServletTest {
 		mockHttpServletRequest.setPathInfo(StringPool.SLASH);
 
 		String requestURI =
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 				getPath(_group, redirectLayout);
 
 		mockHttpServletRequest.setRequestURI(requestURI);
@@ -746,7 +748,7 @@ public class FriendlyURLServletTest {
 			new MockHttpServletRequest(
 				"GET",
 				StringBundler.concat(
-					PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+					TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 					group.getFriendlyURL(), "/home")),
 			mockHttpServletResponse, getPath(group, homeLayout) + "/home",
 			_redirectConstructor1.newInstance(getURL(homeLayout)));
@@ -765,7 +767,7 @@ public class FriendlyURLServletTest {
 			new MockHttpServletRequest(
 				"GET",
 				StringBundler.concat(
-					PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+					TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 					_group.getFriendlyURL(), "/path")),
 			mockHttpServletResponse, getPath(_group, _layout) + "/path",
 			_redirectConstructor1.newInstance(getURL(_layout)));
@@ -795,7 +797,7 @@ public class FriendlyURLServletTest {
 		mockHttpServletRequest.setPathInfo(StringPool.SLASH);
 
 		String requestURI =
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 				getPath(_group, redirectLayout);
 
 		mockHttpServletRequest.setRequestURI(requestURI);
@@ -831,7 +833,7 @@ public class FriendlyURLServletTest {
 		mockHttpServletRequest.setPathInfo(StringPool.SLASH);
 
 		String requestURI =
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 				getPath(_group, redirectLayout);
 
 		mockHttpServletRequest.setRequestURI(requestURI);
@@ -879,7 +881,8 @@ public class FriendlyURLServletTest {
 			JavaConstants.JAKARTA_SERVLET_FORWARD_REQUEST_URI, oldFriendlyURL);
 		mockHttpServletRequest.setPathInfo(oldPath);
 		mockHttpServletRequest.setRequestURI(
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING + oldPath);
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+				oldPath);
 
 		MockHttpServletResponse mockHttpServletResponse =
 			new MockHttpServletResponse();
@@ -957,7 +960,7 @@ public class FriendlyURLServletTest {
 			WebKeys.I18N_LANGUAGE_ID, i18nLanguageId);
 
 		String requestURI =
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 				getPath(_group, _layout);
 
 		mockHttpServletRequest.setRequestURI(requestURI);
@@ -1064,7 +1067,7 @@ public class FriendlyURLServletTest {
 			requestURI.lastIndexOf(StringPool.SLASH));
 
 		String publicFriendlyURL = StringBundler.concat(
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 			_group.getFriendlyURL(), layoutFriendlyURL);
 
 		HttpServletRequest virtualHostFilterProcessedHttpServletRequest =
@@ -1224,7 +1227,8 @@ public class FriendlyURLServletTest {
 				new MockHttpServletRequest(
 					"GET",
 					StringBundler.concat(
-						PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+						TestPropsValues.
+							LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 						_group.getFriendlyURL(), CharPool.SLASH, sourceURL)),
 				mockHttpServletResponse);
 

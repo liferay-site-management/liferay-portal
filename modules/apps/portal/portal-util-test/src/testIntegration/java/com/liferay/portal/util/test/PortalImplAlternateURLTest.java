@@ -364,7 +364,7 @@ public class PortalImplAlternateURLTest {
 
 		return StringBundler.concat(
 			portalURL, _getI18nPath(defaultLocale, locale, portletPreferences),
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 			groupFriendlyURL,
 			FriendlyURLResolverConstants.URL_SEPARATOR_JOURNAL_ARTICLE,
 			friendlyURL);
@@ -375,7 +375,7 @@ public class PortalImplAlternateURLTest {
 
 		return StringBundler.concat(
 			"http://", portalDomain, languageId,
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 			Portal.FRIENDLY_URL_SEPARATOR, "asset_publisher", groupFriendlyURL,
 			"/content/content-title");
 	}
@@ -422,7 +422,7 @@ public class PortalImplAlternateURLTest {
 
 		return StringBundler.concat(
 			portalURL, _getI18nPath(defaultLocale, locale, portletPreferences),
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 			groupFriendlyURL, friendlyURL);
 	}
 
@@ -432,7 +432,7 @@ public class PortalImplAlternateURLTest {
 
 		return StringBundler.concat(
 			"http://", portalDomain, languageId,
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 			groupFriendlyURL, layoutFriendlyURL);
 	}
 

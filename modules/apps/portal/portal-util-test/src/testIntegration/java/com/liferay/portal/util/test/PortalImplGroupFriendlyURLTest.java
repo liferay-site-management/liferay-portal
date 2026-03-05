@@ -163,7 +163,7 @@ public class PortalImplGroupFriendlyURLTest {
 
 		_testGroupFriendlyURL(
 			_company.getVirtualHostname(),
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 				group.getFriendlyURL(),
 			group, nondefaultSiteLayout);
 
@@ -193,7 +193,7 @@ public class PortalImplGroupFriendlyURLTest {
 
 			_testGroupFriendlyURL(
 				_company.getVirtualHostname(),
-				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 					_group.getFriendlyURL(),
 				_group, defaultSiteLayout);
 
@@ -202,7 +202,7 @@ public class PortalImplGroupFriendlyURLTest {
 
 			_testGroupFriendlyURL(
 				_company.getVirtualHostname(),
-				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 					_group.getFriendlyURL(),
 				_group, defaultSiteLayout);
 
@@ -220,7 +220,7 @@ public class PortalImplGroupFriendlyURLTest {
 
 			_testGroupFriendlyURL(
 				_company.getVirtualHostname(),
-				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 					group.getFriendlyURL(),
 				group, nondefaultSiteLayout);
 

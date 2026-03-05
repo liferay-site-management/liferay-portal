@@ -701,7 +701,8 @@ public class PortalImplCanonicalURLTest {
 		sb.append(i18nPath);
 
 		if (Validator.isNotNull(groupFriendlyURL)) {
-			sb.append(PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING);
+			sb.append(
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING);
 			sb.append(groupFriendlyURL);
 		}
 

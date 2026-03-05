@@ -436,7 +436,7 @@ public class DefaultExportImportContentProcessorTest {
 		Assert.assertFalse(
 			content,
 			content.contains(
-				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING));
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING));
 		Assert.assertTrue(
 			content,
 			content.contains(
@@ -513,7 +513,7 @@ public class DefaultExportImportContentProcessorTest {
 		Assert.assertFalse(
 			content,
 			content.contains(
-				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING));
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING));
 		Assert.assertTrue(
 			content,
 			content.contains(

@@ -202,7 +202,7 @@ public class UpdateLanguageActionTest {
 
 		Assert.assertEquals(
 			StringBundler.concat(
-				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 				_group.getFriendlyURL(), StringPool.SLASH),
 			updateLanguageAction.getRedirect(
 				mockHttpServletRequest, themeDisplay, _targetLocale));
@@ -429,13 +429,13 @@ public class UpdateLanguageActionTest {
 		themeDisplay.setSiteGroupId(_group.getGroupId());
 
 		String targetURL =
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 				_group.getFriendlyURL() + _layout.getFriendlyURL(_targetLocale);
 
 		targetURL += targetFriendlyURLSeparatorPart + "?queryString";
 
 		String sourceURL =
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 				_group.getFriendlyURL() + _layout.getFriendlyURL(_sourceLocale);
 
 		sourceURL += sourceFriendlyURLSeparatorPart + "?queryString";
@@ -474,11 +474,11 @@ public class UpdateLanguageActionTest {
 		}
 
 		String sourceURL = StringBundler.concat(
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 			_group.getFriendlyURL(), layoutFriendlyURL, path, "?queryString");
 
 		String targetURL = StringBundler.concat(
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 			_group.getFriendlyURL(), _layout.getFriendlyURL(targetLocale), path,
 			"?queryString");
 

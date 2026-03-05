@@ -485,7 +485,7 @@ public class I18nServletTest extends I18nServlet {
 			mockHttpServletRequest.setAttribute(
 				WebKeys.COMPANY_ID, group.getCompanyId());
 			mockHttpServletRequest.setPathInfo(
-				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 					group.getFriendlyURL());
 		}
 

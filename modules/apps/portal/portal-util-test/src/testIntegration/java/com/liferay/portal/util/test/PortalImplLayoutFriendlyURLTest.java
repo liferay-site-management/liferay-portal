@@ -98,7 +98,7 @@ public class PortalImplLayoutFriendlyURLTest {
 
 			_testLayoutFriendlyURL(
 				_company.getVirtualHostname(),
-				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 					_group.getFriendlyURL() + _layout.getFriendlyURL());
 		}
 	}
@@ -113,7 +113,7 @@ public class PortalImplLayoutFriendlyURLTest {
 	public void testLocalhost() throws Exception {
 		_testLayoutFriendlyURL(
 			"localhost",
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 				_group.getFriendlyURL() + _layout.getFriendlyURL());
 	}
 
@@ -123,7 +123,7 @@ public class PortalImplLayoutFriendlyURLTest {
 
 		_testLayoutFriendlyURL(
 			"localhost",
-			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING +
 				_group.getFriendlyURL() + _layout.getFriendlyURL());
 	}
 

@@ -53,6 +53,8 @@ public class TestPropsValues {
 	public static final int JUNIT_DELAY_FACTOR = GetterUtil.getInteger(
 		TestPropsUtil.get("junit.delay.factor"));
 
+	public static final String LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING;
+
 	public static final String PORTAL_URL = TestPropsUtil.get("portal.url");
 
 	public static final String USER_PASSWORD = TestPropsUtil.get(
@@ -80,6 +82,21 @@ public class TestPropsValues {
 		TestPropsUtil.printProperties();
 
 		COMPANY_WEB_ID = companyWebId;
+
+		String layoutFriendlyUrlPublicServletMapping =
+			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING;
+
+		try {
+			if (PropsValues.VIRTUAL_HOSTS_DIRECTORY_MODE) {
+				layoutFriendlyUrlPublicServletMapping = "";
+			}
+		}
+		catch (Exception exception) {
+			throw new LoggedExceptionInInitializerError(exception);
+		}
+
+		LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING =
+			layoutFriendlyUrlPublicServletMapping;
 	}
 
 	public static long getCompanyId() throws PortalException {

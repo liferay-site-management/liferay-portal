@@ -26,7 +26,6 @@ import com.liferay.portal.kernel.test.TestInfo;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.servlet.I18nServlet;
@@ -154,7 +153,7 @@ public class CommonStatusLayoutUtilityPageEntryRequestContributorTest {
 		_testAddAttributesAndParameters(
 			StringBundler.concat(
 				_PATH_PROXY, _PATH_CONTEXT, StringPool.SLASH, languageId,
-				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 				StringPool.SLASH, RandomTestUtil.randomString(), "/test/test"),
 			_getDynamicServletRequest(
 				_PATH_CONTEXT, layout.getCompanyId(), layoutSet),
@@ -182,7 +181,7 @@ public class CommonStatusLayoutUtilityPageEntryRequestContributorTest {
 		_testAddAttributesAndParameters(
 			StringBundler.concat(
 				_PATH_PROXY, _PATH_CONTEXT, StringPool.SLASH, languageId,
-				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 				StringPool.SLASH, RandomTestUtil.randomString(), "/test/test"),
 			_getDynamicServletRequest(
 				_PATH_CONTEXT, layout.getCompanyId(), layoutSet),
@@ -217,7 +216,7 @@ public class CommonStatusLayoutUtilityPageEntryRequestContributorTest {
 		_testAddAttributesAndParameters(
 			StringBundler.concat(
 				_PATH_PROXY, _PATH_CONTEXT, StringPool.SLASH, languageId,
-				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 				groupFriendlyURL, "/test/test"),
 			_getDynamicServletRequest(_PATH_CONTEXT, companyId, layoutSet),
 			String.valueOf(group.getGroupId()), languageId,
@@ -252,7 +251,7 @@ public class CommonStatusLayoutUtilityPageEntryRequestContributorTest {
 		_testAddAttributesAndParameters(
 			StringBundler.concat(
 				_PATH_PROXY, _PATH_CONTEXT, StringPool.SLASH, languageId,
-				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 				groupFriendlyURL, "/test/test"),
 			_getDynamicServletRequest(
 				_PATH_CONTEXT, virtualHostGroupLayout.getCompanyId(),
@@ -286,7 +285,7 @@ public class CommonStatusLayoutUtilityPageEntryRequestContributorTest {
 		_testAddAttributesAndParameters(
 			StringBundler.concat(
 				_PATH_PROXY, _PATH_CONTEXT, StringPool.SLASH, languageId,
-				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 				groupFriendlyURL, "/test/test"),
 			_getDynamicServletRequest(
 				_PATH_CONTEXT, layout.getCompanyId(), layoutSet),
@@ -360,7 +359,7 @@ public class CommonStatusLayoutUtilityPageEntryRequestContributorTest {
 		_testAddAttributesAndParameters(
 			StringBundler.concat(
 				_PATH_PROXY, _PATH_CONTEXT, StringPool.SLASH, languageId,
-				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 				groupFriendlyURL, "/test/test"),
 			_getDynamicServletRequest(
 				_PATH_CONTEXT, group.getCompanyId(), layoutSet),
