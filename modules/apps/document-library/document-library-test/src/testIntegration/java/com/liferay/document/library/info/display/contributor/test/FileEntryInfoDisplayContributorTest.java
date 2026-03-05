@@ -46,7 +46,6 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsValues;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -113,8 +112,10 @@ public class FileEntryInfoDisplayContributorTest {
 					Locale locale = LocaleUtil.FRANCE;
 
 					String expectedURL = StringBundler.concat(
-						"/", locale.getLanguage(), "/web/",
-						StringUtil.lowerCase(_group.getGroupKey()),
+						"/", locale.getLanguage(),
+						TestPropsValues.
+							LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+						_group.getFriendlyURL(),
 						FriendlyURLResolverConstants.URL_SEPARATOR_FILE_ENTRY,
 						_friendlyURLNormalizer.normalizeWithPeriodsAndSlashes(
 							fileEntry.getTitle()));
@@ -150,7 +151,9 @@ public class FileEntryInfoDisplayContributorTest {
 					Locale locale = LocaleUtil.getDefault();
 
 					String expectedURL = StringBundler.concat(
-						"/web/", StringUtil.lowerCase(_group.getGroupKey()),
+						TestPropsValues.
+							LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+						_group.getFriendlyURL(),
 						FriendlyURLResolverConstants.URL_SEPARATOR_FILE_ENTRY,
 						_friendlyURLNormalizer.normalizeWithPeriodsAndSlashes(
 							fileEntry.getTitle()));
@@ -189,8 +192,10 @@ public class FileEntryInfoDisplayContributorTest {
 					Locale locale = LocaleUtil.getDefault();
 
 					String expectedURL = StringBundler.concat(
-						"/", locale.getLanguage(), "/web/",
-						StringUtil.lowerCase(_group.getGroupKey()),
+						"/", locale.getLanguage(),
+						TestPropsValues.
+							LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+						_group.getFriendlyURL(),
 						FriendlyURLResolverConstants.URL_SEPARATOR_FILE_ENTRY,
 						_friendlyURLNormalizer.normalizeWithPeriodsAndSlashes(
 							fileEntry.getTitle()));
@@ -224,7 +229,9 @@ public class FileEntryInfoDisplayContributorTest {
 					_addAssetDisplayPageEntry(fileEntry);
 
 					String expectedURL = StringBundler.concat(
-						"/web/", StringUtil.lowerCase(_group.getGroupKey()),
+						TestPropsValues.
+							LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+						_group.getFriendlyURL(),
 						FriendlyURLResolverConstants.URL_SEPARATOR_FILE_ENTRY,
 						_friendlyURLNormalizer.normalizeWithPeriodsAndSlashes(
 							fileEntry.getTitle()));
@@ -273,7 +280,8 @@ public class FileEntryInfoDisplayContributorTest {
 			Group depotEntryGroup = _depotEntry.getGroup();
 
 			String expectedURL = StringBundler.concat(
-				"/web/", StringUtil.lowerCase(_group.getGroupKey()),
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+				_group.getFriendlyURL(),
 				FriendlyURLResolverConstants.URL_SEPARATOR_X_FILE_ENTRY,
 				depotEntryGroup.getFriendlyURL(), StringPool.SLASH,
 				_friendlyURLNormalizer.normalizeWithPeriodsAndSlashes(

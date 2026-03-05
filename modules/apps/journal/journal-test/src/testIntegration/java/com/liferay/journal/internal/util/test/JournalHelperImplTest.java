@@ -101,7 +101,8 @@ public class JournalHelperImplTest {
 
 	protected String getArticleURL() {
 		return StringBundler.concat(
-			"/web", _group.getFriendlyURL(),
+			TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+			_group.getFriendlyURL(),
 			FriendlyURLResolverConstants.URL_SEPARATOR_JOURNAL_ARTICLE, "test");
 	}
 

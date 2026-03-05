@@ -58,7 +58,8 @@ public class DefaultLandingPageActionTest {
 		Assert.assertEquals("/home", _getDefaultLandingPagePath("/home"));
 		Assert.assertEquals(
 			StringBundler.concat(
-				"/web/", _user.getScreenName(), "/", _user.getUserId()),
+				TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING, "/",
+				_user.getScreenName(), "/", _user.getUserId()),
 			_getDefaultLandingPagePath(
 				"/web/${liferay:screenName}/${liferay:userId}"));
 	}

@@ -8,6 +8,7 @@ package com.liferay.layout.seo.canonical.url.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.layout.seo.canonical.url.LayoutSEOCanonicalURLProvider;
 import com.liferay.layout.test.util.LayoutTestUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.configuration.test.util.ConfigurationTemporarySwapper;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Group;
@@ -100,7 +101,10 @@ public class LayoutSEOCanonicalURLProviderTest {
 				LocaleUtil.GERMAN);
 
 			Assert.assertEquals(
-				"http://localhost:8080/web" + _group.getFriendlyURL(),
+				StringBundler.concat(
+					"http://localhost:8080",
+					TestPropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
+					_group.getFriendlyURL()),
 				_layoutSEOCanonicalURLProvider.getCanonicalURL(
 					_layout, LocaleUtil.US,
 					_portal.getCanonicalURL(
