@@ -61,6 +61,23 @@ public class RequiredGroupException extends PortalException {
 
 	}
 
+	public static class MustNotDeactivateSystemGroup
+		extends RequiredGroupException {
+
+		public MustNotDeactivateSystemGroup(String siteExternalReferenceCode) {
+			super(
+				String.format(
+					"Site %s cannot be deactivated because it is a system " +
+					"required site",
+					siteExternalReferenceCode));
+
+			this.siteExternalReferenceCode = siteExternalReferenceCode;
+		}
+
+		public String siteExternalReferenceCode;
+
+	}
+
 	private RequiredGroupException(String message) {
 		super(message);
 	}
