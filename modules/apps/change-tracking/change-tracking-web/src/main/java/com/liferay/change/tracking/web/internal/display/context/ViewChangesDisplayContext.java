@@ -109,16 +109,16 @@ import java.io.Serializable;
 
 import java.text.Format;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -483,7 +483,7 @@ public class ViewChangesDisplayContext {
 
 			Map<Long, List<Long>> rootPKsMap = _getRootPKsMap(ctClosure);
 
-			Queue<Map.Entry<Long, List<Long>>> queue = new LinkedList<>(
+			Deque<Map.Entry<Long, List<Long>>> queue = new ArrayDeque<>(
 				rootPKsMap.entrySet());
 
 			while ((entry = queue.poll()) != null) {
@@ -554,19 +554,42 @@ public class ViewChangesDisplayContext {
 				entry.getValue(), typeNameCacheMap);
 		}
 
-		_reactData = HashMapBuilder.<String, Object>put(
-			"changes",
-			() -> {
-				JSONArray changesJSONArray = JSONFactoryUtil.createJSONArray();
+		JSONArray changesJSONArray = JSONFactoryUtil.createJSONArray();
+		JSONObject modelDataJSONObject = JSONFactoryUtil.createJSONObject();
+		JSONObject siteNamesJSONObject = JSONFactoryUtil.createJSONObject();
 
-				for (ModelInfo modelInfo : modelInfoMap.values()) {
-					if (modelInfo._ctEntry) {
-						changesJSONArray.put(modelInfo._modelKey);
+		for (ModelInfo modelInfo : modelInfoMap.values()) {
+			if (modelInfo._ctEntry) {
+				changesJSONArray.put(modelInfo._modelKey);
+			}
+
+			if (modelInfo._jsonObject != null) {
+				modelDataJSONObject.put(
+					String.valueOf(modelInfo._modelKey), modelInfo._jsonObject);
+
+				long groupId = modelInfo._jsonObject.getLong("groupId");
+
+				String groupIdString = String.valueOf(groupId);
+
+				if (!siteNamesJSONObject.has(groupIdString)) {
+					Group group = _groupLocalService.fetchGroup(groupId);
+
+					if (group == null) {
+						siteNamesJSONObject.put(
+							groupIdString,
+							_language.get(_themeDisplay.getLocale(), "global"));
+					}
+					else {
+						siteNamesJSONObject.put(
+							groupIdString,
+							group.getName(_themeDisplay.getLocale()));
 					}
 				}
-
-				return changesJSONArray;
 			}
+		}
+
+		_reactData = HashMapBuilder.<String, Object>put(
+			"changes", changesJSONArray
 		).put(
 			"changeURL",
 			PortletURLBuilder.createRenderURL(
@@ -636,21 +659,7 @@ public class ViewChangesDisplayContext {
 		).put(
 			"entryFromURL", ParamUtil.getString(_renderRequest, "entry")
 		).put(
-			"modelData",
-			() -> {
-				JSONObject modelDataJSONObject =
-					JSONFactoryUtil.createJSONObject();
-
-				for (ModelInfo modelInfo : modelInfoMap.values()) {
-					if (modelInfo._jsonObject != null) {
-						modelDataJSONObject.put(
-							String.valueOf(modelInfo._modelKey),
-							modelInfo._jsonObject);
-					}
-				}
-
-				return modelDataJSONObject;
-			}
+			"modelData", modelDataJSONObject
 		).put(
 			"moveChangesURL",
 			() -> {
@@ -679,39 +688,7 @@ public class ViewChangesDisplayContext {
 				).buildString();
 			}
 		).put(
-			"siteNames",
-			() -> {
-				JSONObject siteNamesJSONObject =
-					JSONFactoryUtil.createJSONObject();
-
-				for (ModelInfo modelInfo : modelInfoMap.values()) {
-					if (modelInfo._jsonObject == null) {
-						continue;
-					}
-
-					long groupId = modelInfo._jsonObject.getLong("groupId");
-
-					String groupIdString = String.valueOf(groupId);
-
-					if (!siteNamesJSONObject.has(groupIdString)) {
-						Group group = _groupLocalService.fetchGroup(groupId);
-
-						if (group == null) {
-							siteNamesJSONObject.put(
-								groupIdString,
-								_language.get(
-									_themeDisplay.getLocale(), "global"));
-						}
-						else {
-							siteNamesJSONObject.put(
-								groupIdString,
-								group.getName(_themeDisplay.getLocale()));
-						}
-					}
-				}
-
-				return siteNamesJSONObject;
-			}
+			"siteNames", siteNamesJSONObject
 		).put(
 			"typeNames",
 			() -> {
@@ -1125,7 +1102,7 @@ public class ViewChangesDisplayContext {
 
 		int nodeIdCounter = 1;
 
-		Queue<ParentModel> queue = new LinkedList<>();
+		Deque<ParentModel> queue = new ArrayDeque<>();
 
 		queue.add(
 			new ParentModel(everythingJSONObject, _getRootPKsMap(ctClosure)));
