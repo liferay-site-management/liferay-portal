@@ -41,6 +41,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import java.util.AbstractMap;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
@@ -48,10 +49,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -162,7 +161,7 @@ public class CTClosureFactoryImpl implements CTClosureFactory {
 
 		Map<Node, Collection<Edge>> edgeMap = new LinkedHashMap<>();
 
-		Queue<Map.Entry<Long, List<Long>>> queue = new LinkedList<>(
+		Deque<Map.Entry<Long, List<Long>>> queue = new ArrayDeque<>(
 			map.entrySet());
 
 		while (queue.size() > 0) {
@@ -321,7 +320,7 @@ public class CTClosureFactoryImpl implements CTClosureFactory {
 
 	private void _filterCyclingEdges(
 		Edge edge, Map<Node, Collection<Edge>> edgeMap,
-		Deque<Edge> backtraceEdges, Set<Edge> cyclingEdges,
+		Set<Edge> backtraceEdges, Set<Edge> cyclingEdges,
 		Set<Edge> resolvedEdges) {
 
 		if (backtraceEdges.contains(edge)) {
@@ -342,14 +341,14 @@ public class CTClosureFactoryImpl implements CTClosureFactory {
 			return;
 		}
 
-		backtraceEdges.push(edge);
+		backtraceEdges.add(edge);
 
 		for (Edge nextEdge : nextEdges) {
 			_filterCyclingEdges(
 				nextEdge, edgeMap, backtraceEdges, cyclingEdges, resolvedEdges);
 		}
 
-		backtraceEdges.pop();
+		backtraceEdges.remove(edge);
 
 		if (!cyclingEdges.contains(edge)) {
 			resolvedEdges.add(edge);
@@ -462,7 +461,7 @@ public class CTClosureFactoryImpl implements CTClosureFactory {
 
 		Map<Node, Collection<Node>> nodeMap = new HashMap<>();
 
-		Deque<Edge> backtraceEdges = new LinkedList<>();
+		Set<Edge> backtraceEdges = new HashSet<>();
 		Set<Edge> cyclingEdges = new HashSet<>();
 		Set<Edge> resolvedEdges = new HashSet<>();
 

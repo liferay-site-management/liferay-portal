@@ -8,15 +8,14 @@ package com.liferay.change.tracking.internal;
 import com.liferay.change.tracking.closure.CTClosure;
 
 import java.util.AbstractMap;
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -39,8 +38,8 @@ public class CTEnclosureUtil {
 
 		Map<Long, Set<Long>> enclosureMap = new HashMap<>();
 
-		Queue<Map.Entry<Long, ? extends Collection<Long>>> queue =
-			new LinkedList<>(rootEntries);
+		Deque<Map.Entry<Long, ? extends Collection<Long>>> queue =
+			new ArrayDeque<>(rootEntries);
 
 		Map.Entry<Long, ? extends Collection<Long>> entry = null;
 
@@ -91,7 +90,7 @@ public class CTEnclosureUtil {
 		CTClosure ctClosure, BacktraceVisitor backtraceVisitor) {
 
 		_visitParentEntries(
-			ctClosure, ctClosure.getRootPKsMap(), new LinkedList<>(),
+			ctClosure, ctClosure.getRootPKsMap(), new ArrayDeque<>(),
 			backtraceVisitor);
 	}
 

@@ -10,16 +10,15 @@ import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 
 import java.util.AbstractMap;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -47,7 +46,7 @@ public class CTClosureImpl implements CTClosure {
 
 		Set<Node> excludedNodes = new HashSet<>();
 
-		Queue<Node> queue = new LinkedList<>(nodes);
+		Deque<Node> queue = new ArrayDeque<>(nodes);
 
 		while (queue.size() > 0) {
 			Collection<Node> childNodes = _closureMap.get(queue.poll());
@@ -84,7 +83,7 @@ public class CTClosureImpl implements CTClosure {
 		Map<Long, List<Long>> pksMap = getRootPKsMap();
 
 		Deque<Map.Entry<Map.Entry<Long, ? extends Collection<Long>>, Integer>>
-			queue = new LinkedList<>();
+			queue = new ArrayDeque<>();
 
 		for (Map.Entry<Long, ? extends Collection<Long>> entry :
 				pksMap.entrySet()) {
