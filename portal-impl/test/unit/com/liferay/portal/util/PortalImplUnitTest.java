@@ -92,12 +92,20 @@ public class PortalImplUnitTest {
 
 	@Before
 	public void setUp() throws Exception {
+		_originalPublicServletMappingEnabled =
+			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING_ENABLED;
+
 		_groupLocalServiceUtilMockedStatic.reset();
 		_portalContextLoaderListenerMockedStatic.reset();
 	}
 
 	@After
 	public void tearDown() {
+		ReflectionTestUtil.setFieldValue(
+			PropsValues.class,
+			"LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING_ENABLED",
+			_originalPublicServletMappingEnabled);
+
 		_groupLocalServiceUtilMockedStatic.close();
 		_portalContextLoaderListenerMockedStatic.close();
 	}
@@ -425,6 +433,79 @@ public class PortalImplUnitTest {
 
 		_assertGetLayoutSetFriendlyURL(
 			"http://test.com:8080", "http://test.com:8080", false,
+			TreeMapBuilder.put(
+				"test.com", StringPool.BLANK
+			).build());
+	}
+
+	@Test
+	public void testGetLayoutSetFriendlyURLWithCleanURLDisabled()
+		throws Exception {
+
+		_setUpPublicServletMapping(true);
+		_setUpPortalImpl(StringPool.BLANK);
+
+		_assertGetLayoutSetFriendlyURL(
+			"/web/test-group", "http://liferay.com:8080", false,
+			new TreeMap<>());
+	}
+
+	@Test
+	public void testGetLayoutSetFriendlyURLWithCleanURLEnabled()
+		throws Exception {
+
+		_setUpPublicServletMapping(false);
+		_setUpPortalImpl(StringPool.BLANK);
+
+		_assertGetLayoutSetFriendlyURL(
+			"/test-group", "http://liferay.com:8080", false, new TreeMap<>());
+	}
+
+	@Test
+	public void testGetLayoutSetFriendlyURLWithCleanURLEnabledAndContextPath()
+		throws Exception {
+
+		_setUpPublicServletMapping(false);
+		_setUpPortalImpl("context-path");
+
+		_assertGetLayoutSetFriendlyURL(
+			"/context-path/test-group", "http://liferay.com:8080/context-path",
+			false, new TreeMap<>());
+	}
+
+	@Test
+	public void testGetLayoutSetFriendlyURLWithCleanURLEnabledAndPrivateGroup()
+		throws Exception {
+
+		_setUpPublicServletMapping(false);
+		_setUpPortalImpl(StringPool.BLANK);
+
+		_assertGetLayoutSetFriendlyURL(
+			"/group/test-group", "http://liferay.com:8080", true,
+			new TreeMap<>());
+	}
+
+	@Test
+	public void testGetLayoutSetFriendlyURLWithCleanURLEnabledAndUserGroup()
+		throws Exception {
+
+		_setUpPublicServletMapping(false);
+		_setUpPortalImpl(StringPool.BLANK, true);
+
+		_assertGetLayoutSetFriendlyURL(
+			"/user/test-group", "http://liferay.com:8080", true,
+			new TreeMap<>());
+	}
+
+	@Test
+	public void testGetLayoutSetFriendlyURLWithCleanURLEnabledAndVirtualHost()
+		throws Exception {
+
+		_setUpPublicServletMapping(false);
+		_setUpPortalImpl(StringPool.BLANK);
+
+		_assertGetLayoutSetFriendlyURL(
+			"/test-group", "http://liferay.com:8080", false,
 			TreeMapBuilder.put(
 				"test.com", StringPool.BLANK
 			).build());
@@ -924,6 +1005,12 @@ public class PortalImplUnitTest {
 		_portalImpl = new PortalImpl();
 	}
 
+	private void _setUpPublicServletMapping(boolean enabled) {
+		ReflectionTestUtil.setFieldValue(
+			PropsValues.class,
+			"LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING_ENABLED", enabled);
+	}
+
 	private void _storeAndResetPropsValuesValue(
 		String forwaredHostHeader, String forwaredServer) {
 
@@ -948,6 +1035,7 @@ public class PortalImplUnitTest {
 	private final MockedStatic<GroupLocalServiceUtil>
 		_groupLocalServiceUtilMockedStatic = Mockito.mockStatic(
 			GroupLocalServiceUtil.class);
+	private boolean _originalPublicServletMappingEnabled;
 	private final MockedStatic<PortalContextLoaderListener>
 		_portalContextLoaderListenerMockedStatic = Mockito.mockStatic(
 			PortalContextLoaderListener.class);
