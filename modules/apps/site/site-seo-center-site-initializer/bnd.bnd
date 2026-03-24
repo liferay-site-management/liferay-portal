@@ -1,0 +1,5 @@
+Bundle-Name: Liferay Site SEO Center Site Initializer
+Bundle-SymbolicName: com.liferay.site.seo.center.site.initializer
+Bundle-Version: 1.0.0
+Web-ContextPath: /site-seo-center-site-initializer
+-dsannotations-options: inherit

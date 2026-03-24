@@ -1,0 +1,8 @@
+Bundle-Name: Liferay Site Initializer SEO Center
+Bundle-SymbolicName: com.liferay.site.initializer.seo.center
+Bundle-Version: 1.0.0
+Liferay-Client-Extension-Batch: com/liferay/site/initializer/seo/center/internal/batch
+Liferay-Site-Initializer-Feature-Flag: LPD-44511
+Liferay-Site-Initializer-Name: SEO Center
+Provide-Capability: liferay.site.initializer
+Web-ContextPath: /site-initializer-seo-center
