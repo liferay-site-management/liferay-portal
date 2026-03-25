@@ -1,0 +1,15 @@
+[
+	{
+		"externalReferenceCode": "SEOPRIMARYNAVIGATION",
+		"menuItems": [
+			{
+				"displayIcon": "plus-squares",
+				"externalReferenceCode": "SEOPRIMARYNAVIGATION1",
+				"friendlyURL": "/overview",
+				"privateLayout": false,
+				"type": "layout"
+			}
+		],
+		"name": "SEO Primary Navigation"
+	}
+]
