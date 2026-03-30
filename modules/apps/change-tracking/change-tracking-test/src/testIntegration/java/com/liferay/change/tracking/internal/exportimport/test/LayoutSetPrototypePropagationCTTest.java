@@ -175,7 +175,7 @@ public class LayoutSetPrototypePropagationCTTest {
 				_propagateChanges(group);
 
 				_assertLayoutPropagation(
-					ctCollection.getCtCollectionId(), group.getGroupId(), true,
+					ctCollection.getCtCollectionId(), group.getGroupId(), false,
 					layoutSetPrototypeLayout, layoutSetPrototypeLayoutSet);
 			}
 			else {
@@ -200,7 +200,7 @@ public class LayoutSetPrototypePropagationCTTest {
 
 		_assertLayoutPropagation(
 			CTCollectionThreadLocal.CT_COLLECTION_ID_PRODUCTION,
-			group.getGroupId(), true, layoutSetPrototypeLayout,
+			group.getGroupId(), false, layoutSetPrototypeLayout,
 			layoutSetPrototypeLayoutSet);
 	}
 
