@@ -56,7 +56,9 @@ export default function EnterpriseFeatureIndicator({
 
 		return (
 			<ClayButton {...props} ref={ref} style={styles} translucent>
-				<span>{Liferay.Language.get('enterprise')}</span>
+				<span className="text-uppercase">
+					{Liferay.Language.get('enterprise')}
+				</span>
 
 				<ClayIcon className="ml-2" symbol="crown" />
 			</ClayButton>
