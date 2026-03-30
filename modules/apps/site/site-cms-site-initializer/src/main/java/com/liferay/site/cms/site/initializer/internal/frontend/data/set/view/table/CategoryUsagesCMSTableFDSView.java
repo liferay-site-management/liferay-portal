@@ -50,7 +50,7 @@ public class CategoryUsagesCMSTableFDSView extends BaseCMSTableFDSView {
 		).add(
 			"embedded.status", "status",
 			fdsTableSchemaField -> fdsTableSchemaField.setContentRenderer(
-				"status")
+				"statusTableCellRenderer")
 		).build();
 	}
 
