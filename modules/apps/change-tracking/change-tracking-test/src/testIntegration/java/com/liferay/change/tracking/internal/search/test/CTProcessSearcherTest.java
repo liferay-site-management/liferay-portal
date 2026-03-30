@@ -89,7 +89,7 @@ public class CTProcessSearcherTest {
 	public void testSearchByStatus() throws Exception {
 		BackgroundTaskExecutor backgroundTaskExecutor =
 			(BackgroundTaskExecutor)ProxyUtil.newProxyInstance(
-				BackgroundTaskExecutor.class.getClassLoader(),
+				CTProcessSearcherTest.class.getClassLoader(),
 				new Class<?>[] {BackgroundTaskExecutor.class},
 				(proxy, method, argus) -> {
 					if (Objects.equals(method.getName(), "clone")) {
