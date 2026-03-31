@@ -30,6 +30,8 @@ import com.liferay.portal.kernel.notifications.UserNotificationDefinition;
 import com.liferay.portal.kernel.service.SQLStateAcceptor;
 import com.liferay.portal.kernel.spring.aop.Property;
 import com.liferay.portal.kernel.spring.aop.Retry;
+import com.liferay.portal.kernel.transaction.Propagation;
+import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 
@@ -66,6 +68,7 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 			)
 		}
 	)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public CTScore decrementScore(long ctCollectionId, int score) {
 		return _updateScore(ctCollectionId, -1 * score);
 	}
@@ -86,6 +89,7 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 			)
 		}
 	)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public CTScore incrementScore(long ctCollectionId, int score) {
 		return _updateScore(ctCollectionId, score);
 	}
@@ -160,52 +164,45 @@ public class CTScoreLocalServiceImpl extends CTScoreLocalServiceBaseImpl {
 			ctScoreId = counterLocalService.increment(CTScore.class.getName());
 		}
 
-		Session session = ctScorePersistence.openSession();
+		Session session = ctScorePersistence.getCurrentSession();
 
-		CTScore ctScore = null;
+		CTScore ctScore = (CTScore)session.get(
+			CTScoreImpl.class, ctScoreId, LockMode.UPGRADE);
 
-		try {
-			ctScore = (CTScore)session.get(
-				CTScoreImpl.class, ctScoreId, LockMode.UPGRADE);
+		if (ctScore == null) {
+			ctScore = new CTScoreImpl();
 
-			if (ctScore == null) {
-				ctScore = new CTScoreImpl();
+			ctScore.setCtScoreId(ctScoreId);
+			ctScore.setCompanyId(ctCollection.getCompanyId());
+			ctScore.setCtCollectionId(ctCollectionId);
 
-				ctScore.setCtScoreId(ctScoreId);
-				ctScore.setCompanyId(ctCollection.getCompanyId());
-				ctScore.setCtCollectionId(ctCollectionId);
+			List<CTEntry> ctEntries =
+				_ctEntryPersistence.findByCtCollectionId(ctCollectionId);
 
-				List<CTEntry> ctEntries =
-					_ctEntryPersistence.findByCtCollectionId(ctCollectionId);
-
-				for (CTEntry ctEntry : ctEntries) {
-					score += _ctScoreCalculator.calculate(
-						ctEntry.getModelClassNameId());
-				}
-
-				ctScore.setScore(score);
-
-				session.save(ctScore);
-
-				session.flush();
-			}
-			else {
-				score = ctScore.getScore() + score;
-
-				if (score < 0) {
-					score = 0;
-				}
-
-				ctScore.setScore(score);
-
-				session.saveOrUpdate(ctScore);
+			for (CTEntry ctEntry : ctEntries) {
+				score += _ctScoreCalculator.calculate(
+					ctEntry.getModelClassNameId());
 			}
 
-			_entityCache.putResult(CTScoreImpl.class, ctScore, false, true);
+			ctScore.setScore(score);
+
+			session.save(ctScore);
+
+			session.flush();
 		}
-		finally {
-			ctScorePersistence.closeSession(session);
+		else {
+			score = ctScore.getScore() + score;
+
+			if (score < 0) {
+				score = 0;
+			}
+
+			ctScore.setScore(score);
+
+			session.saveOrUpdate(ctScore);
 		}
+
+		_entityCache.putResult(CTScoreImpl.class, ctScore, false, true);
 
 		_sendUserNotificationEvents(ctScore, originalCTScore);
 
