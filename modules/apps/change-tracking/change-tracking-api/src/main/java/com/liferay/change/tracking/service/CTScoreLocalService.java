@@ -98,6 +98,7 @@ public interface CTScoreLocalService
 			)
 		}
 	)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public CTScore decrementScore(long ctCollectionId, int score);
 
 	/**
@@ -275,6 +276,7 @@ public interface CTScoreLocalService
 			)
 		}
 	)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public CTScore incrementScore(long ctCollectionId, int score);
 
 	/**
@@ -291,4 +293,4 @@ public interface CTScoreLocalService
 	public CTScore updateCTScore(CTScore ctScore);
 
 }
-// LIFERAY-SERVICE-BUILDER-HASH:625404289
+// LIFERAY-SERVICE-BUILDER-HASH:919720151
