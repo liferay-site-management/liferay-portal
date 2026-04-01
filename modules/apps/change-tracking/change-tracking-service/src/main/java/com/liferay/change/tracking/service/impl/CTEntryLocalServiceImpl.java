@@ -52,6 +52,11 @@ import org.osgi.service.component.annotations.Reference;
 public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 
 	@Override
+	public CTEntry addCTEntry(CTEntry ctEntry) {
+		return super.addCTEntry(ctEntry);
+	}
+
+	@Override
 	public CTEntry addCTEntry(
 			String externalReferenceCode, long ctCollectionId,
 			long modelClassNameId, CTModel<?> ctModel, long userId,
@@ -80,6 +85,11 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		ctEntry.setChangeType(changeType);
 
 		return ctEntryPersistence.update(ctEntry);
+	}
+
+	@Override
+	public CTEntry deleteCTEntry(long ctEntryId) throws PortalException {
+		return super.deleteCTEntry(ctEntryId);
 	}
 
 	@Override
