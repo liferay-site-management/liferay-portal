@@ -1,0 +1,82 @@
+[
+	{
+		"actions": [
+			{
+				"actionId": "VIEW_CONTROL_PANEL",
+				"resource": "90",
+				"scope": 1
+			},
+			{
+				"actionId": "ADD_OBJECT_DEFINITION",
+				"resource": "com.liferay.object",
+				"scope": 1
+			},
+			{
+				"actionId": "PUBLISH_OBJECT_DEFINITION",
+				"resource": "com.liferay.object",
+				"scope": 1
+			},
+			{
+				"actionId": "ADD_OBJECT_ENTRY_FOLDER",
+				"resource": "com.liferay.object.entry.folder",
+				"scope": 1
+			},
+			{
+				"actionId": "DELETE",
+				"resource": "com.liferay.object.model.ObjectDefinition",
+				"scope": 1
+			},
+			{
+				"actionId": "PERMISSIONS",
+				"resource": "com.liferay.object.model.ObjectDefinition",
+				"scope": 1
+			},
+			{
+				"actionId": "UPDATE",
+				"resource": "com.liferay.object.model.ObjectDefinition",
+				"scope": 1
+			},
+			{
+				"actionId": "VIEW",
+				"resource": "com.liferay.object.model.ObjectDefinition",
+				"scope": 1
+			},
+			{
+				"actionId": "EXPORT_IMPORT_PORTLET_INFO",
+				"resource": "com.liferay.portal.kernel.model.Group",
+				"scope": 1
+			},
+			{
+				"actionId": "VIEW",
+				"resource": "com.liferay.portal.kernel.model.Group",
+				"scope": 1
+			},
+			{
+				"actionId": "VIEW",
+				"resource": "com.liferay.portal.kernel.model.Role",
+				"scope": 1
+			},
+			{
+				"actionId": "VIEW",
+				"resource": "com.liferay.portal.kernel.model.User",
+				"scope": 1
+			},
+			{
+				"actionId": "VIEW",
+				"resource": "com.liferay.portal.kernel.model.UserGroup",
+				"scope": 1
+			},
+			{
+				"actionId": "ACCESS_IN_CONTROL_PANEL",
+				"resource": "com_liferay_asset_categories_admin_web_portlet_AssetCategoriesAdminPortlet",
+				"scope": 1
+			}
+		],
+		"name": "SEO Administrator",
+		"name_i18n": {
+			"en-US": "SEO Administrator"
+		},
+		"scope": 1,
+		"type": 1
+	}
+]
