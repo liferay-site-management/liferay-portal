@@ -1,0 +1,13 @@
+{
+	"pageElement": {
+		"pageElements": [
+		],
+		"type": "Root"
+	},
+	"settings": {
+		"masterPage": {
+			"key": "seo-center-master"
+		}
+	},
+	"version": 1.0
+}
