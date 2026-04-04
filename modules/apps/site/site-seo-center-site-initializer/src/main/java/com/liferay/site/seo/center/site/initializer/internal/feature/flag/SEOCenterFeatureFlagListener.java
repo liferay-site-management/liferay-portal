@@ -38,10 +38,19 @@ public class SEOCenterFeatureFlagListener implements FeatureFlagListener {
 	public void onValue(
 		long companyId, String featureFlagKey, boolean enabled) {
 
-		if (!enabled || !Objects.equals(featureFlagKey, "LPD-44511")) {
+		if (!Objects.equals(featureFlagKey, "LPD-44511")) {
 			return;
 		}
 
+		if (enabled) {
+			_addOrActivateSEOCenterGroup(companyId);
+		}
+		else {
+			_deactivateSEOCenterGroup(companyId);
+		}
+	}
+
+	private void _addOrActivateSEOCenterGroup(long companyId) {
 		try (SafeCloseable safeCloseable =
 				CTCollectionThreadLocal.setProductionModeWithSafeCloseable()) {
 
@@ -61,9 +70,38 @@ public class SEOCenterFeatureFlagListener implements FeatureFlagListener {
 					GroupConstants.DEFAULT_MEMBERSHIP_RESTRICTION,
 					SEOCenterConstants.SEO_CENTER_FRIENDLY_URL, false, false,
 					true, null);
+
+				SiteInitializerUtil.initialize(
+					companyId, group, _siteInitializer);
 			}
 
-			SiteInitializerUtil.initialize(companyId, group, _siteInitializer);
+			if (!group.isActive()) {
+				_groupLocalService.updateGroup(
+					group.getGroupId(), group.getParentGroupId(),
+					group.getNameMap(), group.getDescriptionMap(),
+					group.getType(), null, group.isManualMembership(),
+					group.getMembershipRestriction(), group.getFriendlyURL(),
+					group.isInheritContent(), true, null);
+			}
+		}
+		catch (PortalException portalException) {
+			_log.error(portalException);
+		}
+	}
+
+	private void _deactivateSEOCenterGroup(long companyId) {
+		try {
+			Group group = _groupLocalService.fetchGroup(
+				companyId, GroupConstants.SEO_CENTER);
+
+			if (group != null) {
+				_groupLocalService.updateGroup(
+					group.getGroupId(), group.getParentGroupId(),
+					group.getNameMap(), group.getDescriptionMap(),
+					group.getType(), null, group.isManualMembership(),
+					group.getMembershipRestriction(), group.getFriendlyURL(),
+					group.isInheritContent(), false, null);
+			}
 		}
 		catch (PortalException portalException) {
 			_log.error(portalException);
