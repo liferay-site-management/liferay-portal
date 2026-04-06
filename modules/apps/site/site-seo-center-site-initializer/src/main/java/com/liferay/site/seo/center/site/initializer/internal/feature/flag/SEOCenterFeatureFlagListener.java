@@ -66,7 +66,7 @@ public class SEOCenterFeatureFlagListener implements FeatureFlagListener {
 					HashMapBuilder.put(
 						LocaleUtil.getDefault(), GroupConstants.SEO_CENTER
 					).build(),
-					null, GroupConstants.TYPE_SITE_PRIVATE, null, true,
+					null, GroupConstants.TYPE_SITE_RESTRICTED, null, true,
 					GroupConstants.DEFAULT_MEMBERSHIP_RESTRICTION,
 					SEOCenterConstants.SEO_CENTER_FRIENDLY_URL, false, false,
 					true, null);
