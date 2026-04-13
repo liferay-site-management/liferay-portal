@@ -58,7 +58,7 @@ public class GroupConstants {
 
 	public static final String[] SYSTEM_GROUPS = {
 		CALENDAR, CMS, CONTROL_PANEL, FORMS, GUEST,
-		GroupConstants.USER_PERSONAL_SITE
+		GroupConstants.USER_PERSONAL_SITE, SEO_STUDIO
 	};
 
 	public static final int TYPE_DEPOT = 5;
