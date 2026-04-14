@@ -819,8 +819,10 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 		long guestUserId = _userLocalService.getGuestUserId(companyId);
 
 		for (String groupKey : systemGroups) {
-			if (groupKey.equals(GroupConstants.CMS) &&
-				!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+			if ((groupKey.equals(GroupConstants.CMS) &&
+				 !FeatureFlagManagerUtil.isEnabled(companyId, "LPD-17564")) ||
+				(groupKey.equals(GroupConstants.SEO_STUDIO) &&
+				 !FeatureFlagManagerUtil.isEnabled(companyId, "LPD-44511"))) {
 
 				continue;
 			}
@@ -873,6 +875,10 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 					type = GroupConstants.TYPE_SITE_PRIVATE;
 					friendlyURL =
 						GroupConstants.USER_PERSONAL_SITE_FRIENDLY_URL;
+					site = false;
+				}
+				else if (groupKey.equals(GroupConstants.SEO_STUDIO)) {
+					friendlyURL = GroupConstants.SEO_STUDIO_FRIENDLY_URL;
 					site = false;
 				}
 				else if (groupKey.equals(companyIdString)) {
