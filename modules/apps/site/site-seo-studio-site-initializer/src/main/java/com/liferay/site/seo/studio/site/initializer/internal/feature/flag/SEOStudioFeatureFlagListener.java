@@ -50,6 +50,8 @@ public class SEOStudioFeatureFlagListener implements FeatureFlagListener {
 		try (SafeCloseable safeCloseable =
 				CTCollectionThreadLocal.setProductionModeWithSafeCloseable()) {
 
+			_groupLocalService.checkSystemGroups(companyId);
+
 			Group group = _groupLocalService.getGroup(
 				companyId, GroupConstants.SEO_STUDIO);
 
@@ -72,6 +74,8 @@ public class SEOStudioFeatureFlagListener implements FeatureFlagListener {
 	private void _deactivateSEOStudioGroup(long companyId) {
 		try (SafeCloseable safeCloseable =
 				CTCollectionThreadLocal.setProductionModeWithSafeCloseable()) {
+
+			_groupLocalService.checkSystemGroups(companyId);
 
 			Group group = _groupLocalService.getGroup(
 				companyId, GroupConstants.SEO_STUDIO);
