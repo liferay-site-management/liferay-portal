@@ -2411,14 +2411,12 @@ components:
                     description:
                         The navigation menu's creation date.
                     format: date-time
-                    readOnly: true
                     type: string
                 dateModified:
                     # @review
                     description:
                         The last time the navigation menu changed.
                     format: date-time
-                    readOnly: true
                     type: string
                 externalReferenceCode:
                     description:
@@ -2457,6 +2455,10 @@ components:
                     description:
                         The external reference code of the site to which this navigation menu is scoped.
                     readOnly: true
+                    type: string
+                uuid:
+                    description:
+                        The UUID of the navigation menu.
                     type: string
         NavigationMenuFragmentConfigurationFieldValue:
             allOf:
@@ -2510,14 +2512,12 @@ components:
                     description:
                         The navigation menu item's creation date.
                     format: date-time
-                    readOnly: true
                     type: string
                 dateModified:
                     # @review
                     description:
                         The last time the navigation menu item changed.
                     format: date-time
-                    readOnly: true
                     type: string
                 defaultLanguageId:
                     example: en_US
@@ -2578,6 +2578,10 @@ components:
                     type: string
                 useCustomName:
                     type: boolean
+                uuid:
+                    description:
+                        The UUID of the navigation menu item.
+                    type: string
         NavigationMenuValue:
             # @review
             description:
