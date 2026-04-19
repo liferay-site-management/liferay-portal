@@ -61,6 +61,7 @@ import com.liferay.portal.kernel.test.util.RoleTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizer;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -83,6 +84,8 @@ import com.liferay.site.navigation.service.SiteNavigationMenuItemLocalService;
 import com.liferay.site.navigation.service.SiteNavigationMenuLocalService;
 
 import java.io.Serializable;
+
+import java.text.DateFormat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -339,10 +342,12 @@ public class NavigationMenuResourceTest
 		super.testPostSiteNavigationMenu();
 
 		_testPostSiteNavigationMenuBatchWithInvalidItemModel();
+		_testPostSiteNavigationMenuWithCreationAndModificationDate();
 		_testPostSiteNavigationMenuWithCompanyGroup();
 		_testPostSiteNavigationMenuWithInvalidItemModel();
 		_testPostSiteNavigationMenuWithNavigationType();
 		_testPostSiteNavigationMenuWithPermissions();
+		_testPostSiteNavigationMenuWithUuid();
 	}
 
 	@Override
@@ -1259,6 +1264,29 @@ public class NavigationMenuResourceTest
 		assertEquals(navigationMenu, postNavigationMenu);
 	}
 
+	private void _testPostSiteNavigationMenuWithCreationAndModificationDate()
+		throws Exception {
+
+		NavigationMenu navigationMenu = _randomNavigationMenu(false);
+
+		DateFormat dateFormat = DateFormatFactoryUtil.getSimpleDateFormat(
+			"yyyy-MM-dd");
+
+		navigationMenu.setDateCreated(dateFormat.parse("2023-01-01"));
+		navigationMenu.setDateModified(dateFormat.parse("2023-02-02"));
+
+		NavigationMenu postNavigationMenu =
+			navigationMenuResource.postSiteNavigationMenu(
+				testGroup.getExternalReferenceCode(), navigationMenu);
+
+		Assert.assertEquals(
+			navigationMenu.getDateCreated(),
+			postNavigationMenu.getDateCreated());
+		Assert.assertEquals(
+			navigationMenu.getDateModified(),
+			postNavigationMenu.getDateModified());
+	}
+
 	private void _testPostSiteNavigationMenuWithInvalidItemModel()
 		throws Exception {
 
@@ -1358,6 +1386,19 @@ public class NavigationMenuResourceTest
 							   serviceBuilderRole.getExternalReferenceCode(),
 							   permission.getRoleExternalReferenceCode());
 				}));
+	}
+
+	private void _testPostSiteNavigationMenuWithUuid() throws Exception {
+		NavigationMenu navigationMenu = _randomNavigationMenu(false);
+
+		navigationMenu.setUuid(RandomTestUtil.randomString());
+
+		NavigationMenu postNavigationMenu =
+			navigationMenuResource.postSiteNavigationMenu(
+				testGroup.getExternalReferenceCode(), navigationMenu);
+
+		Assert.assertEquals(
+			navigationMenu.getUuid(), postNavigationMenu.getUuid());
 	}
 
 	private void _testPutSiteNavigationMenuWithCompanyGroup() throws Exception {
