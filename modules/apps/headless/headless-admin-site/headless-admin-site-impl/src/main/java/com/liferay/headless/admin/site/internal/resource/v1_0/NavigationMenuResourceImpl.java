@@ -248,9 +248,7 @@ public class NavigationMenuResourceImpl
 				externalReferenceCode, groupId, navigationMenu.getName(),
 				_getNavigationMenuType(navigationMenu),
 				_isAuto(navigationMenu.getAuto()),
-				ServiceContextBuilder.create(
-					groupId, contextHttpServletRequest, null
-				).build());
+				_createServiceContext(groupId, navigationMenu));
 
 		_createNavigationMenuItems(
 			groupId, navigationMenu.getNavigationMenuItems(), 0,
@@ -280,15 +278,7 @@ public class NavigationMenuResourceImpl
 				siteNavigationMenuId, parentNavigationMenuId,
 				navigationMenuItem.getType(),
 				_getTypeSettings(navigationMenuItem),
-				ServiceContextBuilder.create(
-					groupId, contextHttpServletRequest, null
-				).expandoBridgeAttributes(
-					CustomFieldsUtil.toMap(
-						SiteNavigationMenuItem.class.getName(),
-						contextCompany.getCompanyId(),
-						navigationMenuItem.getCustomFields(),
-						contextAcceptLanguage.getPreferredLocale())
-				).build());
+				_createServiceContext(groupId, navigationMenuItem));
 
 		_createNavigationMenuItems(
 			groupId, navigationMenuItem.getNavigationMenuItems(),
@@ -310,6 +300,40 @@ public class NavigationMenuResourceImpl
 				groupId, navigationMenuItem, parentNavigationMenuId,
 				siteNavigationMenuId);
 		}
+	}
+
+	private ServiceContext _createServiceContext(
+		long groupId, NavigationMenu navigationMenu) {
+
+		ServiceContext serviceContext = ServiceContextBuilder.create(
+			groupId, contextHttpServletRequest, null
+		).build();
+
+		serviceContext.setCreateDate(navigationMenu.getDateCreated());
+		serviceContext.setModifiedDate(navigationMenu.getDateModified());
+		serviceContext.setUuid(navigationMenu.getUuid());
+
+		return serviceContext;
+	}
+
+	private ServiceContext _createServiceContext(
+		long groupId, NavigationMenuItem navigationMenuItem) {
+
+		ServiceContext serviceContext = ServiceContextBuilder.create(
+			groupId, contextHttpServletRequest, null
+		).expandoBridgeAttributes(
+			CustomFieldsUtil.toMap(
+				SiteNavigationMenuItem.class.getName(),
+				contextCompany.getCompanyId(),
+				navigationMenuItem.getCustomFields(),
+				contextAcceptLanguage.getPreferredLocale())
+		).build();
+
+		serviceContext.setCreateDate(navigationMenuItem.getDateCreated());
+		serviceContext.setModifiedDate(navigationMenuItem.getDateModified());
+		serviceContext.setUuid(navigationMenuItem.getUuid());
+
+		return serviceContext;
 	}
 
 	private void _deleteNavigationMenuItems(
@@ -637,9 +661,8 @@ public class NavigationMenuResourceImpl
 			navigationMenu.getNavigationMenuItems(), 0,
 			siteNavigationMenu.getSiteNavigationMenuId());
 
-		ServiceContext serviceContext = ServiceContextBuilder.create(
-			siteNavigationMenu.getGroupId(), contextHttpServletRequest, null
-		).build();
+		ServiceContext serviceContext = _createServiceContext(
+			siteNavigationMenu.getGroupId(), navigationMenu);
 
 		_siteNavigationMenuService.updateSiteNavigationMenu(
 			siteNavigationMenu.getSiteNavigationMenuId(),
@@ -705,15 +728,7 @@ public class NavigationMenuResourceImpl
 					_siteNavigationMenuItemService.updateSiteNavigationMenuItem(
 						siteNavigationMenuItem.getSiteNavigationMenuItemId(),
 						_getTypeSettings(navigationMenuItem),
-						ServiceContextBuilder.create(
-							groupId, contextHttpServletRequest, null
-						).expandoBridgeAttributes(
-							CustomFieldsUtil.toMap(
-								SiteNavigationMenuItem.class.getName(),
-								contextCompany.getCompanyId(),
-								navigationMenuItem.getCustomFields(),
-								contextAcceptLanguage.getPreferredLocale())
-						).build());
+						_createServiceContext(groupId, navigationMenuItem));
 
 				_updateNavigationMenuItems(
 					groupId, navigationMenuItem.getNavigationMenuItems(),
