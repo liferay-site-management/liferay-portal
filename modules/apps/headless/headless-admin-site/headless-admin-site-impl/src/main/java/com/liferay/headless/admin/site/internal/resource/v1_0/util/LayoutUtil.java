@@ -1206,6 +1206,19 @@ public class LayoutUtil {
 
 					priority = minPriority++;
 				}
+				else if (oldSegmentsExperience == null) {
+					SegmentsExperience defaultSegmentsExperience =
+						SegmentsExperienceLocalServiceUtil.
+							fetchDefaultSegmentsExperience(layout.getPlid());
+
+					if (defaultSegmentsExperience != null) {
+						originalSegmentsExperiencesMap.remove(
+							defaultSegmentsExperience.
+								getExternalReferenceCode());
+
+						oldSegmentsExperience = defaultSegmentsExperience;
+					}
+				}
 
 				if (oldSegmentsExperience == null) {
 					actualSegmentsExperiencesMap.put(
