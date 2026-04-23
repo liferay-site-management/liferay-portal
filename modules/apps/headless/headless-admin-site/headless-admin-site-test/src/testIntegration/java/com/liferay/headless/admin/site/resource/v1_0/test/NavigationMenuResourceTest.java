@@ -342,8 +342,8 @@ public class NavigationMenuResourceTest
 		super.testPostSiteNavigationMenu();
 
 		_testPostSiteNavigationMenuBatchWithInvalidItemModel();
-		_testPostSiteNavigationMenuWithCreationAndModificationDate();
 		_testPostSiteNavigationMenuWithCompanyGroup();
+		_testPostSiteNavigationMenuWithCreationAndModificationDate();
 		_testPostSiteNavigationMenuWithInvalidItemModel();
 		_testPostSiteNavigationMenuWithNavigationType();
 		_testPostSiteNavigationMenuWithPermissions();
@@ -1272,19 +1272,48 @@ public class NavigationMenuResourceTest
 		DateFormat dateFormat = DateFormatFactoryUtil.getSimpleDateFormat(
 			"yyyy-MM-dd");
 
-		navigationMenu.setDateCreated(dateFormat.parse("2023-01-01"));
-		navigationMenu.setDateModified(dateFormat.parse("2023-02-02"));
+		Date dateCreated = dateFormat.parse("2023-01-01");
+		Date dateModified = dateFormat.parse("2023-02-02");
+		Date itemDateCreated = dateFormat.parse("2023-03-03");
+		Date itemDateModified = dateFormat.parse("2023-04-04");
+
+		navigationMenu.setDateCreated(dateCreated);
+		navigationMenu.setDateModified(dateModified);
+		navigationMenu.setNavigationMenuItems(
+			new NavigationMenuItem[] {
+				new NavigationMenuItem() {
+					{
+						setDateCreated(itemDateCreated);
+						setDateModified(itemDateModified);
+						setNavigationMenuItemSettings(
+							new URLNavigationMenuItemSettings() {
+								{
+									url = "https://www.liferay.com";
+									useNewTab = false;
+								}
+							});
+						setType("url");
+					}
+				}
+			});
 
 		NavigationMenu postNavigationMenu =
 			navigationMenuResource.postSiteNavigationMenu(
 				testGroup.getExternalReferenceCode(), navigationMenu);
 
+		Assert.assertEquals(dateCreated, postNavigationMenu.getDateCreated());
+		Assert.assertEquals(dateModified, postNavigationMenu.getDateModified());
+
+		NavigationMenuItem[] postNavigationMenuItems =
+			postNavigationMenu.getNavigationMenuItems();
+
 		Assert.assertEquals(
-			navigationMenu.getDateCreated(),
-			postNavigationMenu.getDateCreated());
+			Arrays.toString(postNavigationMenuItems), 1,
+			postNavigationMenuItems.length);
 		Assert.assertEquals(
-			navigationMenu.getDateModified(),
-			postNavigationMenu.getDateModified());
+			itemDateCreated, postNavigationMenuItems[0].getDateCreated());
+		Assert.assertEquals(
+			itemDateModified, postNavigationMenuItems[0].getDateModified());
 	}
 
 	private void _testPostSiteNavigationMenuWithInvalidItemModel()
@@ -1391,14 +1420,40 @@ public class NavigationMenuResourceTest
 	private void _testPostSiteNavigationMenuWithUuid() throws Exception {
 		NavigationMenu navigationMenu = _randomNavigationMenu(false);
 
-		navigationMenu.setUuid(RandomTestUtil.randomString());
+		String itemUuid = RandomTestUtil.randomString();
+		String uuid = RandomTestUtil.randomString();
+
+		navigationMenu.setNavigationMenuItems(
+			new NavigationMenuItem[] {
+				new NavigationMenuItem() {
+					{
+						setNavigationMenuItemSettings(
+							new URLNavigationMenuItemSettings() {
+								{
+									url = "https://www.liferay.com";
+									useNewTab = false;
+								}
+							});
+						setType("url");
+						setUuid(itemUuid);
+					}
+				}
+			});
+		navigationMenu.setUuid(uuid);
 
 		NavigationMenu postNavigationMenu =
 			navigationMenuResource.postSiteNavigationMenu(
 				testGroup.getExternalReferenceCode(), navigationMenu);
 
+		Assert.assertEquals(uuid, postNavigationMenu.getUuid());
+
+		NavigationMenuItem[] postNavigationMenuItems =
+			postNavigationMenu.getNavigationMenuItems();
+
 		Assert.assertEquals(
-			navigationMenu.getUuid(), postNavigationMenu.getUuid());
+			Arrays.toString(postNavigationMenuItems), 1,
+			postNavigationMenuItems.length);
+		Assert.assertEquals(itemUuid, postNavigationMenuItems[0].getUuid());
 	}
 
 	private void _testPutSiteNavigationMenuWithCompanyGroup() throws Exception {
