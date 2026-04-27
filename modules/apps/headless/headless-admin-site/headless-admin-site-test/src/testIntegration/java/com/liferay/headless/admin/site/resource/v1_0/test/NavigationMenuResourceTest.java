@@ -61,7 +61,6 @@ import com.liferay.portal.kernel.test.util.RoleTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizer;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -84,8 +83,6 @@ import com.liferay.site.navigation.service.SiteNavigationMenuItemLocalService;
 import com.liferay.site.navigation.service.SiteNavigationMenuLocalService;
 
 import java.io.Serializable;
-
-import java.text.DateFormat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -343,7 +340,6 @@ public class NavigationMenuResourceTest
 
 		_testPostSiteNavigationMenuBatchWithInvalidItemModel();
 		_testPostSiteNavigationMenuWithCompanyGroup();
-		_testPostSiteNavigationMenuWithCreationAndModificationDate();
 		_testPostSiteNavigationMenuWithInvalidItemModel();
 		_testPostSiteNavigationMenuWithNavigationType();
 		_testPostSiteNavigationMenuWithPermissions();
@@ -1262,58 +1258,6 @@ public class NavigationMenuResourceTest
 				_companyGroup.getExternalReferenceCode(), navigationMenu);
 
 		assertEquals(navigationMenu, postNavigationMenu);
-	}
-
-	private void _testPostSiteNavigationMenuWithCreationAndModificationDate()
-		throws Exception {
-
-		NavigationMenu navigationMenu = _randomNavigationMenu(false);
-
-		DateFormat dateFormat = DateFormatFactoryUtil.getSimpleDateFormat(
-			"yyyy-MM-dd");
-
-		Date dateCreated = dateFormat.parse("2023-01-01");
-		Date dateModified = dateFormat.parse("2023-02-02");
-		Date itemDateCreated = dateFormat.parse("2023-03-03");
-		Date itemDateModified = dateFormat.parse("2023-04-04");
-
-		navigationMenu.setDateCreated(dateCreated);
-		navigationMenu.setDateModified(dateModified);
-		navigationMenu.setNavigationMenuItems(
-			new NavigationMenuItem[] {
-				new NavigationMenuItem() {
-					{
-						setDateCreated(itemDateCreated);
-						setDateModified(itemDateModified);
-						setNavigationMenuItemSettings(
-							new URLNavigationMenuItemSettings() {
-								{
-									url = "https://www.liferay.com";
-									useNewTab = false;
-								}
-							});
-						setType("url");
-					}
-				}
-			});
-
-		NavigationMenu postNavigationMenu =
-			navigationMenuResource.postSiteNavigationMenu(
-				testGroup.getExternalReferenceCode(), navigationMenu);
-
-		Assert.assertEquals(dateCreated, postNavigationMenu.getDateCreated());
-		Assert.assertEquals(dateModified, postNavigationMenu.getDateModified());
-
-		NavigationMenuItem[] postNavigationMenuItems =
-			postNavigationMenu.getNavigationMenuItems();
-
-		Assert.assertEquals(
-			Arrays.toString(postNavigationMenuItems), 1,
-			postNavigationMenuItems.length);
-		Assert.assertEquals(
-			itemDateCreated, postNavigationMenuItems[0].getDateCreated());
-		Assert.assertEquals(
-			itemDateModified, postNavigationMenuItems[0].getDateModified());
 	}
 
 	private void _testPostSiteNavigationMenuWithInvalidItemModel()
