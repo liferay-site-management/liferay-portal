@@ -382,8 +382,11 @@ public class NavigationMenuResourceImpl
 			groupId, contextHttpServletRequest, null
 		).build();
 
-		serviceContext.setCreateDate(navigationMenu.getDateCreated());
-		serviceContext.setModifiedDate(navigationMenu.getDateModified());
+		if (BatchEngineThreadLocal.isBatchImportInProcess()) {
+			serviceContext.setCreateDate(navigationMenu.getDateCreated());
+			serviceContext.setModifiedDate(navigationMenu.getDateModified());
+		}
+
 		serviceContext.setUuid(navigationMenu.getUuid());
 
 		return serviceContext;
