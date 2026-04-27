@@ -8,12 +8,21 @@ package com.liferay.document.library.internal.change.tracking.spi.resolver;
 import com.liferay.change.tracking.spi.resolver.ConstraintResolver;
 import com.liferay.change.tracking.spi.resolver.context.ConstraintResolverContext;
 import com.liferay.document.library.kernel.model.DLFileEntry;
+import com.liferay.document.library.kernel.model.DLFileVersion;
+import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
+import com.liferay.document.library.kernel.service.DLFileVersionLocalService;
+import com.liferay.document.library.kernel.util.DLUtil;
+import com.liferay.petra.lang.SafeCloseable;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
+import com.liferay.portal.kernel.change.tracking.sql.CTSQLModeThreadLocal;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.language.LanguageResources;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Samuel Trong Tran
@@ -49,7 +58,48 @@ public class DLFileEntryFileNameConstraintResolver
 
 	@Override
 	public void resolveConflict(
-		ConstraintResolverContext<DLFileEntry> constraintResolverContext) {
+			ConstraintResolverContext<DLFileEntry> constraintResolverContext)
+		throws PortalException {
+
+		DLFileEntry sourceDLFileEntry =
+			constraintResolverContext.getSourceCTModel();
+
+		String uniqueFileName = constraintResolverContext.getInTarget(
+			() -> DLUtil.getUniqueFileName(
+				sourceDLFileEntry.getGroupId(), sourceDLFileEntry.getFolderId(),
+				sourceDLFileEntry.getFileName(), true));
+
+		sourceDLFileEntry.setFileName(uniqueFileName);
+
+		_dlFileEntryLocalService.updateDLFileEntry(sourceDLFileEntry);
+
+		DLFileVersion latestDLFileVersion;
+
+		try (SafeCloseable safeCloseable1 =
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					sourceDLFileEntry.getCtCollectionId());
+			SafeCloseable safeCloseable2 =
+				CTSQLModeThreadLocal.setCTSQLModeWithSafeCloseable(
+					CTSQLModeThreadLocal.CTSQLMode.CT_ONLY)) {
+
+			latestDLFileVersion =
+				_dlFileVersionLocalService.fetchLatestFileVersion(
+					sourceDLFileEntry.getFileEntryId(), false);
+		}
+
+		if ((latestDLFileVersion != null) &&
+			constraintResolverContext.isSourceCTModel(latestDLFileVersion)) {
+
+			latestDLFileVersion.setFileName(uniqueFileName);
+
+			_dlFileVersionLocalService.updateDLFileVersion(latestDLFileVersion);
+		}
 	}
+
+	@Reference
+	private DLFileEntryLocalService _dlFileEntryLocalService;
+
+	@Reference
+	private DLFileVersionLocalService _dlFileVersionLocalService;
 
 }

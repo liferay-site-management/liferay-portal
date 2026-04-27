@@ -671,13 +671,18 @@ public class CTConflictChecker<T extends CTModel<T>> {
 		Set<Long> ignorablePrimaryKeys = new HashSet<>();
 
 		for (CTEntry ctEntry : _ctEntries) {
-			if (ctEntry.getChangeType() !=
-					CTConstants.CT_CHANGE_TYPE_ADDITION) {
+			int changeType = ctEntry.getChangeType();
+			long modelClassPK = ctEntry.getModelClassPK();
 
-				ignorablePrimaryKeys.add(ctEntry.getModelClassPK());
+			if (changeType == CTConstants.CT_CHANGE_TYPE_ADDITION) {
+				verifyPrimaryKeys.add(modelClassPK);
+			}
+			else if (changeType == CTConstants.CT_CHANGE_TYPE_MODIFICATION) {
+				ignorablePrimaryKeys.add(modelClassPK);
+				verifyPrimaryKeys.add(modelClassPK);
 			}
 			else {
-				verifyPrimaryKeys.add(ctEntry.getModelClassPK());
+				ignorablePrimaryKeys.add(modelClassPK);
 			}
 		}
 
