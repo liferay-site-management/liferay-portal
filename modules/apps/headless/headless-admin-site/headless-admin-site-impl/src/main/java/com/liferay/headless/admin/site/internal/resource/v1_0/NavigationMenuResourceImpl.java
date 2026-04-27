@@ -405,8 +405,12 @@ public class NavigationMenuResourceImpl
 				contextAcceptLanguage.getPreferredLocale())
 		).build();
 
-		serviceContext.setCreateDate(navigationMenuItem.getDateCreated());
-		serviceContext.setModifiedDate(navigationMenuItem.getDateModified());
+		if (BatchEngineThreadLocal.isBatchImportInProcess()) {
+			serviceContext.setCreateDate(navigationMenuItem.getDateCreated());
+			serviceContext.setModifiedDate(
+				navigationMenuItem.getDateModified());
+		}
+
 		serviceContext.setUuid(navigationMenuItem.getUuid());
 
 		return serviceContext;
