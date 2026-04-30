@@ -24,26 +24,23 @@ public class CTPreferencesEventListener implements CTEventListener {
 
 	@Override
 	public void onAfterPublish(long ctCollectionId) {
-		if (!FeatureFlagManagerUtil.isEnabled("LPD-39203")) {
+		CTCollection ctCollection = _ctCollectionLocalService.fetchCTCollection(
+			ctCollectionId);
+
+		if ((ctCollection == null) ||
+			!FeatureFlagManagerUtil.isEnabled(
+				ctCollection.getCompanyId(), "LPD-39203")) {
+
 			return;
 		}
 
 		_ctPreferencesLocalService.resetCTPreferences(ctCollectionId);
 
-		if (!_log.isInfoEnabled()) {
-			return;
+		if (_log.isInfoEnabled()) {
+			_log.info(
+				"Publication " + ctCollection.getName() +
+					" was published. Production is live.");
 		}
-
-		CTCollection ctCollection = _ctCollectionLocalService.fetchCTCollection(
-			ctCollectionId);
-
-		if (ctCollection == null) {
-			return;
-		}
-
-		_log.info(
-			"Publication " + ctCollection.getName() +
-				" was published. Production is live.");
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
