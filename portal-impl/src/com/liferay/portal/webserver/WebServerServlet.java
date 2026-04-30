@@ -177,13 +177,19 @@ public class WebServerServlet extends HttpServlet {
 				return true;
 			}
 			else if (Validator.isNumber(pathArray[0])) {
-				try (SafeCloseable safeCloseable =
-						CTCollectionThreadLocal.
-							setCTCollectionIdWithSafeCloseable(
-								ParamUtil.getLong(
-									httpServletRequest,
-									"previewCTCollectionId"))) {
+				long previewCTCollectionId = ParamUtil.getLong(
+					httpServletRequest, "previewCTCollectionId", -1);
 
+				if (previewCTCollectionId > -1) {
+					try (SafeCloseable safeCloseable =
+							CTCollectionThreadLocal.
+								setCTCollectionIdWithSafeCloseable(
+									previewCTCollectionId)) {
+
+						_checkFileEntry(pathArray);
+					}
+				}
+				else {
 					_checkFileEntry(pathArray);
 				}
 			}
@@ -1583,16 +1589,25 @@ public class WebServerServlet extends HttpServlet {
 
 		User user = _getUser(httpServletRequest);
 
-		try (SafeCloseable safeCloseable =
-				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
-					ParamUtil.getLong(
-						httpServletRequest, "previewCTCollectionId"))) {
+		long previewCTCollectionId = ParamUtil.getLong(
+			httpServletRequest, "previewCTCollectionId", -1);
 
-			Group group = _getGroup(user.getCompanyId(), pathArray[1]);
+		if (previewCTCollectionId > -1) {
+			try (SafeCloseable safeCloseable =
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						previewCTCollectionId)) {
 
-			return fileEntryFriendlyURLResolver.resolveFriendlyURL(
-				group.getGroupId(), pathArray[2]);
+				Group group = _getGroup(user.getCompanyId(), pathArray[1]);
+
+				return fileEntryFriendlyURLResolver.resolveFriendlyURL(
+					group.getGroupId(), pathArray[2]);
+			}
 		}
+
+		Group group = _getGroup(user.getCompanyId(), pathArray[1]);
+
+		return fileEntryFriendlyURLResolver.resolveFriendlyURL(
+			group.getGroupId(), pathArray[2]);
 	}
 
 	private void _checkCompanyAndGroup(
