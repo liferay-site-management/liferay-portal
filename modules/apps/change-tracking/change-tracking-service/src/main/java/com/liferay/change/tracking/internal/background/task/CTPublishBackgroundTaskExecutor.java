@@ -15,11 +15,14 @@ import com.liferay.change.tracking.internal.helper.CTTableMapperHelper;
 import com.liferay.change.tracking.internal.helper.CTUserNotificationHelper;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
+import com.liferay.change.tracking.model.CTPreferences;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTEntryLocalService;
+import com.liferay.change.tracking.service.CTPreferencesLocalService;
 import com.liferay.change.tracking.service.CTSchemaVersionLocalService;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.lang.SafeCloseable;
+import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
@@ -34,6 +37,7 @@ import com.liferay.portal.kernel.cache.MultiVMPool;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -44,15 +48,14 @@ import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.service.change.tracking.CTService;
 import com.liferay.portal.kernel.transaction.Propagation;
-import com.liferay.portal.kernel.transaction.Transactional;
+import com.liferay.portal.kernel.transaction.TransactionConfig;
+import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-
-import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -85,17 +88,118 @@ public class CTPublishBackgroundTaskExecutor
 	}
 
 	@Override
-	@Transactional(
-		propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class
-	)
 	public BackgroundTaskResult execute(BackgroundTask backgroundTask)
 		throws Exception {
 
-		Map<String, Serializable> taskContextMap =
-			backgroundTask.getTaskContextMap();
-
 		long ctCollectionId = GetterUtil.getLong(
-			taskContextMap.get("ctCollectionId"));
+			backgroundTask.getTaskContextMap(
+			).get(
+				"ctCollectionId"
+			));
+
+		try {
+			TransactionInvokerUtil.invoke(
+				_transactionConfig,
+				() -> {
+					_publishCTCollection(backgroundTask, ctCollectionId);
+
+					return null;
+				});
+		}
+		catch (Throwable throwable) {
+			ReflectionUtil.throwException(throwable);
+		}
+
+		return BackgroundTaskResult.SUCCESS;
+	}
+
+	@Override
+	public Class<?>[] getAopInterfaces() {
+		return new Class<?>[] {BackgroundTaskExecutor.class};
+	}
+
+	@Override
+	public BackgroundTaskDisplay getBackgroundTaskDisplay(
+		BackgroundTask backgroundTask) {
+
+		return new CTPublishBackgroundTaskDisplay(backgroundTask);
+	}
+
+	@Override
+	public String handleException(
+		BackgroundTask backgroundTask, Exception exception) {
+
+		boolean showConflicts = false;
+
+		if (exception instanceof CTPublishConflictException) {
+			showConflicts = true;
+		}
+
+		long ctCollectionId = MapUtil.getLong(
+			backgroundTask.getTaskContextMap(), "ctCollectionId");
+
+		_resetInstantPublishPreferences(ctCollectionId);
+
+		try {
+			CTCollection ctCollection =
+				_ctCollectionLocalService.getCTCollection(ctCollectionId);
+
+			_ctUserNotificationHelper.sendUserNotificationEvents(
+				ctCollection,
+				JSONUtil.put(
+					"backgroundTaskId", backgroundTask.getBackgroundTaskId()
+				).put(
+					"ctCollectionId", ctCollectionId
+				).put(
+					"ctCollectionName", HtmlUtil.escape(ctCollection.getName())
+				).put(
+					"notificationType",
+					UserNotificationDefinition.NOTIFICATION_TYPE_REVIEW_ENTRY
+				).put(
+					"showConflicts", showConflicts
+				),
+				_getPublicationRolesUserIds(ctCollection, showConflicts));
+		}
+		catch (PortalException portalException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(portalException);
+			}
+		}
+
+		return super.handleException(backgroundTask, exception);
+	}
+
+	@Override
+	public void setAopProxy(Object aopProxy) {
+		_backgroundTaskExecutor = (BackgroundTaskExecutor)aopProxy;
+	}
+
+	private long[] _getPublicationRolesUserIds(
+		CTCollection ctCollection, boolean showConflicts) {
+
+		Set<Long> userIds = SetUtil.fromArray(
+			_ctUserNotificationHelper.getPublicationRoleUserIds(
+				ctCollection, true, PublicationRoleConstants.NAME_ADMIN,
+				PublicationRoleConstants.NAME_EDITOR,
+				PublicationRoleConstants.NAME_PUBLISHER));
+
+		if (!showConflicts) {
+			Role role = _roleLocalService.fetchRole(
+				ctCollection.getCompanyId(), RoleConstants.ADMINISTRATOR);
+
+			for (long userId :
+					_userLocalService.getRoleUserIds(role.getRoleId())) {
+
+				userIds.add(userId);
+			}
+		}
+
+		return ArrayUtil.toLongArray(userIds);
+	}
+
+	private void _publishCTCollection(
+			BackgroundTask backgroundTask, long ctCollectionId)
+		throws Exception {
 
 		CTCollection ctCollection = _ctCollectionLocalService.getCTCollection(
 			ctCollectionId);
@@ -212,94 +316,57 @@ public class CTPublishBackgroundTaskExecutor
 		_ctCollectionLocalService.updateCTCollection(latestCTCollection);
 
 		_ctServiceRegistry.onAfterPublish(ctCollectionId);
-
-		return BackgroundTaskResult.SUCCESS;
 	}
 
-	@Override
-	public Class<?>[] getAopInterfaces() {
-		return new Class<?>[] {BackgroundTaskExecutor.class};
-	}
-
-	@Override
-	public BackgroundTaskDisplay getBackgroundTaskDisplay(
-		BackgroundTask backgroundTask) {
-
-		return new CTPublishBackgroundTaskDisplay(backgroundTask);
-	}
-
-	@Override
-	public String handleException(
-		BackgroundTask backgroundTask, Exception exception) {
-
-		boolean showConflicts = false;
-
-		if (exception instanceof CTPublishConflictException) {
-			showConflicts = true;
-		}
-
-		long ctCollectionId = MapUtil.getLong(
-			backgroundTask.getTaskContextMap(), "ctCollectionId");
-
+	private void _resetInstantPublishPreferences(long ctCollectionId) {
 		try {
 			CTCollection ctCollection =
-				_ctCollectionLocalService.getCTCollection(ctCollectionId);
+				_ctCollectionLocalService.fetchCTCollection(ctCollectionId);
 
-			_ctUserNotificationHelper.sendUserNotificationEvents(
-				ctCollection,
-				JSONUtil.put(
-					"backgroundTaskId", backgroundTask.getBackgroundTaskId()
-				).put(
-					"ctCollectionId", ctCollectionId
-				).put(
-					"ctCollectionName", HtmlUtil.escape(ctCollection.getName())
-				).put(
-					"notificationType",
-					UserNotificationDefinition.NOTIFICATION_TYPE_REVIEW_ENTRY
-				).put(
-					"showConflicts", showConflicts
-				),
-				_getPublicationRolesUserIds(ctCollection, showConflicts));
-		}
-		catch (PortalException portalException) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(portalException);
+			if ((ctCollection == null) ||
+				!FeatureFlagManagerUtil.isEnabled(
+					ctCollection.getCompanyId(), "LPD-39203")) {
+
+				return;
+			}
+
+			CTPreferences guestCTPreferences =
+				_ctPreferencesLocalService.fetchCTPreferences(
+					ctCollection.getCompanyId(),
+					_userLocalService.getGuestUserId(
+						ctCollection.getCompanyId()));
+
+			if ((guestCTPreferences != null) &&
+				(guestCTPreferences.getCtCollectionId() == ctCollectionId)) {
+
+				guestCTPreferences.setCtCollectionId(
+					CTConstants.CT_COLLECTION_ID_PRODUCTION);
+
+				_ctPreferencesLocalService.updateCTPreferences(
+					guestCTPreferences);
 			}
 		}
-
-		return super.handleException(backgroundTask, exception);
-	}
-
-	@Override
-	public void setAopProxy(Object aopProxy) {
-		_backgroundTaskExecutor = (BackgroundTaskExecutor)aopProxy;
-	}
-
-	private long[] _getPublicationRolesUserIds(
-		CTCollection ctCollection, boolean showConflicts) {
-
-		Set<Long> userIds = SetUtil.fromArray(
-			_ctUserNotificationHelper.getPublicationRoleUserIds(
-				ctCollection, true, PublicationRoleConstants.NAME_ADMIN,
-				PublicationRoleConstants.NAME_EDITOR,
-				PublicationRoleConstants.NAME_PUBLISHER));
-
-		if (!showConflicts) {
-			Role role = _roleLocalService.fetchRole(
-				ctCollection.getCompanyId(), RoleConstants.ADMINISTRATOR);
-
-			for (long userId :
-					_userLocalService.getRoleUserIds(role.getRoleId())) {
-
-				userIds.add(userId);
-			}
+		catch (Exception exception) {
+			_log.error(
+				"Unable to reset instant publish preferences for publication " +
+					ctCollectionId,
+				exception);
 		}
-
-		return ArrayUtil.toLongArray(userIds);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CTPublishBackgroundTaskExecutor.class);
+
+	private static final TransactionConfig _transactionConfig;
+
+	static {
+		TransactionConfig.Builder builder = new TransactionConfig.Builder();
+
+		builder.setPropagation(Propagation.REQUIRES_NEW);
+		builder.setRollbackForClasses(Exception.class);
+
+		_transactionConfig = builder.build();
+	}
 
 	private BackgroundTaskExecutor _backgroundTaskExecutor;
 
@@ -311,6 +378,9 @@ public class CTPublishBackgroundTaskExecutor
 
 	@Reference
 	private CTEntryLocalService _ctEntryLocalService;
+
+	@Reference
+	private CTPreferencesLocalService _ctPreferencesLocalService;
 
 	@Reference
 	private CTSchemaVersionLocalService _ctSchemaVersionLocalService;
