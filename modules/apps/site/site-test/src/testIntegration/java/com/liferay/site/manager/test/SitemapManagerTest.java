@@ -1015,27 +1015,66 @@ public class SitemapManagerTest {
 
 	@Test
 	public void testSitemapWithCleanUrlEnabled() throws Exception {
-		try (SafeCloseable safeCloseable =
+		Group group = _groupLocalService.getGroup(
+			TestPropsValues.getCompanyId(), GroupConstants.GUEST);
+
+		try (CompanyConfigurationTemporarySwapper
+				companyConfigurationTemporarySwapper =
+					new CompanyConfigurationTemporarySwapper(
+						TestPropsValues.getCompanyId(),
+						_PID_SITEMAP_COMPANY_CONFIGURATION,
+						HashMapDictionaryBuilder.<String, Object>put(
+							"includeCategories", false
+						).put(
+							"includePages", true
+						).put(
+							"includeWebContent", false
+						).put(
+							"xmlSitemapIndexEnabled", false
+						).build());
+			GroupConfigurationTemporarySwapper
+				groupConfigurationTemporarySwapper =
+					new GroupConfigurationTemporarySwapper(
+						group.getGroupId(), _PID_SITEMAP_GROUP_CONFIGURATION,
+						HashMapDictionaryBuilder.<String, Object>put(
+							"includeCategories", false
+						).put(
+							"includePages", true
+						).put(
+							"includeWebContent", false
+						).build());
+			SafeCloseable safeCloseable =
 				PropsValuesTestUtil.swapWithSafeCloseable(
 					"LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING_ENABLED",
 					false)) {
 
-			Group group = _groupLocalService.getGroup(
-				TestPropsValues.getCompanyId(), GroupConstants.GUEST);
+			Layout layout = _layoutLocalService.fetchFirstLayout(
+				group.getGroupId(), false, 0);
 
-			_setUpThemeDisplay(
-				group,
-				_layoutLocalService.fetchFirstLayout(
-					group.getGroupId(), false, 0),
-				"localhost");
+			_setUpThemeDisplay(group, layout, "localhost");
 
-			String[] guestLayoutURLs = _getSitemapLayoutURLs(
-				group.getGroupId());
+			String xml = _sitemapManager.getSitemap(
+				null, group.getGroupId(), false, _themeDisplay);
 
-			Assert.assertTrue(ArrayUtil.isNotEmpty(guestLayoutURLs));
+			Document document = _saxReader.read(xml);
 
-			for (String guestLayoutURL : guestLayoutURLs) {
-				Assert.assertFalse(guestLayoutURL.contains("/web/"));
+			Element rootElement = document.getRootElement();
+
+			List<Element> elements = rootElement.elements();
+
+			Assert.assertFalse(elements.isEmpty());
+
+			for (Element element : elements) {
+				Element locElement = element.element("loc");
+
+				if (locElement != null) {
+					Assert.assertFalse(
+						locElement.getData(
+						).toString(
+						).contains(
+							"/web/"
+						));
+				}
 			}
 		}
 	}
