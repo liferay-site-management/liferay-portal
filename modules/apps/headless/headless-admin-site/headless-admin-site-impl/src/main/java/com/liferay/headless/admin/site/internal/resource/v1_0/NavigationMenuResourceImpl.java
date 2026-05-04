@@ -209,6 +209,12 @@ public class NavigationMenuResourceImpl
 				fetchSiteNavigationMenuByExternalReferenceCode(
 					navigationMenuExternalReferenceCode, groupId);
 
+		if (siteNavigationMenu == null) {
+			siteNavigationMenu =
+				_siteNavigationMenuLocalService.fetchSiteNavigationMenuByName(
+					groupId, navigationMenu.getName());
+		}
+
 		if (siteNavigationMenu != null) {
 			return _updateNavigationMenu(navigationMenu, siteNavigationMenu);
 		}
