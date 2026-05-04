@@ -224,6 +224,18 @@ public class VerifyLayoutTest extends BaseVerifyProcessTestCase {
 		Assert.assertTrue(errorMessage.contains(_keyword1));
 	}
 
+	@Test
+	public void testVerifyLayoutWithSitesOnlyFriendlyURLKeyword()
+		throws Exception {
+
+		_updateFriendlyURL(_layout1.getPlid(), "/documents");
+
+		super.testVerify();
+
+		Assert.assertEquals(
+			_errorMessages.toString(), 0, _errorMessages.size());
+	}
+
 	@Override
 	protected VerifyProcess getVerifyProcess() {
 		return new VerifyLayout();
