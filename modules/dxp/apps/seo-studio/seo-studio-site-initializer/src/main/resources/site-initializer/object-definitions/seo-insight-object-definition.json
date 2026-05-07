@@ -1,0 +1,114 @@
+{
+	"accountEntryRestricted": false,
+	"active": true,
+	"defaultLanguageId": "en_US",
+	"enableCategorization": true,
+	"enableComments": false,
+	"enableIndexSearch": true,
+	"enableLocalization": false,
+	"enableObjectEntryHistory": false,
+	"externalReferenceCode": "SEO_INSIGHT",
+	"label": {
+		"en_US": "SEO Insight"
+	},
+	"modifiable": true,
+	"name": "Insight",
+	"objectActions": [
+	],
+	"objectFields": [
+		{
+			"DBType": "String",
+			"businessType": "Text",
+			"indexed": true,
+			"indexedAsKeyword": true,
+			"indexedLanguageId": "",
+			"label": {
+				"en_US": "Category"
+			},
+			"localized": false,
+			"name": "category",
+			"objectFieldSettings": [
+			],
+			"readOnly": "false",
+			"readOnlyConditionExpression": "",
+			"required": true,
+			"state": false,
+			"system": false,
+			"type": "String",
+			"unique": false
+		},
+		{
+			"DBType": "String",
+			"businessType": "Text",
+			"indexed": true,
+			"indexedAsKeyword": true,
+			"indexedLanguageId": "",
+			"label": {
+				"en_US": "Insight Type"
+			},
+			"localized": false,
+			"name": "insightType",
+			"objectFieldSettings": [
+			],
+			"readOnly": "false",
+			"readOnlyConditionExpression": "",
+			"required": true,
+			"state": false,
+			"system": false,
+			"type": "String",
+			"unique": false
+		},
+		{
+			"DBType": "String",
+			"businessType": "Text",
+			"indexed": true,
+			"indexedAsKeyword": false,
+			"indexedLanguageId": "",
+			"label": {
+				"en_US": "Title"
+			},
+			"localized": false,
+			"name": "title",
+			"objectFieldSettings": [
+			],
+			"readOnly": "false",
+			"readOnlyConditionExpression": "",
+			"required": false,
+			"state": false,
+			"system": false,
+			"type": "String",
+			"unique": false
+		},
+		{
+			"DBType": "String",
+			"businessType": "Text",
+			"indexed": true,
+			"indexedAsKeyword": true,
+			"indexedLanguageId": "",
+			"label": {
+				"en_US": "URL"
+			},
+			"localized": false,
+			"name": "url",
+			"objectFieldSettings": [
+			],
+			"readOnly": "false",
+			"readOnlyConditionExpression": "",
+			"required": true,
+			"state": false,
+			"system": false,
+			"type": "String",
+			"unique": false
+		}
+	],
+	"objectValidationRules": [
+	],
+	"parameterRequired": false,
+	"pluralLabel": {
+		"en_US": "SEO Insights"
+	},
+	"portlet": true,
+	"scope": "company",
+	"system": false,
+	"titleObjectFieldName": "url"
+}
