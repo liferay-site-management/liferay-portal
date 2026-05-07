@@ -1,4 +1,13 @@
 {
+	"dependencies": {
+		"@clayui/button": "^3.161.0",
+		"@clayui/form": "^3.161.0",
+		"@clayui/label": "^3.161.0",
+		"@clayui/loading-indicator": "^3.161.0",
+		"@liferay/frontend-data-set-web": "*",
+		"frontend-js-web": "*",
+		"react": "18.2.0"
+	},
 	"main": "js/index.ts",
 	"name": "@liferay/seo-studio-web",
 	"scripts": {
