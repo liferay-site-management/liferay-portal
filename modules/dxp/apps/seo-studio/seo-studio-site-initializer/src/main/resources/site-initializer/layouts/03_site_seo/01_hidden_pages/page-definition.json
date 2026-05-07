@@ -1,0 +1,26 @@
+{
+	"pageElement": {
+		"pageElements": [
+			{
+				"definition": {
+					"fragment": {
+						"key": "com.liferay.seo.studio.web.internal.fragment.renderer.ViewHiddenPagesFragmentRenderer"
+					},
+					"fragmentConfig": {
+					},
+					"fragmentFields": [
+					],
+					"indexed": true
+				},
+				"type": "Fragment"
+			}
+		],
+		"type": "Root"
+	},
+	"settings": {
+		"masterPage": {
+			"key": "seo-studio-master"
+		}
+	},
+	"version": 1.0
+}
