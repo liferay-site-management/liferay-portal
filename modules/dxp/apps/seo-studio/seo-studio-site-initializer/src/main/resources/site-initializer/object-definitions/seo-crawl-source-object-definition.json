@@ -1,0 +1,98 @@
+{
+	"accountEntryRestricted": false,
+	"active": true,
+	"defaultLanguageId": "en_US",
+	"enableCategorization": true,
+	"enableComments": false,
+	"enableIndexSearch": true,
+	"enableLocalization": false,
+	"enableObjectEntryHistory": false,
+	"externalReferenceCode": "SEO_CRAWL_SOURCE",
+	"label": {
+		"en_US": "SEO Crawl Source"
+	},
+	"modifiable": true,
+	"name": "CrawlSource",
+	"objectActions": [
+		{
+			"active": true,
+			"conditionExpression": "",
+			"description": "",
+			"errorMessage": {
+				"en_US": "Crawl failed. Please try again later or contact support."
+			},
+			"label": {
+				"en_US": "Trigger SEO Crawl Source"
+			},
+			"name": "triggerCrawlSource",
+			"objectActionExecutorKey": "function#liferay-aihub-etc-spring-boot-object-action-crawl",
+			"objectActionTriggerKey": "standalone",
+			"parameters": {
+				"objectDefinitionExternalReferenceCode": "SEO_CRAWL_SOURCE_TRIGGER",
+				"predefinedValues": [
+				]
+			},
+			"status": {
+				"code": 1,
+				"label": "success",
+				"label_i18n": "Success"
+			},
+			"system": false
+		}
+	],
+	"objectFields": [
+		{
+			"DBType": "String",
+			"businessType": "Text",
+			"indexed": true,
+			"indexedAsKeyword": true,
+			"indexedLanguageId": "",
+			"label": {
+				"en_US": "URL"
+			},
+			"localized": false,
+			"name": "url",
+			"objectFieldSettings": [
+			],
+			"readOnly": "false",
+			"readOnlyConditionExpression": "",
+			"required": true,
+			"state": false,
+			"system": false,
+			"type": "String",
+			"unique": false
+		},
+		{
+			"DBType": "String",
+			"businessType": "Text",
+			"indexed": true,
+			"indexedAsKeyword": true,
+			"indexedLanguageId": "",
+			"label": {
+				"en_US": "Index Name"
+			},
+			"localized": false,
+			"name": "indexName",
+			"objectFieldSettings": [
+			],
+			"readOnly": "false",
+			"readOnlyConditionExpression": "",
+			"required": true,
+			"state": false,
+			"system": false,
+			"type": "String",
+			"unique": false
+		}
+	],
+	"objectValidationRules": [
+	],
+	"panelCategoryKey": "control_panel.object",
+	"parameterRequired": false,
+	"pluralLabel": {
+		"en_US": "SEO Crawl Sources"
+	},
+	"portlet": true,
+	"scope": "company",
+	"system": false,
+	"titleObjectFieldName": "url"
+}
