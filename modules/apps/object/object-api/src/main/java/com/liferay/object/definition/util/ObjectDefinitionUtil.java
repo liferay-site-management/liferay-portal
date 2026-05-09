@@ -236,6 +236,8 @@ public class ObjectDefinitionUtil {
 		).put(
 			"PersonalizationCookieEntry", "/personalization-cookies-entries"
 		).put(
+			"SEOStudioAIRequest", "/seo-studio/ai-requests"
+		).put(
 			"SEOStudioDomain", "/seo-studio/domains"
 		).put(
 			"SEOStudioInstance", "/seo-studio/instances"
