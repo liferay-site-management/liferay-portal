@@ -1,0 +1,40 @@
+{
+	"className": "com.liferay.object.model.ObjectDefinition#A7R3P1",
+	"enableFormContainer": false,
+	"enableIndexSearch": true,
+	"externalReferenceCode": "L_SEO_STUDIO_AI_REQUEST_PROCESSING_STATE",
+	"friendlyURLSeparator": "l",
+	"label": {
+		"en_US": "AI Request Processing State"
+	},
+	"modifiable": true,
+	"name": "SEOStudioAIRequestProcessingState",
+	"objectFields": [
+		{
+			"DBType": "DateTime",
+			"businessType": "DateTime",
+			"externalReferenceCode": "LAST_PROCESSED_TIMESTAMP",
+			"indexed": true,
+			"label": {
+				"en_US": "Last Processed Timestamp"
+			},
+			"name": "lastProcessedTimestamp",
+			"objectFieldSettings": [
+				{
+					"name": "timeStorage",
+					"value": "convertToUTC"
+				}
+			],
+			"system": true,
+			"type": "DateTime"
+		}
+	],
+	"objectFolderExternalReferenceCode": "default",
+	"panelCategoryKey": "control_panel.object",
+	"pluralLabel": {
+		"en_US": "AI Request Processing States"
+	},
+	"portlet": false,
+	"scope": "company",
+	"system": true
+}

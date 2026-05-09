@@ -1,0 +1,63 @@
+{
+	"className": "com.liferay.object.model.ObjectDefinition#A7R3",
+	"enableFormContainer": false,
+	"enableIndexSearch": true,
+	"externalReferenceCode": "L_SEO_STUDIO_AI_REQUEST",
+	"friendlyURLSeparator": "l",
+	"label": {
+		"en_US": "AI Request"
+	},
+	"modifiable": true,
+	"name": "SEOStudioAIRequest",
+	"objectFields": [
+		{
+			"DBType": "String",
+			"businessType": "Text",
+			"externalReferenceCode": "AGENT_NAME",
+			"indexed": true,
+			"indexedAsKeyword": true,
+			"label": {
+				"en_US": "Agent Name"
+			},
+			"name": "agentName",
+			"required": true,
+			"system": true,
+			"type": "String"
+		},
+		{
+			"DBType": "Date",
+			"businessType": "Date",
+			"externalReferenceCode": "REQUEST_DATE",
+			"indexed": true,
+			"label": {
+				"en_US": "Request Date"
+			},
+			"name": "requestDate",
+			"required": true,
+			"system": true,
+			"type": "Date"
+		},
+		{
+			"DBType": "Integer",
+			"businessType": "Integer",
+			"externalReferenceCode": "COUNT",
+			"indexed": true,
+			"label": {
+				"en_US": "Count"
+			},
+			"name": "count",
+			"required": true,
+			"system": true,
+			"type": "Integer"
+		}
+	],
+	"objectFolderExternalReferenceCode": "default",
+	"panelCategoryKey": "control_panel.object",
+	"pluralLabel": {
+		"en_US": "AI Requests"
+	},
+	"portlet": true,
+	"scope": "company",
+	"system": true,
+	"titleObjectFieldName": "agentName"
+}
