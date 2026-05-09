@@ -83,8 +83,13 @@ export class DisplayPageTemplatesPage {
 
 		await this.page.getByRole('button', {name: 'Delete'}).click();
 
-		await this.page
-			.getByLabel('Delete Entries- Loading')
+		const deleteEntriesModal = this.page.getByRole('dialog', {
+			name: 'Delete Entries',
+		});
+
+		await deleteEntriesModal.waitFor();
+
+		await deleteEntriesModal
 			.getByRole('button', {name: 'Delete'})
 			.click();
 	}

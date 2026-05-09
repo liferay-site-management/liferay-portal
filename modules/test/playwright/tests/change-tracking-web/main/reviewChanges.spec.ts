@@ -1315,26 +1315,34 @@ test('LPS-179026 Can preview changes for WikiPages', async ({
 
 	await changeTrackingPage.selectRenderView('Unified View');
 
+	const diffHtmlAdded = page.locator('.diff-html-added');
+
+	await diffHtmlAdded.first().waitFor();
+
 	await expect(
-		page.locator('.diff-html-added').filter({hasText: 'Edited'})
+		diffHtmlAdded.filter({hasText: 'Edited'})
 	).toBeVisible();
 
 	await expect(
-		page.locator('.diff-html-added').filter({hasText: 'Attachments'})
+		diffHtmlAdded.filter({hasText: 'Attachments'})
 	).toBeVisible();
 
 	await changeTrackingPage.selectRenderView('Split View');
 
+	const renderViewContent = page.locator(
+		'td.publications-render-view-content'
+	);
+
+	await renderViewContent.first().waitFor();
+
 	await expect(
-		page
-			.locator('td.publications-render-view-content')
-			.filter({has: page.getByText(wikiPageContent, {exact: true})})
+		renderViewContent.filter({has: page.getByText(wikiPageContent, {exact: true})})
 	).toBeVisible();
 
 	await expect(
-		page
-			.locator('td.publications-render-view-content')
-			.filter({has: page.getByText(wikiPageContentEdited, {exact: true})})
+		renderViewContent.filter({
+			has: page.getByText(wikiPageContentEdited, {exact: true}),
+		})
 	).toBeVisible();
 
 	await expect(
@@ -1343,20 +1351,22 @@ test('LPS-179026 Can preview changes for WikiPages', async ({
 
 	await changeTrackingPage.selectRenderView('Version: 1.0 (Production)');
 
+	await renderViewContent.first().waitFor();
+
 	await expect(
-		page
-			.locator('td.publications-render-view-content')
-			.filter({has: page.getByText(wikiPageContent, {exact: true})})
+		renderViewContent.filter({has: page.getByText(wikiPageContent, {exact: true})})
 	).toBeVisible();
 
 	await changeTrackingPage.selectRenderView(
 		`Version: 1.1 (${ctCollection.body.name})`
 	);
 
+	await renderViewContent.first().waitFor();
+
 	await expect(
-		page
-			.locator('td.publications-render-view-content')
-			.filter({has: page.getByText(wikiPageContentEdited, {exact: true})})
+		renderViewContent.filter({
+			has: page.getByText(wikiPageContentEdited, {exact: true}),
+		})
 	).toBeVisible();
 
 	await expect(

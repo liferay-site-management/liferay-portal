@@ -144,6 +144,12 @@ test(
 
 		await changeTrackingPage.reviewChange(blogTitle);
 
+		const renderViewContent = page.locator(
+			'.publications-render-view-content'
+		);
+
+		await renderViewContent.waitFor();
+
 		await expect(page.getByText(blogBody)).toBeVisible();
 
 		const journalArticleTitle = getRandomString();
@@ -170,6 +176,8 @@ test(
 		await changeTrackingPage.goToReviewChanges(ctCollection.body.name);
 
 		await changeTrackingPage.reviewChange(journalArticleTitle);
+
+		await renderViewContent.waitFor();
 
 		await expect(page.getByText(journalContent)).toBeVisible();
 	}
