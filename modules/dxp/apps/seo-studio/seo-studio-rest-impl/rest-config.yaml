@@ -1,0 +1,13 @@
+apiDir: ../seo-studio-rest-api/src/main/java
+apiPackagePath: com.liferay.seo.studio.rest
+application:
+    baseURI: /seo-studio
+    className: SEOStudioRESTApplication
+    name: Liferay.SEO.Studio.REST
+author: Noor Najjar
+clientDir: ../seo-studio-rest-client/src/main/java
+compatibilityVersion: 1
+forcePredictableOperationId: true
+generateGraphQL: false
+javaEEPackage: jakarta
+testDir: ../seo-studio-rest-test/src/testIntegration/java
