@@ -239,6 +239,13 @@ public class ObjectDefinitionUtil {
 			"PerformanceCookieEntry", "/performance-cookies-entries"
 		).put(
 			"PersonalizationCookieEntry", "/personalization-cookies-entries"
+		).put(
+			"SEOStudioAIAgent", "/seo-studio/ai-agents"
+		).put(
+			"SEOStudioAIRequest", "/seo-studio/ai-requests"
+		).put(
+			"SEOStudioAIRequestProcessingState",
+			"/seo-studio/ai-request-processing-state"
 		).build();
 
 }
