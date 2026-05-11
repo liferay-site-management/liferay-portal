@@ -1,0 +1,37 @@
+{
+	"className": "com.liferay.object.model.ObjectDefinition#A7AG",
+	"enableFormContainer": false,
+	"enableIndexSearch": true,
+	"externalReferenceCode": "L_SEO_STUDIO_AI_AGENT",
+	"friendlyURLSeparator": "l",
+	"label": {
+		"en_US": "AI Agent"
+	},
+	"modifiable": true,
+	"name": "SEOStudioAIAgent",
+	"objectFields": [
+		{
+			"DBType": "String",
+			"businessType": "Text",
+			"externalReferenceCode": "NAME",
+			"indexed": true,
+			"indexedAsKeyword": true,
+			"label": {
+				"en_US": "Name"
+			},
+			"name": "name",
+			"required": true,
+			"system": true,
+			"type": "String"
+		}
+	],
+	"objectFolderExternalReferenceCode": "default",
+	"panelCategoryKey": "control_panel.object",
+	"pluralLabel": {
+		"en_US": "AI Agents"
+	},
+	"portlet": true,
+	"scope": "company",
+	"system": true,
+	"titleObjectFieldName": "name"
+}

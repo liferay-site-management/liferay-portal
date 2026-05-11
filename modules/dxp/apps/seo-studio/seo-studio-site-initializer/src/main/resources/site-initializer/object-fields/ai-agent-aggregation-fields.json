@@ -1,0 +1,33 @@
+{
+	"object-fields": [
+		{
+			"DBType": "String",
+			"businessType": "Aggregation",
+			"externalReferenceCode": "TOTAL_COUNT",
+			"indexed": false,
+			"indexedAsKeyword": false,
+			"label": {
+				"en_US": "Total Count"
+			},
+			"name": "totalCount",
+			"objectFieldSettings": [
+				{
+					"name": "objectRelationshipName",
+					"value": "seoStudioAIAgentToAIRequests"
+				},
+				{
+					"name": "function",
+					"value": "SUM"
+				},
+				{
+					"name": "objectFieldName",
+					"value": "count"
+				}
+			],
+			"required": false,
+			"state": false,
+			"system": true
+		}
+	],
+	"objectDefinitionId": "[$OBJECT_DEFINITION_ID:SEOStudioAIAgent$]"
+}

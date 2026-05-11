@@ -11,20 +11,6 @@
 	"name": "SEOStudioAIRequest",
 	"objectFields": [
 		{
-			"DBType": "String",
-			"businessType": "Text",
-			"externalReferenceCode": "AGENT_NAME",
-			"indexed": true,
-			"indexedAsKeyword": true,
-			"label": {
-				"en_US": "Agent Name"
-			},
-			"name": "agentName",
-			"required": true,
-			"system": true,
-			"type": "String"
-		},
-		{
 			"DBType": "Date",
 			"businessType": "Date",
 			"externalReferenceCode": "REQUEST_DATE",
@@ -49,6 +35,33 @@
 			"required": true,
 			"system": true,
 			"type": "Integer"
+		},
+		{
+			"DBType": "Long",
+			"businessType": "Relationship",
+			"externalReferenceCode": "SEO_STUDIO_AI_AGENT_TO_AI_REQUESTS",
+			"indexed": true,
+			"label": {
+				"en_US": "AI Agent to AI Requests"
+			},
+			"name": "r_seoStudioAIAgentToAIRequests_l_sEOStudioAIAgentId",
+			"objectDefinitionExternalReferenceCode1": "L_SEO_STUDIO_AI_AGENT",
+			"objectFieldSettings": [
+				{
+					"name": "objectDefinition1ShortName",
+					"value": "SEOStudioAIAgent"
+				},
+				{
+					"name": "objectRelationshipERCObjectFieldName",
+					"value": "r_seoStudioAIAgentToAIRequests_l_sEOStudioAIAgentERC"
+				}
+			],
+			"objectRelationshipExternalReferenceCode": "L_SEO_STUDIO_AI_AGENT_TO_L_SEO_STUDIO_AI_REQUESTS",
+			"readOnly": "false",
+			"relationshipType": "oneToMany",
+			"required": true,
+			"system": true,
+			"type": "Long"
 		}
 	],
 	"objectFolderExternalReferenceCode": "default",
@@ -58,6 +71,5 @@
 	},
 	"portlet": true,
 	"scope": "company",
-	"system": true,
-	"titleObjectFieldName": "agentName"
+	"system": true
 }
