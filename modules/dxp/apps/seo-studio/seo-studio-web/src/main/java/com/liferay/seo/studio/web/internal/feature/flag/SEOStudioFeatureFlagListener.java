@@ -13,6 +13,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
+import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -41,6 +42,8 @@ public class SEOStudioFeatureFlagListener implements FeatureFlagListener {
 		if (!enabled || !Objects.equals(featureFlagKey, "LPD-44511")) {
 			return;
 		}
+
+		Objects.requireNonNull(_objectDefinitionIndexer);
 
 		try (SafeCloseable safeCloseable =
 				CTCollectionThreadLocal.setProductionModeWithSafeCloseable()) {
@@ -78,6 +81,11 @@ public class SEOStudioFeatureFlagListener implements FeatureFlagListener {
 
 	@Reference
 	private GroupLocalService _groupLocalService;
+
+	@Reference(
+		target = "(indexer.class.name=com.liferay.object.model.ObjectDefinition)"
+	)
+	private Indexer<?> _objectDefinitionIndexer;
 
 	@Reference(
 		target = "(site.initializer.key=com.liferay.seo.studio.site.initializer)"
