@@ -80,6 +80,8 @@ public class ObjectActionCrawlerRestController extends BaseRestController {
 			String domainUrl =
 				seedURI.getScheme() + "://" + seedURI.getAuthority();
 
+			String sitemapURL = domainUrl + "/sitemap.xml";
+
 			crawlerConfig = _replace(
 				Map.of(
 					"[$CRAWLER_DOMAIN_URL$]", domainUrl,
@@ -94,8 +96,8 @@ public class ObjectActionCrawlerRestController extends BaseRestController {
 					String.valueOf(_crawlerMaxDuration),
 					"[$CRAWLER_OUTPUT_INDEX$]",
 					valuesJSONObject.getString("indexName"),
-					"[$CRAWLER_SEED_URL$]", seedUrl,
-					"[$CRAWLER_URL_QUEUE_SIZE_LIMIT$]",
+					"[$CRAWLER_SEED_URL$]", seedUrl, "[$CRAWLER_SITEMAP_URL$]",
+					sitemapURL, "[$CRAWLER_URL_QUEUE_SIZE_LIMIT$]",
 					String.valueOf(_crawlerUrlQueueSizeLimit)),
 				crawlerConfig);
 
