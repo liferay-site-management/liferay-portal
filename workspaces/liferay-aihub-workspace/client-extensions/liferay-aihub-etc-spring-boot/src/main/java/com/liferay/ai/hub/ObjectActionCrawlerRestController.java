@@ -80,25 +80,37 @@ public class ObjectActionCrawlerRestController extends BaseRestController {
 			String domainUrl =
 				seedURI.getScheme() + "://" + seedURI.getAuthority();
 
-			String sitemapURL = domainUrl + "/sitemap.xml";
-
 			crawlerConfig = _replace(
-				Map.of(
-					"[$CRAWLER_DOMAIN_URL$]", domainUrl,
-					"[$CRAWLER_ELASTICSEARCH_HOST$]", _crawlerElasticsearchHost,
-					"[$CRAWLER_ELASTICSEARCH_PIPELINE$]",
-					_crawlerElasticsearchPipeline,
-					"[$CRAWLER_ELASTICSEARCH_PORT$]",
-					String.valueOf(_crawlerElasticsearchPort),
-					"[$CRAWLER_MAX_CRAWL_DEPTH$]",
-					String.valueOf(_crawlerMaxCrawlDepth),
-					"[$CRAWLER_MAX_DURATION$]",
-					String.valueOf(_crawlerMaxDuration),
-					"[$CRAWLER_OUTPUT_INDEX$]",
-					valuesJSONObject.getString("indexName"),
-					"[$CRAWLER_SEED_URL$]", seedUrl, "[$CRAWLER_SITEMAP_URL$]",
-					sitemapURL, "[$CRAWLER_URL_QUEUE_SIZE_LIMIT$]",
-					String.valueOf(_crawlerUrlQueueSizeLimit)),
+				Map.ofEntries(
+					Map.entry("[$CRAWLER_DOMAIN_URL$]", domainUrl),
+					Map.entry(
+						"[$CRAWLER_ELASTICSEARCH_HOST$]",
+						_crawlerElasticsearchHost),
+					Map.entry(
+						"[$CRAWLER_ELASTICSEARCH_PIPELINE$]",
+						_crawlerElasticsearchPipeline),
+					Map.entry(
+						"[$CRAWLER_ELASTICSEARCH_PORT$]",
+						String.valueOf(_crawlerElasticsearchPort)),
+					Map.entry(
+						"[$CRAWLER_LOOPBACK_ALLOWED$]",
+						String.valueOf(_crawlerLocalNetworkAllowed)),
+					Map.entry(
+						"[$CRAWLER_MAX_CRAWL_DEPTH$]",
+						String.valueOf(_crawlerMaxCrawlDepth)),
+					Map.entry(
+						"[$CRAWLER_MAX_DURATION$]",
+						String.valueOf(_crawlerMaxDuration)),
+					Map.entry(
+						"[$CRAWLER_OUTPUT_INDEX$]",
+						valuesJSONObject.getString("indexName")),
+					Map.entry(
+						"[$CRAWLER_PRIVATE_NETWORKS_ALLOWED$]",
+						String.valueOf(_crawlerLocalNetworkAllowed)),
+					Map.entry("[$CRAWLER_SEED_URL$]", seedUrl),
+					Map.entry(
+						"[$CRAWLER_URL_QUEUE_SIZE_LIMIT$]",
+						String.valueOf(_crawlerUrlQueueSizeLimit))),
 				crawlerConfig);
 
 			Files.writeString(path, crawlerConfig, StandardCharsets.UTF_8);
@@ -192,6 +204,9 @@ public class ObjectActionCrawlerRestController extends BaseRestController {
 
 	@Value("${liferay.ai.hub.crawler.elasticsearch.port}")
 	private int _crawlerElasticsearchPort;
+
+	@Value("${liferay.ai.hub.crawler.local.network.allowed}")
+	private boolean _crawlerLocalNetworkAllowed;
 
 	@Value("${liferay.ai.hub.crawler.max.crawl.depth}")
 	private int _crawlerMaxCrawlDepth;
