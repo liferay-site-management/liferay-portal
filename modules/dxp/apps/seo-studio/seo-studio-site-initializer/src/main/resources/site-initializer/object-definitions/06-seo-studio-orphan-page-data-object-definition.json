@@ -1,0 +1,190 @@
+{
+	"accountEntryRestricted": false,
+	"className": "com.liferay.object.model.ObjectDefinition#O3P4",
+	"enableFormContainer": false,
+	"enableIndexSearch": false,
+	"externalReferenceCode": "L_SEO_STUDIO_ORPHAN_PAGE_DATA",
+	"friendlyURLSeparator": "l",
+	"label": {
+		"en_US": "Orphan Page Data"
+	},
+	"modifiable": true,
+	"name": "SEOStudioOrphanPageData",
+	"objectActions": [
+		{
+			"active": true,
+			"conditionExpression": "",
+			"description": "",
+			"errorMessage": {
+				"en_US": "Crawl failed. Please try again later or contact support."
+			},
+			"label": {
+				"en_US": "Trigger SEO Crawl"
+			},
+			"name": "triggerCrawlSource",
+			"objectActionExecutorKey": "function#liferay-seostudio-crawler-object-action-crawl",
+			"objectActionTriggerKey": "standalone",
+			"parameters": {
+				"objectDefinitionExternalReferenceCode": "SEO_CRAWL_SOURCE_TRIGGER",
+				"predefinedValues": [
+				]
+			},
+			"status": {
+				"code": 1,
+				"label": "success",
+				"label_i18n": "Success"
+			},
+			"system": false
+		}
+	],
+	"objectFields": [
+		{
+			"DBType": "Integer",
+			"businessType": "Integer",
+			"defaultValue": 1,
+			"externalReferenceCode": "MAX_CRAWL_DEPTH",
+			"indexed": true,
+			"label": {
+				"en_US": "Max Crawl Depth"
+			},
+			"name": "maxCrawlDepth",
+			"required": true,
+			"system": true,
+			"type": "Integer"
+		},
+		{
+			"DBType": "Integer",
+			"businessType": "Integer",
+			"defaultValue": 30,
+			"externalReferenceCode": "MAX_DURATION",
+			"indexed": true,
+			"label": {
+				"en_US": "Max Duration"
+			},
+			"name": "maxDuration",
+			"required": true,
+			"system": true,
+			"type": "Integer"
+		},
+		{
+			"DBType": "String",
+			"businessType": "Text",
+			"indexed": true,
+			"indexedAsKeyword": true,
+			"indexedLanguageId": "",
+			"label": {
+				"en_US": "URL"
+			},
+			"localized": false,
+			"name": "url",
+			"objectFieldSettings": [
+			],
+			"readOnly": "false",
+			"readOnlyConditionExpression": "",
+			"required": true,
+			"state": false,
+			"system": false,
+			"type": "String",
+			"unique": false
+		},
+		{
+			"DBType": "String",
+			"businessType": "Text",
+			"indexed": true,
+			"indexedAsKeyword": false,
+			"indexedLanguageId": "",
+			"label": {
+				"en_US": "Title"
+			},
+			"localized": false,
+			"name": "title",
+			"objectFieldSettings": [
+			],
+			"readOnly": "false",
+			"readOnlyConditionExpression": "",
+			"required": false,
+			"state": false,
+			"system": false,
+			"type": "String",
+			"unique": false
+		},
+		{
+			"DBType": "String",
+			"businessType": "Text",
+			"indexed": true,
+			"indexedAsKeyword": true,
+			"indexedLanguageId": "",
+			"label": {
+				"en_US": "Normalized URL"
+			},
+			"localized": false,
+			"name": "normalizedURL",
+			"objectFieldSettings": [
+			],
+			"readOnly": "false",
+			"readOnlyConditionExpression": "",
+			"required": true,
+			"state": false,
+			"system": false,
+			"type": "String",
+			"unique": false
+		},
+		{
+			"DBType": "Long",
+			"businessType": "Relationship",
+			"externalReferenceCode": "SEO_STUDIO_SCAN_INSIGHT_TO_ORPHAN_PAGE_DATAS",
+			"indexed": true,
+			"label": {
+				"en_US": "Scan Insight to Orphan Page Datas"
+			},
+			"name": "r_scanInsightToOrphanPageDatas_seoStudioScanInsightId",
+			"objectDefinitionExternalReferenceCode1": "L_SEO_STUDIO_SCAN_INSIGHT",
+			"objectFieldSettings": [
+				{
+					"name": "objectDefinition1ShortName",
+					"value": "SEOStudioScanInsight"
+				},
+				{
+					"name": "objectRelationshipERCObjectFieldName",
+					"value": "r_scanInsightToOrphanPageDatas_seoStudioScanInsightERC"
+				}
+			],
+			"objectRelationshipExternalReferenceCode": "L_SEO_STUDIO_SCAN_INSIGHT_TO_ORPHAN_PAGE_DATAS",
+			"readOnly": "false",
+			"relationshipType": "oneToMany",
+			"required": true,
+			"system": true,
+			"type": "Long"
+		},
+		{
+			"DBType": "String",
+			"businessType": "Text",
+			"indexed": true,
+			"indexedAsKeyword": false,
+			"indexedLanguageId": "",
+			"label": {
+				"en_US": "Source URL"
+			},
+			"localized": false,
+			"name": "sourceURL",
+			"objectFieldSettings": [
+			],
+			"readOnly": "false",
+			"readOnlyConditionExpression": "",
+			"required": false,
+			"state": false,
+			"system": false,
+			"type": "String",
+			"unique": false
+		}
+	],
+	"objectFolderExternalReferenceCode": "default",
+	"panelCategoryKey": "control_panel.object",
+	"pluralLabel": {
+		"en_US": "Orphan Page Datas"
+	},
+	"portlet": true,
+	"scope": "company",
+	"system": true,
+	"titleObjectFieldName": "url"
+}

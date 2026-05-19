@@ -1,0 +1,13 @@
+{
+	"deletionType": "cascade",
+	"externalReferenceCode": "L_SEO_STUDIO_SCAN_INSIGHT_TO_ORPHAN_PAGE_DATAS",
+	"label": {
+		"en_US": "Scan Insight to Orphan Page Datas"
+	},
+	"name": "scanInsightToOrphanPageDatas",
+	"objectDefinitionId1": "[$OBJECT_DEFINITION_ID:SEOStudioScanInsight$]",
+	"objectDefinitionId2": "[$OBJECT_DEFINITION_ID:SEOStudioOrphanPageData$]",
+	"objectDefinitionName2": "SEOStudioOrphanPageData",
+	"system": true,
+	"type": "oneToMany"
+}
