@@ -34,10 +34,16 @@ info:
     version: v1.0
 openapi: 3.0.1
 paths:
-    "/ai-requests":
+    "/domains/{domainId}/ai-requests":
         get:
-            operationId: getAIRequestsPage
+            operationId: getDomainAIRequestsPage
             parameters:
+                -   in: path
+                    name: domainId
+                    required: true
+                    schema:
+                        format: int64
+                        type: integer
                 -   in: query
                     name: aggregateOn
                     schema:

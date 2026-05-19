@@ -9,6 +9,7 @@ import com.liferay.object.rest.dto.v1_0.ObjectEntry;
 import com.liferay.object.rest.manager.v1_0.ObjectEntryManager;
 import com.liferay.object.rest.odata.entity.v1_0.provider.EntityModelProvider;
 import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -45,8 +46,8 @@ import org.osgi.service.component.annotations.ServiceScope;
 public class AIRequestResourceImpl extends BaseAIRequestResourceImpl {
 
 	@Override
-	public Page<AIRequest> getAIRequestsPage(
-			String aggregateOn, String search, Filter filter,
+	public Page<AIRequest> getDomainAIRequestsPage(
+			Long domainId, String aggregateOn, String search, Filter filter,
 			Pagination pagination, Sort[] sorts)
 		throws Exception {
 
@@ -62,8 +63,9 @@ public class AIRequestResourceImpl extends BaseAIRequestResourceImpl {
 				contextCompany.getCompanyId(),
 				_objectDefinitionLocalService.getObjectDefinition(
 					contextCompany.getCompanyId(), "SEOStudioAIRequest"),
-				null, null, _createDTOConverterContext(), null,
-				Pagination.of(1, _DELTA), search, sorts);
+				null, null, _createDTOConverterContext(),
+				_getFilterString(domainId), Pagination.of(1, _DELTA), search,
+				sorts);
 
 		Map<String, Integer> countsByGroupKey = new LinkedHashMap<>();
 
@@ -103,6 +105,34 @@ public class AIRequestResourceImpl extends BaseAIRequestResourceImpl {
 			_dtoConverterRegistry, contextHttpServletRequest, null,
 			contextAcceptLanguage.getPreferredLocale(), contextUriInfo,
 			contextUser);
+	}
+
+	private String _getFilterString(Long domainId) {
+		StringBundler sb = new StringBundler(6);
+
+		sb.append(
+			"r_seoStudioDomainToSEOStudioAIRequests_seoStudioDomainId eq '");
+		sb.append(domainId);
+		sb.append("'");
+
+		if (contextUriInfo == null) {
+			return sb.toString();
+		}
+
+		String filter = contextUriInfo.getQueryParameters(
+		).getFirst(
+			"filter"
+		);
+
+		if (Validator.isNull(filter)) {
+			return sb.toString();
+		}
+
+		sb.append(" and (");
+		sb.append(filter);
+		sb.append(")");
+
+		return sb.toString();
 	}
 
 	private AIRequest _toAggregatedAIRequest(

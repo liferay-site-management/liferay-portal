@@ -1,0 +1,13 @@
+{
+	"deletionType": "cascade",
+	"externalReferenceCode": "L_SEO_STUDIO_DOMAIN_TO_L_SEO_STUDIO_AI_REQUESTS",
+	"label": {
+		"en_US": "SEO Studio Domain to SEO Studio AI Requests"
+	},
+	"name": "seoStudioDomainToSEOStudioAIRequests",
+	"objectDefinitionId1": "[$OBJECT_DEFINITION_ID:SEOStudioDomain$]",
+	"objectDefinitionId2": "[$OBJECT_DEFINITION_ID:SEOStudioAIRequest$]",
+	"objectDefinitionName2": "SEOStudioAIRequest",
+	"system": true,
+	"type": "oneToMany"
+}
