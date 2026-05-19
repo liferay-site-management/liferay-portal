@@ -1,0 +1,77 @@
+{
+	"accountEntryRestricted": false,
+	"className": "com.liferay.object.model.ObjectDefinition#O3P4",
+	"enableFormContainer": false,
+	"enableIndexSearch": true,
+	"externalReferenceCode": "L_SEO_STUDIO_ORPHAN_PAGE_DATA",
+	"friendlyURLSeparator": "l",
+	"label": {
+		"en_US": "SEO Studio Orphan Page Data"
+	},
+	"modifiable": true,
+	"name": "SEOStudioOrphanPageData",
+	"objectFields": [
+		{
+			"DBType": "Long",
+			"businessType": "Relationship",
+			"externalReferenceCode": "SEO_STUDIO_SCAN_INSIGHT_TO_ORPHAN_PAGE_DATAS",
+			"indexed": true,
+			"label": {
+				"en_US": "SEO Studio Scan Insight to SEO Studio Orphan Pages Data"
+			},
+			"name": "r_scanInsightToOrphanPageDatas_seoStudioScanInsightId",
+			"objectDefinitionExternalReferenceCode1": "L_SEO_STUDIO_SCAN_INSIGHT",
+			"objectFieldSettings": [
+				{
+					"name": "objectDefinition1ShortName",
+					"value": "SEOStudioScanInsight"
+				},
+				{
+					"name": "objectRelationshipERCObjectFieldName",
+					"value": "r_scanInsightToOrphanPageDatas_seoStudioScanInsightERC"
+				}
+			],
+			"objectRelationshipExternalReferenceCode": "L_SEO_STUDIO_SCAN_INSIGHT_TO_ORPHAN_PAGE_DATAS",
+			"readOnly": "false",
+			"relationshipType": "oneToMany",
+			"required": true,
+			"system": true,
+			"type": "Long"
+		},
+		{
+			"DBType": "String",
+			"businessType": "Text",
+			"externalReferenceCode": "TITLE",
+			"indexed": true,
+			"label": {
+				"en_US": "Title"
+			},
+			"name": "title",
+			"system": false,
+			"type": "String"
+		},
+		{
+			"DBType": "String",
+			"businessType": "Text",
+			"externalReferenceCode": "URL",
+			"indexed": true,
+			"indexedAsKeyword": true,
+			"label": {
+				"en_US": "URL"
+			},
+			"name": "url",
+			"required": true,
+			"system": false,
+			"type": "String"
+		}
+	],
+	"objectFolderExternalReferenceCode": "default",
+	"panelCategoryKey": "control_panel.object",
+	"pluralLabel": {
+		"en_US": "SEO Studio Orphan Pages Data"
+	},
+	"portlet": true,
+	"scope": "company",
+	"system": true,
+	"titleObjectFieldName": "url"
+}

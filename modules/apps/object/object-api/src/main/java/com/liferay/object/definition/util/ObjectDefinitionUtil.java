@@ -246,6 +246,8 @@ public class ObjectDefinitionUtil {
 		).put(
 			"SEOStudioInstance", "/seo-studio/instances"
 		).put(
+			"SEOStudioOrphanPageData", "/seo-studio/orphan-pages"
+		).put(
 			"SEOStudioScan", "/seo-studio/scans"
 		).put(
 			"SEOStudioScanInsight", "/seo-studio/scan-insights"
