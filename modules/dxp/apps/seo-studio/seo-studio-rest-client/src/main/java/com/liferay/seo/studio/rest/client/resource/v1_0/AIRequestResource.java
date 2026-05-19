@@ -34,14 +34,14 @@ public interface AIRequestResource {
 		return new Builder();
 	}
 
-	public Page<AIRequest> getAIRequestsPage(
-			String aggregateOn, String search, String filterString,
-			Pagination pagination, String sortString)
+	public Page<AIRequest> getDomainAIRequestsPage(
+			Long domainId, String aggregateOn, String search,
+			String filterString, Pagination pagination, String sortString)
 		throws Exception;
 
-	public HttpInvoker.HttpResponse getAIRequestsPageHttpResponse(
-			String aggregateOn, String search, String filterString,
-			Pagination pagination, String sortString)
+	public HttpInvoker.HttpResponse getDomainAIRequestsPageHttpResponse(
+			Long domainId, String aggregateOn, String search,
+			String filterString, Pagination pagination, String sortString)
 		throws Exception;
 
 	public static class Builder {
@@ -152,14 +152,15 @@ public interface AIRequestResource {
 
 	public static class AIRequestResourceImpl implements AIRequestResource {
 
-		public Page<AIRequest> getAIRequestsPage(
-				String aggregateOn, String search, String filterString,
-				Pagination pagination, String sortString)
+		public Page<AIRequest> getDomainAIRequestsPage(
+				Long domainId, String aggregateOn, String search,
+				String filterString, Pagination pagination, String sortString)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				getAIRequestsPageHttpResponse(
-					aggregateOn, search, filterString, pagination, sortString);
+				getDomainAIRequestsPageHttpResponse(
+					domainId, aggregateOn, search, filterString, pagination,
+					sortString);
 
 			String content = httpResponse.getContent();
 
@@ -220,9 +221,9 @@ public interface AIRequestResource {
 			}
 		}
 
-		public HttpInvoker.HttpResponse getAIRequestsPageHttpResponse(
-				String aggregateOn, String search, String filterString,
-				Pagination pagination, String sortString)
+		public HttpInvoker.HttpResponse getDomainAIRequestsPageHttpResponse(
+				Long domainId, String aggregateOn, String search,
+				String filterString, Pagination pagination, String sortString)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -273,7 +274,9 @@ public interface AIRequestResource {
 			httpInvoker.path(
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
-						"/o/seo-studio/v1.0/ai-requests");
+						"/o/seo-studio/v1.0/domains/{domainId}/ai-requests");
+
+			httpInvoker.path("domainId", domainId);
 
 			if ((_builder._login != null) && (_builder._password != null)) {
 				httpInvoker.userNameAndPassword(
@@ -295,4 +298,4 @@ public interface AIRequestResource {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:-283226252
+// LIFERAY-REST-BUILDER-HASH:884799949

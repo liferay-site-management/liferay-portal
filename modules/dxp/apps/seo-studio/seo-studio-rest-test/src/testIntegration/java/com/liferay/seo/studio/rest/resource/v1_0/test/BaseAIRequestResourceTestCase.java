@@ -188,31 +188,55 @@ public abstract class BaseAIRequestResourceTestCase {
 	}
 
 	@Test
-	public void testGetAIRequestsPage() throws Exception {
-		Page<AIRequest> page = aiRequestResource.getAIRequestsPage(
-			RandomTestUtil.randomString(), null, null, Pagination.of(1, 10),
-			null);
+	public void testGetDomainAIRequestsPage() throws Exception {
+		Long domainId = testGetDomainAIRequestsPage_getDomainId();
+		Long irrelevantDomainId =
+			testGetDomainAIRequestsPage_getIrrelevantDomainId();
+
+		Page<AIRequest> page = aiRequestResource.getDomainAIRequestsPage(
+			domainId, RandomTestUtil.randomString(), null, null,
+			Pagination.of(1, 10), null);
 
 		long totalCount = page.getTotalCount();
 
-		AIRequest aiRequest1 = testGetAIRequestsPage_addAIRequest(
-			randomAIRequest());
+		if (irrelevantDomainId != null) {
+			AIRequest irrelevantAIRequest =
+				testGetDomainAIRequestsPage_addAIRequest(
+					irrelevantDomainId, randomIrrelevantAIRequest());
 
-		AIRequest aiRequest2 = testGetAIRequestsPage_addAIRequest(
-			randomAIRequest());
+			page = aiRequestResource.getDomainAIRequestsPage(
+				irrelevantDomainId, null, null, null,
+				Pagination.of(1, (int)totalCount + 1), null);
 
-		page = aiRequestResource.getAIRequestsPage(
-			null, null, null, Pagination.of(1, 10), null);
+			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+
+			assertContains(
+				irrelevantAIRequest, (List<AIRequest>)page.getItems());
+			assertValid(
+				page,
+				testGetDomainAIRequestsPage_getExpectedActions(
+					irrelevantDomainId));
+		}
+
+		AIRequest aiRequest1 = testGetDomainAIRequestsPage_addAIRequest(
+			domainId, randomAIRequest());
+
+		AIRequest aiRequest2 = testGetDomainAIRequestsPage_addAIRequest(
+			domainId, randomAIRequest());
+
+		page = aiRequestResource.getDomainAIRequestsPage(
+			domainId, null, null, null, Pagination.of(1, 10), null);
 
 		Assert.assertEquals(totalCount + 2, page.getTotalCount());
 
 		assertContains(aiRequest1, (List<AIRequest>)page.getItems());
 		assertContains(aiRequest2, (List<AIRequest>)page.getItems());
-		assertValid(page, testGetAIRequestsPage_getExpectedActions());
+		assertValid(
+			page, testGetDomainAIRequestsPage_getExpectedActions(domainId));
 	}
 
 	protected Map<String, Map<String, String>>
-			testGetAIRequestsPage_getExpectedActions()
+			testGetDomainAIRequestsPage_getExpectedActions(Long domainId)
 		throws Exception {
 
 		Map<String, Map<String, String>> expectedActions = new HashMap<>();
@@ -221,7 +245,7 @@ public abstract class BaseAIRequestResourceTestCase {
 	}
 
 	@Test
-	public void testGetAIRequestsPageWithFilterDateTimeEquals()
+	public void testGetDomainAIRequestsPageWithFilterDateTimeEquals()
 		throws Exception {
 
 		List<EntityField> entityFields = getEntityFields(
@@ -231,13 +255,17 @@ public abstract class BaseAIRequestResourceTestCase {
 			return;
 		}
 
+		Long domainId = testGetDomainAIRequestsPage_getDomainId();
+
 		AIRequest aiRequest1 = randomAIRequest();
 
-		aiRequest1 = testGetAIRequestsPage_addAIRequest(aiRequest1);
+		aiRequest1 = testGetDomainAIRequestsPage_addAIRequest(
+			domainId, aiRequest1);
 
 		for (EntityField entityField : entityFields) {
-			Page<AIRequest> page = aiRequestResource.getAIRequestsPage(
-				null, null, getFilterString(entityField, "between", aiRequest1),
+			Page<AIRequest> page = aiRequestResource.getDomainAIRequestsPage(
+				domainId, null, null,
+				getFilterString(entityField, "between", aiRequest1),
 				Pagination.of(1, 2), null);
 
 			assertEquals(
@@ -247,30 +275,36 @@ public abstract class BaseAIRequestResourceTestCase {
 	}
 
 	@Test
-	public void testGetAIRequestsPageWithFilterDoubleEquals() throws Exception {
-		testGetAIRequestsPageWithFilter("eq", EntityField.Type.DOUBLE);
-	}
-
-	@Test
-	public void testGetAIRequestsPageWithFilterStringContains()
+	public void testGetDomainAIRequestsPageWithFilterDoubleEquals()
 		throws Exception {
 
-		testGetAIRequestsPageWithFilter("contains", EntityField.Type.STRING);
+		testGetDomainAIRequestsPageWithFilter("eq", EntityField.Type.DOUBLE);
 	}
 
 	@Test
-	public void testGetAIRequestsPageWithFilterStringEquals() throws Exception {
-		testGetAIRequestsPageWithFilter("eq", EntityField.Type.STRING);
-	}
-
-	@Test
-	public void testGetAIRequestsPageWithFilterStringStartsWith()
+	public void testGetDomainAIRequestsPageWithFilterStringContains()
 		throws Exception {
 
-		testGetAIRequestsPageWithFilter("startswith", EntityField.Type.STRING);
+		testGetDomainAIRequestsPageWithFilter(
+			"contains", EntityField.Type.STRING);
 	}
 
-	protected void testGetAIRequestsPageWithFilter(
+	@Test
+	public void testGetDomainAIRequestsPageWithFilterStringEquals()
+		throws Exception {
+
+		testGetDomainAIRequestsPageWithFilter("eq", EntityField.Type.STRING);
+	}
+
+	@Test
+	public void testGetDomainAIRequestsPageWithFilterStringStartsWith()
+		throws Exception {
+
+		testGetDomainAIRequestsPageWithFilter(
+			"startswith", EntityField.Type.STRING);
+	}
+
+	protected void testGetDomainAIRequestsPageWithFilter(
 			String operator, EntityField.Type type)
 		throws Exception {
 
@@ -280,16 +314,19 @@ public abstract class BaseAIRequestResourceTestCase {
 			return;
 		}
 
-		AIRequest aiRequest1 = testGetAIRequestsPage_addAIRequest(
-			randomAIRequest());
+		Long domainId = testGetDomainAIRequestsPage_getDomainId();
+
+		AIRequest aiRequest1 = testGetDomainAIRequestsPage_addAIRequest(
+			domainId, randomAIRequest());
 
 		@SuppressWarnings("PMD.UnusedLocalVariable")
-		AIRequest aiRequest2 = testGetAIRequestsPage_addAIRequest(
-			randomAIRequest());
+		AIRequest aiRequest2 = testGetDomainAIRequestsPage_addAIRequest(
+			domainId, randomAIRequest());
 
 		for (EntityField entityField : entityFields) {
-			Page<AIRequest> page = aiRequestResource.getAIRequestsPage(
-				null, null, getFilterString(entityField, operator, aiRequest1),
+			Page<AIRequest> page = aiRequestResource.getDomainAIRequestsPage(
+				domainId, null, null,
+				getFilterString(entityField, operator, aiRequest1),
 				Pagination.of(1, 2), null);
 
 			assertEquals(
@@ -299,28 +336,31 @@ public abstract class BaseAIRequestResourceTestCase {
 	}
 
 	@Test
-	public void testGetAIRequestsPageWithPagination() throws Exception {
-		Page<AIRequest> aiRequestsPage = aiRequestResource.getAIRequestsPage(
-			null, null, null, null, null);
+	public void testGetDomainAIRequestsPageWithPagination() throws Exception {
+		Long domainId = testGetDomainAIRequestsPage_getDomainId();
+
+		Page<AIRequest> aiRequestsPage =
+			aiRequestResource.getDomainAIRequestsPage(
+				domainId, null, null, null, null, null);
 
 		int totalCount = GetterUtil.getInteger(aiRequestsPage.getTotalCount());
 
-		AIRequest aiRequest1 = testGetAIRequestsPage_addAIRequest(
-			randomAIRequest());
+		AIRequest aiRequest1 = testGetDomainAIRequestsPage_addAIRequest(
+			domainId, randomAIRequest());
 
-		AIRequest aiRequest2 = testGetAIRequestsPage_addAIRequest(
-			randomAIRequest());
+		AIRequest aiRequest2 = testGetDomainAIRequestsPage_addAIRequest(
+			domainId, randomAIRequest());
 
-		AIRequest aiRequest3 = testGetAIRequestsPage_addAIRequest(
-			randomAIRequest());
+		AIRequest aiRequest3 = testGetDomainAIRequestsPage_addAIRequest(
+			domainId, randomAIRequest());
 
 		// See com.liferay.portal.vulcan.internal.configuration.HeadlessAPICompanyConfiguration#pageSizeLimit
 
 		int pageSizeLimit = 500;
 
 		if (totalCount >= (pageSizeLimit - 2)) {
-			Page<AIRequest> page1 = aiRequestResource.getAIRequestsPage(
-				null, null, null,
+			Page<AIRequest> page1 = aiRequestResource.getDomainAIRequestsPage(
+				domainId, null, null, null,
 				Pagination.of(
 					(int)Math.ceil((totalCount + 1.0) / pageSizeLimit),
 					pageSizeLimit),
@@ -330,8 +370,8 @@ public abstract class BaseAIRequestResourceTestCase {
 
 			assertContains(aiRequest1, (List<AIRequest>)page1.getItems());
 
-			Page<AIRequest> page2 = aiRequestResource.getAIRequestsPage(
-				null, null, null,
+			Page<AIRequest> page2 = aiRequestResource.getDomainAIRequestsPage(
+				domainId, null, null, null,
 				Pagination.of(
 					(int)Math.ceil((totalCount + 2.0) / pageSizeLimit),
 					pageSizeLimit),
@@ -339,8 +379,8 @@ public abstract class BaseAIRequestResourceTestCase {
 
 			assertContains(aiRequest2, (List<AIRequest>)page2.getItems());
 
-			Page<AIRequest> page3 = aiRequestResource.getAIRequestsPage(
-				null, null, null,
+			Page<AIRequest> page3 = aiRequestResource.getDomainAIRequestsPage(
+				domainId, null, null, null,
 				Pagination.of(
 					(int)Math.ceil((totalCount + 3.0) / pageSizeLimit),
 					pageSizeLimit),
@@ -349,16 +389,18 @@ public abstract class BaseAIRequestResourceTestCase {
 			assertContains(aiRequest3, (List<AIRequest>)page3.getItems());
 		}
 		else {
-			Page<AIRequest> page1 = aiRequestResource.getAIRequestsPage(
-				null, null, null, Pagination.of(1, totalCount + 2), null);
+			Page<AIRequest> page1 = aiRequestResource.getDomainAIRequestsPage(
+				domainId, null, null, null, Pagination.of(1, totalCount + 2),
+				null);
 
 			List<AIRequest> aiRequests1 = (List<AIRequest>)page1.getItems();
 
 			Assert.assertEquals(
 				aiRequests1.toString(), totalCount + 2, aiRequests1.size());
 
-			Page<AIRequest> page2 = aiRequestResource.getAIRequestsPage(
-				null, null, null, Pagination.of(2, totalCount + 2), null);
+			Page<AIRequest> page2 = aiRequestResource.getDomainAIRequestsPage(
+				domainId, null, null, null, Pagination.of(2, totalCount + 2),
+				null);
 
 			Assert.assertEquals(totalCount + 3, page2.getTotalCount());
 
@@ -366,8 +408,9 @@ public abstract class BaseAIRequestResourceTestCase {
 
 			Assert.assertEquals(aiRequests2.toString(), 1, aiRequests2.size());
 
-			Page<AIRequest> page3 = aiRequestResource.getAIRequestsPage(
-				null, null, null, Pagination.of(1, (int)totalCount + 3), null);
+			Page<AIRequest> page3 = aiRequestResource.getDomainAIRequestsPage(
+				domainId, null, null, null,
+				Pagination.of(1, (int)totalCount + 3), null);
 
 			assertContains(aiRequest1, (List<AIRequest>)page3.getItems());
 			assertContains(aiRequest2, (List<AIRequest>)page3.getItems());
@@ -376,8 +419,8 @@ public abstract class BaseAIRequestResourceTestCase {
 	}
 
 	@Test
-	public void testGetAIRequestsPageWithSortDateTime() throws Exception {
-		testGetAIRequestsPageWithSort(
+	public void testGetDomainAIRequestsPageWithSortDateTime() throws Exception {
+		testGetDomainAIRequestsPageWithSort(
 			EntityField.Type.DATE_TIME,
 			(entityField, aiRequest1, aiRequest2) -> {
 				BeanTestUtil.setProperty(
@@ -387,8 +430,8 @@ public abstract class BaseAIRequestResourceTestCase {
 	}
 
 	@Test
-	public void testGetAIRequestsPageWithSortDouble() throws Exception {
-		testGetAIRequestsPageWithSort(
+	public void testGetDomainAIRequestsPageWithSortDouble() throws Exception {
+		testGetDomainAIRequestsPageWithSort(
 			EntityField.Type.DOUBLE,
 			(entityField, aiRequest1, aiRequest2) -> {
 				BeanTestUtil.setProperty(
@@ -399,8 +442,8 @@ public abstract class BaseAIRequestResourceTestCase {
 	}
 
 	@Test
-	public void testGetAIRequestsPageWithSortInteger() throws Exception {
-		testGetAIRequestsPageWithSort(
+	public void testGetDomainAIRequestsPageWithSortInteger() throws Exception {
+		testGetDomainAIRequestsPageWithSort(
 			EntityField.Type.INTEGER,
 			(entityField, aiRequest1, aiRequest2) -> {
 				BeanTestUtil.setProperty(aiRequest1, entityField.getName(), 0);
@@ -409,8 +452,8 @@ public abstract class BaseAIRequestResourceTestCase {
 	}
 
 	@Test
-	public void testGetAIRequestsPageWithSortString() throws Exception {
-		testGetAIRequestsPageWithSort(
+	public void testGetDomainAIRequestsPageWithSortString() throws Exception {
+		testGetDomainAIRequestsPageWithSort(
 			EntityField.Type.STRING,
 			(entityField, aiRequest1, aiRequest2) -> {
 				Class<?> clazz = aiRequest1.getClass();
@@ -459,7 +502,7 @@ public abstract class BaseAIRequestResourceTestCase {
 			});
 	}
 
-	protected void testGetAIRequestsPageWithSort(
+	protected void testGetDomainAIRequestsPageWithSort(
 			EntityField.Type type,
 			UnsafeTriConsumer<EntityField, AIRequest, AIRequest, Exception>
 				unsafeTriConsumer)
@@ -471,6 +514,8 @@ public abstract class BaseAIRequestResourceTestCase {
 			return;
 		}
 
+		Long domainId = testGetDomainAIRequestsPage_getDomainId();
+
 		AIRequest aiRequest1 = randomAIRequest();
 		AIRequest aiRequest2 = randomAIRequest();
 
@@ -478,37 +523,52 @@ public abstract class BaseAIRequestResourceTestCase {
 			unsafeTriConsumer.accept(entityField, aiRequest1, aiRequest2);
 		}
 
-		aiRequest1 = testGetAIRequestsPage_addAIRequest(aiRequest1);
+		aiRequest1 = testGetDomainAIRequestsPage_addAIRequest(
+			domainId, aiRequest1);
 
-		aiRequest2 = testGetAIRequestsPage_addAIRequest(aiRequest2);
+		aiRequest2 = testGetDomainAIRequestsPage_addAIRequest(
+			domainId, aiRequest2);
 
-		Page<AIRequest> page = aiRequestResource.getAIRequestsPage(
-			null, null, null, null, null);
+		Page<AIRequest> page = aiRequestResource.getDomainAIRequestsPage(
+			domainId, null, null, null, null, null);
 
 		for (EntityField entityField : entityFields) {
-			Page<AIRequest> ascPage = aiRequestResource.getAIRequestsPage(
-				null, null, null,
+			Page<AIRequest> ascPage = aiRequestResource.getDomainAIRequestsPage(
+				domainId, null, null, null,
 				Pagination.of(1, (int)page.getTotalCount() + 1),
 				entityField.getName() + ":asc");
 
 			assertContains(aiRequest1, (List<AIRequest>)ascPage.getItems());
 			assertContains(aiRequest2, (List<AIRequest>)ascPage.getItems());
 
-			Page<AIRequest> descPage = aiRequestResource.getAIRequestsPage(
-				null, null, null,
-				Pagination.of(1, (int)page.getTotalCount() + 1),
-				entityField.getName() + ":desc");
+			Page<AIRequest> descPage =
+				aiRequestResource.getDomainAIRequestsPage(
+					domainId, null, null, null,
+					Pagination.of(1, (int)page.getTotalCount() + 1),
+					entityField.getName() + ":desc");
 
 			assertContains(aiRequest2, (List<AIRequest>)descPage.getItems());
 			assertContains(aiRequest1, (List<AIRequest>)descPage.getItems());
 		}
 	}
 
-	protected AIRequest testGetAIRequestsPage_addAIRequest(AIRequest aiRequest)
+	protected AIRequest testGetDomainAIRequestsPage_addAIRequest(
+			Long domainId, AIRequest aiRequest)
 		throws Exception {
 
 		throw new UnsupportedOperationException(
 			"This method needs to be implemented");
+	}
+
+	protected Long testGetDomainAIRequestsPage_getDomainId() throws Exception {
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	protected Long testGetDomainAIRequestsPage_getIrrelevantDomainId()
+		throws Exception {
+
+		return null;
 	}
 
 	@Rule
@@ -1424,4 +1484,4 @@ public abstract class BaseAIRequestResourceTestCase {
 		_aiRequestResource;
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1098378876
+// LIFERAY-REST-BUILDER-HASH:1728471755

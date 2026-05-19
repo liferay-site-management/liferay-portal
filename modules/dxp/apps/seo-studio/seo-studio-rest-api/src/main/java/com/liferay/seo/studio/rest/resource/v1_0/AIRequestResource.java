@@ -44,8 +44,8 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface AIRequestResource {
 
-	public Page<AIRequest> getAIRequestsPage(
-			String aggregateOn, String search,
+	public Page<AIRequest> getDomainAIRequestsPage(
+			Long domainId, String aggregateOn, String search,
 			com.liferay.portal.kernel.search.filter.Filter filter,
 			Pagination pagination,
 			com.liferay.portal.kernel.search.Sort[] sorts)
@@ -143,4 +143,4 @@ public interface AIRequestResource {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1934503411
+// LIFERAY-REST-BUILDER-HASH:1424567590

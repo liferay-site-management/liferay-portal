@@ -71,10 +71,14 @@ public abstract class BaseAIRequestResourceImpl
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -X 'GET' 'http://localhost:8080/o/seo-studio/v1.0/ai-requests'  -u 'test@liferay.com:test'
+	 * curl -X 'GET' 'http://localhost:8080/o/seo-studio/v1.0/domains/{domainId}/ai-requests'  -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
+			@io.swagger.v3.oas.annotations.Parameter(
+				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
+				name = "domainId"
+			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
 				name = "aggregateOn"
@@ -105,10 +109,14 @@ public abstract class BaseAIRequestResourceImpl
 		value = {@io.swagger.v3.oas.annotations.tags.Tag(name = "AIRequest")}
 	)
 	@jakarta.ws.rs.GET
-	@jakarta.ws.rs.Path("/ai-requests")
+	@jakarta.ws.rs.Path("/domains/{domainId}/ai-requests")
 	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
 	@Override
-	public Page<AIRequest> getAIRequestsPage(
+	public Page<AIRequest> getDomainAIRequestsPage(
+			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
+			@jakarta.validation.constraints.NotNull
+			@jakarta.ws.rs.PathParam("domainId")
+			Long domainId,
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@jakarta.ws.rs.QueryParam("aggregateOn")
 			String aggregateOn,
@@ -178,9 +186,8 @@ public abstract class BaseAIRequestResourceImpl
 			Map<String, Serializable> parameters, String search)
 		throws Exception {
 
-		return getAIRequestsPage(
-			(String)parameters.get("aggregateOn"), search, filter, pagination,
-			sorts);
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Override
@@ -546,4 +553,4 @@ public abstract class BaseAIRequestResourceImpl
 		LogFactoryUtil.getLog(BaseAIRequestResourceImpl.class);
 
 }
-// LIFERAY-REST-BUILDER-HASH:1374420600
+// LIFERAY-REST-BUILDER-HASH:-61258132
