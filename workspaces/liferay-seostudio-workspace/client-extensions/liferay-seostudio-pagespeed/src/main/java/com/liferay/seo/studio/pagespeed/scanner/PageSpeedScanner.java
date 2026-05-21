@@ -225,7 +225,8 @@ public class PageSpeedScanner {
 									_computeAverageScores(
 										scanned, totalAccessibility.get(),
 										totalBestPractices.get(),
-										totalPerformance.get(), totalSeo.get()),
+										totalPerformance.get(),
+										totalSeo.get()),
 									null, pagesErrored.get(), scanned,
 									pagesTotal,
 									PageSpeedScanResult.STATUS_RUNNING,
