@@ -72,6 +72,7 @@ import com.liferay.portal.kernel.model.GroupedModel;
 import com.liferay.portal.kernel.model.ModelHintsUtil;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.WorkflowedModel;
 import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.search.IndexWriterHelper;
 import com.liferay.portal.kernel.search.Indexable;
@@ -84,6 +85,7 @@ import com.liferay.portal.kernel.service.ResourceLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalService;
+import com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalService;
 import com.liferay.portal.kernel.service.change.tracking.CTService;
 import com.liferay.portal.kernel.service.persistence.change.tracking.CTPersistence;
 import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
@@ -1231,6 +1233,43 @@ public class CTCollectionLocalServiceImpl
 
 		CTService<?> ctService = _ctServiceRegistry.getCTService(classNameId);
 
+		Class<?> modelClass = ctService.getModelClass();
+
+		Map<Long, Long> groupIdByClassPK = Collections.emptyMap();
+
+		if (WorkflowedModel.class.isAssignableFrom(modelClass) &&
+			GroupedModel.class.isAssignableFrom(modelClass)) {
+
+			groupIdByClassPK = new HashMap<>();
+
+			try (SafeCloseable safeCloseable =
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ctCollection.getCtCollectionId())) {
+
+				CTPersistence<?> ctPersistence = ctService.getCTPersistence();
+
+				for (CTEntry ctEntry : ctEntries) {
+					Object model = ctPersistence.fetchByPrimaryKey(
+						ctEntry.getModelClassPK());
+
+					if (!(model instanceof WorkflowedModel)) {
+						continue;
+					}
+
+					WorkflowedModel workflowedModel = (WorkflowedModel)model;
+
+					if (workflowedModel.isDraft()) {
+						continue;
+					}
+
+					GroupedModel groupedModel = (GroupedModel)model;
+
+					groupIdByClassPK.put(
+						ctEntry.getModelClassPK(), groupedModel.getGroupId());
+				}
+			}
+		}
+
 		ctService.updateWithUnsafeFunction(
 			ctPersistence -> {
 				Set<String> primaryKeyNames = ctPersistence.getCTColumnNames(
@@ -1291,8 +1330,23 @@ public class CTCollectionLocalServiceImpl
 			processedClassPKs += batchSize;
 		}
 
-		Indexer<?> indexer = _indexerRegistry.getIndexer(
-			ctService.getModelClass());
+		if (!groupIdByClassPK.isEmpty()) {
+			try (SafeCloseable safeCloseable =
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						ctCollection.getCtCollectionId())) {
+
+				for (Map.Entry<Long, Long> entry :
+						groupIdByClassPK.entrySet()) {
+
+					_workflowInstanceLinkLocalService.
+						deleteWorkflowInstanceLink(
+							ctCollection.getCompanyId(), entry.getValue(),
+							modelClass.getName(), entry.getKey());
+				}
+			}
+		}
+
+		Indexer<?> indexer = _indexerRegistry.getIndexer(modelClass);
 
 		if (indexer != null) {
 			TransactionCommitCallbackUtil.registerCallback(
@@ -1736,5 +1790,8 @@ public class CTCollectionLocalServiceImpl
 	@Reference
 	private WorkflowDefinitionLinkLocalService
 		_workflowDefinitionLinkLocalService;
+
+	@Reference
+	private WorkflowInstanceLinkLocalService _workflowInstanceLinkLocalService;
 
 }
