@@ -1,6 +1,15 @@
 {
 	"pageElement": {
 		"pageElements": [
+			{
+				"definition": {
+					"fragment": {
+						"key": "pagespeed-charts",
+						"siteKey": "SEO Studio"
+					}
+				},
+				"type": "Fragment"
+			}
 		],
 		"type": "Root"
 	},

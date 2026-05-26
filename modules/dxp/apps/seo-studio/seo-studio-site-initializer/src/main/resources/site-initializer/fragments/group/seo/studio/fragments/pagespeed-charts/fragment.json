@@ -1,0 +1,10 @@
+{
+	"cacheable": false,
+	"configurationPath": "index.json",
+	"cssPath": "index.css",
+	"htmlPath": "index.html",
+	"icon": "analytics",
+	"jsPath": "index.js",
+	"name": "PageSpeed Charts",
+	"type": "component"
+}

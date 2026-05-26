@@ -52,8 +52,6 @@ public class ObjectActionPageSpeedScanRestController
 		JSONObject valuesJSONObject = objectEntryJSONObject.getJSONObject(
 			"values");
 
-		// Check scan name — only process PageSpeed scans
-
 		String scanName = _getScanName(valuesJSONObject);
 
 		if (!Objects.equals("pageSpeed", scanName)) {
@@ -77,8 +75,6 @@ public class ObjectActionPageSpeedScanRestController
 			return new ResponseEntity<>(
 				"Scan is missing a domain", HttpStatus.BAD_REQUEST);
 		}
-
-		// Check for already running scan on the same domain
 
 		if (domainId > 0) {
 			Long existingScanId = _runningScansByDomain.putIfAbsent(
@@ -105,8 +101,6 @@ public class ObjectActionPageSpeedScanRestController
 
 		String portalBaseURL =
 			lxcDXPServerProtocol + "://" + lxcDXPMainDomain;
-
-		// Resolve domain info synchronously before dispatching
 
 		try {
 			_scanResultWriter.updateScanState(scanId, null, "running");
