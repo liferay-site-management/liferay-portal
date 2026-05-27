@@ -5,9 +5,31 @@
 
 package com.liferay.seo.studio.rest.internal.resource.v1_0;
 
+import com.liferay.object.exception.NoSuchObjectEntryException;
+import com.liferay.object.model.ObjectEntry;
+import com.liferay.object.service.ObjectEntryService;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
+import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
+import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
+import com.liferay.portal.search.hits.SearchHit;
+import com.liferay.portal.search.hits.SearchHits;
+import com.liferay.portal.search.sort.Sorts;
+import com.liferay.portal.vulcan.pagination.Page;
+import com.liferay.seo.studio.rest.dto.v1_0.CrawledPage;
 import com.liferay.seo.studio.rest.resource.v1_0.CrawledPageResource;
 
+import java.net.URI;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 
 /**
@@ -18,4 +40,149 @@ import org.osgi.service.component.annotations.ServiceScope;
 	scope = ServiceScope.PROTOTYPE, service = CrawledPageResource.class
 )
 public class CrawledPageResourceImpl extends BaseCrawledPageResourceImpl {
+
+	@Override
+	public Page<CrawledPage> getCrawlHitsPage(
+			Long seoStudioDomainId, Integer maxDocs)
+		throws Exception {
+
+		String indexName = _resolveIndexName(seoStudioDomainId);
+
+		int size = (maxDocs == null) ? _DEFAULT_MAX_DOCS : maxDocs;
+
+		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
+
+		searchSearchRequest.addSorts(_sorts.field("_doc"));
+		searchSearchRequest.setFetchSource(true);
+		searchSearchRequest.setIndexNames(indexName);
+		searchSearchRequest.setSize(size);
+		searchSearchRequest.setStart(0);
+
+		SearchSearchResponse searchSearchResponse =
+			_searchEngineAdapter.execute(searchSearchRequest);
+
+		SearchHits searchHits = searchSearchResponse.getSearchHits();
+
+		List<CrawledPage> crawledPages = new ArrayList<>();
+
+		for (SearchHit searchHit : searchHits.getSearchHits()) {
+			Map<String, Object> sourcesMap = searchHit.getSourcesMap();
+
+			if (sourcesMap == null) {
+				continue;
+			}
+
+			String url = (String)sourcesMap.get("url");
+
+			if (Validator.isNull(url) || _isLanguagePrefixed(url)) {
+				continue;
+			}
+
+			CrawledPage crawledPage = new CrawledPage();
+
+			crawledPage.setUrl(() -> url);
+			crawledPage.setTitle(() -> (String)sourcesMap.get("title"));
+
+			Object linksObject = sourcesMap.get("links");
+
+			if (linksObject instanceof List<?>) {
+				List<?> linksList = (List<?>)linksObject;
+
+				List<String> stringLinks = new ArrayList<>(linksList.size());
+
+				for (Object link : linksList) {
+					if (link instanceof String) {
+						stringLinks.add((String)link);
+					}
+				}
+
+				crawledPage.setLinks(() -> stringLinks.toArray(new String[0]));
+			}
+
+			crawledPages.add(crawledPage);
+		}
+
+		return Page.of(crawledPages);
+	}
+
+	private boolean _isLanguagePrefixed(String url) {
+		String path = URI.create(
+			url
+		).getPath();
+
+		if (path == null) {
+			return false;
+		}
+
+		return _languagePrefixPathPattern.matcher(
+			path
+		).find();
+	}
+
+	private String _resolveIndexName(Long seoStudioDomainId) throws Exception {
+		ObjectEntry objectEntry = _objectEntryService.getObjectEntry(
+			seoStudioDomainId);
+
+		if ((objectEntry == null) ||
+			(objectEntry.getCompanyId() != contextCompany.getCompanyId())) {
+
+			throw new NoSuchObjectEntryException(
+				"No object entry found in company " +
+					contextCompany.getCompanyId());
+		}
+
+		String hostname = (String)objectEntry.getValues(
+		).get(
+			"hostname"
+		);
+
+		if (Validator.isNull(hostname)) {
+			throw new NoSuchObjectEntryException(
+				"Object entry " + seoStudioDomainId + " has no hostname");
+		}
+
+		if (!hostname.startsWith("http://") &&
+			!hostname.startsWith("https://")) {
+
+			hostname = "https://" + hostname;
+		}
+
+		String host = URI.create(
+			hostname
+		).getHost();
+
+		if (Validator.isNull(host)) {
+			throw new NoSuchObjectEntryException(
+				StringBundler.concat(
+					"Object entry ", seoStudioDomainId, " hostname \"",
+					hostname, "\" has no host component"));
+		}
+
+		String sanitizedHost = _invalidHostPattern.matcher(
+			StringUtil.toLowerCase(host)
+		).replaceAll(
+			"_"
+		);
+
+		return _INDEX_NAME_PREFIX + sanitizedHost;
+	}
+
+	private static final int _DEFAULT_MAX_DOCS = 10000;
+
+	private static final String _INDEX_NAME_PREFIX = "seo_studio_";
+
+	private static final Pattern _invalidHostPattern = Pattern.compile(
+		"[^a-z0-9._-]");
+	private static final Pattern _languagePrefixPathPattern = Pattern.compile(
+		"^/[a-z]{2,3}(-[a-z]{2,4})?/(web|group)/");
+
+	@Reference
+	private ObjectEntryService _objectEntryService;
+
+	@Reference
+	private SearchEngineAdapter _searchEngineAdapter;
+
+	@Reference
+	private Sorts _sorts;
+
 }
