@@ -7,6 +7,7 @@ package com.liferay.seo.studio.pagespeed.scanner;
 
 import com.liferay.client.extension.util.spring.boot3.client.LiferayOAuth2AccessTokenManager;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.seo.studio.pagespeed.PageSpeedConstants;
 
@@ -40,13 +41,12 @@ import org.springframework.stereotype.Service;
 public class PageSpeedScanner {
 
 	public PageSpeedScanResult scan(
-			String apiKey, String authToken, String hostname,
-			HttpClient httpClient,
-			Consumer<PageSpeedScanResult> progressConsumer, String portalURL,
-			String strategy)
+			String authToken, String domainHostname, HttpClient httpClient,
+			String pageSpeedAPIKey, String portalBaseURL,
+			Consumer<PageSpeedScanResult> progressConsumer, String strategy)
 		throws Exception {
 
-		if (Validator.isNull(apiKey)) {
+		if (Validator.isNull(pageSpeedAPIKey)) {
 			PageSpeedScanResult pageSpeedScanResult = new PageSpeedScanResult(
 				null, "Google PageSpeed API key is not configured", 0, 0, 0,
 				PageSpeedScanResult.STATUS_FAILED, strategy);
@@ -57,12 +57,11 @@ public class PageSpeedScanner {
 		}
 
 		LiferayHeadlessClient liferayHeadlessClient = new LiferayHeadlessClient(
-			authToken, httpClient, portalURL);
+			authToken, httpClient, portalBaseURL);
 
-		List<String> urls = liferayHeadlessClient.getPageURLs(
-			hostname, _PAGE_LIMIT);
+		List<String> urls = liferayHeadlessClient.getPageURLs(domainHostname, 100);
 
-		if (urls.isEmpty()) {
+		if (ListUtil.isEmpty(urls)) {
 			PageSpeedScanResult pageSpeedScanResult = new PageSpeedScanResult(
 				new PageSpeedScores(0, 0, 0, 0), null, 0, 0, 0,
 				PageSpeedScanResult.STATUS_COMPLETED, strategy);
@@ -73,18 +72,19 @@ public class PageSpeedScanner {
 		}
 
 		PageSpeedScoreProvider pageSpeedScoreProvider =
-			new PageSpeedScoreProvider(apiKey, httpClient, strategy);
+			new PageSpeedScoreProvider(httpClient, pageSpeedAPIKey, strategy);
 
 		return _scanURLs(
 			pageSpeedScoreProvider, progressConsumer, strategy, urls);
 	}
 
 	public void scanAsync(
-		String apiKey, String hostname, HttpClient httpClient,
+		String domainHostname, HttpClient httpClient,
 		LiferayOAuth2AccessTokenManager liferayOAuth2AccessTokenManager,
-		String portalURL,
+		Runnable onComplete, Consumer<String> onError,
+		String pageSpeedAPIKey, String portalBaseURL,
 		Supplier<Consumer<PageSpeedScanResult>> progressConsumerSupplier,
-		String strategy, Runnable onComplete, Consumer<String> onError) {
+		String strategy) {
 
 		_executorService.submit(
 			() -> {
@@ -97,8 +97,8 @@ public class PageSpeedScanner {
 						progressConsumerSupplier.get();
 
 					PageSpeedScanResult pageSpeedScanResult = scan(
-						apiKey, authToken, hostname, httpClient,
-						progressConsumer, portalURL, strategy);
+						authToken, domainHostname, httpClient, pageSpeedAPIKey,
+						portalBaseURL, progressConsumer, strategy);
 
 					if (PageSpeedScanResult.STATUS_FAILED.equals(
 							pageSpeedScanResult.getStatus())) {
@@ -162,9 +162,9 @@ public class PageSpeedScanner {
 
 		int pagesTotal = urls.size();
 
-		AtomicBoolean quotaExceeded = new AtomicBoolean(false);
 		AtomicInteger pagesErrored = new AtomicInteger(0);
 		AtomicInteger pagesScanned = new AtomicInteger(0);
+		AtomicBoolean quotaExceeded = new AtomicBoolean(false);
 		AtomicInteger totalAccessibility = new AtomicInteger(0);
 		AtomicInteger totalBestPractices = new AtomicInteger(0);
 		AtomicInteger totalPerformance = new AtomicInteger(0);
@@ -236,7 +236,7 @@ public class PageSpeedScanner {
 
 		for (Future<?> future : futures) {
 			try {
-				future.get(_TASK_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+				future.get(150, TimeUnit.SECONDS);
 			}
 			catch (TimeoutException timeoutException) {
 				pagesErrored.incrementAndGet();
@@ -299,31 +299,26 @@ public class PageSpeedScanner {
 		return pageSpeedScanResult;
 	}
 
-	private static final int _PAGE_LIMIT = 100;
-
-	private static final int _TASK_TIMEOUT_SECONDS = 150;
-
-	private static final int _WORKER_COUNT = 5;
-
 	private static final Log _log = LogFactory.getLog(PageSpeedScanner.class);
 
-	private static final ThreadFactory _threadFactory = new ThreadFactory() {
-
-		@Override
-		public Thread newThread(Runnable runnable) {
-			Thread thread = new Thread(
-				runnable, "pagespeed-scanner-" + _counter.getAndIncrement());
-
-			thread.setDaemon(true);
-
-			return thread;
-		}
-
-		private final AtomicInteger _counter = new AtomicInteger(0);
-
-	};
-
 	private final ExecutorService _executorService =
-		Executors.newFixedThreadPool(_WORKER_COUNT, _threadFactory);
+		Executors.newFixedThreadPool(
+			5,
+			new ThreadFactory() {
+
+				@Override
+				public Thread newThread(Runnable runnable) {
+					Thread thread = new Thread(
+						runnable,
+						"pagespeed-scanner-" + _counter.getAndIncrement());
+
+					thread.setDaemon(true);
+
+					return thread;
+				}
+
+				private final AtomicInteger _counter = new AtomicInteger(0);
+
+			});
 
 }

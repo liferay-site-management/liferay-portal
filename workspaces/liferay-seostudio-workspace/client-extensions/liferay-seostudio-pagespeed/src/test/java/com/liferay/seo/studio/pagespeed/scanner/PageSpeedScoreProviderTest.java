@@ -23,7 +23,7 @@ public class PageSpeedScoreProviderTest {
 	public void testIsValidConnection() {
 		PageSpeedScoreProvider pageSpeedScoreProvider =
 			new PageSpeedScoreProvider(
-				"apiKey", Mockito.mock(HttpClient.class), "DESKTOP");
+				Mockito.mock(HttpClient.class), "apiKey", "DESKTOP");
 
 		Assertions.assertTrue(pageSpeedScoreProvider.isValidConnection());
 	}
@@ -32,7 +32,7 @@ public class PageSpeedScoreProviderTest {
 	public void testIsValidConnectionWithEmptyAPIKey() {
 		PageSpeedScoreProvider pageSpeedScoreProvider =
 			new PageSpeedScoreProvider(
-				"", Mockito.mock(HttpClient.class), "DESKTOP");
+				Mockito.mock(HttpClient.class), "", "DESKTOP");
 
 		Assertions.assertFalse(pageSpeedScoreProvider.isValidConnection());
 	}
@@ -41,13 +41,13 @@ public class PageSpeedScoreProviderTest {
 	public void testIsValidConnectionWithNullAPIKey() {
 		PageSpeedScoreProvider pageSpeedScoreProvider =
 			new PageSpeedScoreProvider(
-				null, Mockito.mock(HttpClient.class), "DESKTOP");
+				Mockito.mock(HttpClient.class), null, "DESKTOP");
 
 		Assertions.assertFalse(pageSpeedScoreProvider.isValidConnection());
 	}
 
 	@Test
-	public void testQuotaExceededExceptionWithErrorJSON() {
+	public void testIsQuotaExceededWhenErrorJSONIsPresent() {
 		JSONObject errorJSONObject = new JSONObject();
 
 		errorJSONObject.put(
@@ -64,16 +64,16 @@ public class PageSpeedScoreProviderTest {
 				new PageSpeedScoreProvider.PageSpeedScoreProviderException(
 					errorJSONObject, "Quota exceeded");
 
-		Assertions.assertTrue(
-			pageSpeedScoreProviderException.isQuotaExceeded());
 		Assertions.assertEquals(
 			errorJSONObject,
 			pageSpeedScoreProviderException.
 				getGooglePageSpeedErrorJSONObject());
+		Assertions.assertTrue(
+			pageSpeedScoreProviderException.isQuotaExceeded());
 	}
 
 	@Test
-	public void testQuotaExceededExceptionWithNonquotaError() {
+	public void testIsQuotaExceededWhenErrorIsNonQuota() {
 		JSONObject errorJSONObject = new JSONObject();
 
 		errorJSONObject.put(
@@ -95,7 +95,7 @@ public class PageSpeedScoreProviderTest {
 	}
 
 	@Test
-	public void testQuotaExceededExceptionWithNullJSON() {
+	public void testIsQuotaExceededWhenJSONIsNull() {
 		PageSpeedScoreProvider.PageSpeedScoreProviderException
 			pageSpeedScoreProviderException =
 				new PageSpeedScoreProvider.PageSpeedScoreProviderException(

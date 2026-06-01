@@ -32,10 +32,10 @@ import org.json.JSONObject;
 public class PageSpeedScoreProvider {
 
 	public PageSpeedScoreProvider(
-		String apiKey, HttpClient httpClient, String strategy) {
+		HttpClient httpClient, String pageSpeedAPIKey, String strategy) {
 
-		_apiKey = apiKey;
 		_httpClient = httpClient;
+		_pageSpeedAPIKey = pageSpeedAPIKey;
 		_strategy = strategy;
 	}
 
@@ -45,12 +45,11 @@ public class PageSpeedScoreProvider {
 		try {
 			return _getScores(url);
 		}
-		catch (PageSpeedScoreProviderException
-					pageSpeedScoreProviderException) {
-
-			throw pageSpeedScoreProviderException;
-		}
 		catch (Exception exception) {
+			if (exception instanceof PageSpeedScoreProviderException) {
+				throw (PageSpeedScoreProviderException)exception;
+			}
+
 			if (exception instanceof InterruptedException) {
 				Thread.currentThread(
 				).interrupt();
@@ -62,7 +61,7 @@ public class PageSpeedScoreProvider {
 	}
 
 	public boolean isValidConnection() {
-		return Validator.isNotNull(_apiKey);
+		return Validator.isNotNull(_pageSpeedAPIKey);
 	}
 
 	public static class PageSpeedScoreProviderException
@@ -93,14 +92,12 @@ public class PageSpeedScoreProvider {
 		}
 
 		public boolean isQuotaExceeded() {
-			JSONObject errorJSONObject = _googlePageSpeedErrorJSONObject;
-
-			if (errorJSONObject == null) {
+			if (_googlePageSpeedErrorJSONObject == null) {
 				return false;
 			}
 
-			JSONObject errorDetailJSONObject = errorJSONObject.optJSONObject(
-				"error");
+			JSONObject errorDetailJSONObject =
+				_googlePageSpeedErrorJSONObject.optJSONObject("error");
 
 			if (errorDetailJSONObject == null) {
 				return false;
@@ -121,7 +118,7 @@ public class PageSpeedScoreProvider {
 		try {
 			String encodedFields = URLEncoder.encode(
 				"lighthouseResult/categories/*/score", "UTF-8");
-			String encodedKey = URLEncoder.encode(_apiKey, "UTF-8");
+			String encodedKey = URLEncoder.encode(_pageSpeedAPIKey, "UTF-8");
 			String encodedStrategy = URLEncoder.encode(_strategy, "UTF-8");
 			String encodedURL = URLEncoder.encode(url, "UTF-8");
 
@@ -156,8 +153,6 @@ public class PageSpeedScoreProvider {
 			throw new PageSpeedScoreProviderException("Invalid Connection");
 		}
 
-		String googlePageSpeedURL = _buildGooglePageSpeedURL(url);
-
 		HttpResponse<String> httpResponse;
 
 		try {
@@ -166,7 +161,7 @@ public class PageSpeedScoreProvider {
 			).timeout(
 				Duration.ofSeconds(120)
 			).uri(
-				URI.create(googlePageSpeedURL)
+				URI.create(_buildGooglePageSpeedURL(url))
 			).build();
 
 			httpResponse = _httpClient.send(
@@ -234,7 +229,7 @@ public class PageSpeedScoreProvider {
 	private static final Log _log = LogFactory.getLog(
 		PageSpeedScoreProvider.class);
 
-	private final String _apiKey;
+	private final String _pageSpeedAPIKey;
 	private final HttpClient _httpClient;
 	private final String _strategy;
 
