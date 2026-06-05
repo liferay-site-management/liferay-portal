@@ -11,6 +11,7 @@ import com.liferay.change.tracking.constants.PublicationRoleConstants;
 import com.liferay.change.tracking.exception.CTPublishConflictException;
 import com.liferay.change.tracking.internal.CTServiceRegistry;
 import com.liferay.change.tracking.internal.background.task.display.CTPublishBackgroundTaskDisplay;
+import com.liferay.change.tracking.internal.configuration.CTEntityCacheInvalidator;
 import com.liferay.change.tracking.internal.helper.CTTableMapperHelper;
 import com.liferay.change.tracking.internal.notification.CTUserNotificationSender;
 import com.liferay.change.tracking.model.CTCollection;
@@ -161,8 +162,8 @@ public class CTPublishBackgroundTaskExecutor
 
 						if (ctService != null) {
 							return new CTServicePublisher<>(
-								_ctEntryLocalService, ctService,
-								modelClassNameId, ctCollectionId,
+								_ctEntityCacheInvalidator, _ctEntryLocalService,
+								ctService, modelClassNameId, ctCollectionId,
 								CTConstants.CT_COLLECTION_ID_PRODUCTION);
 						}
 
@@ -308,6 +309,9 @@ public class CTPublishBackgroundTaskExecutor
 
 	@Reference
 	private CTCollectionLocalService _ctCollectionLocalService;
+
+	@Reference
+	private CTEntityCacheInvalidator _ctEntityCacheInvalidator;
 
 	@Reference
 	private CTEntryLocalService _ctEntryLocalService;

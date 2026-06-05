@@ -7,6 +7,7 @@ package com.liferay.change.tracking.internal.background.task;
 
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.internal.CTRowUtil;
+import com.liferay.change.tracking.internal.configuration.CTEntityCacheInvalidator;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.petra.string.StringBundler;
@@ -29,6 +30,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +42,12 @@ import java.util.Set;
 public class CTServicePublisher<T extends CTModel<T>> {
 
 	public CTServicePublisher(
+		CTEntityCacheInvalidator ctEntityCacheInvalidator,
 		CTEntryLocalService ctEntryLocalService, CTService<T> ctService,
 		long modelClassNameId, long sourceCTCollectionId,
 		long targetCTCollectionId) {
 
+		_ctEntityCacheInvalidator = ctEntityCacheInvalidator;
 		_ctEntryLocalService = ctEntryLocalService;
 		_ctService = ctService;
 		_modelClassNameId = modelClassNameId;
@@ -268,17 +272,21 @@ public class CTServicePublisher<T extends CTModel<T>> {
 				_targetCTCollectionId);
 		}
 
+		Set<Serializable> primaryKeys = new HashSet<>();
+
 		if (_additionCTEntries != null) {
-			ctPersistence.clearCache(_additionCTEntries.keySet());
+			primaryKeys.addAll(_additionCTEntries.keySet());
 		}
 
 		if (_deletionCTEntries != null) {
-			ctPersistence.clearCache(_deletionCTEntries.keySet());
+			primaryKeys.addAll(_deletionCTEntries.keySet());
 		}
 
 		if (_modificationCTEntries != null) {
-			ctPersistence.clearCache(_modificationCTEntries.keySet());
+			primaryKeys.addAll(_modificationCTEntries.keySet());
 		}
+
+		_ctEntityCacheInvalidator.clearCache(ctPersistence, primaryKeys);
 
 		return null;
 	}
@@ -395,6 +403,7 @@ public class CTServicePublisher<T extends CTModel<T>> {
 	private static final int _BATCH_SIZE = 50000;
 
 	private Map<Serializable, CTEntry> _additionCTEntries;
+	private final CTEntityCacheInvalidator _ctEntityCacheInvalidator;
 	private final CTEntryLocalService _ctEntryLocalService;
 	private final CTService<T> _ctService;
 	private Map<Serializable, CTEntry> _deletionCTEntries;

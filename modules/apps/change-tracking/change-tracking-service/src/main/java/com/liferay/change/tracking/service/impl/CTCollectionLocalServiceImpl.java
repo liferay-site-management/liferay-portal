@@ -20,6 +20,7 @@ import com.liferay.change.tracking.exception.CTPublishConflictException;
 import com.liferay.change.tracking.internal.CTEnclosureUtil;
 import com.liferay.change.tracking.internal.CTServiceCopier;
 import com.liferay.change.tracking.internal.CTServiceRegistry;
+import com.liferay.change.tracking.internal.configuration.CTEntityCacheInvalidator;
 import com.liferay.change.tracking.internal.conflict.CTConflictChecker;
 import com.liferay.change.tracking.internal.conflict.ConstraintResolverConflictInfo;
 import com.liferay.change.tracking.internal.conflict.ModificationConflictInfo;
@@ -1342,9 +1343,8 @@ public class CTCollectionLocalServiceImpl
 				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
 					ctCollection.getCtCollectionId())) {
 
-			CTPersistence<?> ctPersistence = ctService.getCTPersistence();
-
-			ctPersistence.clearCache(new HashSet<>(modelClassPKs));
+			_ctEntityCacheInvalidator.clearCache(
+				ctService.getCTPersistence(), new HashSet<>(modelClassPKs));
 		}
 
 		int processedClassPKs = 0;
@@ -1524,14 +1524,16 @@ public class CTCollectionLocalServiceImpl
 				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
 					fromCTCollectionId)) {
 
-			ctPersistence.clearCache(new HashSet<>(modelClassPKs));
+			_ctEntityCacheInvalidator.clearCache(
+				ctPersistence, new HashSet<>(modelClassPKs));
 		}
 
 		try (SafeCloseable safeCloseable =
 				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
 					toCTCollectionId)) {
 
-			ctPersistence.clearCache(new HashSet<>(modelClassPKs));
+			_ctEntityCacheInvalidator.clearCache(
+				ctPersistence, new HashSet<>(modelClassPKs));
 		}
 
 		int processedClassPKs = 0;
@@ -1754,6 +1756,10 @@ public class CTCollectionLocalServiceImpl
 
 	private ServiceTrackerMap<String, CTDisplayRenderer<?>>
 		_ctDisplayRendererServiceTrackerMap;
+
+	@Reference
+	private CTEntityCacheInvalidator _ctEntityCacheInvalidator;
+
 	private ServiceTrackerMap<String, CTEntryConflictHelper>
 		_ctEntryConflictHelperServiceTrackerMap;
 
