@@ -123,6 +123,15 @@ test('Can publish a Publication containing an edited KBArticle', async ({
 
 	await page.goto(knowledgeBaseUrls.getEditKBArticleUrl(kbArticle.id));
 
+	const stayButton = page.getByRole('button', {
+		name: 'Stay in Current Publication',
+	});
+
+	await stayButton
+		.waitFor({state: 'visible', timeout: 3000})
+		.then(() => stayButton.click())
+		.catch(() => {});
+
 	await knowledgeBaseEditArticlePage.titlePlaceholder.waitFor();
 
 	await knowledgeBaseEditArticlePage.publishNewKnowledgeBaseArticle(
