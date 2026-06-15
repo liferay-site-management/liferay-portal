@@ -1,0 +1,53 @@
+<div class="integrations-card">
+	<div class="integrations-header">
+		<h2 class="integrations-title">Integrations</h2>
+
+		<div class="integrations-actions">
+			<div class="dropdown">
+				<button aria-expanded="false" aria-haspopup="true" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" type="button">
+					Add Integration
+					<span class="inline-item inline-item-after" id="addIntegrationCaret">
+					</span>
+				</button>
+
+				<div class="dropdown-menu dropdown-menu-right">
+					<a class="dropdown-item" href="/web/seo-studio/configurations/google-pagespeed">Google PageSpeed</a>
+				</div>
+			</div>
+
+			<button aria-expanded="true" aria-label="Toggle Integrations" class="btn btn-unstyled integrations-collapse-toggle" type="button">
+				<svg class="lexicon-icon" viewBox="0 0 256 256">
+					<path d="M128 171.6L18.8 62.4c-5.5-5.5-14.2-5.5-19.6 0-5.5 5.5-5.5 14.2 0 19.6l119 119c2.7 2.7 6.3 4.1 9.8 4.1s7.1-1.4 9.8-4.1l119-119c5.5-5.5 5.5-14.2 0-19.6-5.5-5.5-14.2-5.5-19.6 0L128 171.6z"></path>
+				</svg>
+			</button>
+		</div>
+	</div>
+
+	<div class="integrations-body" id="integrationsBody">
+		<div class="d-none integrations-empty" id="integrationsEmpty">
+			<div class="integrations-empty-icon">
+				<img alt="" src="/o/cms-theme/images/states/empty_state_reduced_motion.svg" />
+			</div>
+
+			<h3 class="integrations-empty-title">No integration yet</h3>
+
+			<p class="integrations-empty-description">Add your first integration.</p>
+		</div>
+
+		<div class="d-none" id="integrationsTable">
+			<table class="table table-autofit table-head-bordered table-list">
+				<thead>
+					<tr>
+						<th class="table-cell-expand">Integration</th>
+						<th class="table-cell-expand-smaller">Status</th>
+						<th class="table-cell-expand-smaller">Date Added</th>
+						<th></th>
+					</tr>
+				</thead>
+
+				<tbody id="integrationsTableBody">
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>

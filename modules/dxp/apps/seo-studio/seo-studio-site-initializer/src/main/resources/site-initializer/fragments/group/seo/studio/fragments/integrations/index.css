@@ -1,0 +1,111 @@
+.integrations-card {
+	background-color: #fff;
+	border: 1px solid #e7e7ed;
+	border-radius: 8px;
+	margin: 24px;
+}
+
+.integrations-header {
+	align-items: center;
+	border-bottom: 1px solid #e7e7ed;
+	display: flex;
+	justify-content: space-between;
+	padding: 16px 24px;
+}
+
+.integrations-header.collapsed {
+	border-bottom: none;
+}
+
+.integrations-title {
+	color: #272833;
+	font-size: 18px;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.integrations-actions {
+	align-items: center;
+	display: flex;
+	gap: 8px;
+}
+
+.integrations-collapse-toggle {
+	align-items: center;
+	color: #6b6c7e;
+	display: flex;
+	height: 32px;
+	justify-content: center;
+	width: 32px;
+}
+
+.integrations-collapse-toggle .lexicon-icon {
+	height: 12px;
+	transition: transform 200ms ease;
+	width: 12px;
+}
+
+.integrations-collapse-toggle[aria-expanded="false"] .lexicon-icon {
+	transform: rotate(-90deg);
+}
+
+.integrations-body {
+	padding: 24px;
+}
+
+.integrations-body.collapsed {
+	display: none;
+}
+
+.integrations-empty {
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	padding: 48px 0;
+	text-align: center;
+}
+
+.integrations-empty-icon {
+	margin-bottom: 24px;
+}
+
+.integrations-empty-icon img {
+	height: 120px;
+	width: 120px;
+}
+
+.integrations-empty-title {
+	color: #272833;
+	font-size: 16px;
+	font-weight: 600;
+	margin-bottom: 8px;
+}
+
+.integrations-empty-description {
+	color: #6b6c7e;
+	font-size: 14px;
+	margin-bottom: 0;
+}
+
+.integrations-card .table-head-bordered thead th {
+	color: #6b6c7e;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.integrations-card .table-title {
+	color: #272833;
+	font-weight: 600;
+}
+
+.integrations-card .label-success {
+	border: 1px solid #287d3c;
+	color: #287d3c;
+}
+
+.integrations-card .btn-unstyled .lexicon-icon {
+	color: #6b6c7e;
+	height: 16px;
+	width: 16px;
+}
+

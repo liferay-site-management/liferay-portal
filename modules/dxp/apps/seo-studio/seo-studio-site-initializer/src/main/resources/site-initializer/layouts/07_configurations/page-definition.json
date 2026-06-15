@@ -1,0 +1,22 @@
+{
+	"pageElement": {
+		"pageElements": [
+			{
+				"definition": {
+					"fragment": {
+						"key": "integrations",
+						"siteKey": "SEO Studio"
+					}
+				},
+				"type": "Fragment"
+			}
+		],
+		"type": "Root"
+	},
+	"settings": {
+		"masterPage": {
+			"key": "seo-studio-master"
+		}
+	},
+	"version": 1.0
+}
