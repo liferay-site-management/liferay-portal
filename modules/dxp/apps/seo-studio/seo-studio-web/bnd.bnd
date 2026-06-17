@@ -1,5 +1,6 @@
 Bundle-Name: Liferay SEO Studio Web
 Bundle-SymbolicName: com.liferay.seo.studio.web
 Bundle-Version: 1.0.2
+Export-Package: com.liferay.seo.studio.web.integration
 Web-ContextPath: /seo-studio-web
 -dsannotations-options: inherit
