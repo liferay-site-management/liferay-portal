@@ -31,9 +31,12 @@
 		.menubar-primary {
 			.nav-link {
 				&:focus-visible,
-				&:hover,
+				&:hover {
+					background-color: #eef2fa;
+				}
+
 				&.active {
-					background-color: #f1f2f5;
+					background-color: #eef2fa;
 				}
 
 				&:hover:before {
@@ -48,12 +51,22 @@
 				&:hover:not(.active):before {
 					width: 2px;
 				}
+
+				&.active:before {
+					background-color: #4b9bff;
+					content: '';
+					height: 100%;
+					left: 0;
+					position: absolute;
+					top: 0;
+					width: 3px;
+				}
 			}
 		}
 	}
 
 	.content {
-		background: var(--body-bg);
+		background: #f1f2f5;
 		grid-area: content;
 	}
 
