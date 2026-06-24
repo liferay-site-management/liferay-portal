@@ -291,6 +291,8 @@ public class ObjectDefinitionUtil {
 		).put(
 			"SEOStudioInstance", "/seo-studio/instances"
 		).put(
+			"SEOStudioIntegration", "/seo-studio/integrations"
+		).put(
 			"SEOStudioPage", "/seo-studio/pages"
 		).put(
 			"SEOStudioScan", "/seo-studio/scans"
