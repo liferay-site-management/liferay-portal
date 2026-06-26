@@ -16,8 +16,8 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.seo.studio.web.integration.SEOStudioIntegration;
-import com.liferay.seo.studio.web.integration.SEOStudioIntegrationRegistry;
 import com.liferay.seo.studio.web.internal.constants.SEOStudioFDSNames;
+import com.liferay.seo.studio.web.internal.integration.SEOStudioIntegrationRegistry;
 
 import jakarta.servlet.http.HttpServletRequest;
 

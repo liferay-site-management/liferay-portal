@@ -8,7 +8,6 @@ package com.liferay.seo.studio.web.internal.integration;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.seo.studio.web.integration.SEOStudioIntegration;
-import com.liferay.seo.studio.web.integration.SEOStudioIntegrationRegistry;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,15 +22,12 @@ import org.osgi.service.component.annotations.Deactivate;
  * @author Kiana Suetani
  */
 @Component(service = SEOStudioIntegrationRegistry.class)
-public class SEOStudioIntegrationRegistryImpl
-	implements SEOStudioIntegrationRegistry {
+public class SEOStudioIntegrationRegistry {
 
-	@Override
 	public SEOStudioIntegration getSEOStudioIntegration(String key) {
 		return _serviceTrackerMap.getService(key);
 	}
 
-	@Override
 	public Map<String, SEOStudioIntegration> getSEOStudioIntegrations() {
 		Map<String, SEOStudioIntegration> seoStudioIntegrationsMap =
 			new HashMap<>();

@@ -13,9 +13,9 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
-import com.liferay.seo.studio.web.integration.SEOStudioIntegrationRegistry;
 import com.liferay.seo.studio.web.internal.constants.SEOStudioFDSNames;
 import com.liferay.seo.studio.web.internal.display.context.IntegrationsDisplayContext;
+import com.liferay.seo.studio.web.internal.integration.SEOStudioIntegrationRegistry;
 
 import jakarta.servlet.http.HttpServletRequest;
 
