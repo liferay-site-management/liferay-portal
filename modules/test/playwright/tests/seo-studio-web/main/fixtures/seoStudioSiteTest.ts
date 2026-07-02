@@ -4,16 +4,9 @@
  */
 
 import {mergeTests} from '@playwright/test';
-import path from 'path';
 
 import {backendPageTest} from '../../../../fixtures/backendPageTest';
 import {ApiHelpers} from '../../../../helpers/ApiHelpers';
-import getRandomString from '../../../../utils/getRandomString';
-
-const SITE_INITIALIZER_PATH = path.resolve(
-	__dirname,
-	'../../../../../../dxp/apps/seo-studio/seo-studio-site-initializer/src/main/resources/site-initializer'
-);
 
 const test = mergeTests(backendPageTest);
 
@@ -22,27 +15,27 @@ export const seoStudioSiteTest = test.extend<{
 }>({
 	seoStudioSite: [
 		async ({backendPage}, use) => {
+			test.setTimeout(180000);
+
 			await backendPage.goto('/');
 
 			const apiHelpers = new ApiHelpers(backendPage);
 
-			let seoStudioSite: Site | undefined;
-
 			try {
-				seoStudioSite =
-					await apiHelpers.headlessAdminSite.postSiteSiteInitializer(
-						{name: getRandomString()},
-						SITE_INITIALIZER_PATH
-					);
+				await apiHelpers.featureFlag.updateFeatureFlag(
+					'LPD-44511',
+					true
+				);
 
-				await use(seoStudioSite);
+				await use(
+					await apiHelpers.headlessAdminSite.getSite('L_SEO_STUDIO')
+				);
 			}
 			finally {
-				if (seoStudioSite?.externalReferenceCode) {
-					await apiHelpers.headlessAdminSite.deleteSite(
-						seoStudioSite.externalReferenceCode
-					);
-				}
+				await apiHelpers.featureFlag.updateFeatureFlag(
+					'LPD-44511',
+					false
+				);
 			}
 		},
 		{scope: 'test'},

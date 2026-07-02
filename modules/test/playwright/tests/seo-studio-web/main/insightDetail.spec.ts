@@ -6,7 +6,6 @@
 import {expect, mergeTests} from '@playwright/test';
 
 import {dataApiHelpersTest} from '../../../fixtures/dataApiHelpersTest';
-import {featureFlagsTest} from '../../../fixtures/featureFlagsTest';
 import {loginTest} from '../../../fixtures/loginTest';
 import {InsightType, PageData, Scan} from '../../../helpers/SEOStudioApiHelper';
 import getRandomString from '../../../utils/getRandomString';
@@ -16,7 +15,6 @@ import {seoStudioSiteTest} from './fixtures/seoStudioSiteTest';
 const test = mergeTests(
 	loginTest(),
 	dataApiHelpersTest,
-	featureFlagsTest({'LPD-44511': {enabled: true}}),
 	seoStudioPagesTest,
 	seoStudioSiteTest
 );
