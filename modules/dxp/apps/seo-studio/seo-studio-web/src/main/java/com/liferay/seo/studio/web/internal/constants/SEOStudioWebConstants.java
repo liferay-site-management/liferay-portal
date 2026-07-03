@@ -13,4 +13,7 @@ public class SEOStudioWebConstants {
 	public static final String BUNDLE_SYMBOLIC_NAME =
 		"com.liferay.seo.studio.web";
 
+	public static final String SCREEN_NAME_AI_HUB_CELL_SERVICE_ACCOUNT =
+		"seo-studio-ai-hub-cell-service-account";
+
 }
