@@ -1202,6 +1202,16 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 				for (ResourcePermission resourcePermission :
 						resourcePermissions) {
 
+					String name = resourcePermission.getName();
+
+					if ((resourcePermission.getScope() !=
+							ResourceConstants.SCOPE_GROUP) &&
+						!Objects.equals(name, Group.class.getName()) &&
+						!ResourceActionsUtil.isRootModelResource(name)) {
+
+						continue;
+					}
+
 					_resourcePermissionLocalService.deleteResourcePermission(
 						resourcePermission);
 				}
