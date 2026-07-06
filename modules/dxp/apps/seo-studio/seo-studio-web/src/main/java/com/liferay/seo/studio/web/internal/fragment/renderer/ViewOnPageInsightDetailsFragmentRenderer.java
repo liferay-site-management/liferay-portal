@@ -6,6 +6,8 @@
 package com.liferay.seo.studio.web.internal.fragment.renderer;
 
 import com.liferay.fragment.renderer.FragmentRenderer;
+import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -17,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Locale;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Noor Najjar
@@ -47,12 +50,19 @@ public class ViewOnPageInsightDetailsFragmentRenderer
 			SEOStudioFDSNames.AFFECTED_PAGES_SECTION, httpServletRequest);
 
 		return new ViewOnPageInsightDetailsDisplayContext(
-			httpServletRequest, language, themeDisplay, viewsJSONArray);
+			httpServletRequest, language, _objectDefinitionLocalService,
+			_objectEntryLocalService, themeDisplay, viewsJSONArray);
 	}
 
 	@Override
 	protected String getJSPPath() {
 		return "/on_page_insight_details_view.jsp";
 	}
+
+	@Reference
+	private ObjectDefinitionLocalService _objectDefinitionLocalService;
+
+	@Reference
+	private ObjectEntryLocalService _objectEntryLocalService;
 
 }

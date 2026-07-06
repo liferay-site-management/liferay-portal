@@ -5,6 +5,10 @@
 
 package com.liferay.seo.studio.web.internal.display.context;
 
+import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.model.ObjectEntry;
+import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.language.Language;
@@ -30,10 +34,14 @@ public class ViewOnPageInsightDetailsDisplayContext {
 
 	public ViewOnPageInsightDetailsDisplayContext(
 		HttpServletRequest httpServletRequest, Language language,
+		ObjectDefinitionLocalService objectDefinitionLocalService,
+		ObjectEntryLocalService objectEntryLocalService,
 		ThemeDisplay themeDisplay, JSONArray viewsJSONArray) {
 
 		_httpServletRequest = httpServletRequest;
 		_language = language;
+		_objectDefinitionLocalService = objectDefinitionLocalService;
+		_objectEntryLocalService = objectEntryLocalService;
 		_themeDisplay = themeDisplay;
 		_viewsJSONArray = viewsJSONArray;
 	}
@@ -61,10 +69,19 @@ public class ViewOnPageInsightDetailsDisplayContext {
 		).build();
 	}
 
-	private String _getAPIURL() {
+	private String _getAPIURL() throws Exception {
+		ObjectDefinition objectDefinition =
+			_objectDefinitionLocalService.
+				getObjectDefinitionByExternalReferenceCode(
+					"L_SEO_STUDIO_INSIGHT_TYPE", _themeDisplay.getCompanyId());
+
+		ObjectEntry objectEntry = _objectEntryLocalService.fetchObjectEntry(
+			_getObjectEntryExternalReferenceCode(),
+			_themeDisplay.getScopeGroupId(),
+			objectDefinition.getObjectDefinitionId());
+
 		return StringBundler.concat(
-			"/o/seo-studio/insight-types/by-external-reference-code/",
-			URLCodec.encodeURL(_getObjectEntryExternalReferenceCode(), true),
+			"/o/seo-studio/insight-types/", objectEntry.getObjectEntryId(),
 			"/seoStudioInsightTypeToScanInsights?filter=",
 			URLCodec.encodeURL(
 				"state eq " + WorkflowConstants.STATUS_PENDING, true),
@@ -94,6 +111,8 @@ public class ViewOnPageInsightDetailsDisplayContext {
 
 	private final HttpServletRequest _httpServletRequest;
 	private final Language _language;
+	private final ObjectDefinitionLocalService _objectDefinitionLocalService;
+	private final ObjectEntryLocalService _objectEntryLocalService;
 	private final ThemeDisplay _themeDisplay;
 	private final JSONArray _viewsJSONArray;
 
