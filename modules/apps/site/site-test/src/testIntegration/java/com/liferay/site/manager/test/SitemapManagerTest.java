@@ -413,6 +413,41 @@ public class SitemapManagerTest {
 	}
 
 	@Test
+	public void testSitemapByAssetTypeOnDemandDoesNotStore() throws Exception {
+		try (CompanyConfigurationTemporarySwapper
+				companyConfigurationTemporarySwapper =
+					new CompanyConfigurationTemporarySwapper(
+						TestPropsValues.getCompanyId(),
+						_PID_SITEMAP_COMPANY_CONFIGURATION,
+						HashMapDictionaryBuilder.<String, Object>put(
+							"cachedGenerationEnabled", false
+						).put(
+							"xmlSitemapIndexEnabled", true
+						).put(
+							"xmlSitemapIndexMode",
+							SitemapConstants.INDEX_MODE_ASSET_TYPE
+						).build())) {
+
+			_addJournalArticleAssetDisplayPageEntry(_addJournalArticle());
+
+			String xml = _sitemapManager.getSitemap(
+				_journalArticleClassNameId, null, _group.getGroupId(), false,
+				_themeDisplay);
+
+			Assert.assertNotNull(xml);
+
+			long companyId = TestPropsValues.getCompanyId();
+
+			Assert.assertFalse(
+				_sitemapStorageHelper.hasSitemapFile(
+					companyId, _group.getGroupId(),
+					SitemapConstants.ASSET_TYPE_KEY_WEB_CONTENT, 1));
+			Assert.assertFalse(
+				_sitemapStorageHelper.hasSitemapFiles(companyId));
+		}
+	}
+
+	@Test
 	public void testSitemapByAssetTypePaginationAttributesAreAbsent()
 		throws Exception {
 
@@ -422,6 +457,8 @@ public class SitemapManagerTest {
 						TestPropsValues.getCompanyId(),
 						_PID_SITEMAP_COMPANY_CONFIGURATION,
 						HashMapDictionaryBuilder.<String, Object>put(
+							"cachedGenerationEnabled", true
+						).put(
 							"xmlSitemapIndexEnabled", true
 						).put(
 							"xmlSitemapIndexMode",
@@ -457,6 +494,8 @@ public class SitemapManagerTest {
 						TestPropsValues.getCompanyId(),
 						_PID_SITEMAP_COMPANY_CONFIGURATION,
 						HashMapDictionaryBuilder.<String, Object>put(
+							"cachedGenerationEnabled", true
+						).put(
 							"xmlSitemapIndexEnabled", true
 						).put(
 							"xmlSitemapIndexMode",
@@ -1554,6 +1593,8 @@ public class SitemapManagerTest {
 						TestPropsValues.getCompanyId(),
 						_PID_SITEMAP_COMPANY_CONFIGURATION,
 						HashMapDictionaryBuilder.<String, Object>put(
+							"cachedGenerationEnabled", true
+						).put(
 							"xmlSitemapIndexEnabled", true
 						).put(
 							"xmlSitemapIndexMode",
