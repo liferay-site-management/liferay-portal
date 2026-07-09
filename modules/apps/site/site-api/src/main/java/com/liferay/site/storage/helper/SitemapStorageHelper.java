@@ -38,6 +38,8 @@ public interface SitemapStorageHelper {
 			long companyId, long groupId, String assetTypeKey, int page)
 		throws PortalException;
 
+	public boolean hasSitemapFiles(long companyId) throws PortalException;
+
 	public void storeSitemapFile(long companyId, long groupId, String xml)
 		throws PortalException;
 
