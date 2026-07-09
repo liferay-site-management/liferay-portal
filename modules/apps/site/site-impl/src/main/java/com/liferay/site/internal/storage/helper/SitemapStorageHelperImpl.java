@@ -86,6 +86,18 @@ public class SitemapStorageHelperImpl implements SitemapStorageHelper {
 	}
 
 	@Override
+	public boolean hasSitemapFiles(long companyId) throws PortalException {
+		String[] fileNames = _dlStore.getFileNames(
+			companyId, CompanyConstants.SYSTEM, "sitemaps");
+
+		if (fileNames.length > 0) {
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
 	public void storeSitemapFile(long companyId, long groupId, String xml)
 		throws PortalException {
 
