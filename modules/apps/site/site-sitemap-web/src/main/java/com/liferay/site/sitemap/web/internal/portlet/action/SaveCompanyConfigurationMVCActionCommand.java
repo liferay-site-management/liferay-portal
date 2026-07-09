@@ -21,10 +21,15 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.site.configuration.manager.SitemapConfigurationManager;
+import com.liferay.site.manager.SitemapManager;
+import com.liferay.site.storage.helper.SitemapStorageHelper;
 
 import jakarta.portlet.ActionRequest;
 import jakarta.portlet.ActionResponse;
 import jakarta.portlet.PortletException;
+
+import java.util.Date;
+import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -53,7 +58,9 @@ public class SaveCompanyConfigurationMVCActionCommand
 		PermissionChecker permissionChecker =
 			themeDisplay.getPermissionChecker();
 
-		if (!permissionChecker.isCompanyAdmin(themeDisplay.getCompanyId())) {
+		long companyId = themeDisplay.getCompanyId();
+
+		if (!permissionChecker.isCompanyAdmin(companyId)) {
 			PrincipalException principalException =
 				new PrincipalException.MustBeCompanyAdmin(
 					permissionChecker.getUserId());
@@ -61,8 +68,11 @@ public class SaveCompanyConfigurationMVCActionCommand
 			throw new PortletException(principalException);
 		}
 
+		boolean cachedGenerationEnabled = ParamUtil.getBoolean(
+			actionRequest, "cachedGenerationEnabled");
+
 		_sitemapConfigurationManager.saveSitemapCompanyConfiguration(
-			themeDisplay.getCompanyId(),
+			cachedGenerationEnabled, companyId,
 			ArrayUtil.filter(
 				ArrayUtil.unique(
 					ParamUtil.getLongValues(
@@ -101,14 +111,45 @@ public class SaveCompanyConfigurationMVCActionCommand
 			ParamUtil.getBoolean(actionRequest, "xmlSitemapIndexEnabled"),
 			ParamUtil.getString(
 				actionRequest, "xmlSitemapIndexMode",
-				_sitemapConfigurationManager.xmlSitemapIndexMode(
-					themeDisplay.getCompanyId())));
+				_sitemapConfigurationManager.xmlSitemapIndexMode(companyId)),
+			ParamUtil.getString(
+				actionRequest, "xmlSitemapRegenerationDay",
+				_sitemapConfigurationManager.xmlSitemapRegenerationDay(
+					companyId)),
+			ParamUtil.getString(
+				actionRequest, "xmlSitemapRegenerationFrequency",
+				_sitemapConfigurationManager.xmlSitemapRegenerationFrequency(
+					companyId)),
+			ParamUtil.getString(
+				actionRequest, "xmlSitemapRegenerationTime",
+				_sitemapConfigurationManager.xmlSitemapRegenerationTime(
+					companyId)),
+			ParamUtil.getString(
+				actionRequest, "xmlSitemapRegenerationTimeZoneId",
+				_sitemapConfigurationManager.xmlSitemapRegenerationTimeZoneId(
+					companyId)));
+
+		String successMessage = "xml-sitemap-settings-have-been-saved";
+
+		if (ParamUtil.getBoolean(actionRequest, "saveAndGenerate") ||
+			(cachedGenerationEnabled &&
+			 !_sitemapStorageHelper.hasSitemapFiles(companyId))) {
+
+			Map<Long, String> assetTypeKeys =
+				_sitemapManager.getAssetTypeKeys();
+
+			for (String assetTypeKey : assetTypeKeys.values()) {
+				_sitemapManager.scheduleRegenerateSitemap(
+					assetTypeKey, companyId, 0, new Date());
+			}
+
+			successMessage =
+				"xml-sitemap-has-been-cached-and-settings-have-been-saved";
+		}
 
 		SessionMessages.add(
 			actionRequest, "requestProcessed",
-			_language.get(
-				themeDisplay.getLocale(),
-				"your-request-completed-successfully"));
+			_language.get(themeDisplay.getLocale(), successMessage));
 
 		sendRedirect(actionRequest, actionResponse);
 	}
@@ -124,5 +165,11 @@ public class SaveCompanyConfigurationMVCActionCommand
 
 	@Reference
 	private SitemapConfigurationManager _sitemapConfigurationManager;
+
+	@Reference
+	private SitemapManager _sitemapManager;
+
+	@Reference
+	private SitemapStorageHelper _sitemapStorageHelper;
 
 }
