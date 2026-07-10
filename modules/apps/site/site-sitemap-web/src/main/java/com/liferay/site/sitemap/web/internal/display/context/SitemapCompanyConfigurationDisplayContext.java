@@ -31,6 +31,7 @@ import com.liferay.portal.kernel.util.comparator.GroupNameComparator;
 import com.liferay.site.configuration.manager.SitemapConfigurationManager;
 import com.liferay.site.constants.SitemapConstants;
 import com.liferay.site.item.selector.SiteItemSelectorCriterion;
+import com.liferay.site.manager.SitemapManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ public class SitemapCompanyConfigurationDisplayContext {
 		LiferayPortletResponse liferayPortletResponse,
 		ObjectDefinitionLocalService objectDefinitionLocalService,
 		SitemapConfigurationManager sitemapConfigurationManager,
-		ThemeDisplay themeDisplay) {
+		SitemapManager sitemapManager, ThemeDisplay themeDisplay) {
 
 		_groupLocalService = groupLocalService;
 		_itemSelector = itemSelector;
@@ -54,7 +55,13 @@ public class SitemapCompanyConfigurationDisplayContext {
 		_liferayPortletResponse = liferayPortletResponse;
 		_objectDefinitionLocalService = objectDefinitionLocalService;
 		_sitemapConfigurationManager = sitemapConfigurationManager;
+		_sitemapManager = sitemapManager;
 		_themeDisplay = themeDisplay;
+	}
+
+	public boolean cachedGenerationEnabled() throws ConfigurationException {
+		return _sitemapConfigurationManager.cachedGenerationEnabled(
+			_themeDisplay.getCompanyId());
 	}
 
 	public SearchContainer<Group> getGroupSearchContainer() throws Exception {
@@ -216,6 +223,58 @@ public class SitemapCompanyConfigurationDisplayContext {
 		return selectOptions;
 	}
 
+	public List<SelectOption> getXMLSitemapRegenerationDaySelectOptions()
+		throws ConfigurationException {
+
+		List<SelectOption> selectOptions = new ArrayList<>();
+
+		String xmlSitemapRegenerationDay = xmlSitemapRegenerationDay();
+
+		String[] dayOfWeekKeys = {
+			"sunday", "monday", "tuesday", "wednesday", "thursday", "friday",
+			"saturday"
+		};
+
+		for (int i = 0; i < dayOfWeekKeys.length; i++) {
+			String value = String.valueOf(i + 1);
+
+			selectOptions.add(
+				new SelectOption(
+					LanguageUtil.get(
+						_themeDisplay.getLocale(), dayOfWeekKeys[i]),
+					value,
+					StringUtil.equals(value, xmlSitemapRegenerationDay)));
+		}
+
+		return selectOptions;
+	}
+
+	public List<SelectOption> getXMLSitemapRegenerationFrequencySelectOptions()
+		throws ConfigurationException {
+
+		List<SelectOption> selectOptions = new ArrayList<>();
+
+		String xmlSitemapRegenerationFrequency =
+			xmlSitemapRegenerationFrequency();
+
+		String[] frequencies = {
+			SitemapConstants.REGENERATION_FREQUENCY_HOURLY,
+			SitemapConstants.REGENERATION_FREQUENCY_DAILY,
+			SitemapConstants.REGENERATION_FREQUENCY_WEEKLY
+		};
+
+		for (String frequency : frequencies) {
+			selectOptions.add(
+				new SelectOption(
+					LanguageUtil.get(_themeDisplay.getLocale(), frequency),
+					frequency,
+					StringUtil.equals(
+						frequency, xmlSitemapRegenerationFrequency)));
+		}
+
+		return selectOptions;
+	}
+
 	public boolean hasVirtualHost(Group group) {
 		LayoutSet layoutSet = group.getPublicLayoutSet();
 
@@ -243,6 +302,25 @@ public class SitemapCompanyConfigurationDisplayContext {
 			_themeDisplay.getCompanyId());
 	}
 
+	public boolean isGenerationModeSectionVisible()
+		throws ConfigurationException {
+
+		if (xmlSitemapIndexEnabled() &&
+			StringUtil.equals(
+				xmlSitemapIndexMode(),
+				SitemapConstants.INDEX_MODE_ASSET_TYPE)) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean isRegenerationInProgress() {
+		return _sitemapManager.isRegenerationInProgress(
+			_themeDisplay.getCompanyId());
+	}
+
 	public boolean xmlSitemapIndexEnabled() throws ConfigurationException {
 		return _sitemapConfigurationManager.xmlSitemapIndexCompanyEnabled(
 			_themeDisplay.getCompanyId());
@@ -250,6 +328,30 @@ public class SitemapCompanyConfigurationDisplayContext {
 
 	public String xmlSitemapIndexMode() throws ConfigurationException {
 		return _sitemapConfigurationManager.xmlSitemapIndexMode(
+			_themeDisplay.getCompanyId());
+	}
+
+	public String xmlSitemapRegenerationDay() throws ConfigurationException {
+		return _sitemapConfigurationManager.xmlSitemapRegenerationDay(
+			_themeDisplay.getCompanyId());
+	}
+
+	public String xmlSitemapRegenerationFrequency()
+		throws ConfigurationException {
+
+		return _sitemapConfigurationManager.xmlSitemapRegenerationFrequency(
+			_themeDisplay.getCompanyId());
+	}
+
+	public String xmlSitemapRegenerationTime() throws ConfigurationException {
+		return _sitemapConfigurationManager.xmlSitemapRegenerationTime(
+			_themeDisplay.getCompanyId());
+	}
+
+	public String xmlSitemapRegenerationTimeZoneId()
+		throws ConfigurationException {
+
+		return _sitemapConfigurationManager.xmlSitemapRegenerationTimeZoneId(
 			_themeDisplay.getCompanyId());
 	}
 
@@ -277,6 +379,7 @@ public class SitemapCompanyConfigurationDisplayContext {
 	private String _selectGroupEventName;
 	private String _selectObjectDefinitionEventName;
 	private final SitemapConfigurationManager _sitemapConfigurationManager;
+	private final SitemapManager _sitemapManager;
 	private final ThemeDisplay _themeDisplay;
 
 }
