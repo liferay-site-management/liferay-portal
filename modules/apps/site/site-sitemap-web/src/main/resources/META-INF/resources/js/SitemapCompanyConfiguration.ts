@@ -8,11 +8,15 @@ import {delegate, sub} from 'frontend-js-web';
 
 interface Props {
 	groupSelectorURL: string;
+	isRegenerationInProgress: boolean;
 	namespace: string;
 	objectDefinitionSelectorURL: string;
 	selectGroupEventName: string;
 	selectObjectDefinitionEventName: string;
 }
+
+const FREQUENCY_HOURLY = 'hourly';
+const FREQUENCY_WEEKLY = 'weekly';
 
 type SelectedItem = {
 	groupdescriptivename: string;
@@ -22,6 +26,7 @@ type SelectedItem = {
 
 export default function ({
 	groupSelectorURL,
+	isRegenerationInProgress,
 	namespace,
 	objectDefinitionSelectorURL,
 	selectGroupEventName,
@@ -284,6 +289,138 @@ export default function ({
 		onSelectSiteClick
 	);
 
+	// XML Sitemap Generation Mode section (only rendered when the index is
+	// enabled and the grouping mode is "Asset Type").
+
+	const form = document.getElementById(
+		`${namespace}fm`
+	) as HTMLFormElement | null;
+
+	const onDemandRadio = document.getElementById(
+		`${namespace}cachedGenerationEnabledOnDemand`
+	) as HTMLInputElement | null;
+
+	const scheduledCachedRadio = document.getElementById(
+		`${namespace}cachedGenerationEnabledScheduledCached`
+	) as HTMLInputElement | null;
+
+	const scheduleOptions = document.getElementById(
+		`${namespace}sitemapRegenerationScheduleOptions`
+	);
+
+	const frequencySelect = document.getElementById(
+		`${namespace}xmlSitemapRegenerationFrequency`
+	) as HTMLSelectElement | null;
+
+	const dayField = document.getElementById(
+		`${namespace}xmlSitemapRegenerationDayField`
+	);
+
+	const timeField = document.getElementById(
+		`${namespace}xmlSitemapRegenerationTimeField`
+	);
+
+	const timeZoneField = document.getElementById(
+		`${namespace}xmlSitemapRegenerationTimeZoneField`
+	);
+
+	let saveAndGenerateItem: HTMLDivElement | null = null;
+	let saveAndGenerateButton: HTMLButtonElement | null = null;
+
+	const onSaveAndGenerateClick = () => {
+		const saveAndGenerateInput = document.getElementById(
+			`${namespace}saveAndGenerate`
+		) as HTMLInputElement | null;
+
+		if (saveAndGenerateInput) {
+			saveAndGenerateInput.value = 'true';
+		}
+
+		form?.submit();
+	};
+
+	const onGenerationModeChange = () => {
+		const scheduledCached = Boolean(scheduledCachedRadio?.checked);
+
+		scheduleOptions?.classList.toggle('hide', !scheduledCached);
+		saveAndGenerateItem?.classList.toggle('hide', !scheduledCached);
+	};
+
+	const onFrequencyChange = () => {
+		const frequency = frequencySelect!.value;
+
+		dayField?.classList.toggle('hide', frequency !== FREQUENCY_WEEKLY);
+		timeField?.classList.toggle('hide', frequency === FREQUENCY_HOURLY);
+		timeZoneField?.classList.toggle('hide', frequency === FREQUENCY_HOURLY);
+	};
+
+	if (form && scheduledCachedRadio && onDemandRadio) {
+		const btnGroup = form.querySelector('.sheet-footer .btn-group');
+
+		if (btnGroup) {
+			saveAndGenerateButton = document.createElement('button');
+
+			saveAndGenerateButton.className = 'btn btn-primary';
+			saveAndGenerateButton.textContent =
+				Liferay.Language.get('save-and-generate');
+			saveAndGenerateButton.type = 'button';
+
+			saveAndGenerateButton.addEventListener(
+				'click',
+				onSaveAndGenerateClick
+			);
+
+			saveAndGenerateItem = document.createElement('div');
+
+			saveAndGenerateItem.className = 'btn-group-item';
+
+			saveAndGenerateItem.appendChild(saveAndGenerateButton);
+
+			btnGroup.insertBefore(saveAndGenerateItem, btnGroup.firstChild);
+		}
+
+		onDemandRadio.addEventListener('change', onGenerationModeChange);
+		scheduledCachedRadio.addEventListener('change', onGenerationModeChange);
+
+		onGenerationModeChange();
+
+		if (frequencySelect) {
+			frequencySelect.addEventListener('change', onFrequencyChange);
+
+			onFrequencyChange();
+		}
+	}
+
+	// Disable every control and show a loading indicator while a regeneration
+	// is in progress. The lock-based state survives a page refresh.
+
+	if (isRegenerationInProgress && form) {
+		const controls = form.querySelectorAll<HTMLInputElement>(
+			'button, input, select, textarea'
+		);
+
+		controls.forEach((control) => {
+			control.disabled = true;
+		});
+
+		const cancelButton = form.querySelector('.sheet-footer a');
+
+		cancelButton?.classList.add('disabled');
+		cancelButton?.setAttribute('aria-disabled', 'true');
+
+		const btnGroup = form.querySelector('.sheet-footer .btn-group');
+
+		if (btnGroup) {
+			const loadingItem = document.createElement('div');
+
+			loadingItem.className = 'btn-group-item';
+			loadingItem.innerHTML =
+				'<span aria-hidden="true" class="loading-animation loading-animation-sm"></span>';
+
+			btnGroup.appendChild(loadingItem);
+		}
+	}
+
 	return {
 		dispose() {
 			onRemoveObjectDefinition.detach();
@@ -293,6 +430,20 @@ export default function ({
 			xmlSitemapIndexEnabledCheckbox.removeEventListener(
 				'change',
 				onXmlSitemapIndexEnabledChange
+			);
+
+			onDemandRadio?.removeEventListener(
+				'change',
+				onGenerationModeChange
+			);
+			scheduledCachedRadio?.removeEventListener(
+				'change',
+				onGenerationModeChange
+			);
+			frequencySelect?.removeEventListener('change', onFrequencyChange);
+			saveAndGenerateButton?.removeEventListener(
+				'click',
+				onSaveAndGenerateClick
 			);
 		},
 	};

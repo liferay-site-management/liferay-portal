@@ -96,6 +96,101 @@ SitemapCompanyConfigurationDisplayContext sitemapCompanyConfigurationDisplayCont
 	</clay:content-row>
 </clay:sheet-section>
 
+<c:if test="<%= sitemapCompanyConfigurationDisplayContext.isGenerationModeSectionVisible() %>">
+
+	<%
+	boolean cachedGenerationEnabled = sitemapCompanyConfigurationDisplayContext.cachedGenerationEnabled();
+
+	String xmlSitemapRegenerationFrequency = sitemapCompanyConfigurationDisplayContext.xmlSitemapRegenerationFrequency();
+
+	boolean sitemapRegenerationWeekly = SitemapConstants.REGENERATION_FREQUENCY_WEEKLY.equals(xmlSitemapRegenerationFrequency);
+	boolean sitemapRegenerationScheduled = !SitemapConstants.REGENERATION_FREQUENCY_HOURLY.equals(xmlSitemapRegenerationFrequency);
+	%>
+
+	<clay:sheet-section
+		aria-labelledby='<%= liferayPortletResponse.getNamespace() + "xmlSitemapGenerationModeTitle" %>'
+		cssClass="c-mb-0"
+		role="group"
+	>
+		<clay:content-row
+			containerElement="h3"
+			cssClass="c-mb-3 sheet-subtitle"
+		>
+			<clay:content-col
+				expand="<%= true %>"
+			>
+				<span class="heading-text text-secondary" id="<portlet:namespace />xmlSitemapGenerationModeTitle"><liferay-ui:message key="xml-sitemap-generation-mode" /></span>
+			</clay:content-col>
+		</clay:content-row>
+
+		<clay:content-row
+			cssClass="c-mt-2"
+		>
+			<clay:content-col
+				expand="<%= true %>"
+			>
+				<aui:input checked="<%= !cachedGenerationEnabled %>" data-qa-id="onDemandRadioButton" id="cachedGenerationEnabledOnDemand" label="on-demand" name="cachedGenerationEnabled" type="radio" value="<%= false %>" />
+
+				<aui:input checked="<%= cachedGenerationEnabled %>" data-qa-id="scheduledCachedRadioButton" id="cachedGenerationEnabledScheduledCached" label="scheduled-cached" name="cachedGenerationEnabled" type="radio" value="<%= true %>" />
+			</clay:content-col>
+		</clay:content-row>
+
+		<input id="<portlet:namespace />saveAndGenerate" name="<portlet:namespace />saveAndGenerate" type="hidden" value="false" />
+
+		<clay:content-row
+			cssClass='<%= cachedGenerationEnabled ? "c-mt-2" : "c-mt-2 hide" %>'
+			id='<%= liferayPortletResponse.getNamespace() + "sitemapRegenerationScheduleOptions" %>'
+		>
+			<clay:content-col>
+				<clay:select
+					id='<%= liferayPortletResponse.getNamespace() + "xmlSitemapRegenerationFrequency" %>'
+					label='<%= LanguageUtil.get(request, "frequency") %>'
+					name="xmlSitemapRegenerationFrequency"
+					options="<%= sitemapCompanyConfigurationDisplayContext.getXMLSitemapRegenerationFrequencySelectOptions() %>"
+				/>
+			</clay:content-col>
+
+			<clay:content-col
+				cssClass='<%= sitemapRegenerationWeekly ? "" : "hide" %>'
+				id='<%= liferayPortletResponse.getNamespace() + "xmlSitemapRegenerationDayField" %>'
+			>
+				<clay:select
+					id='<%= liferayPortletResponse.getNamespace() + "xmlSitemapRegenerationDay" %>'
+					label='<%= LanguageUtil.get(request, "day-of-week") %>'
+					name="xmlSitemapRegenerationDay"
+					options="<%= sitemapCompanyConfigurationDisplayContext.getXMLSitemapRegenerationDaySelectOptions() %>"
+				/>
+			</clay:content-col>
+
+			<clay:content-col
+				cssClass='<%= sitemapRegenerationScheduled ? "" : "hide" %>'
+				id='<%= liferayPortletResponse.getNamespace() + "xmlSitemapRegenerationTimeField" %>'
+			>
+				<div class="form-group">
+					<label class="control-label" for="<portlet:namespace />xmlSitemapRegenerationTime"><liferay-ui:message key="time" /></label>
+
+					<input class="form-control" id="<portlet:namespace />xmlSitemapRegenerationTime" name="<portlet:namespace />xmlSitemapRegenerationTime" type="time" value="<%= HtmlUtil.escapeAttribute(sitemapCompanyConfigurationDisplayContext.xmlSitemapRegenerationTime()) %>" />
+				</div>
+			</clay:content-col>
+
+			<clay:content-col
+				cssClass='<%= sitemapRegenerationScheduled ? "" : "hide" %>'
+				id='<%= liferayPortletResponse.getNamespace() + "xmlSitemapRegenerationTimeZoneField" %>'
+			>
+				<div class="form-group">
+					<label class="control-label" for="<portlet:namespace />xmlSitemapRegenerationTimeZoneId"><liferay-ui:message key="time-zone" /></label>
+
+					<liferay-ui:input-time-zone
+						name="xmlSitemapRegenerationTimeZoneId"
+						nullable="<%= true %>"
+						value="<%= sitemapCompanyConfigurationDisplayContext.xmlSitemapRegenerationTimeZoneId() %>"
+					/>
+				</div>
+			</clay:content-col>
+		</clay:content-row>
+	</clay:sheet-section>
+</c:if>
+
 <clay:sheet-section
 	aria-labelledby='<%= liferayPortletResponse.getNamespace() + "sitesIncludedTitle" %>'
 	cssClass="c-mb-0"
@@ -378,6 +473,8 @@ SitemapCompanyConfigurationDisplayContext sitemapCompanyConfigurationDisplayCont
 		context='<%=
 			HashMapBuilder.<String, Object>put(
 				"groupSelectorURL", sitemapCompanyConfigurationDisplayContext.getGroupSelectorURL()
+			).put(
+				"isRegenerationInProgress", sitemapCompanyConfigurationDisplayContext.isRegenerationInProgress()
 			).put(
 				"objectDefinitionSelectorURL", sitemapCompanyConfigurationDisplayContext.getObjectDefinitionSelectorURL()
 			).put(
