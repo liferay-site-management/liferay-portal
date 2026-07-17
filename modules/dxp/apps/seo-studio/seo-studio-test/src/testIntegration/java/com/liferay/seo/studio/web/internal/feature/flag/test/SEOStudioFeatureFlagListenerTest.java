@@ -15,6 +15,7 @@ import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.test.rule.FeatureFlag;
 import com.liferay.portal.test.rule.FeatureFlags;
@@ -48,18 +49,44 @@ public class SEOStudioFeatureFlagListenerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		_deleteOAuth2Application();
+		long companyId = TestPropsValues.getCompanyId();
+
+		_originalOAuth2Application = _deleteOAuth2Application();
+
+		_originalAIHubCellConfiguration =
+			_configurationProvider.getCompanyConfiguration(
+				AIHubCellConfiguration.class, companyId);
 
 		_configurationProvider.deleteCompanyConfiguration(
-			AIHubCellConfiguration.class, TestPropsValues.getCompanyId());
+			AIHubCellConfiguration.class, companyId);
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		long companyId = TestPropsValues.getCompanyId();
+
 		_deleteOAuth2Application();
 
+		if (_originalOAuth2Application != null) {
+			_oAuth2ApplicationLocalService.addOAuth2Application(
+				_originalOAuth2Application);
+		}
+
 		_configurationProvider.deleteCompanyConfiguration(
-			AIHubCellConfiguration.class, TestPropsValues.getCompanyId());
+			AIHubCellConfiguration.class, companyId);
+
+		if (Validator.isNotNull(_originalAIHubCellConfiguration.serviceURL())) {
+			_configurationProvider.saveCompanyConfiguration(
+				AIHubCellConfiguration.class, companyId,
+				HashMapDictionaryBuilder.<String, Object>put(
+					"clientId", _originalAIHubCellConfiguration.clientId()
+				).put(
+					"clientSecret",
+					_originalAIHubCellConfiguration.clientSecret()
+				).put(
+					"serviceURL", _originalAIHubCellConfiguration.serviceURL()
+				).build());
+		}
 	}
 
 	@Test
@@ -91,6 +118,8 @@ public class SEOStudioFeatureFlagListenerTest {
 		Assert.assertEquals(oAuth2Application1.getClientId(), clientId);
 		Assert.assertEquals(oAuth2Application1.getClientSecret(), clientSecret);
 
+		// Re-enabling must reuse the existing client, not provision a new one
+
 		_seoStudioFeatureFlagListener.onValue(companyId, "LPD-44511", true);
 
 		AIHubCellConfiguration aiHubCellConfiguration2 =
@@ -117,7 +146,7 @@ public class SEOStudioFeatureFlagListenerTest {
 			oAuth2Application2.getOAuth2ApplicationId());
 	}
 
-	private void _deleteOAuth2Application() throws Exception {
+	private OAuth2Application _deleteOAuth2Application() throws Exception {
 		OAuth2Application oAuth2Application =
 			_oAuth2ApplicationLocalService.
 				fetchOAuth2ApplicationByExternalReferenceCode(
@@ -127,6 +156,8 @@ public class SEOStudioFeatureFlagListenerTest {
 			_oAuth2ApplicationLocalService.deleteOAuth2Application(
 				oAuth2Application.getOAuth2ApplicationId());
 		}
+
+		return oAuth2Application;
 	}
 
 	private static final String _EXTERNAL_REFERENCE_CODE = "AI-HUB-CELL";
@@ -139,6 +170,9 @@ public class SEOStudioFeatureFlagListenerTest {
 
 	@Inject
 	private OAuth2ApplicationLocalService _oAuth2ApplicationLocalService;
+
+	private AIHubCellConfiguration _originalAIHubCellConfiguration;
+	private OAuth2Application _originalOAuth2Application;
 
 	@Inject(filter = "feature.flag.key=LPD-44511")
 	private FeatureFlagListener _seoStudioFeatureFlagListener;
