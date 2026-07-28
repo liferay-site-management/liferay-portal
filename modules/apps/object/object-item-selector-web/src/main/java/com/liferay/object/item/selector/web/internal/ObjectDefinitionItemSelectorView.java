@@ -12,6 +12,7 @@ import com.liferay.object.item.selector.ObjectDefinitionItemSelectorCriterion;
 import com.liferay.object.item.selector.ObjectDefinitionItemSelectorReturnType;
 import com.liferay.object.item.selector.web.internal.display.context.ObjectDefinitionDisplayContext;
 import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectDefinitionSettingLocalService;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.Portal;
@@ -74,7 +75,9 @@ public class ObjectDefinitionItemSelectorView
 
 		ObjectDefinitionDisplayContext objectDefinitionDisplayContext =
 			new ObjectDefinitionDisplayContext(
-				httpServletRequest, _objectDefinitionLocalService, portletURL,
+				httpServletRequest, objectDefinitionItemSelectorCriterion,
+				_objectDefinitionLocalService,
+				_objectDefinitionSettingLocalService, portletURL,
 				renderRequest);
 
 		_itemSelectorViewDescriptorRenderer.renderHTML(
@@ -99,6 +102,10 @@ public class ObjectDefinitionItemSelectorView
 
 	@Reference
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
+
+	@Reference
+	private ObjectDefinitionSettingLocalService
+		_objectDefinitionSettingLocalService;
 
 	@Reference
 	private Portal _portal;
