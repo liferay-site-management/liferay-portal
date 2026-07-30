@@ -1336,7 +1336,8 @@ public class ObjectFieldLocalServiceTest {
 			ObjectDefinitionTestUtil.addModifiableSystemObjectDefinition(
 				TestPropsValues.getUserId(), null,
 				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
-				"Test" + RandomTestUtil.randomString(), null, null,
+				ObjectDefinitionTestUtil.getRandomSystemObjectDefinitionName(),
+				null, null,
 				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
 				ObjectDefinitionConstants.SCOPE_SITE, null, 1,
 				Collections.emptyList());
@@ -1570,7 +1571,8 @@ public class ObjectFieldLocalServiceTest {
 			ObjectDefinitionTestUtil.addModifiableSystemObjectDefinition(
 				TestPropsValues.getUserId(), null,
 				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
-				"Test" + RandomTestUtil.randomString(), null, null,
+				ObjectDefinitionTestUtil.getRandomSystemObjectDefinitionName(),
+				null, null,
 				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
 				ObjectDefinitionConstants.SCOPE_SITE, null, 1,
 				Collections.emptyList());
@@ -1876,7 +1878,8 @@ public class ObjectFieldLocalServiceTest {
 			ObjectDefinitionTestUtil.addModifiableSystemObjectDefinition(
 				TestPropsValues.getUserId(), null,
 				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
-				"Test" + RandomTestUtil.randomString(), null, null,
+				ObjectDefinitionTestUtil.getRandomSystemObjectDefinitionName(),
+				null, null,
 				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
 				ObjectDefinitionConstants.SCOPE_SITE, null, 1,
 				Collections.emptyList());
