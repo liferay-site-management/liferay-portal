@@ -8,8 +8,12 @@ package com.liferay.change.tracking.service.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.blogs.service.BlogsEntryLocalService;
 import com.liferay.change.tracking.model.CTCollection;
+import com.liferay.change.tracking.model.CTScore;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTScoreLocalService;
+import com.liferay.change.tracking.service.persistence.CTScorePersistence;
+import com.liferay.change.tracking.spi.exception.CTEventException;
+import com.liferay.change.tracking.spi.listener.CTEventListener;
 import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
 import com.liferay.document.library.test.util.DLTestUtil;
@@ -20,7 +24,10 @@ import com.liferay.journal.constants.JournalFolderConstants;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.petra.lang.SafeCloseable;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
+import com.liferay.portal.kernel.dao.db.DB;
+import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -50,6 +57,11 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * @author David Truong
@@ -147,6 +159,63 @@ public class CTScoreLocalServiceTest {
 	}
 
 	@Test
+	public void testDeleteCTCollectionWithConcurrentCTScoreUpdate()
+		throws Exception {
+
+		long ctCollectionId = _ctCollection1.getCtCollectionId();
+
+		Bundle bundle = FrameworkUtil.getBundle(CTScoreLocalServiceTest.class);
+
+		BundleContext bundleContext = bundle.getBundleContext();
+
+		ServiceRegistration<CTEventListener> serviceRegistration =
+			bundleContext.registerService(
+				CTEventListener.class,
+				new CTEventListener() {
+
+					@Override
+					public void onBeforeRemove(long removedCTCollectionId)
+						throws CTEventException {
+
+						if (removedCTCollectionId != ctCollectionId) {
+							return;
+						}
+
+						CTScore ctScore =
+							_ctScorePersistence.fetchByCtCollectionId(
+								ctCollectionId, false);
+
+						DB db = DBManagerUtil.getDB();
+
+						try {
+							db.runSQL(
+								StringBundler.concat(
+									"update CTScore set mvccVersion = ",
+									"mvccVersion + 1 where ctScoreId = ",
+									ctScore.getCtScoreId()));
+						}
+						catch (Exception exception) {
+							throw new CTEventException(exception);
+						}
+					}
+
+				},
+				null);
+
+		try {
+			_ctCollectionLocalService.deleteCTCollection(_ctCollection1);
+		}
+		finally {
+			serviceRegistration.unregister();
+		}
+
+		_ctCollection1 = null;
+
+		Assert.assertNull(
+			_ctScoreLocalService.fetchCTScoreByCTCollectionId(ctCollectionId));
+	}
+
+	@Test
 	public void testUpdateCTScore() throws Throwable {
 		_ctCollection1 = _ctCollectionLocalService.fetchCTCollection(
 			_ctCollection1.getCtCollectionId());
@@ -206,6 +275,9 @@ public class CTScoreLocalServiceTest {
 
 	@Inject
 	private CTScoreLocalService _ctScoreLocalService;
+
+	@Inject
+	private CTScorePersistence _ctScorePersistence;
 
 	@Inject
 	private DDMStructureLocalService _ddmStructureLocalService;
