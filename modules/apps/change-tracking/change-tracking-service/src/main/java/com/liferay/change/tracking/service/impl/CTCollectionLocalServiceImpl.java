@@ -36,6 +36,7 @@ import com.liferay.change.tracking.model.CTEntryTable;
 import com.liferay.change.tracking.model.CTPreferences;
 import com.liferay.change.tracking.model.CTSchemaVersion;
 import com.liferay.change.tracking.model.CTScore;
+import com.liferay.change.tracking.model.impl.CTScoreImpl;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.service.CTPreferencesLocalService;
 import com.liferay.change.tracking.service.CTSchemaVersionLocalService;
@@ -67,6 +68,8 @@ import com.liferay.portal.kernel.change.tracking.sql.CTSQLModeThreadLocal;
 import com.liferay.portal.kernel.cluster.ClusterExecutorUtil;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.dao.jdbc.CurrentConnection;
+import com.liferay.portal.kernel.dao.orm.LockMode;
+import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
@@ -573,7 +576,22 @@ public class CTCollectionLocalServiceImpl
 			ctCollection.getCtCollectionId());
 
 		if (ctScore != null) {
-			_ctScorePersistence.remove(ctScore);
+			Session session = _ctScorePersistence.openSession();
+
+			try {
+				session.evict(CTScoreImpl.class, ctScore.getCtScoreId());
+
+				ctScore = (CTScore)session.get(
+					CTScoreImpl.class, ctScore.getCtScoreId(),
+					LockMode.UPGRADE);
+
+				if (ctScore != null) {
+					_ctScorePersistence.remove(ctScore);
+				}
+			}
+			finally {
+				_ctScorePersistence.closeSession(session);
+			}
 		}
 
 		Group group = _groupLocalService.fetchGroup(
