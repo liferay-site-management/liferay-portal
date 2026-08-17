@@ -6,6 +6,7 @@
 package com.liferay.change.tracking.internal.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.change.tracking.configuration.CTSettingsConfiguration;
 import com.liferay.change.tracking.conflict.ConflictInfo;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
@@ -25,6 +26,7 @@ import com.liferay.friendly.url.service.FriendlyURLEntryLocalService;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.configuration.test.util.CompanyConfigurationTemporarySwapper;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.constants.FriendlyURLResolverConstants;
@@ -39,6 +41,7 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TempFileEntryUtil;
@@ -79,7 +82,7 @@ public class DLFileEntryCTTest {
 
 	@Before
 	public void setUp() throws Exception {
-		_ctCollection = _ctCollectionLocalService.addCTCollection(
+		_ctCollection1 = _ctCollectionLocalService.addCTCollection(
 			null, TestPropsValues.getCompanyId(), TestPropsValues.getUserId(),
 			0, JournalArticleCTTest.class.getName(), null);
 		_group = GroupTestUtil.addGroup();
@@ -92,22 +95,33 @@ public class DLFileEntryCTTest {
 
 		try (SafeCloseable safeCloseable =
 				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
-					_ctCollection.getCtCollectionId())) {
+					_ctCollection1.getCtCollectionId())) {
 
 			_addFileEntry(fileName, title);
 		}
 
 		_addFileEntry(fileName, title);
 
-		Map<Long, List<ConflictInfo>> conflictInfosMap =
-			_ctCollectionLocalService.checkConflicts(_ctCollection);
+		try (CompanyConfigurationTemporarySwapper
+				companyConfigurationTemporarySwapper =
+					new CompanyConfigurationTemporarySwapper(
+						TestPropsValues.getCompanyId(),
+						CTSettingsConfiguration.class.getName(),
+						HashMapDictionaryBuilder.<String, Object>put(
+							"automaticFriendlyURLConflictResolutionEnabled",
+							true
+						).build())) {
 
-		List<ConflictInfo> conflictInfos = conflictInfosMap.get(
-			_classNameLocalService.getClassNameId(
-				FriendlyURLEntryLocalization.class));
+			Map<Long, List<ConflictInfo>> conflictInfosMap =
+				_ctCollectionLocalService.checkConflicts(_ctCollection1);
 
-		for (ConflictInfo conflictInfo : conflictInfos) {
-			Assert.assertTrue(conflictInfo.isResolved());
+			List<ConflictInfo> conflictInfos = conflictInfosMap.get(
+				_classNameLocalService.getClassNameId(
+					FriendlyURLEntryLocalization.class));
+
+			for (ConflictInfo conflictInfo : conflictInfos) {
+				Assert.assertTrue(conflictInfo.isResolved());
+			}
 		}
 	}
 
@@ -121,7 +135,7 @@ public class DLFileEntryCTTest {
 
 		try (SafeCloseable safeCloseable =
 				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
-					_ctCollection.getCtCollectionId())) {
+					_ctCollection1.getCtCollectionId())) {
 
 			FileEntry tempFileEntry = TempFileEntryUtil.addTempFileEntry(
 				_group.getGroupId(), TestPropsValues.getUserId(),
@@ -136,7 +150,7 @@ public class DLFileEntryCTTest {
 		_dlFolderService.deleteFolder(dlFolder.getFolderId());
 
 		Map<Long, List<ConflictInfo>> conflictsMap =
-			_ctCollectionLocalService.checkConflicts(_ctCollection);
+			_ctCollectionLocalService.checkConflicts(_ctCollection1);
 
 		Assert.assertNull(
 			conflictsMap.get(
@@ -152,14 +166,14 @@ public class DLFileEntryCTTest {
 
 		try (SafeCloseable safeCloseable =
 				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
-					_ctCollection.getCtCollectionId())) {
+					_ctCollection1.getCtCollectionId())) {
 
 			_dlAppService.checkOutFileEntry(
 				fileEntry.getFileEntryId(), serviceContext);
 		}
 
 		List<CTEntry> ctEntries = _ctEntryLocalService.getCTCollectionCTEntries(
-			_ctCollection.getCtCollectionId());
+			_ctCollection1.getCtCollectionId());
 
 		Assert.assertEquals(ctEntries.toString(), 0, ctEntries.size());
 
@@ -172,13 +186,13 @@ public class DLFileEntryCTTest {
 
 		try (SafeCloseable safeCloseable =
 				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
-					_ctCollection.getCtCollectionId())) {
+					_ctCollection1.getCtCollectionId())) {
 
 			_dlAppService.cancelCheckOut(fileEntry.getFileEntryId());
 		}
 
 		ctEntries = _ctEntryLocalService.getCTCollectionCTEntries(
-			_ctCollection.getCtCollectionId());
+			_ctCollection1.getCtCollectionId());
 
 		Assert.assertEquals(ctEntries.toString(), 0, ctEntries.size());
 
@@ -193,7 +207,7 @@ public class DLFileEntryCTTest {
 
 		try (SafeCloseable safeCloseable =
 				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
-					_ctCollection.getCtCollectionId())) {
+					_ctCollection1.getCtCollectionId())) {
 
 			fileEntry = _addFileEntry(RandomTestUtil.randomString(), title);
 		}
@@ -237,7 +251,7 @@ public class DLFileEntryCTTest {
 
 		try (SafeCloseable safeCloseable =
 				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
-					_ctCollection.getCtCollectionId())) {
+					_ctCollection1.getCtCollectionId())) {
 
 			friendlyURLEntry1 =
 				_friendlyURLEntryLocalService.addFriendlyURLEntry(
@@ -261,21 +275,34 @@ public class DLFileEntryCTTest {
 					RandomTestUtil.randomLong(), urlTitle, serviceContext);
 		}
 
-		_ctProcessLocalService.addCTProcess(
-			_ctCollection.getUserId(), _ctCollection.getCtCollectionId());
+		try (CompanyConfigurationTemporarySwapper
+				companyConfigurationTemporarySwapper =
+					new CompanyConfigurationTemporarySwapper(
+						TestPropsValues.getCompanyId(),
+						CTSettingsConfiguration.class.getName(),
+						HashMapDictionaryBuilder.<String, Object>put(
+							"automaticFriendlyURLConflictResolutionEnabled",
+							true
+						).build())) {
 
-		_ctProcessLocalService.addCTProcess(
-			ctCollection2.getUserId(), ctCollection2.getCtCollectionId());
+			_ctProcessLocalService.addCTProcess(
+				_ctCollection1.getUserId(), _ctCollection1.getCtCollectionId());
 
-		friendlyURLEntry1 = _friendlyURLEntryLocalService.fetchFriendlyURLEntry(
-			friendlyURLEntry1.getFriendlyURLEntryId());
-		friendlyURLEntry2 = _friendlyURLEntryLocalService.fetchFriendlyURLEntry(
-			friendlyURLEntry2.getFriendlyURLEntryId());
+			_ctProcessLocalService.addCTProcess(
+				ctCollection2.getUserId(), ctCollection2.getCtCollectionId());
 
-		Assert.assertEquals(
-			urlTitle, friendlyURLEntry1.getUrlTitle(languageId));
-		Assert.assertEquals(
-			urlTitle + "-1", friendlyURLEntry2.getUrlTitle(languageId));
+			friendlyURLEntry1 =
+				_friendlyURLEntryLocalService.fetchFriendlyURLEntry(
+					friendlyURLEntry1.getFriendlyURLEntryId());
+			friendlyURLEntry2 =
+				_friendlyURLEntryLocalService.fetchFriendlyURLEntry(
+					friendlyURLEntry2.getFriendlyURLEntryId());
+
+			Assert.assertEquals(
+				urlTitle, friendlyURLEntry1.getUrlTitle(languageId));
+			Assert.assertEquals(
+				urlTitle + "-1", friendlyURLEntry2.getUrlTitle(languageId));
+		}
 
 		_ctCollectionLocalService.deleteCTCollection(ctCollection2);
 	}
@@ -289,7 +316,7 @@ public class DLFileEntryCTTest {
 
 		try (SafeCloseable safeCloseable =
 				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
-					_ctCollection.getCtCollectionId())) {
+					_ctCollection1.getCtCollectionId())) {
 
 			_dlAppService.updateFileEntry(
 				fileEntry.getFileEntryId(), fileEntry.getFileName(),
@@ -340,7 +367,7 @@ public class DLFileEntryCTTest {
 		mockHttpServletRequest.setContextPath("/documents");
 		mockHttpServletRequest.setParameter(
 			"previewCTCollectionId",
-			String.valueOf(_ctCollection.getCtCollectionId()));
+			String.valueOf(_ctCollection1.getCtCollectionId()));
 		mockHttpServletRequest.setPathInfo(friendlyURL);
 		mockHttpServletRequest.setServletPath(StringPool.BLANK);
 
@@ -351,7 +378,7 @@ public class DLFileEntryCTTest {
 	private ClassNameLocalService _classNameLocalService;
 
 	@DeleteAfterTestRun
-	private CTCollection _ctCollection;
+	private CTCollection _ctCollection1;
 
 	@Inject
 	private CTCollectionLocalService _ctCollectionLocalService;
