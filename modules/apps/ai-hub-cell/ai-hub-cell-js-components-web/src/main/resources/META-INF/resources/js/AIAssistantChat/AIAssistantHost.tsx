@@ -131,6 +131,8 @@ const AIAssistantHost: React.FC = () => {
 	);
 
 	const chat = useAIChat({
+		chatbotExternalReferenceCode:
+			activeCommand?.chatbotExternalReferenceCode,
 		context: activeCommand?.context,
 		enableFreeFormCategorization:
 			activeCommand?.enableFreeFormCategorization,
