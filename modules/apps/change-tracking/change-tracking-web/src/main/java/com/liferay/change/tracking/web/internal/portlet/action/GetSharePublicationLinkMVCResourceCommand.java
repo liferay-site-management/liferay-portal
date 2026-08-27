@@ -5,15 +5,20 @@
 
 package com.liferay.change.tracking.web.internal.portlet.action;
 
+import com.liferay.change.tracking.constants.CTActionKeys;
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.web.internal.helper.PublicationHelper;
+import com.liferay.change.tracking.web.internal.security.permission.resource.CTCollectionPermission;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.WebKeys;
 
 import jakarta.portlet.ResourceRequest;
 import jakarta.portlet.ResourceResponse;
@@ -45,6 +50,24 @@ public class GetSharePublicationLinkMVCResourceCommand
 		CTCollection ctCollection = _ctCollectionLocalService.getCTCollection(
 			ctCollectionId);
 
+		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		if (!CTCollectionPermission.contains(
+				themeDisplay.getPermissionChecker(), ctCollectionId,
+				CTActionKeys.INVITE_USERS)) {
+
+			JSONPortletResponseUtil.writeJSON(
+				resourceRequest, resourceResponse,
+				JSONUtil.put(
+					"errorMessage",
+					_language.get(
+						themeDisplay.getLocale(),
+						"you-do-not-have-the-required-permissions")));
+
+			return;
+		}
+
 		boolean shareable = ParamUtil.getBoolean(resourceRequest, "shareable");
 
 		if (ctCollection.isShareable() != shareable) {
@@ -67,6 +90,9 @@ public class GetSharePublicationLinkMVCResourceCommand
 
 	@Reference
 	private CTCollectionLocalService _ctCollectionLocalService;
+
+	@Reference
+	private Language _language;
 
 	@Reference
 	private PublicationHelper _publicationHelper;
