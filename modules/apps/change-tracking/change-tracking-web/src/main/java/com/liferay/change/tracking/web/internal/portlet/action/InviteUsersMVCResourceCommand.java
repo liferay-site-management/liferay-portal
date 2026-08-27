@@ -143,8 +143,7 @@ public class InviteUsersMVCResourceCommand
 						"errorMessage",
 						_language.get(
 							httpServletRequest,
-							"you-do-not-have-permission-to-perform-this-" +
-								"action")));
+							"you-do-not-have-the-required-permissions")));
 
 				return;
 			}
