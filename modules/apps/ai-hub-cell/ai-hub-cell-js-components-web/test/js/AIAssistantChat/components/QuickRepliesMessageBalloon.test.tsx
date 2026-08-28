@@ -160,4 +160,138 @@ describe('QuickRepliesMessageBalloon', () => {
 			)
 		);
 	});
+
+	it('calls onAction with the settled request outcome', async () => {
+		const onAction = jest.fn();
+
+		const successRender = render(
+			<QuickRepliesMessageBalloon
+				component={COMPONENT}
+				onAction={onAction}
+				setIsGenerating={jest.fn()}
+			/>
+		);
+
+		await userEvent.click(
+			successRender.getByRole('button', {
+				name: 'Find Matching Assets in CMS',
+			})
+		);
+
+		await waitFor(() =>
+			expect(onAction).toHaveBeenCalledWith({
+				response: expect.objectContaining({ok: true}),
+				success: true,
+			})
+		);
+
+		successRender.unmount();
+		onAction.mockClear();
+
+		mockFetch.mockImplementation((resource) => {
+			if (String(resource).includes('authorization-tokens')) {
+				return Promise.resolve({
+					json: () =>
+						Promise.resolve({
+							accessToken: 'access-token',
+							serviceURL: 'http://ai-hub',
+							userToken: 'user-token',
+						}),
+					ok: true,
+				} as never);
+			}
+
+			return Promise.resolve({ok: false} as never);
+		});
+
+		const failureRender = render(
+			<QuickRepliesMessageBalloon
+				component={COMPONENT}
+				onAction={onAction}
+				setIsGenerating={jest.fn()}
+			/>
+		);
+
+		await userEvent.click(
+			failureRender.getByRole('button', {
+				name: 'Find Matching Assets in CMS',
+			})
+		);
+
+		await waitFor(() =>
+			expect(onAction).toHaveBeenCalledWith({
+				response: expect.objectContaining({ok: false}),
+				success: false,
+			})
+		);
+
+		failureRender.unmount();
+		onAction.mockClear();
+
+		mockFetch.mockImplementation((resource) => {
+			if (String(resource).includes('authorization-tokens')) {
+				return Promise.resolve({
+					json: () => Promise.resolve({}),
+					ok: true,
+				} as never);
+			}
+
+			return Promise.resolve({ok: true} as never);
+		});
+
+		const noTokenRender = render(
+			<QuickRepliesMessageBalloon
+				component={COMPONENT}
+				onAction={onAction}
+				setIsGenerating={jest.fn()}
+			/>
+		);
+
+		await userEvent.click(
+			noTokenRender.getByRole('button', {
+				name: 'Find Matching Assets in CMS',
+			})
+		);
+
+		await waitFor(() =>
+			expect(onAction).toHaveBeenCalledWith({success: false})
+		);
+
+		noTokenRender.unmount();
+		onAction.mockClear();
+
+		mockFetch.mockImplementation((resource) => {
+			if (String(resource).includes('authorization-tokens')) {
+				return Promise.resolve({
+					json: () =>
+						Promise.resolve({
+							accessToken: 'access-token',
+							serviceURL: 'http://ai-hub',
+							userToken: 'user-token',
+						}),
+					ok: true,
+				} as never);
+			}
+
+			return Promise.reject(new Error('network error'));
+		});
+
+		const errorRender = render(
+			<QuickRepliesMessageBalloon
+				component={COMPONENT}
+				onAction={onAction}
+				setIsGenerating={jest.fn()}
+			/>
+		);
+
+		await userEvent.click(
+			errorRender.getByRole('button', {
+				name: 'Find Matching Assets in CMS',
+			})
+		);
+
+		await waitFor(() =>
+			expect(onAction).toHaveBeenCalledWith({success: false})
+		);
+	});
 });

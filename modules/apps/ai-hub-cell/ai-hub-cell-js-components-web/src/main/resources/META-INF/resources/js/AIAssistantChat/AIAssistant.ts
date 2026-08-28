@@ -10,6 +10,11 @@ import {ChatContext} from './api';
 
 export type AIAssistantPresentation = 'dropdown' | 'sidebar';
 
+export interface AIAssistantActionOutcome {
+	response?: Response;
+	success: boolean;
+}
+
 export interface AIAssistantOpenCommand {
 	anchorId?: string;
 	context?: ChatContext;
@@ -17,6 +22,7 @@ export interface AIAssistantOpenCommand {
 	getContext?: () => ChatContext;
 	initialMessage?: string;
 	instructionDefinitionScope: string;
+	onAction?: (outcome: AIAssistantActionOutcome) => void;
 	presentation?: AIAssistantPresentation;
 	pushContainer?: string;
 	quickActions?: string[];

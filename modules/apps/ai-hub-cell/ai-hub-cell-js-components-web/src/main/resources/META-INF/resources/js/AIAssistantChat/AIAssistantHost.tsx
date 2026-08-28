@@ -138,6 +138,7 @@ const AIAssistantHost: React.FC = () => {
 		initialMessage: activeCommand?.initialMessage,
 		instructionDefinitionScope:
 			activeCommand?.instructionDefinitionScope ?? '',
+		onAction: activeCommand?.onAction,
 		onCloseRequested: handleClose,
 		onOpenRequested: () => setOpenedByEvent(true),
 		triggerRef: anchorRef as React.RefObject<HTMLButtonElement | null>,

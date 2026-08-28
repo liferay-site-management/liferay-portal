@@ -12,13 +12,17 @@ import {AgentComponent, AgentComponentOption} from '../types';
 
 import '../chat.scss';
 
+import type {AIAssistantActionOutcome} from '../AIAssistant';
+
 export interface QuickRepliesMessageBalloonProps {
 	component: AgentComponent;
+	onAction?: (outcome: AIAssistantActionOutcome) => void;
 	setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const QuickRepliesMessageBalloon: React.FC<QuickRepliesMessageBalloonProps> = ({
 	component,
+	onAction,
 	setIsGenerating,
 }) => {
 	const [submitted, setSubmitted] = useState(false);
@@ -31,10 +35,16 @@ const QuickRepliesMessageBalloon: React.FC<QuickRepliesMessageBalloonProps> = ({
 		setIsGenerating(true);
 
 		try {
-			await executeHttpRequestAction(option.action['http-request']);
+			const response = await executeHttpRequestAction(
+				option.action['http-request']
+			);
+
+			onAction?.({response, success: response?.ok ?? false});
 		}
 		catch {
 			setIsGenerating(false);
+
+			onAction?.({success: false});
 		}
 	}
 

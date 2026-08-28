@@ -12,14 +12,17 @@ import {AgentComponent} from '../types';
 
 import '../chat.scss';
 
+import type {AIAssistantActionOutcome} from '../AIAssistant';
+
 export interface SelectComponentMessageBalloonProps {
 	component: AgentComponent;
+	onAction?: (outcome: AIAssistantActionOutcome) => void;
 	setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const SelectComponentMessageBalloon: React.FC<
 	SelectComponentMessageBalloonProps
-> = ({component, setIsGenerating}) => {
+> = ({component, onAction, setIsGenerating}) => {
 	const [selectedIndex, setSelectedIndex] = useState('');
 	const [submitted, setSubmitted] = useState(false);
 
@@ -41,10 +44,16 @@ const SelectComponentMessageBalloon: React.FC<
 		setIsGenerating(true);
 
 		try {
-			await executeHttpRequestAction(option.action['http-request']);
+			const response = await executeHttpRequestAction(
+				option.action['http-request']
+			);
+
+			onAction?.({response, success: response?.ok ?? false});
 		}
 		catch {
 			setIsGenerating(false);
+
+			onAction?.({success: false});
 		}
 	}
 
