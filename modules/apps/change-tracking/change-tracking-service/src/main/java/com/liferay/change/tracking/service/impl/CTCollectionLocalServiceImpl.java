@@ -1189,7 +1189,8 @@ public class CTCollectionLocalServiceImpl
 
 			ctEntry.setChangeType(changeType);
 
-			ctServiceCopier.addCTEntry(_ctEntryPersistence.update(ctEntry));
+			ctServiceCopier.addCTEntry(
+				_ctEntryLocalService.addCTEntry(ctEntry));
 		}
 
 		try {
