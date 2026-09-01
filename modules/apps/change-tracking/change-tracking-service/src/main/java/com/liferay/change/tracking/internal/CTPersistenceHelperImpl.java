@@ -150,7 +150,7 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 				int changeType = ctEntry.getChangeType();
 
 				if (changeType == CTConstants.CT_CHANGE_TYPE_ADDITION) {
-					_ctEntryLocalService.deleteCTEntry(ctEntry, false);
+					_ctEntryLocalService.deleteCTEntry(ctEntry);
 
 					return true;
 				}
