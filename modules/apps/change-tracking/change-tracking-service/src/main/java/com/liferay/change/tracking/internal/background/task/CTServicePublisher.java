@@ -385,8 +385,9 @@ public class CTServicePublisher<T extends CTModel<T>> {
 
 					CTEntry ctEntry = ctEntries.get(primaryKey);
 
-					_ctEntryLocalService.updateModelMvccVersion(
-						ctEntry.getCtEntryId(), mvccVersion);
+					ctEntry.setModelMvccVersion(mvccVersion);
+
+					_ctEntryLocalService.updateCTEntry(ctEntry);
 				}
 			}
 		}
