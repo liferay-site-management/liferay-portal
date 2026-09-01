@@ -1606,7 +1606,7 @@ public class CTCollectionLocalServiceImpl
 
 				ctEntry.setCtCollectionId(toCTCollectionId);
 
-				_ctEntryPersistence.update(ctEntry);
+				_ctEntryLocalService.updateCTEntry(ctEntry);
 			}
 		}
 
