@@ -547,7 +547,7 @@ public class CTCollectionLocalServiceImpl
 			for (CTEntry ctEntry : ctEntries) {
 				ctEntryPrimaryKeys.add(ctEntry.getCtEntryId());
 
-				_ctEntryPersistence.remove(ctEntry);
+				_ctEntryLocalService.deleteCTEntry(ctEntry, true);
 			}
 		}
 
