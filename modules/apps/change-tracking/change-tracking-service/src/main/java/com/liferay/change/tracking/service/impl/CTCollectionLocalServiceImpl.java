@@ -559,7 +559,7 @@ public class CTCollectionLocalServiceImpl
 			for (CTEntry ctEntry : ctEntries) {
 				ctEntryPrimaryKeys.add(ctEntry.getCtEntryId());
 
-				_ctEntryPersistence.remove(ctEntry);
+				_ctEntryLocalService.deleteCTEntry(ctEntry, true);
 			}
 		}
 
@@ -1189,7 +1189,8 @@ public class CTCollectionLocalServiceImpl
 
 			ctEntry.setChangeType(changeType);
 
-			ctServiceCopier.addCTEntry(_ctEntryPersistence.update(ctEntry));
+			ctServiceCopier.addCTEntry(
+				_ctEntryLocalService.addCTEntry(ctEntry));
 		}
 
 		try {
@@ -1605,7 +1606,7 @@ public class CTCollectionLocalServiceImpl
 
 				ctEntry.setCtCollectionId(toCTCollectionId);
 
-				_ctEntryPersistence.update(ctEntry);
+				_ctEntryLocalService.updateCTEntry(ctEntry);
 			}
 		}
 

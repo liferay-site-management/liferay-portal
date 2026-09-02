@@ -293,17 +293,6 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 	}
 
 	@Override
-	public CTEntry updateChangeType(long ctEntryId, int changeType)
-		throws PortalException {
-
-		CTEntry ctEntry = ctEntryPersistence.findByPrimaryKey(ctEntryId);
-
-		ctEntry.setChangeType(changeType);
-
-		return ctEntryPersistence.update(ctEntry);
-	}
-
-	@Override
 	public CTEntry updateCTEntry(CTEntry ctEntry) {
 		CTCollection ctCollection = _ctCollectionPersistence.fetchByPrimaryKey(
 			ctEntry.getCtCollectionId());
@@ -332,17 +321,6 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		CTEntry ctEntry = ctEntryPersistence.findByPrimaryKey(ctEntryId);
 
 		ctEntry.setModelMvccVersion(modelMvccVersion);
-
-		return ctEntryPersistence.update(ctEntry);
-	}
-
-	@Override
-	public CTEntry updateUserId(long ctEntryId, long userId)
-		throws PortalException {
-
-		CTEntry ctEntry = ctEntryPersistence.findByPrimaryKey(ctEntryId);
-
-		ctEntry.setUserId(userId);
 
 		return ctEntryPersistence.update(ctEntry);
 	}
