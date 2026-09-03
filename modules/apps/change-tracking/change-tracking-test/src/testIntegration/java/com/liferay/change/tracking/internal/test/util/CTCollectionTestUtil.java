@@ -6,12 +6,8 @@
 package com.liferay.change.tracking.internal.test.util;
 
 import com.liferay.change.tracking.model.CTCollection;
-import com.liferay.change.tracking.model.CTScore;
 import com.liferay.change.tracking.service.CTCollectionLocalServiceUtil;
 import com.liferay.change.tracking.service.CTCollectionServiceUtil;
-import com.liferay.change.tracking.service.CTScoreLocalServiceUtil;
-import com.liferay.document.library.kernel.model.DLFileEntryMetadata;
-import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestUtil;
 import com.liferay.journal.model.JournalFolder;
 import com.liferay.journal.service.JournalFolderLocalServiceUtil;
 import com.liferay.journal.test.util.JournalFolderFixture;
@@ -102,31 +98,11 @@ public class CTCollectionTestUtil {
 	}
 
 	public static void updateCTCollectionSizeClassification(
-			long ctCollectionId, long groupId, int score, User user)
+			long ctCollectionId, String scoreSizeClassification)
 		throws Exception {
 
-		try (SafeCloseable safeCloseable =
-				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
-					ctCollectionId)) {
-
-			DDMStructureTestUtil.addStructure(
-				groupId, DLFileEntryMetadata.class.getName());
-		}
-
-		CTScore ctScore = CTScoreLocalServiceUtil.fetchCTScoreByCTCollectionId(
-			ctCollectionId);
-
-		ctScore.setScore(score);
-
-		CTScoreLocalServiceUtil.updateCTScore(ctScore);
-
-		try (SafeCloseable safeCloseable =
-				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
-					ctCollectionId)) {
-
-			DDMStructureTestUtil.addStructure(
-				groupId, DLFileEntryMetadata.class.getName());
-		}
+		CTCollectionLocalServiceUtil.updateScoreSizeClassification(
+			ctCollectionId, scoreSizeClassification);
 	}
 
 }

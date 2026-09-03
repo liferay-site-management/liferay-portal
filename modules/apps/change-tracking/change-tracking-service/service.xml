@@ -60,6 +60,7 @@
 		<column name="description" type="String" />
 		<column name="onDemandUserId" type="long" />
 		<column name="scheduledDate" type="Date" />
+		<column name="scoreSizeClassification" type="String" />
 		<column name="shareable" type="boolean" />
 		<column name="status" type="int" />
 		<column name="statusByUserId" type="long" />
@@ -342,27 +343,6 @@
 
 		<finder name="CompanyId" return-type="Collection">
 			<finder-column name="companyId" />
-		</finder>
-	</entity>
-	<entity local-service="true" name="CTScore" remote-service="false" trash-enabled="false" uuid="false">
-
-		<!-- PK fields -->
-
-		<column name="ctScoreId" primary="true" type="long" />
-
-		<!-- Audit fields -->
-
-		<column name="companyId" type="long" />
-
-		<!-- Other fields -->
-
-		<column name="ctCollectionId" type="long" />
-		<column name="score" type="int" />
-
-		<!-- Finder methods -->
-
-		<finder name="CtCollectionId" return-type="CTScore" unique="true">
-			<finder-column name="ctCollectionId" />
 		</finder>
 	</entity>
 	<exceptions>

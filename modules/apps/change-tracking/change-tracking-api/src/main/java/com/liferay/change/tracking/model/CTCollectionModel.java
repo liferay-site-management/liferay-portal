@@ -293,6 +293,21 @@ public interface CTCollectionModel
 	public void setScheduledDate(Date scheduledDate);
 
 	/**
+	 * Returns the score size classification of this ct collection.
+	 *
+	 * @return the score size classification of this ct collection
+	 */
+	@AutoEscape
+	public String getScoreSizeClassification();
+
+	/**
+	 * Sets the score size classification of this ct collection.
+	 *
+	 * @param scoreSizeClassification the score size classification of this ct collection
+	 */
+	public void setScoreSizeClassification(String scoreSizeClassification);
+
+	/**
 	 * Returns the shareable of this ct collection.
 	 *
 	 * @return the shareable of this ct collection
@@ -377,4 +392,4 @@ public interface CTCollectionModel
 	}
 
 }
-// LIFERAY-SERVICE-BUILDER-HASH:-1314799029
+// LIFERAY-SERVICE-BUILDER-HASH:-359061677

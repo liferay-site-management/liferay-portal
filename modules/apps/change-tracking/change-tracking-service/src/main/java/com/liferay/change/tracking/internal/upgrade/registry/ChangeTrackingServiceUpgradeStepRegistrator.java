@@ -9,6 +9,7 @@ import com.liferay.change.tracking.internal.upgrade.v2_10_0.CTCollectionUpgradeP
 import com.liferay.change.tracking.internal.upgrade.v2_12_3.CTMessageCompanyIdUpgradeProcess;
 import com.liferay.change.tracking.internal.upgrade.v2_12_4.CTProcessResourceUpgradeProcess;
 import com.liferay.change.tracking.internal.upgrade.v2_14_0.CTConflictCheckerDispatchTriggerUpgradeProcess;
+import com.liferay.change.tracking.internal.upgrade.v2_16_0.CTCollectionScoreClassificationUpgradeProcess;
 import com.liferay.change.tracking.internal.upgrade.v2_3_0.UpgradeCompanyId;
 import com.liferay.change.tracking.internal.upgrade.v2_4_0.CTSchemaVersionUpgradeProcess;
 import com.liferay.change.tracking.internal.upgrade.v2_7_0.CTProcessUpgradeProcess;
@@ -162,6 +163,10 @@ public class ChangeTrackingServiceUpgradeStepRegistrator
 			"2.14.0", "2.15.0",
 			new com.liferay.change.tracking.internal.upgrade.v2_15_0.
 				CTCollectionUpgradeProcess());
+
+		registry.register(
+			"2.15.0", "2.16.0",
+			new CTCollectionScoreClassificationUpgradeProcess());
 	}
 
 	@Reference

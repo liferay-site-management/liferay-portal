@@ -6,6 +6,7 @@
 package com.liferay.change.tracking.internal.notification.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.internal.test.util.CTCollectionTestUtil;
 import com.liferay.change.tracking.model.CTCollection;
@@ -96,7 +97,8 @@ public class PublicationUserNotificationHandlerTest {
 			RandomTestUtil.randomString(), null);
 
 		CTCollectionTestUtil.updateCTCollectionSizeClassification(
-			ctCollection.getCtCollectionId(), _group.getGroupId(), 9999, user);
+			ctCollection.getCtCollectionId(),
+			CTConstants.SCORE_SIZE_CLASSIFICATION_MEDIUM);
 
 		ServiceContext serviceContext = _getServiceContext();
 
@@ -215,7 +217,8 @@ public class PublicationUserNotificationHandlerTest {
 			RandomTestUtil.randomString(), null);
 
 		CTCollectionTestUtil.updateCTCollectionSizeClassification(
-			ctCollection.getCtCollectionId(), _group.getGroupId(), 19999, user);
+			ctCollection.getCtCollectionId(),
+			CTConstants.SCORE_SIZE_CLASSIFICATION_LARGE);
 
 		ServiceContext serviceContext = _getServiceContext();
 

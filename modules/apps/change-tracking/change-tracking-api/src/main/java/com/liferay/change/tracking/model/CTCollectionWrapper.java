@@ -48,6 +48,7 @@ public class CTCollectionWrapper
 		attributes.put("description", getDescription());
 		attributes.put("onDemandUserId", getOnDemandUserId());
 		attributes.put("scheduledDate", getScheduledDate());
+		attributes.put("scoreSizeClassification", getScoreSizeClassification());
 		attributes.put("shareable", isShareable());
 		attributes.put("status", getStatus());
 		attributes.put("statusByUserId", getStatusByUserId());
@@ -141,6 +142,13 @@ public class CTCollectionWrapper
 
 		if (scheduledDate != null) {
 			setScheduledDate(scheduledDate);
+		}
+
+		String scoreSizeClassification = (String)attributes.get(
+			"scoreSizeClassification");
+
+		if (scoreSizeClassification != null) {
+			setScoreSizeClassification(scoreSizeClassification);
 		}
 
 		Boolean shareable = (Boolean)attributes.get("shareable");
@@ -313,11 +321,11 @@ public class CTCollectionWrapper
 		return model.getSchemaVersionId();
 	}
 
-	@Override
-	public int getScore() {
-		return model.getScore();
-	}
-
+	/**
+	 * Returns the score size classification of this ct collection.
+	 *
+	 * @return the score size classification of this ct collection
+	 */
 	@Override
 	public String getScoreSizeClassification() {
 		return model.getScoreSizeClassification();
@@ -584,6 +592,16 @@ public class CTCollectionWrapper
 	}
 
 	/**
+	 * Sets the score size classification of this ct collection.
+	 *
+	 * @param scoreSizeClassification the score size classification of this ct collection
+	 */
+	@Override
+	public void setScoreSizeClassification(String scoreSizeClassification) {
+		model.setScoreSizeClassification(scoreSizeClassification);
+	}
+
+	/**
 	 * Sets whether this ct collection is shareable.
 	 *
 	 * @param shareable the shareable of this ct collection
@@ -679,4 +697,4 @@ public class CTCollectionWrapper
 	}
 
 }
-// LIFERAY-SERVICE-BUILDER-HASH:-233953900
+// LIFERAY-SERVICE-BUILDER-HASH:784783012

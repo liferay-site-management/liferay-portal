@@ -406,5 +406,9 @@ public interface CTCollectionLocalService
 			long userId, long ctCollectionId, String name, String description)
 		throws PortalException;
 
+	public CTCollection updateScoreSizeClassification(
+			long ctCollectionId, String scoreSizeClassification)
+		throws PortalException;
+
 }
-// LIFERAY-SERVICE-BUILDER-HASH:-846670018
+// LIFERAY-SERVICE-BUILDER-HASH:-1046750057

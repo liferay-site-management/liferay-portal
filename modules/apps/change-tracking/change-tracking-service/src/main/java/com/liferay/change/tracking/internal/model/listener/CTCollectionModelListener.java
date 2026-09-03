@@ -5,6 +5,7 @@
 
 package com.liferay.change.tracking.internal.model.listener;
 
+import com.liferay.change.tracking.internal.score.CTCollectionScoreCache;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.model.CTProcess;
@@ -39,6 +40,8 @@ public class CTCollectionModelListener extends BaseModelListener<CTCollection> {
 
 	@Override
 	public void onAfterRemove(CTCollection ctCollection) {
+		_ctCollectionScoreCache.remove(ctCollection.getCtCollectionId());
+
 		_ctPreferencesLocalService.resetCTPreferences(
 			ctCollection.getCtCollectionId());
 
@@ -108,6 +111,9 @@ public class CTCollectionModelListener extends BaseModelListener<CTCollection> {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CTCollectionModelListener.class.getName());
+
+	@Reference
+	private CTCollectionScoreCache _ctCollectionScoreCache;
 
 	@Reference
 	private CTEntryLocalService _ctEntryLocalService;

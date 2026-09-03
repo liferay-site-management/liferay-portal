@@ -32,6 +32,12 @@ public interface CTConstants {
 
 	public static final String RESOURCE_NAME = "com.liferay.change.tracking";
 
+	public static final String SCORE_SIZE_CLASSIFICATION_LARGE = "large";
+
+	public static final String SCORE_SIZE_CLASSIFICATION_MEDIUM = "medium";
+
+	public static final String SCORE_SIZE_CLASSIFICATION_SMALL = "small";
+
 	public static final String TYPE_AFTER = "after";
 
 	public static final String TYPE_BEFORE = "before";

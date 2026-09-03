@@ -844,12 +844,6 @@
 		},
 		{
 			"properties": {
-				"contextViewScoreThreshold": {
-					"default": 60000,
-					"description": "Set the maximum score a publication can have and still render the context view. Publications with a score above this threshold will skip the context view for better performance.",
-					"title": "Context View Score Threshold",
-					"type": "number"
-				},
 				"hiddenApplications": {
 					"description": "These applications will be hidden from the application menu when you are in a publication.",
 					"items": {

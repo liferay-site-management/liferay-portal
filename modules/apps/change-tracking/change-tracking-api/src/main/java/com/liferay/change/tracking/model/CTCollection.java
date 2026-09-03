@@ -49,10 +49,6 @@ public interface CTCollection extends CTCollectionModel, PersistedModel {
 
 		};
 
-	public int getScore();
-
-	public String getScoreSizeClassification();
-
 	public String getUserName();
 
 	public boolean isEmpty();
@@ -64,4 +60,4 @@ public interface CTCollection extends CTCollectionModel, PersistedModel {
 	public boolean isReadOnly();
 
 }
-// LIFERAY-SERVICE-BUILDER-HASH:838455712
+// LIFERAY-SERVICE-BUILDER-HASH:48475

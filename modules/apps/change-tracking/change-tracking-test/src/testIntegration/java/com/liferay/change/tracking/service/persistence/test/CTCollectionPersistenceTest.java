@@ -138,6 +138,9 @@ public class CTCollectionPersistenceTest {
 
 		newCTCollection.setScheduledDate(RandomTestUtil.nextDate());
 
+		newCTCollection.setScoreSizeClassification(
+			RandomTestUtil.randomString());
+
 		newCTCollection.setShareable(RandomTestUtil.randomBoolean());
 
 		newCTCollection.setStatus(RandomTestUtil.nextInt());
@@ -192,6 +195,9 @@ public class CTCollectionPersistenceTest {
 		Assert.assertEquals(
 			Time.getShortTimestamp(existingCTCollection.getScheduledDate()),
 			Time.getShortTimestamp(newCTCollection.getScheduledDate()));
+		Assert.assertEquals(
+			existingCTCollection.getScoreSizeClassification(),
+			newCTCollection.getScoreSizeClassification());
 		Assert.assertEquals(
 			existingCTCollection.isShareable(), newCTCollection.isShareable());
 		Assert.assertEquals(
@@ -318,8 +324,8 @@ public class CTCollectionPersistenceTest {
 			true, "userId", true, "createDate", true, "modifiedDate", true,
 			"ctRemoteId", true, "schemaVersionId", true, "name", true,
 			"description", true, "onDemandUserId", true, "scheduledDate", true,
-			"shareable", true, "status", true, "statusByUserId", true,
-			"statusDate", true);
+			"scoreSizeClassification", true, "shareable", true, "status", true,
+			"statusByUserId", true, "statusDate", true);
 	}
 
 	@Test
@@ -627,6 +633,8 @@ public class CTCollectionPersistenceTest {
 
 		ctCollection.setScheduledDate(RandomTestUtil.nextDate());
 
+		ctCollection.setScoreSizeClassification(RandomTestUtil.randomString());
+
 		ctCollection.setShareable(RandomTestUtil.randomBoolean());
 
 		ctCollection.setStatus(RandomTestUtil.nextInt());
@@ -645,4 +653,4 @@ public class CTCollectionPersistenceTest {
 	private ClassLoader _dynamicQueryClassLoader;
 
 }
-// LIFERAY-SERVICE-BUILDER-HASH:1051562728
+// LIFERAY-SERVICE-BUILDER-HASH:1937341176

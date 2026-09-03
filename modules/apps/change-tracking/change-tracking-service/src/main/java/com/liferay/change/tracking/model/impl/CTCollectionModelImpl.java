@@ -72,9 +72,10 @@ public class CTCollectionModelImpl
 		{"modifiedDate", Types.TIMESTAMP}, {"ctRemoteId", Types.BIGINT},
 		{"schemaVersionId", Types.BIGINT}, {"name", Types.VARCHAR},
 		{"description", Types.VARCHAR}, {"onDemandUserId", Types.BIGINT},
-		{"scheduledDate", Types.TIMESTAMP}, {"shareable", Types.BOOLEAN},
-		{"status", Types.INTEGER}, {"statusByUserId", Types.BIGINT},
-		{"statusDate", Types.TIMESTAMP}
+		{"scheduledDate", Types.TIMESTAMP},
+		{"scoreSizeClassification", Types.VARCHAR},
+		{"shareable", Types.BOOLEAN}, {"status", Types.INTEGER},
+		{"statusByUserId", Types.BIGINT}, {"statusDate", Types.TIMESTAMP}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -95,6 +96,7 @@ public class CTCollectionModelImpl
 		TABLE_COLUMNS_MAP.put("description", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("onDemandUserId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("scheduledDate", Types.TIMESTAMP);
+		TABLE_COLUMNS_MAP.put("scoreSizeClassification", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("shareable", Types.BOOLEAN);
 		TABLE_COLUMNS_MAP.put("status", Types.INTEGER);
 		TABLE_COLUMNS_MAP.put("statusByUserId", Types.BIGINT);
@@ -102,7 +104,7 @@ public class CTCollectionModelImpl
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table CTCollection (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,externalReferenceCode VARCHAR(75) null,ctCollectionId LONG not null primary key,companyId LONG,userId LONG,createDate DATE null,modifiedDate DATE null,ctRemoteId LONG,schemaVersionId LONG,name VARCHAR(75) null,description VARCHAR(200) null,onDemandUserId LONG,scheduledDate DATE null,shareable BOOLEAN,status INTEGER,statusByUserId LONG,statusDate DATE null)";
+		"create table CTCollection (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,externalReferenceCode VARCHAR(75) null,ctCollectionId LONG not null primary key,companyId LONG,userId LONG,createDate DATE null,modifiedDate DATE null,ctRemoteId LONG,schemaVersionId LONG,name VARCHAR(75) null,description VARCHAR(200) null,onDemandUserId LONG,scheduledDate DATE null,scoreSizeClassification VARCHAR(75) null,shareable BOOLEAN,status INTEGER,statusByUserId LONG,statusDate DATE null)";
 
 	public static final String TABLE_SQL_DROP = "drop table CTCollection";
 
@@ -304,6 +306,9 @@ public class CTCollectionModelImpl
 			attributeGetterFunctions.put(
 				"scheduledDate", CTCollection::getScheduledDate);
 			attributeGetterFunctions.put(
+				"scoreSizeClassification",
+				CTCollection::getScoreSizeClassification);
+			attributeGetterFunctions.put(
 				"shareable", CTCollection::getShareable);
 			attributeGetterFunctions.put("status", CTCollection::getStatus);
 			attributeGetterFunctions.put(
@@ -373,6 +378,10 @@ public class CTCollectionModelImpl
 			attributeSetterBiConsumers.put(
 				"scheduledDate",
 				(BiConsumer<CTCollection, Date>)CTCollection::setScheduledDate);
+			attributeSetterBiConsumers.put(
+				"scoreSizeClassification",
+				(BiConsumer<CTCollection, String>)
+					CTCollection::setScoreSizeClassification);
 			attributeSetterBiConsumers.put(
 				"shareable",
 				(BiConsumer<CTCollection, Boolean>)CTCollection::setShareable);
@@ -710,6 +719,26 @@ public class CTCollectionModelImpl
 
 	@JSON
 	@Override
+	public String getScoreSizeClassification() {
+		if (_scoreSizeClassification == null) {
+			return "";
+		}
+		else {
+			return _scoreSizeClassification;
+		}
+	}
+
+	@Override
+	public void setScoreSizeClassification(String scoreSizeClassification) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_scoreSizeClassification = scoreSizeClassification;
+	}
+
+	@JSON
+	@Override
 	public boolean getShareable() {
 		return _shareable;
 	}
@@ -876,6 +905,8 @@ public class CTCollectionModelImpl
 		ctCollectionImpl.setDescription(getDescription());
 		ctCollectionImpl.setOnDemandUserId(getOnDemandUserId());
 		ctCollectionImpl.setScheduledDate(getScheduledDate());
+		ctCollectionImpl.setScoreSizeClassification(
+			getScoreSizeClassification());
 		ctCollectionImpl.setShareable(isShareable());
 		ctCollectionImpl.setStatus(getStatus());
 		ctCollectionImpl.setStatusByUserId(getStatusByUserId());
@@ -915,6 +946,8 @@ public class CTCollectionModelImpl
 			this.<Long>getColumnOriginalValue("onDemandUserId"));
 		ctCollectionImpl.setScheduledDate(
 			this.<Date>getColumnOriginalValue("scheduledDate"));
+		ctCollectionImpl.setScoreSizeClassification(
+			this.<String>getColumnOriginalValue("scoreSizeClassification"));
 		ctCollectionImpl.setShareable(
 			this.<Boolean>getColumnOriginalValue("shareable"));
 		ctCollectionImpl.setStatus(
@@ -1077,6 +1110,18 @@ public class CTCollectionModelImpl
 			ctCollectionCacheModel.scheduledDate = Long.MIN_VALUE;
 		}
 
+		ctCollectionCacheModel.scoreSizeClassification =
+			getScoreSizeClassification();
+
+		String scoreSizeClassification =
+			ctCollectionCacheModel.scoreSizeClassification;
+
+		if ((scoreSizeClassification != null) &&
+			(scoreSizeClassification.length() == 0)) {
+
+			ctCollectionCacheModel.scoreSizeClassification = null;
+		}
+
 		ctCollectionCacheModel.shareable = isShareable();
 
 		ctCollectionCacheModel.status = getStatus();
@@ -1168,6 +1213,7 @@ public class CTCollectionModelImpl
 	private String _description;
 	private long _onDemandUserId;
 	private Date _scheduledDate;
+	private String _scoreSizeClassification;
 	private boolean _shareable;
 	private int _status;
 	private long _statusByUserId;
@@ -1218,6 +1264,8 @@ public class CTCollectionModelImpl
 		_columnOriginalValues.put("description", _description);
 		_columnOriginalValues.put("onDemandUserId", _onDemandUserId);
 		_columnOriginalValues.put("scheduledDate", _scheduledDate);
+		_columnOriginalValues.put(
+			"scoreSizeClassification", _scoreSizeClassification);
 		_columnOriginalValues.put("shareable", _shareable);
 		_columnOriginalValues.put("status", _status);
 		_columnOriginalValues.put("statusByUserId", _statusByUserId);
@@ -1273,13 +1321,15 @@ public class CTCollectionModelImpl
 
 		columnBitmasks.put("scheduledDate", 8192L);
 
-		columnBitmasks.put("shareable", 16384L);
+		columnBitmasks.put("scoreSizeClassification", 16384L);
 
-		columnBitmasks.put("status", 32768L);
+		columnBitmasks.put("shareable", 32768L);
 
-		columnBitmasks.put("statusByUserId", 65536L);
+		columnBitmasks.put("status", 65536L);
 
-		columnBitmasks.put("statusDate", 131072L);
+		columnBitmasks.put("statusByUserId", 131072L);
+
+		columnBitmasks.put("statusDate", 262144L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}
@@ -1288,4 +1338,4 @@ public class CTCollectionModelImpl
 	private CTCollection _escapedModel;
 
 }
-// LIFERAY-SERVICE-BUILDER-HASH:-1724200380
+// LIFERAY-SERVICE-BUILDER-HASH:266803489

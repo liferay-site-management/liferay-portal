@@ -614,6 +614,16 @@ public class CTCollectionLocalServiceWrapper
 	}
 
 	@Override
+	public com.liferay.change.tracking.model.CTCollection
+			updateScoreSizeClassification(
+				long ctCollectionId, String scoreSizeClassification)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _ctCollectionLocalService.updateScoreSizeClassification(
+			ctCollectionId, scoreSizeClassification);
+	}
+
+	@Override
 	public BasePersistence<?> getBasePersistence() {
 		return _ctCollectionLocalService.getBasePersistence();
 	}
@@ -633,4 +643,4 @@ public class CTCollectionLocalServiceWrapper
 	private CTCollectionLocalService _ctCollectionLocalService;
 
 }
-// LIFERAY-SERVICE-BUILDER-HASH:1350542652
+// LIFERAY-SERVICE-BUILDER-HASH:-660973950
