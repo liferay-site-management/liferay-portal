@@ -12,9 +12,11 @@ import java.io.File;
 import java.io.IOException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -58,13 +60,17 @@ public class TestClassFileUtil {
 			testSuiteElements.add(rootElement);
 		}
 
+		Set<TestClassFileMethod> matchedTestClassFileMethods = new HashSet<>();
+
 		for (Element testSuiteElement : testSuiteElements) {
 			testSuiteElement.addAttribute("package", projectPath);
 
 			for (Element testCaseElement :
 					testSuiteElement.elements("testcase")) {
 
-				_formatTestCaseElement(portalDir, testCaseElement, testPackage);
+				_formatTestCaseElement(
+					matchedTestClassFileMethods, portalDir, testCaseElement,
+					testPackage);
 			}
 		}
 
@@ -79,11 +85,23 @@ public class TestClassFileUtil {
 	}
 
 	private static void _formatTestCaseElement(
+			Set<TestClassFileMethod> matchedTestClassFileMethods,
 			File portalDir, Element testCaseElement, TestPackage testPackage)
 		throws IOException {
 
-		List<TestClassFile> testClassFiles = _getTestClassFiles(
-			testCaseElement, testPackage);
+		String testCaseClassName = testCaseElement.attributeValue("classname");
+
+		TestClassFile testClassFile = testPackage.getTestClassFile(
+			testCaseClassName);
+
+		List<TestClassFile> testClassFiles;
+
+		if (testClassFile == null) {
+			testClassFiles = testPackage.getTestClassFiles(testCaseClassName);
+		}
+		else {
+			testClassFiles = Collections.singletonList(testClassFile);
+		}
 
 		if ((testClassFiles == null) || testClassFiles.isEmpty()) {
 			return;
@@ -92,37 +110,56 @@ public class TestClassFileUtil {
 		String testCaseName = testCaseElement.attributeValue("name");
 
 		TestClassFileMethod testClassFileMethod = _getTestClassFileMethod(
-			testCaseName, testClassFiles);
+			matchedTestClassFileMethods, testCaseName, testClassFiles);
 
-		if (testClassFileMethod == null) {
-			return;
+		if (testClassFileMethod != null) {
+			testClassFile = testClassFileMethod.getTestClassFile();
 		}
 
-		TestClassFile testClassFile = testClassFileMethod.getTestClassFile();
+		if (testClassFile == null) {
+			return;
+		}
 
 		testCaseElement.addAttribute(
 			"classname",
 			JenkinsResultsParserUtil.getPathRelativeTo(
 				testClassFile.getFile(), portalDir));
 
-		if (testClassFileMethod.matches(testCaseName)) {
+		if ((testClassFileMethod != null) &&
+			testClassFileMethod.matches(testCaseName)) {
+
 			testCaseElement.addAttribute(
 				"name", testClassFileMethod.getFullName());
 		}
 	}
 
 	private static TestClassFileMethod _getTestClassFileMethod(
+			Set<TestClassFileMethod> matchedTestClassFileMethods,
 			String testCaseName, List<TestClassFile> testClassFiles)
 		throws IOException {
+
+		TestClassFileMethod matchedTestClassFileMethod = null;
 
 		for (TestClassFile testClassFile : testClassFiles) {
 			for (TestClassFileMethod testClassFileMethod :
 					testClassFile.getTestClassFileMethods()) {
 
-				if (testClassFileMethod.matches(testCaseName)) {
+				if (!testClassFileMethod.matches(testCaseName)) {
+					continue;
+				}
+
+				if (matchedTestClassFileMethods.add(testClassFileMethod)) {
 					return testClassFileMethod;
 				}
+
+				if (matchedTestClassFileMethod == null) {
+					matchedTestClassFileMethod = testClassFileMethod;
+				}
 			}
+		}
+
+		if (matchedTestClassFileMethod != null) {
+			return matchedTestClassFileMethod;
 		}
 
 		for (TestClassFile testClassFile : testClassFiles) {
@@ -136,22 +173,6 @@ public class TestClassFileUtil {
 		}
 
 		return null;
-	}
-
-	private static List<TestClassFile> _getTestClassFiles(
-			Element testCaseElement, TestPackage testPackage)
-		throws IOException {
-
-		String testCaseClassName = testCaseElement.attributeValue("classname");
-
-		TestClassFile testClassFile = testPackage.getTestClassFile(
-			testCaseClassName);
-
-		if (testClassFile != null) {
-			return Arrays.asList(testClassFile);
-		}
-
-		return testPackage.getTestClassFiles(testCaseClassName);
 	}
 
 }

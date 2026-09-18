@@ -11,8 +11,11 @@ import com.liferay.jenkins.results.parser.RandomTestUtil;
 
 import java.io.File;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -26,63 +29,80 @@ import org.junit.Test;
 public class TestClassFileUtilTest extends BaseTestClassFileTestCase {
 
 	@Test
-	public void testFormatTestResultsFileDynamic() throws Exception {
-		File projectDir = createProjectDir("node-scripts test");
+	public void testFormatTestResultsFileClassName() throws Exception {
+		_testFormat(
+			_CLASS_NAME + ".a_test_js", "a b", "a > b", "a.test.js",
+			"a.test.js", _TEST_FILE_CONTENT);
+		_testFormat(
+			_CLASS_NAME + ".b_js", "a b", "a > b", "b.js", "a.js",
+			_TEST_FILE_CONTENT, "b.js", _TEST_FILE_CONTENT);
 
-		write("it(`a ${b}`, () => {});", projectDir, _TEST_DIR_PATH + "/a.js");
+		String name = RandomTestUtil.randomString();
 
-		Element testCaseElement = _format(
-			_getTestSuite("a", _getTestCase(_CLASS_NAME, "a value")),
-			projectDir);
-
-		testEquals("a value", testCaseElement.attributeValue("name"));
-
-		testEquals(
-			_PROJECT_PATH + "/" + _TEST_DIR_PATH + "/a.js",
-			testCaseElement.attributeValue("classname"));
+		_testFormat(
+			_CLASS_NAME + ".a_js", name, name, "a.js", "a.js",
+			"it('b', () => {});");
 	}
 
 	@Test
-	public void testFormatTestResultsFileDynamicName() throws Exception {
-		File projectDir = createProjectDir("node-scripts test");
+	public void testFormatTestResultsFileDuplicateTestName() throws Exception {
+		File projectDir = _createProjectDir(
+			"a.js", _TEST_FILE_CONTENT, "b.js", _TEST_FILE_CONTENT);
 
-		write(
-			"it('100%s complete', () => {});", projectDir,
-			_TEST_DIR_PATH + "/a.js");
-
-		Element testCaseElement = _format(
-			_getTestSuite("a", _getTestCase(_CLASS_NAME, "100abc complete")),
+		List<Element> testCaseElements = _formatTestCaseElements(
+			_getTestSuite(
+				_getTestCase(_CLASS_NAME, "a b") +
+					_getTestCase(_CLASS_NAME, "a b")),
 			projectDir);
 
-		testEquals("100abc complete", testCaseElement.attributeValue("name"));
+		testEquals(
+			new HashSet<>(
+				Arrays.asList(
+					_getTestFilePath("a.js"), _getTestFilePath("b.js"))),
+			_getClassNames(testCaseElements));
+	}
+
+	@Test
+	public void testFormatTestResultsFileDuplicateTestNameExhausted()
+		throws Exception {
+
+		File projectDir = _createProjectDir("a.js", _TEST_FILE_CONTENT);
+
+		List<Element> testCaseElements = _formatTestCaseElements(
+			_getTestSuite(
+				_getTestCase(_CLASS_NAME, "a b") +
+					_getTestCase(_CLASS_NAME, "a b")),
+			projectDir);
 
 		testEquals(
-			_PROJECT_PATH + "/" + _TEST_DIR_PATH + "/a.js",
-			testCaseElement.attributeValue("classname"));
+			new HashSet<>(Arrays.asList(_getTestFilePath("a.js"))),
+			_getClassNames(testCaseElements));
+	}
+
+	@Test
+	public void testFormatTestResultsFileDynamic() throws Exception {
+		_testFormat(
+			_CLASS_NAME, "100abc complete", "100abc complete", "a.js", "a.js",
+			"it('100%s complete', () => {});");
+		_testFormat(
+			_CLASS_NAME, "a value", "a value", "a.js", "a.js",
+			"it(`a ${b}`, () => {});");
 	}
 
 	@Test
 	public void testFormatTestResultsFileExactMatch() throws Exception {
-		_testFormatTestResultsFileExactMatch("a.js", "b.js");
-		_testFormatTestResultsFileExactMatch("z.js", "b.js");
+		_testFormat(
+			_CLASS_NAME, "c a", "c a", "b.js", "a.js",
+			"it(`c ${d}`, () => {});", "b.js", "it('c a', () => {});");
+		_testFormat(
+			_CLASS_NAME, "c a", "c a", "b.js", "z.js",
+			"it(`c ${d}`, () => {});", "b.js", "it('c a', () => {});");
 	}
 
 	@Test
 	public void testFormatTestResultsFileJest() throws Exception {
-		File projectDir = createProjectDir("node-scripts test");
-
-		write(
-			"describe('a', () => {it('b', () => {});});", projectDir,
-			_TEST_DIR_PATH + "/a.js");
-
-		Element testCaseElement = _format(
-			_getTestSuite("a", _getTestCase(_CLASS_NAME, "a b")), projectDir);
-
-		testEquals("a > b", testCaseElement.attributeValue("name"));
-
-		testEquals(
-			_PROJECT_PATH + "/" + _TEST_DIR_PATH + "/a.js",
-			testCaseElement.attributeValue("classname"));
+		_testFormat(
+			_CLASS_NAME, "a b", "a > b", "a.js", "a.js", _TEST_FILE_CONTENT);
 	}
 
 	@Test
@@ -99,14 +119,10 @@ public class TestClassFileUtilTest extends BaseTestClassFileTestCase {
 
 	@Test
 	public void testFormatTestResultsFileNoMatch() throws Exception {
-		File projectDir = createProjectDir("node-scripts test");
-
-		write("it('b', () => {});", projectDir, _TEST_DIR_PATH + "/a.js");
-
 		String name = RandomTestUtil.randomString();
 
 		Element testCaseElement = _format(
-			_getTestSuite("a", _getTestCase(_CLASS_NAME, name)), projectDir);
+			_CLASS_NAME, name, "a.js", "it('b', () => {});");
 
 		testEquals(_CLASS_NAME, testCaseElement.attributeValue("classname"));
 		testEquals(name, testCaseElement.attributeValue("name"));
@@ -114,14 +130,10 @@ public class TestClassFileUtilTest extends BaseTestClassFileTestCase {
 
 	@Test
 	public void testFormatTestResultsFileUnchanged() throws Exception {
-		File projectDir = createProjectDir("node-scripts test");
-
-		write(
-			"describe('a', () => {it('b', () => {});});", projectDir,
-			_TEST_DIR_PATH + "/a.js");
+		File projectDir = _createProjectDir("a.js", _TEST_FILE_CONTENT);
 
 		File testResultsFile = _createTestResultsFile(
-			_getTestSuite("a", _getTestCase(_CLASS_NAME, "a b")), projectDir);
+			_getTestSuite(_getTestCase(_CLASS_NAME, "a b")), projectDir);
 
 		File portalDir = projectDir.getParentFile();
 
@@ -138,16 +150,12 @@ public class TestClassFileUtilTest extends BaseTestClassFileTestCase {
 	public void testFormatTestResultsFileVitest() throws Exception {
 		File projectDir = createProjectDir("vitest run");
 
-		write(
-			"describe('a', () => {it('b', () => {});});", projectDir,
-			"src/tests/api.spec.ts");
+		write(_TEST_FILE_CONTENT, projectDir, "src/tests/api.spec.ts");
 
 		Element testCaseElement = _format(
 			JenkinsResultsParserUtil.combine(
 				"<testsuites name=\"vitest tests\">",
-				_getTestSuite(
-					"src/tests/api.spec.ts",
-					_getTestCase("src/tests/api.spec.ts", "a > b")),
+				_getTestSuite(_getTestCase("src/tests/api.spec.ts", "a > b")),
 				"</testsuites>"),
 			projectDir);
 
@@ -155,6 +163,18 @@ public class TestClassFileUtilTest extends BaseTestClassFileTestCase {
 		testEquals(
 			_PROJECT_PATH + "/src/tests/api.spec.ts",
 			testCaseElement.attributeValue("classname"));
+	}
+
+	private File _createProjectDir(String... testFiles) throws Exception {
+		File projectDir = createProjectDir("node-scripts test");
+
+		for (int i = 0; i < testFiles.length; i += 2) {
+			write(
+				testFiles[i + 1], projectDir,
+				_TEST_DIR_PATH + "/" + testFiles[i]);
+		}
+
+		return projectDir;
 	}
 
 	private File _createTestResultsFile(String content, File projectDir)
@@ -166,6 +186,25 @@ public class TestClassFileUtilTest extends BaseTestClassFileTestCase {
 	}
 
 	private Element _format(String content, File projectDir) throws Exception {
+		List<Element> testCaseElements = _formatTestCaseElements(
+			content, projectDir);
+
+		return testCaseElements.get(0);
+	}
+
+	private Element _format(
+			String testCaseClassName, String testCaseName, String... testFiles)
+		throws Exception {
+
+		return _format(
+			_getTestSuite(_getTestCase(testCaseClassName, testCaseName)),
+			_createProjectDir(testFiles));
+	}
+
+	private List<Element> _formatTestCaseElements(
+			String content, File projectDir)
+		throws Exception {
+
 		File testResultsFile = _createTestResultsFile(content, projectDir);
 
 		TestClassFileUtil.formatTestResultsFile(
@@ -186,9 +225,17 @@ public class TestClassFileUtilTest extends BaseTestClassFileTestCase {
 
 		testEquals(_PROJECT_PATH, testSuiteElement.attributeValue("package"));
 
-		List<Element> testCaseElements = testSuiteElement.elements("testcase");
+		return testSuiteElement.elements("testcase");
+	}
 
-		return testCaseElements.get(0);
+	private Set<String> _getClassNames(List<Element> testCaseElements) {
+		Set<String> classNames = new HashSet<>();
+
+		for (Element testCaseElement : testCaseElements) {
+			classNames.add(testCaseElement.attributeValue("classname"));
+		}
+
+		return classNames;
 	}
 
 	private String _getTestCase(String className, String name) {
@@ -197,32 +244,29 @@ public class TestClassFileUtilTest extends BaseTestClassFileTestCase {
 			"\" time=\"1\" />");
 	}
 
-	private String _getTestSuite(String name, String testCases) {
-		return JenkinsResultsParserUtil.combine(
-			"<testsuite name=\"", name, "\" tests=\"1\">", testCases,
-			"</testsuite>");
+	private String _getTestFilePath(String testFileName) {
+		return _PROJECT_PATH + "/" + _TEST_DIR_PATH + "/" + testFileName;
 	}
 
-	private void _testFormatTestResultsFileExactMatch(
-			String dynamicName, String exactName)
+	private String _getTestSuite(String testCases) {
+		return JenkinsResultsParserUtil.combine(
+			"<testsuite name=\"a\" tests=\"1\">", testCases, "</testsuite>");
+	}
+
+	private void _testFormat(
+			String testCaseClassName, String testCaseName,
+			String expectedTestCaseName, String expectedTestFileName,
+			String... testFiles)
 		throws Exception {
 
-		File projectDir = createProjectDir("node-scripts test");
-
-		write(
-			"it(`c ${d}`, () => {});", projectDir,
-			_TEST_DIR_PATH + "/" + dynamicName);
-		write(
-			"it('c a', () => {});", projectDir,
-			_TEST_DIR_PATH + "/" + exactName);
-
 		Element testCaseElement = _format(
-			_getTestSuite("c", _getTestCase(_CLASS_NAME, "c a")), projectDir);
-
-		testEquals("c a", testCaseElement.attributeValue("name"));
+			testCaseClassName, testCaseName, testFiles);
 
 		testEquals(
-			_PROJECT_PATH + "/" + _TEST_DIR_PATH + "/" + exactName,
+			expectedTestCaseName, testCaseElement.attributeValue("name"));
+
+		testEquals(
+			_getTestFilePath(expectedTestFileName),
 			testCaseElement.attributeValue("classname"));
 	}
 
@@ -232,5 +276,8 @@ public class TestClassFileUtilTest extends BaseTestClassFileTestCase {
 	private static final String _PROJECT_PATH = "project";
 
 	private static final String _TEST_DIR_PATH = "test/js";
+
+	private static final String _TEST_FILE_CONTENT =
+		"describe('a', () => {it('b', () => {});});";
 
 }

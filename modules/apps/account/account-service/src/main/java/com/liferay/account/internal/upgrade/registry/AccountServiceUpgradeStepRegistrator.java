@@ -216,6 +216,19 @@ public class AccountServiceUpgradeStepRegistrator
 			"2.12.0", "2.12.1",
 			new AccountEntryResourcePermissionUpgradeProcess(
 				_resourceActionLocalService, _resourcePermissionLocalService));
+
+		registry.register(
+			"2.12.1", "2.13.0",
+			UpgradeProcessFactory.runSQL(
+				StringBundler.concat(
+					"update ObjectRelationship set deletionType = 'cascade' ",
+					"where objectFieldId2 in (select ",
+					"ObjectField.objectFieldId from ObjectDefinition inner ",
+					"join ObjectField on ObjectField.objectDefinitionId = ",
+					"ObjectDefinition.objectDefinitionId where ",
+					"ObjectDefinition.externalReferenceCode = ",
+					"'L_ACCOUNT_VALIDATOR_RESULT' and ObjectField.name = ",
+					"'r_accountToAccountValidatorResults_accountEntryId')")));
 	}
 
 	@Reference

@@ -53,6 +53,10 @@ public class CTCollectionTable extends BaseTable<CTCollectionTable> {
 		"onDemandUserId", Long.class, Types.BIGINT, Column.FLAG_DEFAULT);
 	public final Column<CTCollectionTable, Date> scheduledDate = createColumn(
 		"scheduledDate", Date.class, Types.TIMESTAMP, Column.FLAG_DEFAULT);
+	public final Column<CTCollectionTable, String> scoreSizeClassification =
+		createColumn(
+			"scoreSizeClassification", String.class, Types.VARCHAR,
+			Column.FLAG_DEFAULT);
 	public final Column<CTCollectionTable, Boolean> shareable = createColumn(
 		"shareable", Boolean.class, Types.BOOLEAN, Column.FLAG_DEFAULT);
 	public final Column<CTCollectionTable, Integer> status = createColumn(
@@ -67,4 +71,4 @@ public class CTCollectionTable extends BaseTable<CTCollectionTable> {
 	}
 
 }
-// LIFERAY-SERVICE-BUILDER-HASH:984313143
+// LIFERAY-SERVICE-BUILDER-HASH:-27331636

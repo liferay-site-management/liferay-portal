@@ -20,7 +20,6 @@ import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.service.CTSchemaVersionLocalService;
 import com.liferay.change.tracking.spi.display.CTDisplayRenderer;
 import com.liferay.change.tracking.spi.display.CTDisplayRendererRegistry;
-import com.liferay.change.tracking.web.internal.configuration.CTConfiguration;
 import com.liferay.change.tracking.web.internal.display.BasePersistenceRegistry;
 import com.liferay.change.tracking.web.internal.display.CTModelDisplayRendererAdapter;
 import com.liferay.change.tracking.web.internal.security.permission.resource.CTCollectionPermission;
@@ -39,7 +38,6 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.configuration.module.configuration.ConfigurationProviderUtil;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.sql.CTSQLModeThreadLocal;
 import com.liferay.portal.kernel.dao.orm.ORMException;
@@ -459,7 +457,9 @@ public class ViewChangesDisplayContext {
 
 		if ((_modelClassNameId != 0) && (_modelClassPK != 0) &&
 			(_ctCollection.getStatus() != WorkflowConstants.STATUS_APPROVED) &&
-			(_ctCollection.getScore() < _getContextViewScoreThreshold())) {
+			!Objects.equals(
+				CTConstants.SCORE_SIZE_CLASSIFICATION_LARGE,
+				_ctCollection.getScoreSizeClassification())) {
 
 			try {
 				ctClosure = _ctClosureFactory.create(
@@ -1204,14 +1204,6 @@ public class ViewChangesDisplayContext {
 		}
 
 		return JSONUtil.put("everything", everythingJSONObject);
-	}
-
-	private int _getContextViewScoreThreshold() throws Exception {
-		CTConfiguration ctConfiguration =
-			ConfigurationProviderUtil.getCompanyConfiguration(
-				CTConfiguration.class, _themeDisplay.getCompanyId());
-
-		return ctConfiguration.contextViewScoreThreshold();
 	}
 
 	private JSONArray _getDropdownItemsJSONArray(

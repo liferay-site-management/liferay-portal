@@ -68,7 +68,7 @@ public class CTCollectionCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(37);
+		StringBundler sb = new StringBundler(39);
 
 		sb.append("{mvccVersion=");
 		sb.append(mvccVersion);
@@ -98,6 +98,8 @@ public class CTCollectionCacheModel
 		sb.append(onDemandUserId);
 		sb.append(", scheduledDate=");
 		sb.append(scheduledDate);
+		sb.append(", scoreSizeClassification=");
+		sb.append(scoreSizeClassification);
 		sb.append(", shareable=");
 		sb.append(shareable);
 		sb.append(", status=");
@@ -175,6 +177,14 @@ public class CTCollectionCacheModel
 			ctCollectionImpl.setScheduledDate(new Date(scheduledDate));
 		}
 
+		if (scoreSizeClassification == null) {
+			ctCollectionImpl.setScoreSizeClassification("");
+		}
+		else {
+			ctCollectionImpl.setScoreSizeClassification(
+				scoreSizeClassification);
+		}
+
 		ctCollectionImpl.setShareable(shareable);
 		ctCollectionImpl.setStatus(status);
 		ctCollectionImpl.setStatusByUserId(statusByUserId);
@@ -213,6 +223,7 @@ public class CTCollectionCacheModel
 
 		onDemandUserId = objectInput.readLong();
 		scheduledDate = objectInput.readLong();
+		scoreSizeClassification = objectInput.readUTF();
 
 		shareable = objectInput.readBoolean();
 
@@ -269,6 +280,13 @@ public class CTCollectionCacheModel
 		objectOutput.writeLong(onDemandUserId);
 		objectOutput.writeLong(scheduledDate);
 
+		if (scoreSizeClassification == null) {
+			objectOutput.writeUTF("");
+		}
+		else {
+			objectOutput.writeUTF(scoreSizeClassification);
+		}
+
 		objectOutput.writeBoolean(shareable);
 
 		objectOutput.writeInt(status);
@@ -291,10 +309,11 @@ public class CTCollectionCacheModel
 	public String description;
 	public long onDemandUserId;
 	public long scheduledDate;
+	public String scoreSizeClassification;
 	public boolean shareable;
 	public int status;
 	public long statusByUserId;
 	public long statusDate;
 
 }
-// LIFERAY-SERVICE-BUILDER-HASH:-526990286
+// LIFERAY-SERVICE-BUILDER-HASH:-1931051590
