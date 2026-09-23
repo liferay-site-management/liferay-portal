@@ -25,6 +25,7 @@ create table CTCollection (
 	description VARCHAR(200) null,
 	onDemandUserId LONG,
 	scheduledDate DATE null,
+	scoreSizeClassification VARCHAR(75) null,
 	shareable BOOLEAN,
 	status INTEGER,
 	statusByUserId LONG,

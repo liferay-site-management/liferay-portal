@@ -522,6 +522,14 @@ public class CTCollectionLocalServiceUtil {
 			userId, ctCollectionId, name, description);
 	}
 
+	public static CTCollection updateScoreSizeClassification(
+			long ctCollectionId, String scoreSizeClassification)
+		throws PortalException {
+
+		return getService().updateScoreSizeClassification(
+			ctCollectionId, scoreSizeClassification);
+	}
+
 	public static CTCollectionLocalService getService() {
 		return _serviceSnapshot.get();
 	}
@@ -531,4 +539,4 @@ public class CTCollectionLocalServiceUtil {
 			CTCollectionLocalServiceUtil.class, CTCollectionLocalService.class);
 
 }
-// LIFERAY-SERVICE-BUILDER-HASH:294435277
+// LIFERAY-SERVICE-BUILDER-HASH:-2087827824
