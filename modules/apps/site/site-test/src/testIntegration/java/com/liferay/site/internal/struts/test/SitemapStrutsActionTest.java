@@ -181,7 +181,7 @@ public class SitemapStrutsActionTest {
 	}
 
 	@Test
-	public void testExecuteReturnsSitemapIndexXMLFromDLStore()
+	public void testExecuteReturnsNotFoundWithSitemapIndexNotStored()
 		throws Exception {
 
 		try (CompanyConfigurationTemporarySwapper
@@ -201,6 +201,35 @@ public class SitemapStrutsActionTest {
 			MockHttpServletResponse mockHttpServletResponse = _executeRequest(
 				null, null);
 
+			Assert.assertEquals(404, mockHttpServletResponse.getStatus());
+		}
+	}
+
+	@Test
+	public void testExecuteReturnsSitemapIndexXMLFromDLStore()
+		throws Exception {
+
+		try (CompanyConfigurationTemporarySwapper
+				companyConfigurationTemporarySwapper =
+					new CompanyConfigurationTemporarySwapper(
+						TestPropsValues.getCompanyId(),
+						_PID_SITEMAP_COMPANY_CONFIGURATION,
+						HashMapDictionaryBuilder.<String, Object>put(
+							"cachedGenerationEnabled", true
+						).put(
+							"xmlSitemapIndexEnabled", true
+						).put(
+							"xmlSitemapIndexMode",
+							SitemapConstants.INDEX_MODE_ASSET_TYPE
+						).build())) {
+
+			_sitemapManager.regenerateSitemap(
+				SitemapConstants.ASSET_TYPE_KEY_PAGES,
+				TestPropsValues.getCompanyId(), _group.getGroupId());
+
+			MockHttpServletResponse mockHttpServletResponse = _executeRequest(
+				null, null);
+
 			Assert.assertEquals(200, mockHttpServletResponse.getStatus());
 
 			Document document = _saxReader.read(
@@ -213,10 +242,6 @@ public class SitemapStrutsActionTest {
 			List<Element> elements = rootElement.elements();
 
 			Assert.assertFalse(elements.isEmpty());
-
-			Assert.assertTrue(
-				_sitemapStorageHelper.hasSitemapFile(
-					TestPropsValues.getCompanyId(), _group.getGroupId()));
 		}
 	}
 
@@ -240,6 +265,10 @@ public class SitemapStrutsActionTest {
 
 			_addJournalArticleAssetDisplayPageEntry(_addJournalArticle());
 
+			_sitemapManager.regenerateSitemap(
+				SitemapConstants.ASSET_TYPE_KEY_WEB_CONTENT,
+				TestPropsValues.getCompanyId(), _group.getGroupId());
+
 			Map<Long, String> assetTypeKeys =
 				_sitemapManager.getAssetTypeKeys();
 
@@ -260,11 +289,6 @@ public class SitemapStrutsActionTest {
 			List<Element> elements = rootElement.elements();
 
 			Assert.assertFalse(elements.isEmpty());
-
-			Assert.assertTrue(
-				_sitemapStorageHelper.hasSitemapFile(
-					TestPropsValues.getCompanyId(), _group.getGroupId(),
-					"web-content", 1));
 		}
 	}
 
