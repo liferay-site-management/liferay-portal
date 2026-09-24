@@ -45,8 +45,7 @@ public class SitemapStorageHelperImpl implements SitemapStorageHelper {
 
 	@Override
 	public void deleteSitemaps(long companyId) throws PortalException {
-		_dlStore.deleteDirectory(
-			companyId, CompanyConstants.SYSTEM, _getDirName());
+		_deleteFiles(companyId, _getDirName());
 
 		String lastRegenerateSitemapDateFileName =
 			_getLastRegenerateSitemapDateFileName();
@@ -65,8 +64,7 @@ public class SitemapStorageHelperImpl implements SitemapStorageHelper {
 	public void deleteSitemaps(long companyId, long groupId)
 		throws PortalException {
 
-		_dlStore.deleteDirectory(
-			companyId, CompanyConstants.SYSTEM, _getDirName(groupId));
+		_deleteFiles(companyId, _getDirName(groupId));
 	}
 
 	@Override
@@ -177,6 +175,17 @@ public class SitemapStorageHelperImpl implements SitemapStorageHelper {
 
 		_storeSitemapFile(
 			companyId, _getSitemapFileName(groupId, assetTypeKey, page), xml);
+	}
+
+	private void _deleteFiles(long companyId, String dirName)
+		throws PortalException {
+
+		for (String fileName :
+				_dlStore.getFileNames(
+					companyId, CompanyConstants.SYSTEM, dirName)) {
+
+			_dlStore.deleteFile(companyId, CompanyConstants.SYSTEM, fileName);
+		}
 	}
 
 	private String _getDirName() {
