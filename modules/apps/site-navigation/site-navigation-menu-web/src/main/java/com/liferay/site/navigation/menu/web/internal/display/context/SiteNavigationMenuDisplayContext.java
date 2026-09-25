@@ -194,6 +194,15 @@ public class SiteNavigationMenuDisplayContext {
 			return _rootMenuItemId;
 		}
 
+		String rootMenuItemId = ParamUtil.getString(
+			_httpServletRequest, "rootMenuItemId");
+
+		if (Validator.isNotNull(rootMenuItemId)) {
+			_rootMenuItemId = rootMenuItemId;
+
+			return _rootMenuItemId;
+		}
+
 		String rootMenuItemExternalReferenceCode = ParamUtil.getString(
 			_httpServletRequest, "rootMenuItemExternalReferenceCode",
 			_siteNavigationMenuPortletInstanceConfiguration.
@@ -362,6 +371,17 @@ public class SiteNavigationMenuDisplayContext {
 
 	public SiteNavigationMenu getSiteNavigationMenu() {
 		if (_siteNavigationMenu != null) {
+			return _siteNavigationMenu;
+		}
+
+		long siteNavigationMenuId = ParamUtil.getLong(
+			_httpServletRequest, "siteNavigationMenuId", -1);
+
+		if (siteNavigationMenuId >= 0) {
+			_siteNavigationMenu =
+				SiteNavigationMenuLocalServiceUtil.fetchSiteNavigationMenu(
+					siteNavigationMenuId);
+
 			return _siteNavigationMenu;
 		}
 

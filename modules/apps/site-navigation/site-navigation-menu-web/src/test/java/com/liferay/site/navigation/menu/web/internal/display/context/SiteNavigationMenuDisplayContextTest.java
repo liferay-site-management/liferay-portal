@@ -209,6 +209,75 @@ public class SiteNavigationMenuDisplayContextTest {
 	}
 
 	@Test
+	@TestInfo("LPD-107168")
+	public void testGetRootMenuItemIdAndSiteNavigationMenuIdWithParameters()
+		throws ConfigurationException {
+
+		long rootMenuItemId = RandomTestUtil.randomLong();
+
+		_setUpHttpServletRequestParameter(
+			"rootMenuItemId", String.valueOf(rootMenuItemId));
+
+		long siteNavigationMenuId = RandomTestUtil.randomLong();
+
+		_setUpHttpServletRequestParameter(
+			"siteNavigationMenuId", String.valueOf(siteNavigationMenuId));
+
+		SiteNavigationMenu siteNavigationMenu = Mockito.mock(
+			SiteNavigationMenu.class);
+
+		Mockito.when(
+			siteNavigationMenu.getSiteNavigationMenuId()
+		).thenReturn(
+			siteNavigationMenuId
+		);
+
+		_siteNavigationMenuLocalServiceUtilMockedStatic.when(
+			() -> SiteNavigationMenuLocalServiceUtil.fetchSiteNavigationMenu(
+				siteNavigationMenuId)
+		).thenReturn(
+			siteNavigationMenu
+		);
+
+		String rootMenuItemExternalReferenceCode =
+			RandomTestUtil.randomString();
+
+		_setUpSiteNavigationMenuPortletInstanceConfigurationRootMenuItem(
+			rootMenuItemExternalReferenceCode, null);
+
+		String siteNavigationMenuExternalReferenceCode =
+			RandomTestUtil.randomString();
+
+		_setUpSiteNavigationMenuPortletInstanceConfigurationSiteNavigationMenu(
+			siteNavigationMenuExternalReferenceCode, null);
+
+		SiteNavigationMenuDisplayContext siteNavigationMenuDisplayContext =
+			new SiteNavigationMenuDisplayContext(_httpServletRequest);
+
+		Assert.assertEquals(
+			String.valueOf(rootMenuItemId),
+			siteNavigationMenuDisplayContext.getRootMenuItemId());
+		Assert.assertEquals(
+			siteNavigationMenuId,
+			siteNavigationMenuDisplayContext.getSiteNavigationMenuId());
+
+		_siteNavigationMenuItemLocalServiceUtilMockedStatic.verify(
+			() ->
+				SiteNavigationMenuItemLocalServiceUtil.
+					fetchSiteNavigationMenuItemByExternalReferenceCode(
+						Mockito.eq(rootMenuItemExternalReferenceCode),
+						Mockito.anyLong()),
+			Mockito.never());
+		_siteNavigationMenuLocalServiceUtilMockedStatic.verify(
+			() ->
+				SiteNavigationMenuLocalServiceUtil.
+					fetchSiteNavigationMenuByExternalReferenceCode(
+						Mockito.eq(siteNavigationMenuExternalReferenceCode),
+						Mockito.anyLong()),
+			Mockito.never());
+	}
+
+	@Test
 	@TestInfo("LPD-37038")
 	public void testGetRootMenuItemIdWithDifferentScope()
 		throws ConfigurationException {
@@ -376,6 +445,14 @@ public class SiteNavigationMenuDisplayContextTest {
 				WebKeys.THEME_DISPLAY)
 		).thenReturn(
 			_themeDisplay
+		);
+	}
+
+	private void _setUpHttpServletRequestParameter(String name, String value) {
+		Mockito.when(
+			_httpServletRequest.getParameter(name)
+		).thenReturn(
+			value
 		);
 	}
 
