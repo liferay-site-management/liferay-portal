@@ -5,12 +5,18 @@
 
 package com.liferay.change.tracking.internal.score;
 
+import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.internal.CTServiceRegistry;
+import com.liferay.change.tracking.model.CTEntryTable;
+import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.store.model.CTSContent;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.petra.lang.SafeCloseable;
+import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.cache.MultiVMPool;
 import com.liferay.portal.kernel.cache.PortalCache;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
@@ -27,6 +33,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.osgi.framework.BundleContext;
@@ -80,6 +87,40 @@ public class CTScoreCalculator {
 		_portalCache.put(modelClassNameId, score);
 
 		return score;
+	}
+
+	public int calculateCTCollectionScore(long ctCollectionId) {
+		try (SafeCloseable safeCloseable =
+				CTCollectionThreadLocal.setProductionModeWithSafeCloseable()) {
+
+			List<Long> modelClassNameIds = _ctEntryLocalService.dslQuery(
+				DSLQueryFactoryUtil.select(
+					CTEntryTable.INSTANCE.modelClassNameId
+				).from(
+					CTEntryTable.INSTANCE
+				).where(
+					CTEntryTable.INSTANCE.ctCollectionId.eq(ctCollectionId)
+				));
+
+			int score = 0;
+
+			for (long modelClassNameId : modelClassNameIds) {
+				score += calculate(modelClassNameId);
+			}
+
+			return score;
+		}
+	}
+
+	public String getScoreSizeClassification(int score) {
+		if (score > _THRESHOLD_LARGE) {
+			return CTConstants.SCORE_SIZE_CLASSIFICATION_LARGE;
+		}
+		else if (score > _THRESHOLD_MEDIUM) {
+			return CTConstants.SCORE_SIZE_CLASSIFICATION_MEDIUM;
+		}
+
+		return CTConstants.SCORE_SIZE_CLASSIFICATION_SMALL;
 	}
 
 	@Activate
@@ -147,11 +188,18 @@ public class CTScoreCalculator {
 
 	private static final int _COUNT_DIVISOR = 50000000;
 
+	private static final int _THRESHOLD_LARGE = 20000;
+
+	private static final int _THRESHOLD_MEDIUM = 10000;
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		CTScoreCalculator.class);
 
 	@Reference
 	private ClassNameLocalService _classNameLocalService;
+
+	@Reference
+	private CTEntryLocalService _ctEntryLocalService;
 
 	@Reference
 	private CTServiceRegistry _ctServiceRegistry;
