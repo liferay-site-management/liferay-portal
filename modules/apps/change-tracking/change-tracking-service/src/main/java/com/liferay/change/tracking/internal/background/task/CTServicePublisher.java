@@ -18,7 +18,6 @@ import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.service.change.tracking.CTService;
 import com.liferay.portal.kernel.service.persistence.change.tracking.CTPersistence;
 import com.liferay.portal.kernel.util.ListUtil;
-import com.liferay.portal.kernel.util.PropsValues;
 
 import java.io.Serializable;
 
@@ -192,19 +191,19 @@ public class CTServicePublisher<T extends CTModel<T>> {
 				connection, tableName, primaryKeyName);
 
 			if (predeletedRowCount != _deletionCTEntries.size()) {
-				int updatedRowCount = _updateCTCollectionId(
+				int updatedCTEntryCount = _updateCTCollectionId(
 					connection, tableName, primaryKeyName,
 					_deletionCTEntries.values(), _targetCTCollectionId,
 					_sourceCTCollectionId, false, false);
 
-				if ((predeletedRowCount + updatedRowCount) !=
+				if ((predeletedRowCount + updatedCTEntryCount) !=
 						_deletionCTEntries.size()) {
 
 					throw new SystemException(
 						StringBundler.concat(
-							"Size mismatch expected ",
-							_deletionCTEntries.size(), " but was ",
-							updatedRowCount));
+							"Unable to publish ", _deletionCTEntries.size(),
+							" deletions, predeleted ", predeletedRowCount,
+							" and updated ", updatedCTEntryCount));
 				}
 			}
 
@@ -316,9 +315,6 @@ public class CTServicePublisher<T extends CTModel<T>> {
 				AutoBatchPreparedStatementUtil.autoBatchWithResults(
 					connection, sb.toString())) {
 
-			int batchCount = 0;
-			int totalRowCount = 0;
-
 			for (CTEntry ctEntry : ctEntries) {
 				preparedStatement.setLong(1, ctEntry.getModelClassPK());
 
@@ -327,28 +323,25 @@ public class CTServicePublisher<T extends CTModel<T>> {
 				}
 
 				preparedStatement.addBatch();
+			}
 
-				if (++batchCount >= PropsValues.HIBERNATE_JDBC_BATCH_SIZE) {
-					batchCount = 0;
+			int updatedCTEntryCount = 0;
 
-					for (int rowCount : preparedStatement.executeBatch()) {
-						totalRowCount += rowCount;
-					}
+			for (int rowCount : preparedStatement.executeBatch()) {
+				if (rowCount > 0) {
+					updatedCTEntryCount++;
 				}
 			}
 
-			for (int rowCount : preparedStatement.executeBatch()) {
-				totalRowCount += rowCount;
-			}
-
-			if (checkRowCount && (totalRowCount != ctEntries.size())) {
+			if (checkRowCount && (updatedCTEntryCount != ctEntries.size())) {
 				throw new SystemException(
 					StringBundler.concat(
-						"Size mismatch expected ", ctEntries.size(),
-						" but was ", totalRowCount));
+						"Unable to update ", ctEntries.size(),
+						" change tracking entries, updated ",
+						updatedCTEntryCount));
 			}
 
-			return totalRowCount;
+			return updatedCTEntryCount;
 		}
 	}
 
