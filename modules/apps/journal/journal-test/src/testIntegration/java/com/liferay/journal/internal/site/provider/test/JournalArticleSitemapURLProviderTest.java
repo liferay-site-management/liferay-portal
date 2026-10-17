@@ -40,6 +40,7 @@ import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.LayoutSetLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.TestInfo;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
@@ -406,6 +407,53 @@ public class JournalArticleSitemapURLProviderTest {
 	}
 
 	@Test
+	public void testJournalArticleSitemapURLProviderDefaultLayoutWithBatches()
+		throws Exception {
+
+		Layout layout = LayoutTestUtil.addTypePortletLayout(
+			_group.getGroupId());
+
+		List<JournalArticle> articles = new ArrayList<>();
+
+		for (int i = 0; i < 5; i++) {
+			articles.add(_addArticleWithLayoutUuid(layout));
+		}
+
+		PermissionChecker permissionChecker =
+			PermissionCheckerFactoryUtil.create(
+				_userLocalService.getGuestUser(_group.getCompanyId()));
+
+		Element rootElement = _getRootElement();
+
+		_visitLayout(layout, permissionChecker, rootElement);
+
+		String xml = rootElement.asXML();
+
+		for (JournalArticle article : articles) {
+			Assert.assertTrue(
+				xml, xml.contains(article.getUrlTitle() + "</loc>"));
+		}
+
+		int batchSize = ReflectionTestUtil.getFieldValue(
+			_journalArticleSitemapURLProvider, "_batchSize");
+
+		ReflectionTestUtil.setFieldValue(
+			_journalArticleSitemapURLProvider, "_batchSize", 2);
+
+		try {
+			rootElement = _getRootElement();
+
+			_visitLayout(layout, permissionChecker, rootElement);
+
+			Assert.assertEquals(xml, rootElement.asXML());
+		}
+		finally {
+			ReflectionTestUtil.setFieldValue(
+				_journalArticleSitemapURLProvider, "_batchSize", batchSize);
+		}
+	}
+
+	@Test
 	@TestInfo("LPD-102025")
 	public void testJournalArticleSitemapURLProviderDefaultLayoutWithoutPermissionChecker()
 		throws Exception {
@@ -638,6 +686,26 @@ public class JournalArticleSitemapURLProviderTest {
 		_themeDisplay.setSignedIn(true);
 		_themeDisplay.setSiteGroupId(_group.getGroupId());
 		_themeDisplay.setUser(TestPropsValues.getUser());
+	}
+
+	private void _visitLayout(
+			Layout layout, PermissionChecker permissionChecker,
+			Element rootElement)
+		throws Exception {
+
+		PermissionChecker originalPermissionChecker =
+			PermissionThreadLocal.getPermissionChecker();
+
+		try {
+			PermissionThreadLocal.setPermissionChecker(permissionChecker);
+
+			_journalArticleSitemapURLProvider.visitLayout(
+				rootElement, layout.getUuid(), _layoutSet, _themeDisplay);
+		}
+		finally {
+			PermissionThreadLocal.setPermissionChecker(
+				originalPermissionChecker);
+		}
 	}
 
 	private void _visitLayoutSet(

@@ -29,7 +29,6 @@ import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
-import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
@@ -69,6 +68,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -142,10 +142,8 @@ public class JournalArticleSitemapURLProvider implements SitemapURLProvider {
 				layoutSet, themeDisplay);
 		}
 		else {
-			_visitArticles(
-				element, true,
-				_getDisplayPageArticles(layoutSet.getGroupId(), layoutUuid),
-				null, layoutSet, themeDisplay);
+			_visitDisplayPageArticles(
+				element, layoutSet, layoutUuid, themeDisplay);
 		}
 	}
 
@@ -177,6 +175,11 @@ public class JournalArticleSitemapURLProvider implements SitemapURLProvider {
 				themeDisplay));
 
 		actionableDynamicQuery.performActions();
+	}
+
+	@Activate
+	protected void activate() {
+		_batchSize = 500;
 	}
 
 	private Layout _fetchVisitedLayout(
@@ -216,24 +219,6 @@ public class JournalArticleSitemapURLProvider implements SitemapURLProvider {
 		}
 
 		return availableLocales;
-	}
-
-	private List<JournalArticle> _getDisplayPageArticles(
-		long groupId, String layoutUuid) {
-
-		int start = QueryUtil.ALL_POS;
-		int end = QueryUtil.ALL_POS;
-
-		int count = _journalArticleService.getArticlesByLayoutUuidCount(
-			groupId, layoutUuid);
-
-		if (count > SitemapManager.MAXIMUM_ENTRIES) {
-			start = count - SitemapManager.MAXIMUM_ENTRIES;
-			end = count;
-		}
-
-		return _journalArticleService.getArticlesByLayoutUuid(
-			groupId, layoutUuid, start, end);
 	}
 
 	private List<JournalArticle> _getDisplayPageTemplateArticles(Layout layout)
@@ -486,12 +471,49 @@ public class JournalArticleSitemapURLProvider implements SitemapURLProvider {
 		}
 	}
 
+	private void _visitDisplayPageArticles(
+			Element element, LayoutSet layoutSet, String layoutUuid,
+			ThemeDisplay themeDisplay)
+		throws PortalException {
+
+		long[] designLibraryGroupIds =
+			DesignLibraryUtil.getConnectedDesignLibraryGroupIds(
+				layoutSet.getGroupId());
+		String portalURL = _portal.getPortalURL(layoutSet, themeDisplay);
+		Set<String> processedArticleIds = new HashSet<>();
+		Set<Locale> siteAvailableLocales = _language.getAvailableLocales(
+			themeDisplay.getScopeGroupId());
+		int start = 0;
+
+		while (true) {
+			List<JournalArticle> journalArticles =
+				_journalArticleService.getArticlesByLayoutUuid(
+					layoutSet.getGroupId(), layoutUuid, start,
+					start + _batchSize);
+
+			for (JournalArticle journalArticle : journalArticles) {
+				_visitArticle(
+					designLibraryGroupIds, element, true, journalArticle, null,
+					layoutSet, portalURL, processedArticleIds,
+					siteAvailableLocales, themeDisplay);
+			}
+
+			if (journalArticles.size() < _batchSize) {
+				return;
+			}
+
+			start += _batchSize;
+		}
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		JournalArticleSitemapURLProvider.class);
 
 	@Reference
 	private AssetDisplayPageEntryLocalService
 		_assetDisplayPageEntryLocalService;
+
+	private int _batchSize;
 
 	@Reference
 	private GroupLocalService _groupLocalService;
