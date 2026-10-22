@@ -33,6 +33,7 @@ dependencies {
 	testIntegrationImplementation project(":apps:notification:notification-rest-api")
 	testIntegrationImplementation project(":apps:object:object-admin-rest-api")
 	testIntegrationImplementation project(":apps:object:object-api")
+	testIntegrationImplementation project(":apps:portal-configuration:portal-configuration-test-util")
 	testIntegrationImplementation project(":apps:portal-language:portal-language-override-api")
 	testIntegrationImplementation project(":apps:portal-security:portal-security-script-management-test-util")
 	testIntegrationImplementation project(":apps:portal-security:portal-security-service-access-policy-api")

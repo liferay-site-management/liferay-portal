@@ -51,6 +51,7 @@ import com.liferay.document.library.kernel.service.DLAppLocalServiceUtil;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
 import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalService;
 import com.liferay.document.library.kernel.service.DLFolderLocalService;
+import com.liferay.document.library.kernel.util.DLValidatorUtil;
 import com.liferay.dynamic.data.lists.model.DDLRecord;
 import com.liferay.dynamic.data.mapping.constants.DDMTemplateConstants;
 import com.liferay.dynamic.data.mapping.exception.NoSuchStructureException;
@@ -244,6 +245,7 @@ import com.liferay.wiki.model.WikiPage;
 
 import jakarta.servlet.ServletContext;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 
@@ -267,6 +269,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -6151,6 +6155,15 @@ public class BundleSiteInitializer implements SiteInitializer {
 
 		ServiceContextThreadLocal.pushServiceContext(serviceContext);
 
+		Group companyGroup = _groupLocalService.getCompanyGroup(
+			serviceContext.getCompanyId());
+
+		_validateDocuments(
+			companyGroup.getGroupId(), "/site-initializer/documents/company");
+
+		_validateDocuments(groupId, "/site-initializer/documents/group");
+		_validateJSONFiles("/site-initializer/");
+
 		List<R> rList = new ArrayList<>();
 		Map<R, List<R>> rMap = _createRMap(serviceContext);
 
@@ -6498,6 +6511,94 @@ public class BundleSiteInitializer implements SiteInitializer {
 		_updateLayoutSet(true, serviceContext, stringUtilReplaceValues);
 	}
 
+	private void _validateDocuments(long groupId, String parentResourcePath)
+		throws Exception {
+
+		Set<String> resourcePaths = _servletContext.getResourcePaths(
+			parentResourcePath);
+
+		if (SetUtil.isEmpty(resourcePaths)) {
+			return;
+		}
+
+		for (String resourcePath : resourcePaths) {
+			if (resourcePath.endsWith("/")) {
+				_validateDocuments(groupId, resourcePath);
+
+				continue;
+			}
+
+			if (resourcePath.endsWith(".gitkeep") ||
+				resourcePath.endsWith(".metadata.json")) {
+
+				continue;
+			}
+
+			String fileName = FileUtil.getShortFileName(resourcePath);
+
+			DLValidatorUtil.validateFileName(fileName);
+
+			URL url = _servletContext.getResource(resourcePath);
+
+			URLConnection urlConnection = url.openConnection();
+
+			DLValidatorUtil.validateFileSize(
+				groupId, fileName, MimeTypesUtil.getContentType(fileName),
+				urlConnection.getContentLengthLong());
+		}
+	}
+
+	private void _validateJSONFiles(String parentResourcePath)
+		throws Exception {
+
+		Set<String> resourcePaths = _servletContext.getResourcePaths(
+			parentResourcePath);
+
+		if (SetUtil.isEmpty(resourcePaths)) {
+			return;
+		}
+
+		for (String resourcePath : resourcePaths) {
+			if (resourcePath.endsWith("/")) {
+				if (!resourcePath.endsWith("/resources/")) {
+					_validateJSONFiles(resourcePath);
+				}
+
+				continue;
+			}
+
+			if (!resourcePath.endsWith(".json") ||
+				(resourcePath.startsWith("/site-initializer/documents/") &&
+				 !resourcePath.endsWith(".metadata.json"))) {
+
+				continue;
+			}
+
+			String json = SiteInitializerUtil.read(
+				resourcePath, _servletContext);
+
+			if (Validator.isBlank(json)) {
+				continue;
+			}
+
+			Matcher matcher = _placeholderPattern.matcher(json);
+
+			json = matcher.replaceAll("0");
+
+			if (JSONUtil.isJSONObject(json) || JSONUtil.isJSONArray(json)) {
+				continue;
+			}
+
+			try {
+				_objectMapper.readTree(json);
+			}
+			catch (IOException ioException) {
+				throw new InitializationException(
+					"Unable to parse " + resourcePath, ioException);
+			}
+		}
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		BundleSiteInitializer.class);
 
@@ -6512,6 +6613,8 @@ public class BundleSiteInitializer implements SiteInitializer {
 	private static final Snapshot<OSBSiteInitializer>
 		_osbSiteInitializerSnapshot = new Snapshot<>(
 			BundleSiteInitializer.class, OSBSiteInitializer.class);
+	private static final Pattern _placeholderPattern = Pattern.compile(
+		"\\[([#$%])[^\\]\\n]*?\\1\\]");
 
 	private final AccountEntryLocalService _accountEntryLocalService;
 	private final AccountEntryOrganizationRelLocalService

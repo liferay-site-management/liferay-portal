@@ -57,6 +57,7 @@ import com.liferay.depot.model.DepotAppCustomization;
 import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.service.DepotAppCustomizationLocalService;
 import com.liferay.depot.service.DepotEntryLocalService;
+import com.liferay.document.library.kernel.exception.FileSizeException;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
@@ -138,8 +139,10 @@ import com.liferay.petra.io.StreamUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClassDefinition;
+import com.liferay.portal.configuration.test.util.ConfigurationTemporarySwapper;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -188,6 +191,7 @@ import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PropsUtil;
@@ -219,6 +223,7 @@ import com.liferay.segments.model.SegmentsExperience;
 import com.liferay.segments.service.SegmentsEntryLocalService;
 import com.liferay.segments.service.SegmentsExperienceLocalService;
 import com.liferay.site.configuration.manager.MenuAccessConfigurationManager;
+import com.liferay.site.exception.InitializationException;
 import com.liferay.site.initializer.SiteInitializer;
 import com.liferay.site.initializer.SiteInitializerFactory;
 import com.liferay.site.initializer.SiteInitializerRegistry;
@@ -541,6 +546,109 @@ public class BundleSiteInitializerTest {
 		finally {
 			FileUtil.deltree(tempDir1);
 			FileUtil.deltree(tempDir2);
+		}
+	}
+
+	@Test
+	public void testInitializeFromFileWithDocumentOverSizeLimit()
+		throws Exception {
+
+		File tempDir = FileUtil.createTempFolder();
+
+		try (ConfigurationTemporarySwapper configurationTemporarySwapper =
+				new ConfigurationTemporarySwapper(
+					"com.liferay.document.library.internal.configuration." +
+						"DLSizeLimitConfiguration",
+					HashMapDictionaryBuilder.<String, Object>put(
+						"fileMaxSize", 1L
+					).build());
+			LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
+				"com.liferay.site.initializer.extender.internal." +
+					"BundleSiteInitializer",
+				LoggerTestUtil.ERROR)) {
+
+			File siteInitializerDir = new File(tempDir, "site-initializer");
+
+			FileUtil.write(
+				new File(siteInitializerDir, "documents/group/test.txt"),
+				"test");
+			FileUtil.write(
+				new File(
+					siteInitializerDir,
+					"taxonomy-vocabularies/group/test-asset-vocabulary.json"),
+				JSONUtil.put(
+					"name", "Test Asset Vocabulary"
+				).put(
+					"viewableBy", "Anyone"
+				).toString());
+
+			SiteInitializer siteInitializer = _siteInitializerFactory.create(
+				siteInitializerDir, null);
+
+			InitializationException initializationException =
+				Assert.assertThrows(
+					InitializationException.class,
+					() -> siteInitializer.initialize(_group.getGroupId()));
+
+			Throwable throwable = initializationException.getCause();
+
+			Assert.assertTrue(
+				String.valueOf(throwable),
+				throwable instanceof FileSizeException);
+
+			Assert.assertNull(
+				_assetVocabularyLocalService.fetchGroupVocabulary(
+					_group.getGroupId(), "Test Asset Vocabulary"));
+			Assert.assertEquals(
+				0,
+				_dlFileEntryLocalService.getFileEntriesCount(
+					_group.getGroupId(),
+					DLFolderConstants.DEFAULT_PARENT_FOLDER_ID));
+		}
+		finally {
+			FileUtil.deltree(tempDir);
+		}
+	}
+
+	@Test
+	public void testInitializeFromFileWithInvalidJSON() throws Exception {
+		File tempDir = FileUtil.createTempFolder();
+
+		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
+				"com.liferay.site.initializer.extender.internal." +
+					"BundleSiteInitializer",
+				LoggerTestUtil.ERROR)) {
+
+			File siteInitializerDir = new File(tempDir, "site-initializer");
+
+			FileUtil.write(
+				new File(siteInitializerDir, "blog-postings.json"), "[{");
+			FileUtil.write(
+				new File(siteInitializerDir, "documents/group/test.txt"),
+				"test");
+
+			SiteInitializer siteInitializer = _siteInitializerFactory.create(
+				siteInitializerDir, null);
+
+			InitializationException initializationException =
+				Assert.assertThrows(
+					InitializationException.class,
+					() -> siteInitializer.initialize(_group.getGroupId()));
+
+			Throwable throwable = initializationException.getCause();
+
+			Assert.assertEquals(
+				"Unable to parse /site-initializer/blog-postings.json",
+				throwable.getMessage());
+
+			Assert.assertEquals(
+				0,
+				_dlFileEntryLocalService.getFileEntriesCount(
+					_group.getGroupId(),
+					DLFolderConstants.DEFAULT_PARENT_FOLDER_ID));
+		}
+		finally {
+			FileUtil.deltree(tempDir);
 		}
 	}
 
