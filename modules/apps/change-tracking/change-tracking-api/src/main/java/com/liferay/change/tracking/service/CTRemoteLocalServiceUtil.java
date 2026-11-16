@@ -89,8 +89,11 @@ public class CTRemoteLocalServiceUtil {
 	 *
 	 * @param ctRemote the ct remote
 	 * @return the ct remote that was removed
+	 * @throws PortalException
 	 */
-	public static CTRemote deleteCTRemote(CTRemote ctRemote) {
+	public static CTRemote deleteCTRemote(CTRemote ctRemote)
+		throws PortalException {
+
 		return getService().deleteCTRemote(ctRemote);
 	}
 
@@ -318,4 +321,4 @@ public class CTRemoteLocalServiceUtil {
 			CTRemoteLocalServiceUtil.class, CTRemoteLocalService.class);
 
 }
-// LIFERAY-SERVICE-BUILDER-HASH:1445140565
+// LIFERAY-SERVICE-BUILDER-HASH:1750916832
