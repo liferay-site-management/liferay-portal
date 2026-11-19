@@ -94,6 +94,9 @@ public class CTCollectionServiceImpl extends CTCollectionServiceBaseImpl {
 	public CTCollection deleteCTCollection(CTCollection ctCollection)
 		throws PortalException {
 
+		ctCollection = ctCollectionPersistence.findByPrimaryKey(
+			ctCollection.getCtCollectionId());
+
 		_ctCollectionModelResourcePermission.check(
 			getPermissionChecker(), ctCollection, ActionKeys.DELETE);
 
