@@ -45,6 +45,7 @@ import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.role.RoleConstants;
+import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
@@ -157,6 +158,36 @@ public class CTCollectionServiceTest {
 				_ctCollectionModelResourcePermission.contains(
 					permissionChecker, _ctCollection, CTActionKeys.PUBLISH));
 		}
+	}
+
+	@Test
+	public void testDeleteCTCollection() throws Exception {
+		CTCollection ctCollection = _ctCollectionLocalService.addCTCollection(
+			null, TestPropsValues.getCompanyId(), TestPropsValues.getUserId(),
+			0, RandomTestUtil.randomString(), RandomTestUtil.randomString());
+
+		UserTestUtil.setUser(_user);
+
+		ctCollection.setUserId(_user.getUserId());
+
+		try {
+			_ctCollectionService.deleteCTCollection(ctCollection);
+
+			Assert.fail();
+		}
+		catch (PrincipalException.MustHavePermission principalException) {
+			Assert.assertNotNull(
+				_ctCollectionLocalService.fetchCTCollection(
+					ctCollection.getCtCollectionId()));
+		}
+
+		UserTestUtil.setUser(TestPropsValues.getUser());
+
+		_ctCollectionService.deleteCTCollection(ctCollection);
+
+		Assert.assertNull(
+			_ctCollectionLocalService.fetchCTCollection(
+				ctCollection.getCtCollectionId()));
 	}
 
 	@Test

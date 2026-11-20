@@ -57,6 +57,9 @@ public class CTRemoteServiceImpl extends CTRemoteServiceBaseImpl {
 
 	@Override
 	public CTRemote deleteCTRemote(CTRemote ctRemote) throws PortalException {
+		ctRemote = ctRemotePersistence.findByPrimaryKey(
+			ctRemote.getCtRemoteId());
+
 		_ctRemoteModelResourcePermission.check(
 			getPermissionChecker(), ctRemote, ActionKeys.DELETE);
 
