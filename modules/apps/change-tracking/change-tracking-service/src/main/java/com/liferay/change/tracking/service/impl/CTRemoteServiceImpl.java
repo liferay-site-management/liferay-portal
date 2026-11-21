@@ -73,8 +73,15 @@ public class CTRemoteServiceImpl extends CTRemoteServiceBaseImpl {
 
 	@Override
 	public List<CTRemote> getCTRemotes(
-		String keywords, int start, int end,
-		OrderByComparator<CTRemote> orderByComparator) {
+			String keywords, int start, int end,
+			OrderByComparator<CTRemote> orderByComparator)
+		throws PortalException {
+
+		PortletResourcePermission portletResourcePermission =
+			_ctRemoteModelResourcePermission.getPortletResourcePermission();
+
+		portletResourcePermission.check(
+			getPermissionChecker(), null, ActionKeys.VIEW);
 
 		String[] keywordsArray = _customSQL.keywords(
 			keywords, true, WildcardMode.SURROUND);
@@ -107,7 +114,13 @@ public class CTRemoteServiceImpl extends CTRemoteServiceBaseImpl {
 	}
 
 	@Override
-	public int getCTRemotesCount(String keywords) {
+	public int getCTRemotesCount(String keywords) throws PortalException {
+		PortletResourcePermission portletResourcePermission =
+			_ctRemoteModelResourcePermission.getPortletResourcePermission();
+
+		portletResourcePermission.check(
+			getPermissionChecker(), null, ActionKeys.VIEW);
+
 		String[] keywordsArray = _customSQL.keywords(
 			keywords, true, WildcardMode.SURROUND);
 
