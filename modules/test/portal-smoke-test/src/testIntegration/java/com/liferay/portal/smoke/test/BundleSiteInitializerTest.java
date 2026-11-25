@@ -2543,6 +2543,8 @@ public class BundleSiteInitializerTest {
 				"Test Object Definition Display Page Template",
 				LayoutPageTemplateEntryTypeConstants.DISPLAY_PAGE);
 
+		Assert.assertNotNull(layoutPageTemplateEntry);
+
 		ObjectDefinition objectDefinition =
 			_objectDefinitionLocalService.fetchObjectDefinition(
 				_group.getCompanyId(), "C_TestObjectDefinition3");
