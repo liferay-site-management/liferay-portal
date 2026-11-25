@@ -5614,14 +5614,14 @@ public class BundleSiteInitializer implements SiteInitializer {
 				addObjectDefinitionsR, addOrUpdateBlogPostingsR,
 				addCPDefinitionsR, addOrUpdateClientExtensionEntriesR,
 				addFragmentEntriesR, addOrUpdateJournalArticlesR,
-				addOrUpdateSXPBlueprintR)
+				addOrUpdateSXPBlueprintR, publishObjectDefinitionsR)
 		).put(
 			addLayoutUtilityPageEntriesR,
 			_dependsOn(
 				addObjectDefinitionsR, addOrUpdateBlogPostingsR,
 				addCPDefinitionsR, addOrUpdateClientExtensionEntriesR,
 				addFragmentEntriesR, addOrUpdateJournalArticlesR,
-				addOrUpdateSXPBlueprintR)
+				addOrUpdateSXPBlueprintR, publishObjectDefinitionsR)
 		).put(
 			addObjectDefinitionsR,
 			_dependsOn(
