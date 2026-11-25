@@ -192,6 +192,10 @@ public class CTProcessResourceImpl extends BaseCTProcessResourceImpl {
 		com.liferay.change.tracking.model.CTProcess serviceBuilderCTProcess =
 			_ctProcessLocalService.getCTProcess(ctProcessId);
 
+		_ctCollectionModelResourcePermission.check(
+			PermissionThreadLocal.getPermissionChecker(),
+			serviceBuilderCTProcess.getCtCollectionId(), ActionKeys.VIEW);
+
 		return _ctProcessDTOConverter.toDTO(
 			_getDTOConverterContext(serviceBuilderCTProcess),
 			serviceBuilderCTProcess);
