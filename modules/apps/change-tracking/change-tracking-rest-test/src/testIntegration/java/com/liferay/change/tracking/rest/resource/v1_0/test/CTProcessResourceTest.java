@@ -11,6 +11,7 @@ import com.liferay.change.tracking.model.CTPreferences;
 import com.liferay.change.tracking.rest.client.dto.v1_0.CTProcess;
 import com.liferay.change.tracking.rest.client.pagination.Page;
 import com.liferay.change.tracking.rest.client.pagination.Pagination;
+import com.liferay.change.tracking.rest.client.resource.v1_0.CTProcessResource;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTPreferencesLocalService;
 import com.liferay.change.tracking.service.CTProcessLocalService;
@@ -20,10 +21,16 @@ import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.test.util.UserTestUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.test.rule.Inject;
+
+import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 
@@ -52,6 +59,20 @@ public class CTProcessResourceTest extends BaseCTProcessResourceTestCase {
 			_ctProcessLocalService.getCTProcesses(
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS),
 			com.liferay.change.tracking.model.CTProcess::getCtProcessId);
+
+		String password = RandomTestUtil.randomString();
+
+		User user = UserTestUtil.addUser(testCompany, password);
+
+		_userCTProcessResource = CTProcessResource.builder(
+		).authentication(
+			user.getEmailAddress(), password
+		).endpoint(
+			testCompany.getVirtualHostname(),
+			PortalUtil.getPortalServerPort(false), "http"
+		).locale(
+			LocaleUtil.getDefault()
+		).build();
 	}
 
 	@After
@@ -102,6 +123,14 @@ public class CTProcessResourceTest extends BaseCTProcessResourceTestCase {
 	@Test
 	public void testDeleteCTProcessBatch() throws Exception {
 		super.testDeleteCTProcessBatch();
+	}
+
+	@Override
+	@Test
+	public void testGetCTProcess() throws Exception {
+		super.testGetCTProcess();
+
+		_testGetCTProcessPermission();
 	}
 
 	@Override
@@ -212,6 +241,14 @@ public class CTProcessResourceTest extends BaseCTProcessResourceTestCase {
 			serviceBuilderCTProcess.getCtProcessId());
 	}
 
+	private void _testGetCTProcessPermission() throws Exception {
+		CTProcess ctProcess = _addCTProcess();
+
+		assertHttpResponseStatusCode(
+			Response.Status.NOT_FOUND.getStatusCode(),
+			_userCTProcessResource.getCTProcessHttpResponse(ctProcess.getId()));
+	}
+
 	private List<Long> _ctCollectionIds;
 
 	@Inject
@@ -224,5 +261,7 @@ public class CTProcessResourceTest extends BaseCTProcessResourceTestCase {
 
 	@Inject
 	private CTProcessLocalService _ctProcessLocalService;
+
+	private CTProcessResource _userCTProcessResource;
 
 }
