@@ -166,6 +166,9 @@ import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
@@ -186,6 +189,7 @@ import com.liferay.portal.kernel.settings.Settings;
 import com.liferay.portal.kernel.settings.SettingsLocator;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DataGuard;
+import com.liferay.portal.kernel.test.util.CompanyTestUtil;
 import com.liferay.portal.kernel.test.util.FeatureFlagTestUtil;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
@@ -194,6 +198,7 @@ import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PropsUtil;
@@ -633,6 +638,100 @@ public class BundleSiteInitializerTest {
 		}
 		finally {
 			PrincipalThreadLocal.setName(name);
+
+			FileUtil.deltree(tempDir);
+		}
+	}
+
+	@Test
+	public void testInitializeTwiceDoesNotThrowForSystemVocabularyAfterGroupLocaleChange()
+		throws Exception {
+
+		Company company = CompanyTestUtil.addCompany(true);
+
+		Group group = GroupTestUtil.addGroupToCompany(company.getCompanyId());
+
+		Role role = _roleLocalService.getRole(
+			company.getCompanyId(), RoleConstants.ADMINISTRATOR);
+
+		User user = _userLocalService.getRoleUsers(
+			role.getRoleId(), 0, 1
+		).get(
+			0
+		);
+
+		String originalPrincipalName = PrincipalThreadLocal.getName();
+		PermissionChecker originalPermissionChecker =
+			PermissionThreadLocal.getPermissionChecker();
+
+		File tempDir = FileUtil.createTempFolder();
+
+		try {
+			File taxonomyVocabulariesDir = new File(
+				tempDir, "site-initializer/taxonomy-vocabularies/group");
+
+			taxonomyVocabulariesDir.mkdirs();
+
+			FileUtil.write(
+				new File(
+					taxonomyVocabulariesDir, "test-system-vocabulary.json"),
+				StringBundler.concat(
+					"{\n",
+					"\t\"externalReferenceCode\": \"TESTSYSTEMVOCABULARY\",\n",
+					"\t\"multiValued\": true,\n",
+					"\t\"name\": \"Test System Vocabulary\",\n",
+					"\t\"name_i18n\": {\n",
+					"\t\t\"en_US\": \"Test System Vocabulary\"\n", "\t},\n",
+					"\t\"system\": true,\n", "\t\"viewableBy\": \"Anyone\",\n",
+					"\t\"visibilityType\": \"INTERNAL\"\n", "}"));
+
+			SiteInitializer siteInitializer = _siteInitializerFactory.create(
+				new File(tempDir, "site-initializer"), null);
+
+			PrincipalThreadLocal.setName(user.getUserId());
+			PermissionThreadLocal.setPermissionChecker(
+				PermissionCheckerFactoryUtil.create(user));
+
+			ServiceContextThreadLocal.pushServiceContext(new ServiceContext());
+
+			try {
+				siteInitializer.initialize(group.getGroupId());
+			}
+			finally {
+				ServiceContextThreadLocal.popServiceContext();
+			}
+
+			CompanyTestUtil.resetCompanyLocales(
+				company.getCompanyId(),
+				ListUtil.fromArray(LocaleUtil.ITALY, LocaleUtil.US),
+				LocaleUtil.ITALY);
+
+			PrincipalThreadLocal.setName(user.getUserId());
+			PermissionThreadLocal.setPermissionChecker(
+				PermissionCheckerFactoryUtil.create(user));
+
+			ServiceContextThreadLocal.pushServiceContext(new ServiceContext());
+
+			try {
+				siteInitializer.initialize(group.getGroupId());
+			}
+			finally {
+				ServiceContextThreadLocal.popServiceContext();
+			}
+
+			AssetVocabulary assetVocabulary =
+				_assetVocabularyLocalService.fetchGroupVocabulary(
+					group.getGroupId(), "Test System Vocabulary");
+
+			Assert.assertNotNull(assetVocabulary);
+			Assert.assertEquals(
+				"TESTSYSTEMVOCABULARY",
+				assetVocabulary.getExternalReferenceCode());
+		}
+		finally {
+			PrincipalThreadLocal.setName(originalPrincipalName);
+			PermissionThreadLocal.setPermissionChecker(
+				originalPermissionChecker);
 
 			FileUtil.deltree(tempDir);
 		}
