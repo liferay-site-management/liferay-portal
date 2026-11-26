@@ -196,6 +196,8 @@ The procedure runs in two passes over the validations, in the order below. The o
 
 1. [Portlet Title](validations/portal/portlet-title.md)
 
+1. [Index Action Label](validations/portal/index-action-label.md)
+
 1. [BND DS Annotations Options](validations/branch/bnd-dsannotations-options.md)
 
 1. [Service Registration](validations/branch/service-registration.md)
@@ -217,6 +219,8 @@ The procedure runs in two passes over the validations, in the order below. The o
 1. [Required Configuration Policy](validations/branch/required-configuration-policy.md)
 
 1. [TransactionTestUtil Usage](validations/branch/transaction-test-util-usage.md)
+
+1. [Own Bundle Context](validations/branch/own-bundle-context.md)
 
 1. [Full Portal Build](validations/portal/full-portal-build.md)
 

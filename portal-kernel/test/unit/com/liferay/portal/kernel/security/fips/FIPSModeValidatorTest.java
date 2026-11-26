@@ -17,6 +17,7 @@ import com.liferay.portal.kernel.test.util.PropsValuesTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.SystemProperties;
 
 import java.security.Provider;
 import java.security.Security;
@@ -173,6 +174,12 @@ public class FIPSModeValidatorTest {
 			authElement.getAttribute("auth_class"));
 
 		_assertSecurityException(
+			"The cluster link channel properties " +
+				"\"jgroups/secure/sym_encrypt/udp_control.xml\" must be a " +
+					"file in FIPS mode",
+			"_readChannelPropertiesDocument", new Class<?>[] {String.class},
+			"jgroups/secure/sym_encrypt/udp_control.xml");
+		_assertSecurityException(
 			"Unable to parse the cluster link channel properties",
 			"_readChannelPropertiesDocument", new Class<?>[] {String.class},
 			String.valueOf(
@@ -180,9 +187,12 @@ public class FIPSModeValidatorTest {
 					FIPSModeValidatorTest.class,
 					"cluster-link-channel-properties-malformed.xml")));
 		_assertSecurityException(
-			"Unable to read the cluster link channel properties",
-			"_readChannelPropertiesDocument", new Class<?>[] {String.class},
-			RandomTestUtil.randomString());
+			"must be a file in FIPS mode", "_readChannelPropertiesDocument",
+			new Class<?>[] {String.class}, "\u0000");
+		_assertSecurityException(
+			"must be a file in FIPS mode", "_readChannelPropertiesDocument",
+			new Class<?>[] {String.class},
+			SystemProperties.get(SystemProperties.TMP_DIR));
 	}
 
 	@Test

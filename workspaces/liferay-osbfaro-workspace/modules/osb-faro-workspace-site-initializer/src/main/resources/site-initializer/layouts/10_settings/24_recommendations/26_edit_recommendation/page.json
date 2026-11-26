@@ -14,13 +14,25 @@
 		},
 		{
 			"actionIds": [
-				"VIEW"
 			],
 			"roleName": "Site Member",
+			"scope": 4
+		},
+		{
+			"actionIds": [
+				"VIEW"
+			],
+			"roleName": "Workspace Administrator",
 			"scope": 4
 		}
 	],
 	"private": false,
 	"system": false,
-	"type": "Content"
+	"type": "Content",
+	"typeSettings": [
+		{
+			"key": "faroViewRoleName",
+			"value": "Workspace Administrator"
+		}
+	]
 }
