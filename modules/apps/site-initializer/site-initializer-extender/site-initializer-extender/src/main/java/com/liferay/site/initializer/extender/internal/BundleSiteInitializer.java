@@ -17,6 +17,7 @@ import com.liferay.account.service.AccountGroupLocalService;
 import com.liferay.account.service.AccountGroupRelService;
 import com.liferay.account.service.AccountRoleLocalService;
 import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
+import com.liferay.asset.kernel.exception.SystemVocabularyException;
 import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
@@ -242,6 +243,8 @@ import com.liferay.template.service.TemplateEntryLocalService;
 import com.liferay.wiki.model.WikiPage;
 
 import jakarta.servlet.ServletContext;
+
+import jakarta.ws.rs.BadRequestException;
 
 import java.io.InputStream;
 import java.io.Serializable;
@@ -4436,12 +4439,23 @@ public class BundleSiteInitializer implements SiteInitializer {
 			if (Validator.isNotNull(
 					taxonomyVocabulary.getExternalReferenceCode())) {
 
-				taxonomyVocabulary =
-					taxonomyVocabularyResource.
-						putSiteTaxonomyVocabularyByExternalReferenceCode(
-							groupId,
-							taxonomyVocabulary.getExternalReferenceCode(),
-							taxonomyVocabulary);
+				try {
+					taxonomyVocabulary =
+						taxonomyVocabularyResource.
+							putSiteTaxonomyVocabularyByExternalReferenceCode(
+								groupId,
+								taxonomyVocabulary.getExternalReferenceCode(),
+								taxonomyVocabulary);
+				}
+				catch (BadRequestException | SystemVocabularyException
+							exception) {
+
+					taxonomyVocabulary =
+						taxonomyVocabularyResource.
+							getSiteTaxonomyVocabularyByExternalReferenceCode(
+								groupId,
+								taxonomyVocabulary.getExternalReferenceCode());
+				}
 			}
 			else {
 				Page<TaxonomyVocabulary> taxonomyVocabularyPage =
