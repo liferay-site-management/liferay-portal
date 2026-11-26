@@ -31,6 +31,7 @@ import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.BooleanFilter;
 import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.servlet.DummyHttpServletResponse;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -142,9 +143,19 @@ public class CTEntryResourceImpl extends BaseCTEntryResourceImpl {
 				}
 			},
 			sorts,
-			document -> _toCTEntry(
-				GetterUtil.getLong(document.get(Field.ENTRY_CLASS_PK)),
-				document));
+			document -> {
+				if (!_ctCollectionModelResourcePermission.contains(
+						PermissionThreadLocal.getPermissionChecker(),
+						GetterUtil.getLong(document.get("ctCollectionId")),
+						ActionKeys.VIEW)) {
+
+					return null;
+				}
+
+				return _toCTEntry(
+					GetterUtil.getLong(document.get(Field.ENTRY_CLASS_PK)),
+					document);
+			});
 	}
 
 	@Override
@@ -157,6 +168,10 @@ public class CTEntryResourceImpl extends BaseCTEntryResourceImpl {
 			Long ctCollectionId, String search, Boolean showHideable,
 			Filter filter, Pagination pagination, Sort[] sorts)
 		throws Exception {
+
+		_ctCollectionModelResourcePermission.check(
+			PermissionThreadLocal.getPermissionChecker(), ctCollectionId,
+			ActionKeys.VIEW);
 
 		return SearchUtil.search(
 			Collections.emptyMap(),
@@ -204,6 +219,10 @@ public class CTEntryResourceImpl extends BaseCTEntryResourceImpl {
 			getCtCollectionCTEntryByModelClassNameByModelClassPkModelClassPK(
 				Long ctCollectionId, Long modelClassNameId, Long modelClassPK)
 		throws Exception {
+
+		_ctCollectionModelResourcePermission.check(
+			PermissionThreadLocal.getPermissionChecker(), ctCollectionId,
+			ActionKeys.VIEW);
 
 		CTCollectionHistoryProvider<?> ctCollectionHistoryProvider =
 			_ctCollectionHistoryProviderRegistry.getCTCollectionHistoryProvider(
@@ -349,6 +368,10 @@ public class CTEntryResourceImpl extends BaseCTEntryResourceImpl {
 
 		com.liferay.change.tracking.model.CTEntry serviceBuilderCTEntry =
 			_ctEntryLocalService.getCTEntry(ctEntryId);
+
+		_ctCollectionModelResourcePermission.check(
+			PermissionThreadLocal.getPermissionChecker(),
+			serviceBuilderCTEntry.getCtCollectionId(), ActionKeys.VIEW);
 
 		DefaultDTOConverterContext dtoConverterContext =
 			_getDTOConverterContext(serviceBuilderCTEntry);

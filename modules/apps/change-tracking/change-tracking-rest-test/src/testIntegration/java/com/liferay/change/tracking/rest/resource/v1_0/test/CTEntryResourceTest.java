@@ -11,6 +11,7 @@ import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.rest.client.dto.v1_0.CTEntry;
 import com.liferay.change.tracking.rest.client.pagination.Page;
 import com.liferay.change.tracking.rest.client.pagination.Pagination;
+import com.liferay.change.tracking.rest.client.resource.v1_0.CTEntryResource;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.spi.history.CTCollectionHistoryProvider;
@@ -38,10 +39,16 @@ import com.liferay.portal.kernel.test.rule.Sync;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.odata.entity.EntityField;
 import com.liferay.portal.test.rule.Inject;
+
+import jakarta.ws.rs.core.Response;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,6 +79,20 @@ public class CTEntryResourceTest extends BaseCTEntryResourceTestCase {
 			JournalArticle.class);
 		_kbArticleClassNameId = _classNameLocalService.getClassNameId(
 			KBArticle.class);
+
+		String password = RandomTestUtil.randomString();
+
+		User user = UserTestUtil.addUser(testCompany, password);
+
+		_userCTEntryResource = CTEntryResource.builder(
+		).authentication(
+			user.getEmailAddress(), password
+		).endpoint(
+			testCompany.getVirtualHostname(),
+			PortalUtil.getPortalServerPort(false), "http"
+		).locale(
+			LocaleUtil.getDefault()
+		).build();
 	}
 
 	@After
@@ -153,6 +174,8 @@ public class CTEntryResourceTest extends BaseCTEntryResourceTestCase {
 		_assertGetCTEntriesHistoryPageInPublicationContext(
 			_kbArticleClassNameId, ctEntry4.getModelClassPK(), ctCollectionId2,
 			ctEntry4, ctEntry5);
+
+		_testGetCTEntriesHistoryPagePermission();
 	}
 
 	@Override
@@ -265,6 +288,29 @@ public class CTEntryResourceTest extends BaseCTEntryResourceTestCase {
 		Assert.assertTrue(actions.containsKey("move-changes"));
 		Assert.assertTrue(actions.containsKey("update"));
 		Assert.assertTrue(actions.containsKey("view-discard"));
+
+		assertHttpResponseStatusCode(
+			Response.Status.NOT_FOUND.getStatusCode(),
+			_userCTEntryResource.getCTEntryHttpResponse(ctEntry.getId()));
+	}
+
+	@Override
+	@Test
+	public void testGetCtCollectionCTEntriesPage() throws Exception {
+		super.testGetCtCollectionCTEntriesPage();
+
+		_testGetCtCollectionCTEntriesPagePermission();
+	}
+
+	@Override
+	@Test
+	public void testGetCtCollectionCTEntryByModelClassNameByModelClassPkModelClassPK()
+		throws Exception {
+
+		super.
+			testGetCtCollectionCTEntryByModelClassNameByModelClassPkModelClassPK();
+
+		_testGetCtCollectionCTEntryByModelClassNameByModelClassPKModelClassPKPermission();
 	}
 
 	@Override
@@ -684,6 +730,43 @@ public class CTEntryResourceTest extends BaseCTEntryResourceTestCase {
 		return ctCollection.getCtCollectionId();
 	}
 
+	private void _testGetCTEntriesHistoryPagePermission() throws Exception {
+		Page<CTEntry> page = _userCTEntryResource.getCTEntriesHistoryPage(
+			_journalArticleClassNameId, null, null, testGroup.getGroupId(),
+			null, Pagination.of(1, 10), null);
+
+		Assert.assertTrue(ListUtil.isEmpty((List<CTEntry>)page.getItems()));
+	}
+
+	private void _testGetCtCollectionCTEntriesPagePermission()
+		throws Exception {
+
+		long ctCollectionId = _getCTCollectionId();
+
+		_addCTEntry(ctCollectionId, RandomTestUtil.randomString());
+
+		assertHttpResponseStatusCode(
+			Response.Status.NOT_FOUND.getStatusCode(),
+			_userCTEntryResource.getCtCollectionCTEntriesPageHttpResponse(
+				ctCollectionId, null, null, null, Pagination.of(1, 10), null));
+	}
+
+	private void _testGetCtCollectionCTEntryByModelClassNameByModelClassPKModelClassPKPermission()
+		throws Exception {
+
+		long ctCollectionId = _getCTCollectionId();
+
+		CTEntry ctEntry = _addCTEntry(
+			ctCollectionId, RandomTestUtil.randomString());
+
+		assertHttpResponseStatusCode(
+			Response.Status.NOT_FOUND.getStatusCode(),
+			_userCTEntryResource.
+				getCtCollectionCTEntryByModelClassNameByModelClassPkModelClassPKHttpResponse(
+					ctCollectionId, ctEntry.getModelClassNameId(),
+					ctEntry.getModelClassPK()));
+	}
+
 	@Inject
 	private AddressLocalService _addressLocalService;
 
@@ -714,5 +797,7 @@ public class CTEntryResourceTest extends BaseCTEntryResourceTestCase {
 
 	@Inject
 	private ListTypeLocalService _listTypeLocalService;
+
+	private CTEntryResource _userCTEntryResource;
 
 }
